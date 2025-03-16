@@ -3,34 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>日付表示サイト</title>
+  <title>Symphony</title>
+  <link rel="manifest" href="/manifest.json">
   <style>
     body {
       font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       margin: 0;
       background-color: #f4f4f9;
+      text-align: center;
+    }
+    header {
+      background-color: #008DBD;
+      color: #ffffff;
+      padding: 1rem;
+      font-size: 1.5rem;
     }
     .date-container {
-      text-align: center;
-      color: #333;
-    }
-    .large {
-      font-size: 2.5rem; /* 大きなフォントサイズ */
-      font-weight: bold;
-    }
-    .small {
-      font-size: 1.2rem; /* 小さなフォントサイズ */
-      font-weight: normal;
+      margin-top: 20px;
+      font-size: 1.2rem;
     }
   </style>
 </head>
 <body>
+  <header>symphony</header>
   <div class="date-container" id="date"></div>
+
   <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/service-worker.js")
+        .then((registration) => {
+          console.log("Service Worker registered with scope:", registration.scope);
+        })
+        .catch((error) => {
+          console.error("Service Worker registration failed:", error);
+        });
+    }
+
     function getFormattedDate() {
       const now = new Date();
       const year = now.getFullYear();
@@ -40,16 +48,11 @@
       const day = dayNames[now.getDay()];
 
       return `
-        <span class="small">${year}年</span>
-        <span class="large">${month}</span>
-        <span class="small">月</span>
-        <span class="large">${date}</span>
-        <span class="small">日（${day}）</span>
+        ${year}年${month}月${date}日（${day}）
       `;
     }
 
-    // 日付を挿入
-    document.getElementById('date').innerHTML = getFormattedDate();
+    document.getElementById('date').innerText = getFormattedDate();
   </script>
 </body>
 </html>
