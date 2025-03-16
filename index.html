@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>日付表示サイト</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f9;
+    }
+    .date-container {
+      text-align: center;
+      color: #333;
+    }
+    .large {
+      font-size: 2.5rem; /* 大きなフォントサイズ */
+      font-weight: bold;
+    }
+    .small {
+      font-size: 1.2rem; /* 小さなフォントサイズ */
+      font-weight: normal;
+    }
+  </style>
+</head>
+<body>
+  <div class="date-container" id="date"></div>
+  <script>
+    function getFormattedDate() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = ('0' + (now.getMonth() + 1)).slice(-2);
+      const date = ('0' + now.getDate()).slice(-2);
+      const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+      const day = dayNames[now.getDay()];
+
+      return `
+        <span class="small">${year}年</span>
+        <span class="large">${month}</span>
+        <span class="small">月</span>
+        <span class="large">${date}</span>
+        <span class="small">日（${day}）</span>
+      `;
+    }
+
+    // 日付を挿入
+    document.getElementById('date').innerHTML = getFormattedDate();
+  </script>
+</body>
+</html>
