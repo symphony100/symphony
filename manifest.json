@@ -1,6 +1,6 @@
 {
-  "name": "Symphony",
-  "short_name": "Symphony",
+  "name": "symphony",
+  "short_name": "symphony",
   "start_url": "https://symphony100.github.io/symphony/",
   "display": "standalone",
   "background_color": "#ffffff",
