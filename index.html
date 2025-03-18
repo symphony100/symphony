@@ -12,49 +12,224 @@
       background-color: #f4f4f9;
       text-align: center;
     }
+
     header {
       background-color: #008DBD;
       color: #ffffff;
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 1rem;
       font-size: 1.5rem;
+      transition: background-color 0.3s;
     }
-    .date-container {
+
+    .header-left {
+      margin-left: 1rem;
+    }
+
+    .header-right {
+      margin-right: 1rem;
+      font-size: 1rem;
+    }
+
+    .header-right a {
+      color: #ffffff;
+      text-decoration: none;
+      margin-left: 1rem;
+    }
+
+    .greeting-container {
       margin-top: 20px;
       font-size: 1.2rem;
+    }
+
+    .date-container {
+      margin-top: 10px;
+      font-size: inherit;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 400px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      z-index: 1000;
+      text-align: left;
+    }
+
+    .modal.active {
+      display: block;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+
+    .modal h3 {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    .modal label {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal select,
+    .modal input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .modal button {
+      width: 100%;
+      padding: 10px;
+      background-color: #008DBD;
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .modal button:hover {
+      background-color: #005f8a;
     }
   </style>
 </head>
 <body>
-  <header>symphony</header>
+  <header id="header">
+    <div class="header-left">symphony</div>
+    <div class="header-right">
+      <a href="#" id="settings-btn">設定</a>
+    </div>
+  </header>
+  <div class="greeting-container" id="greeting"></div>
   <div class="date-container" id="date"></div>
 
+  <!-- 設定モーダル -->
+  <div class="modal" id="settings-modal">
+    <h3>設定</h3>
+    <label>
+      テーマカラー:
+      <select id="theme-color">
+        <option value="#008DBD">デフォルト（青）</option>
+        <option value="#FFC0CB">ピンク</option>
+        <option value="#FFA500">オレンジ</option>
+        <option value="#808080">灰色</option>
+      </select>
+    </label>
+    <label>
+      ユーザー名変更:
+      <input type="text" id="username-input" placeholder="新しい名前を入力">
+    </label>
+    <button id="save-btn">保存</button>
+  </div>
+  <div class="overlay" id="modal-overlay"></div>
+
   <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/service-worker.js")
-        .then((registration) => {
-          console.log("Service Worker registered with scope:", registration.scope);
-        })
-        .catch((error) => {
-          console.error("Service Worker registration failed:", error);
-        });
-    }
+// 初回にユーザー名を尋ねる
+function askUserName() {
+  // すでにユーザー名が保存されている場合はスキップ
+  const savedUserName = localStorage.getItem("userName");
+  if (savedUserName) {
+    document.getElementById("greeting").innerText = `${savedUserName}さん、こんにちは！`;
+    return;
+  }
 
-    function getFormattedDate() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = ('0' + (now.getMonth() + 1)).slice(-2);
-      const date = ('0' + now.getDate()).slice(-2);
-      const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
-      const day = dayNames[now.getDay()];
+  // ユーザー名が保存されていない場合は尋ねる
+  const userName = prompt("あなたのお名前を教えてください:");
+  if (userName) {
+    document.getElementById("greeting").innerText = `${userName}さん、こんにちは！`;
+    localStorage.setItem("userName", userName); // 保存する
+  } else {
+    document.getElementById("greeting").innerText = "ゲストさん、こんにちは！";
+  }
+}
 
-      return `
-        ${year}年${month}月${date}日（${day}）
-      `;
-    }
+// 設定画面の要素を取得
+const settingsBtn = document.getElementById("settings-btn");
+const settingsModal = document.getElementById("settings-modal");
+const modalOverlay = document.getElementById("modal-overlay");
+const saveBtn = document.getElementById("save-btn");
+const themeColorSelect = document.getElementById("theme-color");
+const usernameInput = document.getElementById("username-input");
+const header = document.getElementById("header");
 
-    document.getElementById('date').innerText = getFormattedDate();
+// モーダル表示
+settingsBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  settingsModal.classList.add("active");
+  modalOverlay.classList.add("active");
+});
+
+// モーダル非表示
+modalOverlay.addEventListener("click", () => {
+  settingsModal.classList.remove("active");
+  modalOverlay.classList.remove("active");
+});
+
+// 設定を保存
+saveBtn.addEventListener("click", () => {
+  // ヘッダーのテーマカラー変更
+  const themeColor = themeColorSelect.value;
+  header.style.backgroundColor = themeColor;
+
+  // ユーザー名変更
+  const username = usernameInput.value;
+  if (username) {
+    document.getElementById("greeting").innerText = `${username}さん、こんにちは！`;
+    localStorage.setItem("userName", username); // 新しいユーザー名を保存する
+  }
+
+  // モーダルを閉じる
+  settingsModal.classList.remove("active");
+  modalOverlay.classList.remove("active");
+});
+
+// 日付を表示する関数
+function getFormattedDate() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = ('0' + (now.getMonth() + 1)).slice(-2);
+  const date = ('0' + now.getDate()).slice(-2);
+  const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+  const day = dayNames[now.getDay()];
+  return `${year}年${month}月${date}日（${day}）`;
+}
+
+// ページロード時に実行
+window.onload = () => {
+  askUserName();
+  document.getElementById("date").innerText = getFormattedDate();
+};
+
   </script>
 </body>
 </html>
