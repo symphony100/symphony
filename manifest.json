@@ -4,7 +4,7 @@
   "start_url": "https://symphony100.github.io/symphony/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#008DBD",
+  "theme_color": "#ffffff",
   "icons": [
     {
       "src": "https://symphony100.github.io/symphony/symphony.png",
