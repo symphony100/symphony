@@ -121,6 +121,29 @@
     .modal button:hover {
       background-color: #005f8a;
     }
+    
+        /* スマートフォン対応 */
+        @media (max-width: 600px) {
+            footer {
+                padding: 15px;
+                font-size: 14px;
+            }
+            footer a {
+                margin: 0 5px;
+            }
+        }
+
+        /* タブレット対応 */
+        @media (min-width: 601px) and (max-width: 1024px) {
+            footer {
+                padding: 20px;
+                font-size: 16px;
+            }
+            footer a {
+                margin: 0 8px;
+            }
+        }
+
   </style>
 </head>
 <body>
