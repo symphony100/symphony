@@ -1,12 +1,35 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-N8VFSRMP');</script>
+<!-- End Google Tag Manager -->
+  <!-- localStorageから保存されたテーマカラーを即時適用 -->
+  <script>
+    (function() {
+      const savedThemeColor = localStorage.getItem("themeColor");
+      if (savedThemeColor) {
+        document.documentElement.style.setProperty("--header-bg-color", savedThemeColor);
+      } else {
+        // 保存されていない場合はデフォルトの色
+        document.documentElement.style.setProperty("--header-bg-color", "#008DBD");
+      }
+    })();
+  </script>
   <link rel="icon" type="image/x-icon" href="symphony.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="symphony公式サイトです。">
   <title>symphony</title>
   <link rel="manifest" href="manifest.json">
   <style>
+    :root {
+      --header-bg-color: #008DBD; /* デフォルトテーマカラー */
+    }
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -15,7 +38,7 @@
     }
 
     header {
-      background-color: #008DBD;
+      background-color: var(--header-bg-color);
       color: #ffffff;
       display: flex;
       justify-content: space-between;
@@ -123,31 +146,32 @@
       background-color: #005f8a;
     }
     
-        /* スマートフォン対応 */
-        @media (max-width: 600px) {
-            footer {
-                padding: 15px;
-                font-size: 14px;
-            }
-            footer a {
-                margin: 0 5px;
-            }
-        }
+    @media (max-width: 600px) {
+      footer {
+        padding: 15px;
+        font-size: 14px;
+      }
+      footer a {
+        margin: 0 5px;
+      }
+    }
 
-        /* タブレット対応 */
-        @media (min-width: 601px) and (max-width: 1024px) {
-            footer {
-                padding: 20px;
-                font-size: 16px;
-            }
-            footer a {
-                margin: 0 8px;
-            }
-        }
-
+    @media (min-width: 601px) and (max-width: 1024px) {
+      footer {
+        padding: 20px;
+        font-size: 16px;
+      }
+      footer a {
+        margin: 0 8px;
+      }
+    }
   </style>
 </head>
 <body>
+  <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N8VFSRMP"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
   <header id="header">
     <div class="header-left">symphony</div>
     <div class="header-right">
@@ -157,7 +181,6 @@
   <div class="greeting-container" id="greeting"></div>
   <div class="date-container" id="date"></div>
 
-  <!-- 設定モーダル -->
   <div class="modal" id="settings-modal">
     <h3>設定</h3>
     <label>
@@ -178,82 +201,78 @@
   <div class="overlay" id="modal-overlay"></div>
 
   <script>
-// 初回にユーザー名を尋ねる
-function askUserName() {
-  // すでにユーザー名が保存されている場合はスキップ
-  const savedUserName = localStorage.getItem("userName");
-  if (savedUserName) {
-    document.getElementById("greeting").innerText = `${savedUserName}さん、こんにちは！`;
-    return;
-  }
+    function askUserName() {
+      const savedUserName = localStorage.getItem("userName");
+      if (savedUserName) {
+        document.getElementById("greeting").innerText = `${savedUserName}さん、こんにちは！`;
+        return;
+      }
+      const userName = prompt("あなたのお名前を教えてください:");
+      if (userName) {
+        document.getElementById("greeting").innerText = `${userName}さん、こんにちは！`;
+        localStorage.setItem("userName", userName);
+      } else {
+        document.getElementById("greeting").innerText = "ゲストさん、こんにちは！";
+      }
+    }
 
-  // ユーザー名が保存されていない場合は尋ねる
-  const userName = prompt("あなたのお名前を教えてください:");
-  if (userName) {
-    document.getElementById("greeting").innerText = `${userName}さん、こんにちは！`;
-    localStorage.setItem("userName", userName); // 保存する
-  } else {
-    document.getElementById("greeting").innerText = "ゲストさん、こんにちは！";
-  }
-}
+    const settingsBtn = document.getElementById("settings-btn");
+    const settingsModal = document.getElementById("settings-modal");
+    const modalOverlay = document.getElementById("modal-overlay");
+    const saveBtn = document.getElementById("save-btn");
+    const themeColorSelect = document.getElementById("theme-color");
+    const usernameInput = document.getElementById("username-input");
+    const header = document.getElementById("header");
 
-// 設定画面の要素を取得
-const settingsBtn = document.getElementById("settings-btn");
-const settingsModal = document.getElementById("settings-modal");
-const modalOverlay = document.getElementById("modal-overlay");
-const saveBtn = document.getElementById("save-btn");
-const themeColorSelect = document.getElementById("theme-color");
-const usernameInput = document.getElementById("username-input");
-const header = document.getElementById("header");
+    function applyThemeColor() {
+      const savedThemeColor = localStorage.getItem("themeColor");
+      if (savedThemeColor) {
+        header.style.backgroundColor = savedThemeColor;
+        themeColorSelect.value = savedThemeColor;
+      }
+    }
 
-// モーダル表示
-settingsBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  settingsModal.classList.add("active");
-  modalOverlay.classList.add("active");
-});
+    settingsBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      settingsModal.classList.add("active");
+      modalOverlay.classList.add("active");
+    });
 
-// モーダル非表示
-modalOverlay.addEventListener("click", () => {
-  settingsModal.classList.remove("active");
-  modalOverlay.classList.remove("active");
-});
+    modalOverlay.addEventListener("click", () => {
+      settingsModal.classList.remove("active");
+      modalOverlay.classList.remove("active");
+    });
 
-// 設定を保存
-saveBtn.addEventListener("click", () => {
-  // ヘッダーのテーマカラー変更
-  const themeColor = themeColorSelect.value;
-  header.style.backgroundColor = themeColor;
+    saveBtn.addEventListener("click", () => {
+      const themeColor = themeColorSelect.value;
+      header.style.backgroundColor = themeColor;
+      localStorage.setItem("themeColor", themeColor);
 
-  // ユーザー名変更
-  const username = usernameInput.value;
-  if (username) {
-    document.getElementById("greeting").innerText = `${username}さん、こんにちは！`;
-    localStorage.setItem("userName", username); // 新しいユーザー名を保存する
-  }
+      const username = usernameInput.value;
+      if (username) {
+        document.getElementById("greeting").innerText = `${username}さん、こんにちは！`;
+        localStorage.setItem("userName", username);
+      }
 
-  // モーダルを閉じる
-  settingsModal.classList.remove("active");
-  modalOverlay.classList.remove("active");
-});
+      settingsModal.classList.remove("active");
+      modalOverlay.classList.remove("active");
+    });
 
-// 日付を表示する関数
-function getFormattedDate() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = ('0' + (now.getMonth() + 1)).slice(-2);
-  const date = ('0' + now.getDate()).slice(-2);
-  const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
-  const day = dayNames[now.getDay()];
-  return `${year}年${month}月${date}日（${day}）`;
-}
+    function getFormattedDate() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = ('0' + (now.getMonth() + 1)).slice(-2);
+      const date = ('0' + now.getDate()).slice(-2);
+      const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+      const day = dayNames[now.getDay()];
+      return `${year}年${month}月${date}日（${day}）`;
+    }
 
-// ページロード時に実行
-window.onload = () => {
-  askUserName();
-  document.getElementById("date").innerText = getFormattedDate();
-};
-
+    window.onload = () => {
+      applyThemeColor();
+      askUserName();
+      document.getElementById("date").innerText = getFormattedDate();
+    };
   </script>
 </body>
 </html>
