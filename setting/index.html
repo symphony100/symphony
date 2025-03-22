@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="/symphony/symphony.png">
   <title>symphony</title>
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="/symphony/manifest.json">
   <script src="/symphony/theme.js"></script>
   <style>
     :root {
@@ -93,7 +93,6 @@
     document.getElementById("save-theme-color").addEventListener("click", () => {
       const selectedColor = document.getElementById("theme-color").value;
       setThemeColor(selectedColor); // 共通スクリプトの関数を使用
-      alert("テーマカラーが保存されました！");
     });
   </script>
 </body>
