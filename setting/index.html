@@ -94,6 +94,7 @@
 <body>
   <header>symphony</header>
   <div class="settings-container">
+    <h1>設定</h1>
     <div class="settings-group">
       <label class="settings-label">テーマカラー</label>
       <div class="settings-item">
@@ -137,6 +138,7 @@
       if (userName) {
         localStorage.setItem("userName", userName);
       }
+      alert("設定が保存されました！");
       window.location.href = "/symphony/index.html"; // インデックスページへのリダイレクト
     });
   </script>
