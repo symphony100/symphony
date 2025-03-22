@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>テーマ設定</title>
+    <link rel="icon" type="image/x-icon" href="/symphony.png">
+  <title>symphony</title>
+  <link rel="manifest" href="manifest.json">
   <script src="/theme.js"></script>
   <style>
     :root {
@@ -12,10 +14,35 @@
 
     header {
       background-color: var(--header-bg-color);
-      color: white;
+      color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       padding: 1rem;
-      text-align: center;
+      font-size: 1.5rem;
+      transition: background-color 0.3s;
     }
+
+    .header-left {
+      margin-left: 1rem;
+    }
+
+    .header-right {
+      margin-right: 1rem;
+      font-size: 1rem;
+    }
+
+    .header-right a {
+      color: #ffffff;
+      text-decoration: none;
+      margin-left: 1rem;
+    }
+
+    .greeting-container {
+      margin-top: 20px;
+      font-size: 1.2rem;
+    }
+
 
     .settings {
       margin: 20px;
@@ -45,7 +72,7 @@
   </style>
 </head>
 <body>
-  <header>テーマ設定ページ</header>
+  <header>symphony</header>
   <div class="settings">
     <label for="theme-color">テーマカラー:</label>
     <select id="theme-color">
