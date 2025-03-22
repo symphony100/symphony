@@ -1,11 +1,11 @@
 const cacheName = "symphony-cache-v1";
 const assetsToCache = [
-  "/",
-  "/index.html",
-  "/setting/index.html",
-  "/theme.js",
-  "/script.js",
-  "https://symphony100.github.io/symphony/symphony.png"
+  "/symphony/",
+  "/symphony/index.html",
+  "/symphony/setting/index.html",
+  "/symphony/theme.js",
+  "/symphony/script.js",
+  "/symphony/symphony.png"
 ];
 
 self.addEventListener("install", (event) => {
