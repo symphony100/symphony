@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="/symphony/symphony.png">
-  <title>symphony</title>
+  <link rel="icon" type="image/x-icon" href="/symphony/symphony.png">
+  <title>設定 - symphony</title>
   <link rel="manifest" href="/symphony/manifest.json">
   <script src="/symphony/theme.js"></script>
   <style>
@@ -13,86 +13,130 @@
     }
 
     body {
-      font-family: Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       margin: 0;
       background-color: #f4f4f9;
-      text-align: center;
+      color: #333;
     }
 
     header {
       background-color: var(--header-bg-color);
-      color: #ffffff;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      color: white;
       padding: 1rem;
       font-size: 1.5rem;
-      transition: background-color 0.3s;
+      text-align: left;
     }
 
-    .header-left {
-      margin-left: 1rem;
+    .settings-container {
+      margin: 0 auto;
+      padding: 20px;
+      max-width: 600px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-    .header-right {
-      margin-right: 1rem;
+    .settings-group {
+      margin-bottom: 20px;
+    }
+
+    .settings-label {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .settings-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #f9f9f9;
       font-size: 1rem;
+      transition: background-color 0.3s, box-shadow 0.3s;
     }
 
-    .header-right a {
-      color: #ffffff;
-      text-decoration: none;
-      margin-left: 1rem;
+    .settings-item:hover {
+      background-color: #f0f0f0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    .greeting-container {
-      margin-top: 20px;
-      font-size: 1.2rem;
-    }
-
-    .settings {
-      margin: 20px;
-      text-align: center;
-    }
-
-    .settings select {
-      padding: 10px;
-      margin: 10px;
-      border-radius: 5px;
-    }
-
-    .settings button {
-      padding: 10px;
-      margin: 10px;
+    .settings-item select,
+    .settings-item input {
+      flex: 1;
       border: none;
-      border-radius: 5px;
-      background-color: #008DBD;
+      outline: none;
+      background: transparent;
+      font-size: 1rem;
+      margin-left: 10px;
+    }
+
+    .save-button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background-color: var(--header-bg-color);
       color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.3s;
     }
 
-    .settings button:hover {
+    .save-button:hover {
       background-color: #005f8a;
     }
   </style>
 </head>
 <body>
-  <header>symphony</header>
-  <div class="settings">
-    <label for="theme-color">テーマカラー:</label>
-    <select id="theme-color">
-      <option value="#008DBD">青</option>
-      <option value="#FFC0CB">ピンク</option>
-      <option value="#FFA500">オレンジ</option>
-      <option value="#808080">灰色</option>
-    </select>
-    <button id="save-theme-color">保存</button>
+  <header>設定</header>
+  <div class="settings-container">
+    <div class="settings-group">
+      <label class="settings-label">テーマカラー</label>
+      <div class="settings-item">
+        <span>カラーを選択:</span>
+        <select id="theme-color">
+          <option value="#008DBD">青</option>
+          <option value="#FFC0CB">ピンク</option>
+          <option value="#FFA500">オレンジ</option>
+          <option value="#808080">灰色</option>
+        </select>
+      </div>
+    </div>
+    <div class="settings-group">
+      <label class="settings-label">ユーザー名変更</label>
+      <div class="settings-item">
+        <span>名前を入力:</span>
+        <input type="text" id="user-name" placeholder="名前を入力してください">
+      </div>
+    </div>
+    <button class="save-button" id="save-settings">保存</button>
   </div>
+
   <script>
-    document.getElementById("save-theme-color").addEventListener("click", () => {
+    // 保存済みの設定を適用
+    const savedThemeColor = localStorage.getItem("themeColor");
+    if (savedThemeColor) {
+      document.getElementById("theme-color").value = savedThemeColor;
+    }
+    const savedUserName = localStorage.getItem("userName");
+    if (savedUserName) {
+      document.getElementById("user-name").value = savedUserName;
+    }
+
+    // 設定保存
+    document.getElementById("save-settings").addEventListener("click", () => {
       const selectedColor = document.getElementById("theme-color").value;
-      setThemeColor(selectedColor); // 共通スクリプトの関数を使用
+      localStorage.setItem("themeColor", selectedColor);
+      setThemeColor(selectedColor); // `theme.js` 内の関数
+
+      const userName = document.getElementById("user-name").value;
+      if (userName) {
+        localStorage.setItem("userName", userName);
+      }
     });
   </script>
 </body>
