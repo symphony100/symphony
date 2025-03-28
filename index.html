@@ -106,9 +106,11 @@
   </header>
   <div class="greeting-container" id="greeting"></div>
   <div class="date-container" id="date"></div>
-  <div class="iframe-container">
-    <iframe src="/symphony/news/" title="お知らせ"></iframe>
-  </div>
+<!-- iframe を div でラップして横幅を統一 -->
+     <div id="news-wrapper">
+        <iframe id="news-frame" src="news/index.html"></iframe>
+     </div>
+</section>
   <script>
     function askUserName() {
       const savedUserName = localStorage.getItem("userName");
