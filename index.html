@@ -55,6 +55,22 @@
       margin-top: 10px;
       font-size: inherit;
     }
+    .iframe-container {
+      margin: 30px auto;
+      width: 95%;
+      max-width: 800px;
+      height: 400px;
+      background: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .iframe-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
   </style>
 </head>
 <body>
@@ -66,7 +82,9 @@
   </header>
   <div class="greeting-container" id="greeting"></div>
   <div class="date-container" id="date"></div>
-
+  <div class="iframe-container">
+    <iframe src="/symphony/news.html" title="お知らせ"></iframe>
+  </div>
   <script>
     function askUserName() {
       const savedUserName = localStorage.getItem("userName");
