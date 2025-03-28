@@ -55,22 +55,46 @@
       margin-top: 10px;
       font-size: inherit;
     }
-    .iframe-container {
-      margin: 30px auto;
-      width: 95%;
-      max-width: 800px;
-      height: 400px;
-      background: #ffffff;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+    
+	/* （iframe）のスタイル調整 */
+#news {
+    text-align: center;
+    padding: 30px;
+    background-color: #f8f8f8;
+    margin: 20px auto;
+    width: 60%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-    .iframe-container iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
+/* iframe のラップ要素 */
+#news-wrapper {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+/* iframe のスタイル */
+#news-frame {
+    width: 100%;
+    height: 200px;
+    border: none;
+    scrollbar-width: none; /* Firefox 用 */
+    -ms-overflow-style: none; /* IE, Edge 用 */
+}
+
+#news-frame::-webkit-scrollbar {
+    display: none; /* Chrome, Safari 用 */
+}
+
+/* スマートフォン版の調整 */
+@media (max-width: 768px) {
+    #news {
+        width: 90%;
+        padding: 20px;
     }
+}
   </style>
 </head>
 <body>
