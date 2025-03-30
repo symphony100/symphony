@@ -119,7 +119,7 @@
         document.getElementById("news-frame").src += "";
     }
 
-    setInterval(reloadIframe, 5000); // 5秒ごとにiframeをリロード
+    setInterval(reloadIframe, 60000); // 1分ごとにiframeをリロード
 
     function askUserName() {
       const savedUserName = localStorage.getItem("userName");
