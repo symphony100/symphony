@@ -115,6 +115,12 @@
   </div>
 </section>
   <script>
+    function reloadIframe() {
+        document.getElementById("news-frame").src += "";
+    }
+
+    setInterval(reloadIframe, 5000); // 5秒ごとにiframeをリロード
+
     function askUserName() {
       const savedUserName = localStorage.getItem("userName");
       if (savedUserName) {
