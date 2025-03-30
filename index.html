@@ -17,6 +17,7 @@
       font-family: Arial, sans-serif;
       margin: 0;
       background-color: #f4f4f9;
+      transition: opacity 1.5s ease-in-out;
       text-align: center;
     }
 
@@ -150,6 +151,12 @@
       askUserName();
       document.getElementById("date").innerText = getFormattedDate();
     };
+
+        document.addEventListener("DOMContentLoaded", function() {
+            requestAnimationFrame(function() {
+                document.body.style.opacity = 1;
+            });
+        });
   </script>
 </body>
 </html>
