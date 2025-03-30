@@ -116,48 +116,65 @@
         <iframe id="news-frame" src="news/index.html"></iframe>
   </div>
 </section>
-  <script>
-    function reloadIframe() {
-        document.getElementById("news-frame").src += "";
-    }
+  <script>function reloadIframe() {
+  document.getElementById("news-frame").src += "";
+}
 
-    setInterval(reloadIframe, 60000); // 1分ごとにiframeをリロード
+setInterval(reloadIframe, 60000); // 1分ごとにiframeをリロード
 
-    function askUserName() {
-      const savedUserName = localStorage.getItem("userName");
-      if (savedUserName) {
-        document.getElementById("greeting").innerText = `${savedUserName}さん、こんにちは！`;
-        return;
-      }
-      const userName = prompt("あなたのお名前を教えてください:");
-      if (userName) {
-        document.getElementById("greeting").innerText = `${userName}さん、こんにちは！`;
-        localStorage.setItem("userName", userName);
-      } else {
-        document.getElementById("greeting").innerText = "ゲストさん、こんにちは！";
-      }
-    }
+function askUserName() {
+  const savedUserName = localStorage.getItem("userName");
+  const greetingElement = document.getElementById("greeting");
+  const timeBasedGreeting = getTimeBasedGreeting();
 
-    function getFormattedDate() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = ('0' + (now.getMonth() + 1)).slice(-2);
-      const date = ('0' + now.getDate()).slice(-2);
-      const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
-      const day = dayNames[now.getDay()];
-      return `${year}年${month}月${date}日（${day}）`;
-    }
+  if (savedUserName) {
+    greetingElement.innerText = `${savedUserName}さん、${timeBasedGreeting}`;
+    return;
+  }
 
-    window.onload = () => {
-      askUserName();
-      document.getElementById("date").innerText = getFormattedDate();
-    };
+  const userName = prompt("あなたのお名前を教えてください:");
+  if (userName) {
+    greetingElement.innerText = `${userName}さん、${timeBasedGreeting}`;
+    localStorage.setItem("userName", userName);
+  } else {
+    greetingElement.innerText = `ゲストさん、${timeBasedGreeting}`;
+  }
+}
 
-        document.addEventListener("DOMContentLoaded", function() {
-            requestAnimationFrame(function() {
-                document.body.style.opacity = 1;
-            });
-        });
+function getTimeBasedGreeting() {
+  const now = new Date();
+  const hour = now.getHours();
+
+  if (hour < 12) {
+    return "おはようございます！"; // 朝の挨拶
+  } else if (hour < 18) {
+    return "こんにちは！"; // 昼の挨拶
+  } else {
+    return "こんばんは！"; // 夜の挨拶
+  }
+}
+
+function getFormattedDate() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = ('0' + (now.getMonth() + 1)).slice(-2);
+  const date = ('0' + now.getDate()).slice(-2);
+  const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+  const day = dayNames[now.getDay()];
+  return `${year}年${month}月${date}日（${day}）`;
+}
+
+window.onload = () => {
+  askUserName();
+  document.getElementById("date").innerText = getFormattedDate();
+};
+
+document.addEventListener("DOMContentLoaded", function() {
+  requestAnimationFrame(function() {
+    document.body.style.opacity = 1;
+  });
+});
+
   </script>
 </body>
 </html>
