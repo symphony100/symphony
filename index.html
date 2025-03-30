@@ -108,6 +108,11 @@
   </header>
   <div class="greeting-container" id="greeting"></div>
   <div class="date-container" id="date"></div>
+	<!-- 今日の時間割リンク -->
+<section id="dailyTimeTable" style="margin-top: 30px; text-align: center;">
+  <a href="timetable.html" style="font-size: 18px; color: #008DBD; text-decoration: none;">今日の時間割を見る</a>
+</section>
+
 	<!-- 新着情報セクション -->
 <section id="news">
     <h2 style="color: #00AAFF; font-size: 22px; margin-bottom: 15px;">新着情報</h2>
@@ -116,8 +121,6 @@
         <iframe id="news-frame" src="news/index.html"></iframe>
   </div>
 </section>
-        <!-- 時間割セクション -->
-<section id="timeTable" style="margin-top: 30px; text-align: center;"></section>
   <script>
 function reloadIframe() {
   document.getElementById("news-frame").src += "";
