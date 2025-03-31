@@ -108,13 +108,6 @@
   </header>
   <div class="greeting-container" id="greeting"></div>
   <div class="date-container" id="date"></div>
-	<!-- 今日の時間割リンク -->
-<h1>今日の時間割</h1>
-  <ul id="timeTable"></ul>
-<section id="dailyTimeTable" style="margin-top: 30px; text-align: center;">
-  <a href="timetable/" style="font-size: 18px; color: #008DBD; text-decoration: none;">今日の時間割</a>
-</section>
-
 	<!-- 新着情報セクション -->
 <section id="news">
     <h2 style="color: #00AAFF; font-size: 22px; margin-bottom: 15px;">新着情報</h2>
@@ -182,57 +175,6 @@ document.addEventListener("DOMContentLoaded", function() {
     document.body.style.opacity = 1;
   });
 });
-
-function getTimeTable(dayOfWeek) {
-  const weekTimeTables = {
-    1: [ // 月曜日
-      "1時間目: 数学", "2時間目: 英語", "3時間目: 体育",
-      "4時間目: 理科", "昼休み", "5時間目: 社会", "6時間目: 音楽"
-    ],
-    2: [ // 火曜日
-      "1時間目: 国語", "2時間目: 化学", "3時間目: 美術",
-      "4時間目: 生物", "昼休み", "5時間目: 歴史", "6時間目: 音楽"
-    ],
-    3: [ // 水曜日
-      "1時間目: 英語", "2時間目: 数学", "3時間目: 理科",
-      "4時間目: 体育", "昼休み", "5時間目: 社会", "6時間目: 技術"
-    ],
-    4: [ // 木曜日
-      "1時間目: 化学", "2時間目: 生物", "3時間目: 歴史",
-      "4時間目: 音楽", "昼休み", "5時間目: 国語", "6時間目: 体育"
-    ],
-    5: [ // 金曜日
-      "1時間目: 国語", "2時間目: 英語", "3時間目: 数学",
-      "4時間目: 理科", "昼休み", "5時間目: 美術", "6時間目: 社会"
-    ],
-    6: [ // 土曜日 (昼休みなし、4時間授業)
-      "1時間目: 英語", "2時間目: 数学", "3時間目: 理科", "4時間目: 体育"
-    ]
-  };
-
-  return weekTimeTables[dayOfWeek] || ["授業なし"];
-}
-
-function displayTimeTable() {
-  const now = new Date();
-  const dayOfWeek = now.getDay(); // 曜日を取得 (0=日曜日, 1=月曜日, ..., 6=土曜日)
-  const timeTableSection = document.getElementById("timeTable");
-  const timeTable = getTimeTable(dayOfWeek);
-
-  // 時間割をHTMLとして表示
-  timeTableSection.innerHTML = `
-    <h2 style="color: #00AAFF; font-size: 22px; margin-bottom: 15px;">今日の時間割</h2>
-    <ul style="list-style: none; padding: 0;">
-      ${timeTable.map((subject) => `<li>${subject}</li>`).join("")}
-    </ul>
-  `;
-}
-
-window.onload = () => {
-  askUserName();
-  document.getElementById("date").innerText = getFormattedDate();
-  displayTimeTable();
-};
 
   </script>
 </body>
