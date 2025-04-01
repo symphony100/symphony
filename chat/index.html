@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>symphony Firebaseチャット</title>
+    <style>
+        :root {
+            --header-bg-color: #008DBD;
+            --primary-color: #00AAFF;
+            --message-bg: #f4f4f9;
+            --sent-message-bg: #d1f7c4;
+            --received-message-bg: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: var(--message-bg);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background-color: var(--header-bg-color);
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            max-width: 70%;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .message.sent {
+            background-color: var(--sent-message-bg);
+            align-self: flex-end;
+        }
+
+        .message.received {
+            background-color: var(--received-message-bg);
+            align-self: flex-start;
+        }
+
+        footer {
+            display: flex;
+            padding: 10px;
+            background-color: #ffffff;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        button {
+            margin-left: 10px;
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>symphony Firebaseチャット</header>
+    <div class="chat-container">
+        <div class="messages" id="messages">
+            <!-- メッセージがここに表示されます -->
+        </div>
+        <footer>
+            <input type="text" id="messageInput" placeholder="メッセージを入力...">
+            <button id="sendButton">送信</button>
+        </footer>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+    <script>
+        // Firebaseの設定
+        const firebaseConfig = {
+            apiKey: "あなたのAPIキー",
+            authDomain: "あなたのプロジェクトID.firebaseapp.com",
+            projectId: "あなたのプロジェクトID",
+            storageBucket: "あなたのプロジェクトID.appspot.com",
+            messagingSenderId: "送信者ID",
+            appId: "アプリID"
+        };
+
+        // Firebase初期化
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const messagesElement = document.getElementById('messages');
+        const inputElement = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+
+        // メッセージをFirestoreに保存
+        async function sendMessage() {
+            const message = inputElement.value.trim();
+            if (message) {
+                await db.collection("messages").add({
+                    content: message,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                inputElement.value = ''; // 入力欄をクリア
+            }
+        }
+
+        // Firestoreからリアルタイムでメッセージを受信
+        db.collection("messages").orderBy("timestamp")
+            .onSnapshot((snapshot) => {
+                messagesElement.innerHTML = ''; // メッセージエリアをクリア
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const messageElement = document.createElement('div');
+                    messageElement.className = 'message received';
+                    messageElement.textContent = data.content;
+                    messagesElement.appendChild(messageElement);
+                });
+                // 自動スクロール
+                messagesElement.scrollTop = messagesElement.scrollHeight;
+            });
+
+        // 「送信」ボタンのクリックイベント
+        sendButton.addEventListener('click', sendMessage);
+
+        // Enterキーでも送信
+        inputElement.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
