@@ -113,14 +113,17 @@
 	<section id="dailyTimeTable" style="margin-top: 30px; text-align: center;">
   <a href="timetable/" style="font-size: 18px; color: #008DBD; text-decoration: none;">今日の時間割</a>
 </section>
-	<!-- 新着情報セクション -->
+
 <section id="news">
-    <h2 style="color: #00AAFF; font-size: 22px; margin-bottom: 15px;">新着情報</h2>
-        <!-- iframe を div でラップして横幅を統一 -->
-  <div id="news-wrapper">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="color: #00AAFF; font-size: 22px; margin-bottom: 15px;">新着情報</h2>
+        <button id="reload-news" style="background-color: #008DBD; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">リロード</button>
+    </div>
+    <div id="news-wrapper">
         <iframe id="news-frame" src="news/"></iframe>
-  </div>
+    </div>
 </section>
+
 
 
   <script>
@@ -128,7 +131,11 @@ function reloadIframe() {
   document.getElementById("news-frame").src += "";
 }
 
-setInterval(reloadIframe, 60000); // 1分ごとにiframeをリロード
+// リロードボタンのクリックイベントを追加
+document.getElementById("reload-news").addEventListener("click", function() {
+    const iframe = document.getElementById("news-frame");
+    iframe.src = iframe.src; // iframeのsrcを再設定してリロード
+});
 
 function askUserName() {
   const savedUserName = localStorage.getItem("userName");
