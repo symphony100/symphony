@@ -96,12 +96,12 @@
     }
 }
 
-/* リフレッシュボタンの基礎デザイン */
+/* ボタンの基礎デザイン */
 #refresh-button {
-    transition: transform 0.2s ease-in-out; /* 押下時のエフェクト */
+    transition: transform 0.3s ease-in-out;
 }
 
-/* クリック時のアニメーション */
+/* 回転アニメーション */
 @keyframes spin {
     from {
         transform: rotate(0deg);
@@ -198,20 +198,22 @@ window.onload = () => {
   document.getElementById("date").innerText = getFormattedDate();
 };
 
-/* リフレッシュボタンの基礎デザイン */
-#refresh-button {
-    transition: transform 0.2s ease-in-out; /* 押下時のエフェクト */
-}
+// リフレッシュボタンのクリック動作
+document.getElementById("refresh-button").addEventListener("click", function () {
+    const iframe = document.getElementById("news-frame");
 
-/* クリック時のアニメーション */
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
+    // iframeをリロード
+    iframe.src = iframe.src;
+
+    // 回転アニメーションを適用
+    const refreshButton = document.getElementById("refresh-button");
+    refreshButton.style.animation = "spin 1s linear"; // 1秒間回転
+
+    // アニメーション終了後にリセット
+    setTimeout(() => {
+        refreshButton.style.animation = ""; // アニメーションを停止
+    }, 1000); // 1秒後にリセット
+});
 
   </script>
 </body>
