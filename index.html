@@ -90,18 +90,20 @@
     display: none; /* Chrome, Safari 用 */
 }
 
-/* リフレッシュボタンのデザイン */
-#refresh-button {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #00AAFF; /* 外枠の色 */
-    border-top: 4px solid #FFFFFF; /* スピナー部分の色 */
-    border-radius: 50%; /* 円形にする */
-    cursor: pointer;
-    animation: spin 0s linear infinite; /* 初期状態は停止 */
+/* スマートフォン版の調整 */
+@media (max-width: 768px) {
+    #news {
+        width: 90%;
+        padding: 20px;
+    }
 }
 
-/* 回転アニメーション */
+/* リフレッシュボタンの基礎デザイン */
+#refresh-button {
+    transition: transform 0.2s ease-in-out; /* 押下時のエフェクト */
+}
+
+/* クリック時のアニメーション */
 @keyframes spin {
     from {
         transform: rotate(0deg);
@@ -111,14 +113,6 @@
     }
 }
 
-
-/* スマートフォン版の調整 */
-@media (max-width: 768px) {
-    #news {
-        width: 90%;
-        padding: 20px;
-    }
-}
   </style>
 </head>
 <body>
@@ -138,8 +132,14 @@
 
 <section id="news">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 style="color: #00AAFF; font-size: 22px; margin-bottom: 15px;">新着情報</h2>
-        <div id="refresh-button"></div> <!-- リフレッシュボタン -->
+        <h2 style="color: #00AAFF; font-size: 22px; margin-bottom: 15px; text-align: center; flex-grow: 1;">新着情報</h2>
+        <div id="refresh-button" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 2px solid #00AAFF; border-radius: 50%; cursor: pointer;">
+            <!-- リフレッシュアイコン -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#00AAFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <path d="M20.49 15a9 9 0 1 1-5.38-9.94"></path>
+            </svg>
+        </div>
     </div>
     <div id="news-wrapper">
         <iframe id="news-frame" src="news/"></iframe>
@@ -206,20 +206,20 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 
-// リフレッシュボタンの動作を追加
-document.getElementById("refresh-button").addEventListener("click", function() {
-    const iframe = document.getElementById("news-frame");
-    iframe.src = iframe.src; // iframeをリロード
+/* リフレッシュボタンの基礎デザイン */
+#refresh-button {
+    transition: transform 0.2s ease-in-out; /* 押下時のエフェクト */
+}
 
-    // リフレッシュボタンのアニメーションを開始
-    const refreshButton = document.getElementById("refresh-button");
-    refreshButton.style.animation = "spin 1s linear";
-
-    setTimeout(() => {
-        refreshButton.style.animation = ""; // アニメーションを停止
-    }, 1000); // アニメーション時間に合わせて停止
-});
-
+/* クリック時のアニメーション */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
 
   </script>
 </body>
