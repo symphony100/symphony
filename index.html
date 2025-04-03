@@ -17,8 +17,6 @@
       font-family: Arial, sans-serif;
       margin: 0;
       background-color: #f4f4f9;
-      opacity: 0;
-      transition: opacity 1s ease-in-out;
       text-align: center;
     }
 
@@ -199,12 +197,6 @@ window.onload = () => {
   askUserName();
   document.getElementById("date").innerText = getFormattedDate();
 };
-
-document.addEventListener("DOMContentLoaded", function() {
-  requestAnimationFrame(function() {
-    document.body.style.opacity = 1;
-  });
-});
 
 /* リフレッシュボタンの基礎デザイン */
 #refresh-button {
