@@ -121,6 +121,8 @@
         <iframe id="news-frame" src="news/"></iframe>
   </div>
 </section>
+
+
   <script>
 function reloadIframe() {
   document.getElementById("news-frame").src += "";
@@ -180,93 +182,6 @@ document.addEventListener("DOMContentLoaded", function() {
     document.body.style.opacity = 1;
   });
 });
-
-//時間割
-function getCurrentPeriod(dayOfWeek) {
-  const now = new Date();
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
-  const totalMinutes = currentHour * 60 + currentMinute; // 現在時刻を分単位で計算
-
-  // 曜日ごとのスケジュール
-  const weeklySchedule = {
-    1: [ // 月曜日
-      { period: "1時間目: 数学", start: 8 * 60 + 45, end: 9 * 60 + 35 },
-      { period: "2時間目: 英語", start: 9 * 60 + 45, end: 10 * 60 + 35 },
-      { period: "3時間目: 体育", start: 10 * 60 + 45, end: 11 * 60 + 35 },
-      { period: "4時間目: 理科", start: 11 * 60 + 45, end: 12 * 60 + 35 },
-      { period: "昼休み", start: 12 * 60 + 35, end: 13 * 60 + 10 },
-      { period: "5時間目: 社会", start: 13 * 60 + 15, end: 14 * 60 + 5 },
-      { period: "6時間目: 音楽", start: 14 * 60 + 15, end: 15 * 60 + 5 }
-    ],
-    2: [ // 火曜日
-      { period: "1時間目: 国語", start: 8 * 60 + 45, end: 9 * 60 + 35 },
-      { period: "2時間目: 化学", start: 9 * 60 + 45, end: 10 * 60 + 35 },
-      { period: "3時間目: 美術", start: 10 * 60 + 45, end: 11 * 60 + 35 },
-      { period: "4時間目: 生物", start: 11 * 60 + 45, end: 12 * 60 + 35 },
-      { period: "昼休み", start: 12 * 60 + 35, end: 13 * 60 + 10 },
-      { period: "5時間目: 歴史", start: 13 * 60 + 15, end: 14 * 60 + 5 },
-      { period: "6時間目: 音楽", start: 14 * 60 + 15, end: 15 * 60 + 5 }
-    ],
-    3: [ // 水曜日
-      { period: "1時間目: 英語", start: 8 * 60 + 45, end: 9 * 60 + 35 },
-      { period: "2時間目: 数学", start: 9 * 60 + 45, end: 10 * 60 + 35 },
-      { period: "3時間目: 理科", start: 10 * 60 + 45, end: 11 * 60 + 35 },
-      { period: "4時間目: 体育", start: 11 * 60 + 45, end: 12 * 60 + 35 },
-      { period: "昼休み", start: 12 * 60 + 35, end: 13 * 60 + 10 },
-      { period: "5時間目: 社会", start: 13 * 60 + 15, end: 14 * 60 + 5 },
-      { period: "6時間目: 技術", start: 14 * 60 + 15, end: 15 * 60 + 5 }
-    ],
-    4: [ // 木曜日
-      { period: "1時間目: 化学", start: 8 * 60 + 45, end: 9 * 60 + 35 },
-      { period: "2時間目: 生物", start: 9 * 60 + 45, end: 10 * 60 + 35 },
-      { period: "3時間目: 歴史", start: 10 * 60 + 45, end: 11 * 60 + 35 },
-      { period: "4時間目: 音楽", start: 11 * 60 + 45, end: 12 * 60 + 35 },
-      { period: "昼休み", start: 12 * 60 + 35, end: 13 * 60 + 10 },
-      { period: "5時間目: 国語", start: 13 * 60 + 15, end: 14 * 60 + 5 },
-      { period: "6時間目: 体育", start: 14 * 60 + 15, end: 15 * 60 + 5 }
-    ],
-    5: [ // 金曜日
-      { period: "1時間目: 国語", start: 8 * 60 + 45, end: 9 * 60 + 35 },
-      { period: "2時間目: 英語", start: 9 * 60 + 45, end: 10 * 60 + 35 },
-      { period: "3時間目: 数学", start: 10 * 60 + 45, end: 11 * 60 + 35 },
-      { period: "4時間目: 理科", start: 11 * 60 + 45, end: 12 * 60 + 35 },
-      { period: "昼休み", start: 12 * 60 + 35, end: 13 * 60 + 10 },
-      { period: "5時間目: 美術", start: 13 * 60 + 15, end: 14 * 60 + 5 },
-      { period: "6時間目: 社会", start: 14 * 60 + 15, end: 15 * 60 + 5 }
-    ],
-    6: [ // 土曜日
-      { period: "1時間目: 英語", start: 8 * 60 + 45, end: 9 * 60 + 35 },
-      { period: "2時間目: 数学", start: 9 * 60 + 45, end: 10 * 60 + 35 },
-      { period: "3時間目: 理科", start: 10 * 60 + 45, end: 11 * 60 + 35 },
-      { period: "4時間目: 体育", start: 11 * 60 + 45, end: 12 * 60 + 35 }
-    ]
-  };
-
-  // 適切なスケジュールを選択
-  const schedule = weeklySchedule[dayOfWeek];
-
-  // 現在の時間帯を判定
-  for (let i = 0; i < schedule.length; i++) {
-    const { period, start, end } = schedule[i];
-    if (totalMinutes >= start && totalMinutes < end) {
-      return period;
-    }
-  }
-  return "現在は授業時間外です"; // 授業時間外の場合のメッセージ
-}
-
-function displayCurrentPeriod() {
-  const now = new Date();
-  const dayOfWeek = now.getDay(); // 曜日を取得 (0=日曜日, 1=月曜日, ..., 6=土曜日)
-  const periodSection = document.getElementById("currentPeriod");
-  const currentPeriod = getCurrentPeriod(dayOfWeek);
-
-  periodSection.innerHTML = `
-    <h2 style="color: #00AAFF; font-size: 22px; margin-bottom: 15px;">現在の授業</h2>
-    <p style="font-size: 18px;">${currentPeriod}</p>
-  `;
-}
 
   </script>
 </body>
