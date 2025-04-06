@@ -89,6 +89,8 @@
     .save-button:hover {
       background-color: #005f8a;
     }
+
+    
   </style>
 </head>
 <body>
@@ -161,11 +163,11 @@
     `;
     document.querySelector(".settings-container").appendChild(saveNotice);
 
-    // 1.5秒後に通知を消してトップページへ移動
+    // 0.5秒後に通知を消してトップページへ移動
     setTimeout(() => {
       saveNotice.remove();
       window.location.href = "/symphony/";
-    }, 1500);
+    }, 500);
   });
 </script>
 
