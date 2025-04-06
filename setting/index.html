@@ -139,6 +139,12 @@
       localStorage.setItem("userName", userName);
     }
 
+    if (!document.getElementById("save-notice")) {
+  const saveNotice = document.createElement("div");
+  saveNotice.id = "save-notice";
+}
+
+
     // 通知エリア作成
     const saveNotice = document.createElement("div");
     saveNotice.innerText = "設定を保存しました！";
