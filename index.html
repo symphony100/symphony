@@ -12,10 +12,17 @@
     :root {
       --header-bg-color: #008DBD; /* デフォルトテーマカラー */
     }
+   html, body {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
 
-    html, body {
-  overflow-x: hidden;
-}
+  * {
+    box-sizing: inherit;
+  }
 
     body {
       font-family: Arial, sans-serif;
