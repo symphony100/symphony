@@ -75,6 +75,16 @@
         これから長いお付き合いをどうぞよろしくお願いいたします。</p>
     </article>
 </section>
-
+    <script>
+    // テーマカラー適用用の関数
+    function applyThemeColor() {
+        const savedThemeColor = localStorage.getItem("themeColor") || "#00AAFF"; // デフォルトカラー
+        document.documentElement.style.setProperty("--header-bg-color", savedThemeColor);
+        const headings = document.querySelectorAll("h3"); // 記事タイトルのh3タグ
+        headings.forEach(heading => {
+            heading.style.color = savedThemeColor; // h3タグの色をテーマカラーに設定
+        });
+    }
+</script>
 </body>
 </html>
