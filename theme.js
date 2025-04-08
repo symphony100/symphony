@@ -1,6 +1,5 @@
 // theme.js
 (function() {
-  // DOMが完全に読み込まれてから処理を実行する
   document.addEventListener("DOMContentLoaded", function() {
     // 保存されたテーマカラーを取得し、適用
     const savedThemeColor = localStorage.getItem("themeColor");
@@ -40,11 +39,14 @@
     function applyThemeColorToRefreshButton(color) {
       const refreshButton = document.getElementById("refresh-button");
       if (refreshButton) {
+        console.log("Refresh button found!"); // ボタンが見つかったことを確認
         refreshButton.style.borderColor = color; // ボーダーの色
         const svgIcon = refreshButton.querySelector("svg");
         if (svgIcon) {
           svgIcon.style.stroke = color; // アイコンの色
         }
+      } else {
+        console.log("Refresh button not found!"); // ボタンが見つからない場合
       }
     }
   });
