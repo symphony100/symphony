@@ -4,6 +4,11 @@
   const savedThemeColor = localStorage.getItem("themeColor");
   const defaultColor = "#00AAFF"; // デフォルトのテーマカラー
   document.documentElement.style.setProperty("--header-bg-color", savedThemeColor || defaultColor);
+
+    // 保存されたテーマカラーを取得
+  const savedThemeColor = localStorage.getItem("themeColor");
+  const defaultColor = "#00AAFF"; // デフォルトのテーマカラー
+  const themeColor = savedThemeColor || defaultColor;
   
   // news.htmlのカラーも反映させる
   const newsHeadings = document.querySelectorAll('h3');
@@ -31,3 +36,15 @@
   // 初期読み込み時にも反映
   applyThemeColorToNews();
 })();
+
+    // リフレッシュボタンのカラーも変更
+    if (refreshButton) {
+      refreshButton.style.borderColor = themeColor; // ボーダーの色
+      const svgIcon = refreshButton.querySelector("svg");
+      if (svgIcon) {
+        svgIcon.style.stroke = themeColor; // アイコンの色
+      }
+    }
+  };
+})();
+
