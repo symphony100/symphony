@@ -84,6 +84,11 @@
             heading.style.color = savedThemeColor; // h3タグの色をテーマカラーに設定
         });
     }
+
+    // ページ読み込み後にapplyThemeColorを実行
+    document.addEventListener("DOMContentLoaded", function() {
+        applyThemeColor(); // ページ読み込み後にテーマカラーを適用
+    });
 </script>
 </body>
 </html>
