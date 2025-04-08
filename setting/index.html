@@ -120,65 +120,73 @@
   </div>
 
 <script>
-  // 保存済みの設定を適用
-  const savedThemeColor = localStorage.getItem("themeColor");
-  if (savedThemeColor) {
-    document.getElementById("theme-color").value = savedThemeColor;
-  }
-  const savedUserName = localStorage.getItem("userName");
-  if (savedUserName) {
-    document.getElementById("user-name").value = savedUserName;
-  }
+  document.addEventListener("DOMContentLoaded", function() {
+    // 保存されたテーマカラーとユーザー名を読み込み
+    const savedThemeColor = localStorage.getItem("themeColor");
+    const savedUserName = localStorage.getItem("userName");
 
-  // 設定保存
-  document.getElementById("save-settings").addEventListener("click", () => {
+    // テーマカラーが保存されていればそれを反映
+    if (savedThemeColor) {
+      document.getElementById("theme-color").value = savedThemeColor;
+    }
+
+    // ユーザー名が保存されていればそれを表示
+    if (savedUserName) {
+      document.getElementById("user-name").value = savedUserName;
+    }
+  });
+
+  // 設定を保存するボタンの処理
+  document.getElementById("save-settings").addEventListener("click", function() {
+    // テーマカラーの取得
     const selectedColor = document.getElementById("theme-color").value;
     localStorage.setItem("themeColor", selectedColor);
-    setThemeColor(selectedColor); // theme.jsの関数
+    // theme.jsのsetThemeColor関数を呼び出して、テーマカラーを即時反映
+    if (window.setThemeColor) {
+      setThemeColor(selectedColor);
+    }
 
+    // ユーザー名の取得
     const userName = document.getElementById("user-name").value;
     if (userName) {
       localStorage.setItem("userName", userName);
     }
 
+    // 設定が保存されたことを通知する要素を作成
     if (!document.getElementById("save-notice")) {
-  const saveNotice = document.createElement("div");
-  saveNotice.id = "save-notice";
-}
+      const saveNotice = document.createElement("div");
+      saveNotice.id = "save-notice";
+      saveNotice.innerText = "設定が保存されました！";
+      saveNotice.style.cssText = `
+        background: #008DBD;
+        color: white;
+        padding: 12px;
+        border-radius: 8px;
+        text-align: center;
+        margin-top: 20px;
+        font-weight: bold;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.3s ease;
+      `;
+      document.querySelector(".settings-container").appendChild(saveNotice);
 
-
-    // 通知エリア作成
-    if (!document.getElementById("save-notice")) {
-  const saveNotice = document.createElement("div");
-  saveNotice.id = "save-notice";
-  saveNotice.innerText = "設定を保存しました！";
-  saveNotice.style.cssText = 
-    background: #008DBD;
-    color: white;
-    padding: 12px;
-    border-radius: 8px;
-    text-align: center;
-    margin-top: 20px;
-    font-weight: bold;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    animation: fadeIn 0.3s ease;
-  ;
-  document.querySelector(".settings-container").appendChild(saveNotice);
-
-  // 通知を消してページ遷移
-  setTimeout(() => {
-    saveNotice.remove();
-    window.location.href = "/symphony/";
-  }, 2000); // 2秒後に消してページ遷移
-}
-
-
-    // 0.1秒後に通知を消してトップページへ移動
-    setTimeout(() => {
-      saveNotice.remove();
-      window.location.href = "/symphony/";
-    }, 100);
+      // 通知を2秒後に消してトップページに遷移
+      setTimeout(() => {
+        saveNotice.remove();
+        window.location.href = "/symphony/";
+      }, 2000);
+    }
   });
+
+  // 通知のフェードインアニメーション
+  const style = document.createElement('style');
+  style.innerHTML = `
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+  `;
+  document.head.appendChild(style);
 </script>
 
 </body>
