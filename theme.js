@@ -16,7 +16,8 @@
       heading.style.color = themeColor;
     });
     newsDates.forEach(date => {
-      date.style.color = "#777"; // 日付の色は固定でいいと思うけど、調整も可能
+      date.style.color = "#777"; 
+        console.log("Theme applied to news"); 
     });
   }
 
