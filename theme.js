@@ -1,4 +1,4 @@
-// theme.js
+// theme.js 
 (function() {
   document.addEventListener("DOMContentLoaded", function() {
     // 保存されたテーマカラーを取得し、適用
