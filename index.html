@@ -146,7 +146,7 @@
 <!-- ニュースセクション -->
 <section id="news">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 style="color: #00AAFF; font-size: 22px; margin-bottom: 15px; text-align: center; flex-grow: 1;">新着情報</h2>
+        <h2 id="news-title" style="color: #00AAFF; font-size: 22px; margin-bottom: 15px; text-align: center; flex-grow: 1;">新着情報</h2>
         <div id="refresh-button" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 2px solid #00AAFF; border-radius: 50%; cursor: pointer;">
             <!-- リフレッシュアイコン -->
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#00AAFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
@@ -230,6 +230,27 @@ document.getElementById("refresh-button").addEventListener("click", function () 
         refreshButton.style.animation = ""; // アニメーションを停止
     }, 1000); // 1秒後にリセット
 });
+	  
+(function() {
+  // デフォルトテーマカラー
+  const defaultColor = "#00AAFF"; 
+
+  // 保存されたテーマカラーを取得し、適用
+  const savedThemeColor = localStorage.getItem("themeColor");
+  const themeColor = savedThemeColor || defaultColor; // 保存されてるカラーがない場合、デフォルトカラーを使用
+
+  // ヘッダーと「新着情報」部分にカラーを適用
+  document.documentElement.style.setProperty("--header-bg-color", themeColor);
+  document.getElementById("news-title").style.color = themeColor;
+
+  // テーマカラーを保存する関数
+  window.setThemeColor = function(themeColor) {
+    localStorage.setItem("themeColor", themeColor);
+    document.documentElement.style.setProperty("--header-bg-color", themeColor);
+    document.getElementById("news-title").style.color = themeColor;
+  };
+})();
+
 
   </script>
 </body>
