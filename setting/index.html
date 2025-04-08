@@ -89,7 +89,6 @@
     .save-button:hover {
       background-color: #005f8a;
     }
-
     
   </style>
 </head>
@@ -119,67 +118,51 @@
     <button class="save-button" id="save-settings">保存</button>
   </div>
 
-<script>
-  // 保存済みの設定を適用
-  const savedThemeColor = localStorage.getItem("themeColor");
-  if (savedThemeColor) {
-    document.getElementById("theme-color").value = savedThemeColor;
-  }
-  const savedUserName = localStorage.getItem("userName");
-  if (savedUserName) {
-    document.getElementById("user-name").value = savedUserName;
-  }
-
-  // 設定保存
-  document.getElementById("save-settings").addEventListener("click", () => {
-    const selectedColor = document.getElementById("theme-color").value;
-    localStorage.setItem("themeColor", selectedColor);
-    setThemeColor(selectedColor); // theme.jsの関数
-
-    const userName = document.getElementById("user-name").value;
-    if (userName) {
-      localStorage.setItem("userName", userName);
+  <script>
+    // 保存済みの設定を適用
+    const savedThemeColor = localStorage.getItem("themeColor");
+    if (savedThemeColor) {
+      document.getElementById("theme-color").value = savedThemeColor;
+    }
+    const savedUserName = localStorage.getItem("userName");
+    if (savedUserName) {
+      document.getElementById("user-name").value = savedUserName;
     }
 
-    if (!document.getElementById("save-notice")) {
-  const saveNotice = document.createElement("div");
-  saveNotice.id = "save-notice";
-}
+    // 設定保存
+    document.getElementById("save-settings").addEventListener("click", () => {
+      const selectedColor = document.getElementById("theme-color").value;
+      localStorage.setItem("themeColor", selectedColor);
+      setThemeColor(selectedColor); // theme.jsの関数
 
+      const userName = document.getElementById("user-name").value;
+      if (userName) {
+        localStorage.setItem("userName", userName);
+      }
 
-    // 通知エリア作成
-    if (!document.getElementById("save-notice")) {
-  const saveNotice = document.createElement("div");
-  saveNotice.id = "save-notice";
-  saveNotice.innerText = "設定を保存しました！";
-  saveNotice.style.cssText = `
-    background: #008DBD;
-    color: white;
-    padding: 12px;
-    border-radius: 8px;
-    text-align: center;
-    margin-top: 20px;
-    font-weight: bold;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    animation: fadeIn 0.3s ease;
-  `;
-  document.querySelector(".settings-container").appendChild(saveNotice);
+      // 通知エリア作成
+      const saveNotice = document.createElement("div");
+      saveNotice.id = "save-notice";
+      saveNotice.innerText = "設定を保存しました！";
+      saveNotice.style.cssText = `
+        background: #008DBD;
+        color: white;
+        padding: 12px;
+        border-radius: 8px;
+        text-align: center;
+        margin-top: 20px;
+        font-weight: bold;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.3s ease;
+      `;
+      document.querySelector(".settings-container").appendChild(saveNotice);
 
-  // 通知を消してページ遷移
-  setTimeout(() => {
-    saveNotice.remove();
-    window.location.href = "/symphony/";
-  }, 2000); // 2秒後に消してページ遷移
-}
-
-
-    // 0.1秒後に通知を消してトップページへ移動
-    setTimeout(() => {
-      saveNotice.remove();
-      window.location.href = "/symphony/";
-    }, 100);
-  });
-</script>
-
+      // 通知を消してページ遷移
+      setTimeout(() => {
+        saveNotice.remove();
+        window.location.href = "/symphony/";  // ここでトップページに移動
+      }, 2000); // 2秒後に消してページ遷移
+    });
+  </script>
 </body>
 </html>
