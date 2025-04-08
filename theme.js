@@ -51,3 +51,28 @@
     }
   });
 })();
+
+  // リフレッシュボタンの動作
+  const refreshButton = document.getElementById("refresh-button");
+  if (refreshButton) {
+    const svgIcon = refreshButton.querySelector("svg");
+    
+    refreshButton.addEventListener("click", () => {
+      // ボタンを無効化
+      refreshButton.style.pointerEvents = "none"; // クリック不可にする
+      refreshButton.style.opacity = 0.5; // ボタンを半透明にする
+
+      // アイコンの回転
+      svgIcon.style.transition = "transform 1s ease";
+      svgIcon.style.transform = "rotate(360deg)"; // 1秒で回転
+
+      // 回転が終わった後にボタンを再度有効化
+      setTimeout(() => {
+        // 回転終了後の処理
+        svgIcon.style.transform = "rotate(0deg)"; // アイコンの回転を元に戻す
+        refreshButton.style.pointerEvents = "auto"; // クリック可能に戻す
+        refreshButton.style.opacity = 1; // 半透明を元に戻す
+      }, 1000); // 1秒後にボタンを再度有効にする
+    });
+  }
+})();
