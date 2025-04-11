@@ -2,7 +2,8 @@ const cacheName = "symphony-cache-v1";
 const assetsToCache = [
   "/symphony/",
   "/symphony/news/",
-  "/symphony/setting/index.html",
+  "/symphony/setting/",
+  "/symphony/game/",
   "/symphony/theme.js",
   "/symphony/script.js",
   "/symphony/symphony.png"
