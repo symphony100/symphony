@@ -257,6 +257,38 @@ document.getElementById("refresh-button").addEventListener("click", function () 
   };
 })();
 
+	  
+  const today = new Date();
+  const m = today.getMonth() + 1;
+  const d = today.getDate();
+
+  const specialDays = {
+    "1/1": "🎍 あけましておめでとう！",
+    "2/14": "💝 ハッピーバレンタイン！",
+    "9/2": "🎉 ウェブサイト記念日！",
+    "12/24": "🎄 メリークリスマスイブ！",
+    "12/25": "🎅 メリークリスマス！",
+    "12/31": "🍜 よいお年を！"
+  };
+
+  const key = `${m}/${d}`;
+  const message = specialDays[key];
+
+  if (message) {
+    // ポップアップ表示
+    alert(message);
+
+    // マウスパーティクル
+    document.addEventListener("mousemove", (e) => {
+      const particle = document.createElement("div");
+      particle.className = "mouse-particle";
+      particle.style.left = `${e.pageX}px`;
+      particle.style.top = `${e.pageY}px`;
+      document.body.appendChild(particle);
+      setTimeout(() => particle.remove(), 800);
+    });
+  }
+
 
   </script>
 </body>
