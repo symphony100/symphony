@@ -137,21 +137,26 @@
 }
 
 .mouse-particle {
-  position: absolute;
+  position: fixed;
   width: 8px;
   height: 8px;
-  background: radial-gradient(circle, #fff 0%, #00ffff 60%, transparent 100%);
   border-radius: 50%;
   pointer-events: none;
+  z-index: 9999;
   opacity: 0.8;
   transform: translate(-50%, -50%);
-  animation: fadeOut 0.8s ease-out;
-  z-index: 9999;
+  animation: fadeOut 0.5s ease-out forwards;
 }
 
 @keyframes fadeOut {
-  0% { opacity: 0.8; transform: scale(1); }
-  100% { opacity: 0; transform: scale(2); }
+  0% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.5);
+  }
 }
 
 	    #popup-message {
@@ -297,37 +302,116 @@ document.getElementById("refresh-button").addEventListener("click", function () 
 })();
 
 	  
-function showSpecialDayPopup() {
-  const now = new Date();
-  const month = now.getMonth() + 1;
-  const date = now.getDate();
-  const key = `${month}/${date}`;
-
   const specialDays = {
     "1/1": { color: "#FFA500", message: "🎍 お正月おめでとう！" },
     "2/14": { color: "#FF69B4", message: "💝 ハッピーバレンタイン！" },
-    "4/12": { color: "#008DBD", message: "🎉 サイト開設記念日！" },
+    "9/2": { color: "#008DBD", message: "🎉 サイト開設記念日！" },
     "12/24": { color: "#ADFF2F", message: "🎄 メリークリスマスイブ！" },
     "12/25": { color: "#00FF00", message: "🎅 メリークリスマス！" },
     "12/31": { color: "#0000FF", message: "🕛 よいお年を！" },
   };
 
-  if (specialDays[key]) {
-    const popup = document.getElementById("popup-message");
-    popup.innerText = specialDays[key].message;
-    popup.style.borderLeft = `6px solid ${specialDays[key].color}`;
-    popup.classList.add("show");
+  function showPopupIfSpecialDay() {
+    const now = new Date();
+    const key = `${now.getMonth() + 1}/${now.getDate()}`;
+    const special = specialDays[key];
+    if (special) {
+      const popup = document.getElementById("popup-message");
+      const popupText = document.getElementById("popup-text");
+      popupText.textContent = special.message;
+      popup.style.borderLeft = `6px solid ${special.color}`;
+      popup.style.display = "block";
+
+      // ✕ボタンで閉じる
+      document.getElementById("popup-close").onclick = () => {
+        popup.style.display = "none";
+      };
+
+      // パーティクル起動
+      startParticles(special.color);
+    }
+  }
+
+  // パーティクル（canvas）
+  function startParticles(color) {
+    const canvas = document.getElementById("cursor-canvas");
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    document.addEventListener("mousemove", function (e) {
+      for (let i = 0; i < 4; i++) {
+        particles.push({
+          x: e.clientX,
+          y: e.clientY,
+          size: Math.random() * 3 + 2,
+          speedX: (Math.random() - 0.5) * 2,
+          speedY: (Math.random() - 0.5) * 2,
+          alpha: 1,
+        });
+      }
+    });
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = color + Math.floor(p.alpha * 255).toString(16).padStart(2, "0");
+        ctx.fill();
+        p.x += p.speedX;
+        p.y += p.speedY;
+        p.alpha -= 0.02;
+        if (p.alpha <= 0) {
+          particles.splice(i, 1);
+          i--;
+        }
+      }
+      requestAnimationFrame(animateParticles);
+    }
+
+    animateParticles();
+  }
+
+  // 起動
+  window.addEventListener("DOMContentLoaded", showPopupIfSpecialDay);
+
+
+	  
+const particleColorsByDate = {
+  "1/1": "orange",
+  "2/14": "pink",
+  "9/2": "#008DBD",
+  "12/24": "lightgreen",
+  "12/25": "green",
+  "12/31": "blue"
+};
+
+const today = new Date();
+const formattedDate = `${today.getMonth() + 1}/${today.getDate()}`;
+const particleColor = particleColorsByDate[formattedDate] || null;
+
+if (particleColor) {
+  document.addEventListener("mousemove", function(e) {
+    const particle = document.createElement("div");
+    particle.className = "mouse-particle";
+    particle.style.left = e.clientX + "px";
+    particle.style.top = e.clientY + "px";
+    particle.style.background = particleColor;
+    document.body.appendChild(particle);
 
     setTimeout(() => {
-      popup.classList.remove("show");
-    }, 4000); // 4秒で消える
-  }
+      particle.remove();
+    }, 500);
+  });
 }
-
-// ページ読み込み時にチェック
-window.addEventListener("DOMContentLoaded", showSpecialDayPopup);
-
-
   </script>
 </body>
 </html>
