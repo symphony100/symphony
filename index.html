@@ -159,27 +159,47 @@
   }
 }
 
-	    #popup-message {
+
+	  
+  #popup-message {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.95);
     color: #333;
-    padding: 15px 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    padding: 20px 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     font-size: 16px;
-    z-index: 9999;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.6s ease;
+    z-index: 10000;
+    display: none;
+    border-left: 6px solid #008DBD;
+    min-width: 250px;
+    max-width: 300px;
+    position: fixed;
   }
 
-  #popup-message.show {
-    opacity: 1;
-    transform: translateY(0);
+  #popup-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #888;
   }
-	
+
+  #popup-close:hover {
+    color: #f33;
+  }
+
+  canvas#cursor-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
   </style>
 </head>
 <body>
@@ -191,7 +211,11 @@
   </header>
   <div class="greeting-container" id="greeting"></div>
   <div class="date-container" id="date"></div>
-  <div id="popup-message" class="hidden"></div>
+<div id="popup-message">
+  <span id="popup-close">&times;</span>
+  <span id="popup-text"></span>
+</div>
+<canvas id="cursor-canvas"></canvas>
 
 <!-- ニュースセクション -->
 <section id="news">
