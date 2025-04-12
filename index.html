@@ -154,7 +154,27 @@
   100% { opacity: 0; transform: scale(2); }
 }
 
-	  
+	    #popup-message {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #333;
+    padding: 15px 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-size: 16px;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease;
+  }
+
+  #popup-message.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+	
   </style>
 </head>
 <body>
@@ -166,6 +186,7 @@
   </header>
   <div class="greeting-container" id="greeting"></div>
   <div class="date-container" id="date"></div>
+  <div id="popup-message" class="hidden"></div>
 
 <!-- ニュースセクション -->
 <section id="news">
@@ -276,36 +297,35 @@ document.getElementById("refresh-button").addEventListener("click", function () 
 })();
 
 	  
-  const today = new Date();
-  const m = today.getMonth() + 1;
-  const d = today.getDate();
+function showSpecialDayPopup() {
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const date = now.getDate();
+  const key = `${month}/${date}`;
 
   const specialDays = {
-    "1/1": "🎍 あけましておめでとう！",
-    "4/12": "💝 ハッピーバレンタイン！",
-    "9/2": "🎉 ウェブサイト記念日！",
-    "12/24": "🎄 メリークリスマスイブ！",
-    "12/25": "🎅 メリークリスマス！",
-    "12/31": "🍜 よいお年を！"
+    "1/1": { color: "#FFA500", message: "🎍 お正月おめでとう！" },
+    "2/14": { color: "#FF69B4", message: "💝 ハッピーバレンタイン！" },
+    "9/2": { color: "#008DBD", message: "🎉 サイト開設記念日！" },
+    "12/24": { color: "#ADFF2F", message: "🎄 メリークリスマスイブ！" },
+    "12/25": { color: "#00FF00", message: "🎅 メリークリスマス！" },
+    "12/31": { color: "#0000FF", message: "🕛 よいお年を！" },
   };
 
-  const key = `${m}/${d}`;
-  const message = specialDays[key];
+  if (specialDays[key]) {
+    const popup = document.getElementById("popup-message");
+    popup.innerText = specialDays[key].message;
+    popup.style.borderLeft = `6px solid ${specialDays[key].color}`;
+    popup.classList.add("show");
 
-  if (message) {
-    // ポップアップ表示
-    alert(message);
-
-    // マウスパーティクル
-    document.addEventListener("mousemove", (e) => {
-      const particle = document.createElement("div");
-      particle.className = "mouse-particle";
-      particle.style.left = `${e.pageX}px`;
-      particle.style.top = `${e.pageY}px`;
-      document.body.appendChild(particle);
-      setTimeout(() => particle.remove(), 800);
-    });
+    setTimeout(() => {
+      popup.classList.remove("show");
+    }, 4000); // 4秒で消える
   }
+}
+
+// ページ読み込み時にチェック
+window.addEventListener("DOMContentLoaded", showSpecialDayPopup);
 
 
   </script>
