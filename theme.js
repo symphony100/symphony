@@ -60,3 +60,40 @@
     }
   }
 })();
+
+(function () {
+  const defaultColor = "#00AAFF";
+
+  const savedThemeColor = localStorage.getItem("themeColor");
+  const themeColor = savedThemeColor || defaultColor;
+
+  document.documentElement.style.setProperty("--header-bg-color", themeColor);
+
+  const newsTitle = document.getElementById("news-title");
+  if (newsTitle) newsTitle.style.color = themeColor;
+
+  // ⭐ h1, h2 全部に色を適用
+  const h1Tags = document.querySelectorAll("h1");
+  const h2Tags = document.querySelectorAll("h2");
+
+  h1Tags.forEach(tag => {
+    tag.style.color = themeColor;
+  });
+  h2Tags.forEach(tag => {
+    tag.style.color = themeColor;
+  });
+
+  window.setThemeColor = function (newColor) {
+    localStorage.setItem("themeColor", newColor);
+    document.documentElement.style.setProperty("--header-bg-color", newColor);
+
+    if (newsTitle) newsTitle.style.color = newColor;
+
+    h1Tags.forEach(tag => {
+      tag.style.color = newColor;
+    });
+    h2Tags.forEach(tag => {
+      tag.style.color = newColor;
+    });
+  };
+})();
