@@ -61,42 +61,6 @@
   }
 })();
 
-(function () {
-  const defaultColor = "#00AAFF";
-
-  const savedThemeColor = localStorage.getItem("themeColor");
-  const themeColor = savedThemeColor || defaultColor;
-
-  document.documentElement.style.setProperty("--header-bg-color", themeColor);
-
-  const newsTitle = document.getElementById("news-title");
-  if (newsTitle) newsTitle.style.color = themeColor;
-
-  // ⭐ h1, h2 全部に色を適用
-  const h1Tags = document.querySelectorAll("h1");
-  const h2Tags = document.querySelectorAll("h2");
-
-  h1Tags.forEach(tag => {
-    tag.style.color = themeColor;
-  });
-  h2Tags.forEach(tag => {
-    tag.style.color = themeColor;
-  });
-
-  window.setThemeColor = function (newColor) {
-    localStorage.setItem("themeColor", newColor);
-    document.documentElement.style.setProperty("--header-bg-color", newColor);
-
-    if (newsTitle) newsTitle.style.color = newColor;
-
-    h1Tags.forEach(tag => {
-      tag.style.color = newColor;
-    });
-    h2Tags.forEach(tag => {
-      tag.style.color = newColor;
-    });
-  };
-})();
 
 (function() {
   // 保存されたテーマカラーを取得し、適用
@@ -129,3 +93,30 @@
   }
 })();
 
+(function () {
+  const defaultColor = "#00AAFF";
+  const savedThemeColor = localStorage.getItem("themeColor");
+  const themeColor = savedThemeColor || defaultColor;
+
+  // 初期設定
+  applyThemeColor(themeColor);
+
+  // テーマカラーを保存して適用する関数を window に追加
+  window.setThemeColor = function (newColor) {
+    localStorage.setItem("themeColor", newColor);
+    applyThemeColor(newColor);
+  };
+
+  function applyThemeColor(color) {
+    document.documentElement.style.setProperty("--header-bg-color", color);
+
+    const newsTitle = document.getElementById("news-title");
+    if (newsTitle) newsTitle.style.color = color;
+
+    const h1Tags = document.querySelectorAll("h1");
+    const h2Tags = document.querySelectorAll("h2");
+
+    h1Tags.forEach(tag => tag.style.color = color);
+    h2Tags.forEach(tag => tag.style.color = color);
+  }
+})();
