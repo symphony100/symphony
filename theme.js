@@ -98,8 +98,6 @@
   };
 })();
 
-// theme.js
-
 (function() {
   // 保存されたテーマカラーを取得し、適用
   const savedThemeColor = localStorage.getItem("themeColor");
