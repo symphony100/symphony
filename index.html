@@ -200,6 +200,36 @@
     z-index: 9999;
   }
 
+
+#top-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 999;
+  background-color: #008DBD;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#top-button.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+#top-button:hover {
+  background-color: #006a91;
+  transform: scale(1.1);
+}
+
   </style>
 </head>
 <body>
@@ -209,6 +239,8 @@
       <a href="setting/">設定</a>
     </div>
   </header>
+<!-- トップへ戻るボタン -->
+<button id="top-button" title="トップへ戻る">▲</button>
   <div class="greeting-container" id="greeting"></div>
   <div class="date-container" id="date"></div>
 <div id="popup-message">
@@ -436,6 +468,24 @@ if (particleColor) {
     }, 500);
   });
 }
+
+	  
+const topButton = document.getElementById("top-button");
+
+// スクロール監視
+window.addEventListener("scroll", () => {
+  if (window.scrollY > 300) {
+    topButton.classList.add("show");
+  } else {
+    topButton.classList.remove("show");
+  }
+});
+
+// クリックで上へ
+topButton.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
   </script>
 </body>
 </html>
