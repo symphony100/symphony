@@ -204,7 +204,7 @@
     }
   });
 
-  // 通知のフェードインアニメーション
+  // テーマカラーの変更のフェードインアニメーション
   const style = document.createElement('style');
   style.innerHTML = `
     @keyframes fadeIn {
@@ -212,9 +212,9 @@
       100% { opacity: 1; }
     }
   `;
-  document.head.appendChild(style);
+  document.head.appendChild(style); 
 
-  
+  // 自動的に余白を設定
   window.addEventListener("DOMContentLoaded", () => {
     const header = document.getElementById("header");
     const headerHeight = header.offsetHeight;
