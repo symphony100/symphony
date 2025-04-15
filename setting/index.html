@@ -18,13 +18,33 @@
       background-color: #f4f4f9;
       color: #333;
     }
+    
+   html, body {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+
+  * {
+    box-sizing: inherit;
+  }
 
     header {
       background-color: var(--header-bg-color);
-      color: white;
+      color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       padding: 1rem;
       font-size: 1.5rem;
-      text-align: left;
+      transition: background-color 0.3s;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
     }
 
     .settings-container {
