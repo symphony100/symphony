@@ -213,7 +213,15 @@
     }
   `;
   document.head.appendChild(style);
+
+  
+  window.addEventListener("DOMContentLoaded", () => {
+    const header = document.getElementById("header");
+    const headerHeight = header.offsetHeight;
+    document.body.style.paddingTop = `${headerHeight}px`;
+  });
 </script>
+
 
 </body>
 </html>
