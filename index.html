@@ -404,16 +404,19 @@
 
 
   <script>
-//起動
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    const splash = document.getElementById("splash-icon");
-    splash.style.transition = "opacity 1s ease";
-    splash.style.opacity = "0";
-    setTimeout(() => splash.remove(), 1000);
-  }, 2000); // 2秒後にフェードアウト
-});
 
+// スプラッシュ画面
+  window.addEventListener("DOMContentLoaded", () => {
+    const splash = document.getElementById("splashScreen");
+
+    splash.style.display = "flex";
+    setTimeout(() => {
+      splash.style.opacity = 0;
+      setTimeout(() => {
+        splash.style.display = "none";
+      }, 500);
+    }, 2000);
+  });
 
 function reloadIframe() {
   document.getElementById("news-frame").src += "";
