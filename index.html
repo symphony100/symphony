@@ -314,7 +314,32 @@
         height: 50px;
       }
     }
-	  
+
+#splash-icon {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  text-align: center;
+}
+
+#splash-icon img {
+  width: 100px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.splash-text {
+  font-size: 1.2rem;
+  color: #008DBD;
+  font-weight: bold;
+}
+
   </style>
 </head>
 <body>
@@ -324,6 +349,13 @@
       <a href="setting/">設定</a>
     </div>
   </header>
+
+<!-- 起動時 -->
+<div id="splash-icon">
+  <img src="symphony.png" alt="起動アイコン">
+  <div class="splash-text">Symphony System Group</div>
+</div>
+
 <!-- トップへ戻るボタン -->
 <button id="top-button" title="トップへ戻る">▲</button>
   <div class="greeting-container" id="greeting"></div>
@@ -358,6 +390,17 @@
 
 
   <script>
+//起動
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    const splash = document.getElementById("splash-icon");
+    splash.style.transition = "opacity 1s ease";
+    splash.style.opacity = "0";
+    setTimeout(() => splash.remove(), 1000);
+  }, 2000); // 2秒後にフェードアウト
+});
+
+
 function reloadIframe() {
   document.getElementById("news-frame").src += "";
 }
@@ -575,6 +618,15 @@ topButton.addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
+// service-worker.js
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('Service Worker 登録成功:', reg))
+        .catch(err => console.log('Service Worker 登録失敗:', err));
+    });
+  }
+	  
   </script>
 </body>
 </html>
