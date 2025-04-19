@@ -371,8 +371,86 @@
   margin: 0 auto;
 }
 
+/* 画像カルーセル */
 
-	  
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .carousel {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      height: 400px;
+      overflow: hidden;
+      border-radius: 20px;
+      box-shadow: 0 0 20px #000;
+    }
+
+    .slides {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+      width: 100%;
+      height: 100%;
+    }
+
+    .slide {
+      min-width: 100%;
+      height: 100%;
+    }
+
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .nav {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-50%);
+      padding: 0 20px;
+    }
+
+    .nav button {
+      background: rgba(0, 0, 0, 0.5);
+      border: none;
+      color: white;
+      font-size: 2rem;
+      cursor: pointer;
+      padding: 0 15px;
+      border-radius: 10px;
+    }
+
+    .nav button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* スマホ対応 */
+    @media (max-width: 768px) {
+      .carousel {
+        height: 250px;
+      }
+      .nav button {
+        font-size: 1.5rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -421,6 +499,20 @@
 <h2 class="menu-title">メニュー</h2>
 <div class="menu-wrapper" id="menuWrapper"></div>
 <script src="menu.js"></script>
+
+<!-- 画像カルーセル -->
+  <div class="carousel">
+    <div class="slides" id="slides">
+      <div class="slide"><img src="" alt="astro1"></div>
+      <div class="slide"><img src="images/astro2.jpg" alt="astro2"></div>
+      <div class="slide"><img src="images/astro3.jpg" alt="astro3"></div>
+    </div>
+    <div class="nav">
+      <button onclick="prevSlide()">‹</button>
+      <button onclick="nextSlide()">›</button>
+    </div>
+  </div>
+
 
 
 <footer class="footer">
@@ -671,6 +763,29 @@ topButton.addEventListener("click", () => {
         .catch(err => console.log('Service Worker 登録失敗:', err));
     });
   }
+
+// 画像カルーセル
+    const slides = document.getElementById("slides");
+    const totalSlides = slides.children.length;
+    let index = 0;
+
+    function updateSlide() {
+      slides.style.transform = `translateX(-${index * 100}%)`;
+    }
+
+    function nextSlide() {
+      index = (index + 1) % totalSlides;
+      updateSlide();
+    }
+
+    function prevSlide() {
+      index = (index - 1 + totalSlides) % totalSlides;
+      updateSlide();
+    }
+
+    // 自動再生（5秒ごとに次の画像へ）
+    setInterval(nextSlide, 5000);
+
 	  
   </script>
 </body>
