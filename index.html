@@ -419,22 +419,6 @@
 <h2 class="menu-title">メニュー</h2>
 <div class="menu-wrapper" id="menuWrapper"></div>
 <script src="menu.js"></script>
-<br><br><br>
-
-<!-- 画像カルーセル -->
-<center>
-<div class="carousel">
-    <div class="slides" id="slides">
-      <div class="slide"><img src="astro1.png" alt="astro1"></div>
-      <div class="slide"><img src="astro2.png" alt="astro2"></div>
-      <div class="slide"><img src="astro3.png" alt="astro3"></div>
-    </div>
-    <div class="nav">
-      <button onclick="prevSlide()">‹</button>
-      <button onclick="nextSlide()">›</button>
-    </div>
-  </div>
-</center>
 
 
 
@@ -687,27 +671,6 @@ topButton.addEventListener("click", () => {
     });
   }
 
-// 画像カルーセル
-    const slides = document.getElementById("slides");
-    const totalSlides = slides.children.length;
-    let index = 0;
-
-    function updateSlide() {
-      slides.style.transform = `translateX(-${index * 100}%)`;
-    }
-
-    function nextSlide() {
-      index = (index + 1) % totalSlides;
-      updateSlide();
-    }
-
-    function prevSlide() {
-      index = (index - 1 + totalSlides) % totalSlides;
-      updateSlide();
-    }
-
-    // 自動再生（5秒ごとに次の画像へ）
-    setInterval(nextSlide, 5000);
 
 	  
   </script>
