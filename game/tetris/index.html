@@ -1,1 +1,251 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <link rel="icon" type="image/x-icon" href="/symphony/symphony.png">
+  <link rel="manifest" href="manifest.json">
+  <meta charset="UTF-8" />
+	<meta name="description" content="symphony公式サイトです。">
+  <title>symphony</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: sans-serif;
+      text-align: center;
+    }
+    canvas {
+      background: #000;
+      display: block;
+      margin: 20px auto;
+      border: 2px solid #fff;
+    }
+    #score {
+      font-size: 1.2em;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 1em;
+      background: #444;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .hidden {
+      display: none;
+    }
+    .controls {
+      margin-top: 20px;
+    }
+    .controls button {
+      width: 70px;
+      height: 50px;
+      margin: 5px;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <h1>カスタムテトリス</h1>
+  <canvas id="tetris" width="300" height="600"></canvas>
+  <div id="score">スコア: 0</div>
+  <button id="startBtn">ゲーム開始</button>
+  <button id="restartBtn" class="hidden">再開</button>
 
+  <!-- スマホ操作用 -->
+  <div class="controls">
+    <button onclick="move('left')">←</button>
+    <button onclick="rotate()">⟳</button>
+    <button onclick="move('right')">→</button>
+    <button onclick="move('down')">↓</button>
+  </div>
+
+  <div id="nextShapeContainer">
+    <h3>次のブロック</h3>
+    <canvas id="nextShape" width="150" height="150"></canvas>
+  </div>
+
+  <audio id="bgm" loop>
+    <source src="https://symphony100.github.io/symphony/game/tetris/bgm.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="gameOverSound">
+    <source src="https://www.soundjay.com/button/beep-10.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const canvas = document.getElementById("tetris");
+    const nextCanvas = document.getElementById("nextShape");
+    const ctx = canvas.getContext("2d");
+    const nextCtx = nextCanvas.getContext("2d");
+
+    const ROWS = 20;
+    const COLS = 10;
+    const BLOCK_SIZE = 30;
+
+    let board = [];
+    let currentShape;
+    let nextShape; // 次のブロック用変数
+    let currentPos;
+    let score = 0;
+    let gameOver = false;
+    let autoDropSpeed = 500;
+    let level = 1;
+    let dropInterval = null;
+
+    const startButton = document.getElementById("startBtn");
+    const restartButton = document.getElementById("restartBtn");
+    const bgm = document.getElementById("bgm");
+    const gameOverSound = document.getElementById("gameOverSound");
+
+    const COLORS = {
+      0: "#000000",
+      1: "#00ffff",
+      2: "#ffff00",
+      3: "#800080",
+      4: "#00ff00",
+      5: "#ff0000",
+      6: "#ffa500",
+      7: "#0000ff"
+    };
+
+    const SHAPES = [
+      { shape: [[1, 1, 1, 1]], id: 1 },
+      { shape: [[2, 2], [2, 2]], id: 2 },
+      { shape: [[0, 3, 0], [3, 3, 3]], id: 3 },
+      { shape: [[0, 4, 4], [4, 4, 0]], id: 4 },
+      { shape: [[5, 5, 0], [0, 5, 5]], id: 5 },
+      { shape: [[6, 0, 0], [6, 6, 6]], id: 6 },
+      { shape: [[0, 0, 7], [7, 7, 7]], id: 7 }
+    ];
+
+    function getRandomShape() {
+      const obj = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function drawBoard() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const val = board[r][c];
+          if (val !== 0) {
+            ctx.fillStyle = COLORS[val];
+            ctx.fillRect(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+            ctx.strokeStyle = "#111";
+            ctx.strokeRect(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+          }
+        }
+      }
+    }
+
+    function drawNextShape() {
+      nextCtx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
+      const shape = nextShape.shape;
+      const offset = Math.floor((nextCanvas.width - shape[0].length * BLOCK_SIZE) / 2);
+      for (let r = 0; r < shape.length; r++) {
+        for (let c = 0; c < shape[r].length; c++) {
+          const val = shape[r][c];
+          if (val !== 0) {
+            nextCtx.fillStyle = COLORS[val];
+            nextCtx.fillRect((c * BLOCK_SIZE) + offset, (r * BLOCK_SIZE), BLOCK_SIZE, BLOCK_SIZE);
+            nextCtx.strokeStyle = "#111";
+            nextCtx.strokeRect((c * BLOCK_SIZE) + offset, (r * BLOCK_SIZE), BLOCK_SIZE, BLOCK_SIZE);
+          }
+        }
+      }
+    }
+
+    function drawShape() {
+      const shape = currentShape.shape;
+      for (let r = 0; r < shape.length; r++) {
+        for (let c = 0; c < shape[r].length; c++) {
+          const val = shape[r][c];
+          if (val !== 0) {
+            ctx.fillStyle = COLORS[val];
+            ctx.fillRect((currentPos.col + c) * BLOCK_SIZE, (currentPos.row + r) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+            ctx.strokeStyle = "#111";
+            ctx.strokeRect((currentPos.col + c) * BLOCK_SIZE, (currentPos.row + r) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+          }
+        }
+      }
+    }
+
+    // 以下、ゲームのロジックはそのまま
+
+    // 次のブロックをセット
+    function setNextShape() {
+      nextShape = getRandomShape();
+      drawNextShape();
+    }
+
+    function placeShape() {
+      const shape = currentShape.shape;
+      for (let r = 0; r < shape.length; r++) {
+        for (let c = 0; c < shape[r].length; c++) {
+          const val = shape[r][c];
+          if (val !== 0) {
+            board[currentPos.row + r][currentPos.col + c] = val;
+          }
+        }
+      }
+      setNextShape(); // 次のブロックを設定
+    }
+
+    function init() {
+      currentShape = nextShape;
+      currentPos = { row: 0, col: Math.floor(COLS / 2) - Math.floor(currentShape.shape[0].length / 2) };
+      setNextShape(); // ゲーム開始時に次のブロックをセット
+      if (checkCollision()) {
+        gameOverFunction();
+      }
+    }
+
+    function startGame() {
+      score = 0;
+      level = 1;
+      gameOver = false;
+      board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+      autoDropSpeed = 500;
+      clearInterval(dropInterval);
+      startAutoDrop();
+      setNextShape(); // 次のブロックをセット
+      init();
+      startButton.classList.add("hidden");
+      restartButton.classList.add("hidden");
+      bgm.currentTime = 0;
+      bgm.play();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // ゲームループ
+    function gameLoop() {
+      if (!gameOver) {
+        drawBoard();
+        drawShape();
+        setTimeout(() => requestAnimationFrame(gameLoop), 1000 / 60);
+      }
+    }
+
+    // 操作関数
+    function move(dir) {
+      if (gameOver) return;
+      if (dir === "left" && !checkCollision(0, -1)) currentPos.col--;
+      if (dir === "right" && !checkCollision(0, 1)) currentPos.col++;
+      if (dir === "down") moveSlowlyDown();
+    }
+
+    // キーボード操作
+    document.addEventListener("keydown", (e) => {
+      if (gameOver) return;
+      if (e.key === "ArrowLeft") move("left");
+      if (e.key === "ArrowRight") move("right");
+      if (e.key === "ArrowDown") move("down");
+      if (e.key === "ArrowUp") hardDrop();
+      if (e.key.toLowerCase() === "w") rotate();
+    });
+
+    startButton.addEventListener("click", startGame);
+    restartButton.addEventListener("click", startGame);
+  </script>
+</body>
+</html>
