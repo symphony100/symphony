@@ -1,12 +1,12 @@
 //menu.js
 
 const menus = [
-    { id: "game", title: "ゲーム", img: "img/game.png", link: "game.html" },
-    { id: "calc", title: "電卓", img: "img/calc.png", link: "calc.html" },
-    { id: "memo", title: "メモ帳", img: "img/memo.png", link: "memo.html" },
-    { id: "login", title: "ログイン", img: "img/login.png", link: "login.html" },
-    { id: "archive", title: "アーカイブ", img: "img/archive.png", link: "archive.html" },
-    { id: "contact", title: "お問い合わせ", img: "img/contact.png", link: "contact.html" },
+    { id: "game", title: "ゲーム", img: "img/game.png", link: "game/" },
+    { id: "calc", title: "電卓", img: "img/calc.png", link: "calc/" },
+    { id: "memo", title: "メモ帳", img: "img/memo.png", link: "memo/" },
+    { id: "login", title: "ログイン", img: "img/login.png", link: "login/" },
+    { id: "archive", title: "アーカイブ", img: "img/archive.png", link: "archive/" },
+    { id: "contact", title: "お問い合わせ", img: "img/contact.png", link: "contact/" },
   ];
 
   const wrapper = document.getElementById("menuWrapper");
