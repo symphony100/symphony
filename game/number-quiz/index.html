@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>数当てゲーム</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #e0eafc;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      margin: 0;
+      padding-top: 60px;
+      user-select: none;
+    }
+
+    h1 {
+      font-weight: 900;
+      font-size: 3rem;
+      margin-bottom: 0.2em;
+      text-shadow: 0 0 8px #1e90ff, 0 0 15px #00ffff;
+    }
+
+    #game {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(30, 144, 255, 0.7);
+      width: 320px;
+      text-align: center;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin: 12px 0;
+    }
+
+    input[type='number'] {
+      width: 60px;
+      font-size: 1.2rem;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      text-align: center;
+      margin-right: 12px;
+      box-shadow: inset 0 0 8px #1e90ff;
+      background: rgba(255, 255, 255, 0.15);
+      color: #e0eafc;
+      transition: box-shadow 0.3s ease;
+    }
+
+    input[type='number']:focus {
+      box-shadow: inset 0 0 15px #00ffff;
+      background: rgba(255, 255, 255, 0.3);
+      color: #fff;
+    }
+
+    button {
+      background: #1e90ff;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 10px 22px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 0 12px #1e90ff;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    button:hover:not(:disabled) {
+      background-color: #00ffff;
+      box-shadow: 0 0 18px #00ffff;
+      color: #000;
+    }
+
+    button:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+      box-shadow: none;
+      color: #bbb;
+    }
+
+    #message {
+      font-size: 1.3rem;
+      font-weight: 900;
+      margin-top: 18px;
+      min-height: 36px;
+      transition: color 0.4s ease;
+    }
+
+    #guesses {
+      margin-top: 8px;
+      font-style: italic;
+      color: #a0c4ff;
+      font-size: 0.95rem;
+      min-height: 24px;
+      user-select: text;
+    }
+
+    #resetBtn {
+      margin-top: 20px;
+      width: 100%;
+      font-weight: 700;
+      background: #00bcd4;
+      box-shadow: 0 0 15px #00bcd4;
+      border-radius: 12px;
+      padding: 12px 0;
+      color: #003344;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #resetBtn:hover {
+      background-color: #00ffff;
+      box-shadow: 0 0 25px #00ffff;
+      color: #000;
+      cursor: pointer;
+    }
+
+    @media (max-width: 400px) {
+      #game {
+        width: 90vw;
+        padding: 20px;
+      }
+      input[type='number'] {
+        width: 50px;
+        font-size: 1rem;
+        margin-right: 8px;
+      }
+      button {
+        padding: 10px 18px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>数当てゲーム</h1>
+  <div id="game">
+    <p>1から100までの数字を当ててください。</p>
+    <input type="number" id="guessField" placeholder="数字" min="1" max="100" />
+    <button id="guessBtn" onclick="checkGuess()">予想する。</button>
+    <p id="message"></p>
+    <p id="guesses"></p>
+    <button id="resetBtn" onclick="resetGame()">もう一回プレイする。</button>
+  </div>
+
+  <script>
+    let randomNumber;
+    let guessCount;
+    let guessedNumbers;
+
+    function init() {
+      randomNumber = Math.floor(Math.random() * 100) + 1;
+      guessCount = 0;
+      guessedNumbers = [];
+      document.getElementById('guessField').disabled = false;
+      document.getElementById('guessBtn').disabled = false;
+      document.getElementById('guessField').value = '';
+      document.getElementById('message').textContent = '';
+      document.getElementById('guesses').textContent = '';
+      document.getElementById('message').style.color = '#e0eafc';
+      document.getElementById('guessField').focus();
+    }
+
+    function checkGuess() {
+      const userGuess = Number(document.getElementById('guessField').value);
+      const messageElement = document.getElementById('message');
+      const guessesElement = document.getElementById('guesses');
+
+      if (isNaN(userGuess) || userGuess < 1 || userGuess > 100) {
+        messageElement.textContent = '1から100の数字を入力してください。';
+        messageElement.style.color = '#ff6b6b';
+        return;
+      }
+
+      guessCount++;
+      guessedNumbers.push(userGuess);
+
+      if (userGuess === randomNumber) {
+        messageElement.textContent = `🎉 おめでとう！正解は${randomNumber}や。${guessCount}回で当てました！`;
+        messageElement.style.color = '#32cd32';
+        endGame();
+      } else if (guessCount >= 10) {
+        messageElement.textContent = `ゲームオーバー！正解は${randomNumber}です。`;
+        messageElement.style.color = '#ff6b6b';
+        endGame();
+      } else if (userGuess < randomNumber) {
+        messageElement.textContent = 'もっと大きい数字です。';
+        messageElement.style.color = '#00ffff';
+      } else {
+        messageElement.textContent = 'もっと小さい数字です。';
+        messageElement.style.color = '#00ffff';
+      }
+
+      guessesElement.textContent = `予想した数字: ${guessedNumbers.join(', ')}`;
+      document.getElementById('guessField').value = '';
+      document.getElementById('guessField').focus();
+    }
+
+    function endGame() {
+      document.getElementById('guessField').disabled = true;
+      document.getElementById('guessBtn').disabled = true;
+    }
+
+    function resetGame() {
+      init();
+    }
+
+    // 初期化実行
+    init();
+  </script>
+</body>
+</html>
