@@ -4,14 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="/symphony/symphony.png">
-  <meta name="description" content="symphony公式サイトです。">
-  <title>symphony</title>
+  <meta name="description" content="Symphony公式サイトです。">
+  <title>Symphony</title>
   <link rel="manifest" href="manifest.json">
   <script src="theme.js"></script>
   <style>
     :root {
       --header-bg-color: #008DBD; /* デフォルトテーマカラー */
     }
+
    html, body {
     margin: 0;
     padding: 0;
@@ -68,65 +69,35 @@
       font-size: 1.2rem;
     }
 
-    .date-container {
-      margin-top: 10px;
-      font-size: inherit;
-    }
-    
-	/* （iframe）のスタイル調整 */
-#news {
-    text-align: center;
-    padding: 30px;
-    background-color: #f8f8f8;
-    margin: 20px auto;
-    width: 60%;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.button-container {
+  display: flex;
+  flex-wrap: wrap; /* 折り返す */
+  justify-content: center; /* 中央揃え */
+  gap: 20px;
+  padding: 40px;
 }
 
-/* iframe のラップ要素 */
-#news-wrapper {
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
-    overflow: hidden;
+.cool-btn {
+  flex: 1 1 200px; /* 最小幅200px、画面に応じて伸縮 */
+  max-width: 250px;
+  padding: 20px 0;
+  background-color: #1e90ff;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* iframe のスタイル */
-#news-frame {
-    width: 100%;
-    height: 200px;
-    border: none;
-    scrollbar-width: none; /* Firefox 用 */
-    -ms-overflow-style: none; /* IE, Edge 用 */
+.cool-btn:hover {
+  background-color: #0d6efd;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
 }
 
-#news-frame::-webkit-scrollbar {
-    display: none; /* Chrome, Safari 用 */
-}
-
-/* スマートフォン版の調整 */
-@media (max-width: 768px) {
-    #news {
-        width: 90%;
-        padding: 20px;
-    }
-}
-
-/* ボタンの基礎デザイン */
-#refresh-button {
-    transition: transform 0.3s ease-in-out;
-}
-
-/* 回転アニメーション */
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
 .menu-title {
   text-align: center;
   font-size: 24px;
@@ -142,7 +113,7 @@
 <body>
   <header id="header">
     <div class="header-left">
-      <a href="/symphony/" class="link">symphony</a>
+      <a href="/symphony/" class="link">Symphony</a>
     </div>
     <div class="header-right">
       <a href="/symphony/setting/">設定</a>
@@ -167,77 +138,10 @@
         <iframe id="news-frame" src="news/"></iframe>
     </div>
 </section>
-<h2 class="menu-title">メニュー</h2>
+<h2 class="menu-title">Symphony-Game</h2>
 
 
   <script>
-function reloadIframe() {
-  document.getElementById("news-frame").src += "";
-}
-
-function askUserName() {
-  const savedUserName = localStorage.getItem("userName");
-  const greetingElement = document.getElementById("greeting");
-  const timeBasedGreeting = getTimeBasedGreeting();
-
-  if (savedUserName) {
-    greetingElement.innerText = `${savedUserName}さん、${timeBasedGreeting}`;
-    return;
-  }
-
-  const userName = prompt("あなたのお名前を教えてください:");
-  if (userName) {
-    greetingElement.innerText = `${userName}さん、${timeBasedGreeting}`;
-    localStorage.setItem("userName", userName);
-  } else {
-    greetingElement.innerText = `ゲストさん、${timeBasedGreeting}`;
-  }
-}
-
-function getTimeBasedGreeting() {
-  const now = new Date();
-  const hour = now.getHours();
-
-  if (hour < 12) {
-    return "おはようございます！"; // 朝の挨拶
-  } else if (hour < 18) {
-    return "こんにちは！"; // 昼の挨拶
-  } else {
-    return "こんばんは！"; // 夜の挨拶
-  }
-}
-
-function getFormattedDate() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = ('0' + (now.getMonth() + 1)).slice(-2);
-  const date = ('0' + now.getDate()).slice(-2);
-  const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
-  const day = dayNames[now.getDay()];
-  return `${year}年${month}月${date}日（${day}）`;
-}
-
-window.onload = () => {
-  askUserName();
-  document.getElementById("date").innerText = getFormattedDate();
-};
-
-// リフレッシュボタンのクリック動作
-document.getElementById("refresh-button").addEventListener("click", function () {
-    const iframe = document.getElementById("news-frame");
-
-    // iframeをリロード
-    iframe.src = iframe.src;
-
-    // 回転アニメーションを適用
-    const refreshButton = document.getElementById("refresh-button");
-    refreshButton.style.animation = "spin 1s linear"; // 1秒間回転
-
-    // アニメーション終了後にリセット
-    setTimeout(() => {
-        refreshButton.style.animation = ""; // アニメーションを停止
-    }, 1000); // 1秒後にリセット
-});
 	  
 (function() {
   // デフォルトテーマカラー
@@ -258,7 +162,6 @@ document.getElementById("refresh-button").addEventListener("click", function () 
     document.getElementById("news-title").style.color = themeColor;
   };
 })();
-
 
   </script>
 </body>
