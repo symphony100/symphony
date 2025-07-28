@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ズーム対応グリッド＋ロゴ＋サイズ表示</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: auto;
+      font-family: sans-serif;
+    }
+
+    #grid-background {
+      display: grid;
+      position: relative;
+    }
+
+    .grid-cell {
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    #zoom-control {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 100px;
+      display: flex;
+      flex-direction: column;
+      border: 2px solid #ccc;
+      background: #fff;
+      z-index: 100;
+    }
+
+    #zoom-control button {
+      flex: 1;
+      font-size: 24px;
+      font-weight: bold;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: #008DBD;
+    }
+
+    #zoom-control button:disabled {
+      color: #aaa;
+      cursor: default;
+    }
+
+    #zoom-control button:hover:not(:disabled) {
+      background-color: #f0f0f0;
+    }
+
+    #measure-cm {
+      position: absolute;
+      width: 1cm;
+      height: 1cm;
+      top: -9999px;
+      left: -9999px;
+      visibility: hidden;
+    }
+
+    #size-display {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.95);
+      padding: 6px 12px;
+      border: 2px solid #008DBD;
+      border-radius: 4px;
+      font-weight: bold;
+      color: #008DBD;
+      font-size: 16px;
+      z-index: 99;
+    }
+
+    /* ロゴセクション（白背景＋青文字＋角ばり） */
+    #logo-section {
+      position: fixed;
+      top: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      background-color: #ffffff;
+      color: #008DBD;
+      padding: 6px 16px;
+      height: 60px;
+      z-index: 10;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      border-radius: 0;
+    }
+
+    #logo-section img {
+      height: 40px;
+      margin-right: 12px;
+    }
+
+    #logo-section span {
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 測定用ダミー -->
+  <div id="measure-cm"></div>
+
+  <!-- ロゴセクション -->
+  <div id="logo-section">
+    <img src="https://symphony100.github.io/symphony/symphony.png" alt="Symphony Logo">
+    <span>Symphony System Group</span>
+  </div>
+
+  <!-- グリッド -->
+  <div id="grid-background"></div>
+
+  <!-- 一辺サイズ表示 -->
+  <div id="size-display"></div>
+
+  <!-- ズームボタン -->
+  <div id="zoom-control">
+    <button id="zoom-in">＋</button>
+    <button id="zoom-out">－</button>
+  </div>
+
+  <script src="theme.js"></script>
+  <script>
+    const measure = document.getElementById('measure-cm');
+    const grid = document.getElementById('grid-background');
+    const zoomInBtn = document.getElementById('zoom-in');
+    const zoomOutBtn = document.getElementById('zoom-out');
+    const sizeDisplay = document.getElementById('size-display');
+
+    // 1cmのピクセル幅（物理）
+    const baseCM = measure.offsetWidth || 38;
+
+    // theme.js で保存された倍率
+    const dpiScalePercent = localStorage.getItem('dpiScalePercent') || '100';
+    const dpiScale = parseFloat(dpiScalePercent) / 100;
+
+    // 初期の1cmサイズ（保存倍率で調整）
+    let baseSize = baseCM * dpiScale;
+    let currentSize = baseSize;
+
+    const baseCols = 100;
+    const baseRows = 100;
+
+    function updateZoomButtons() {
+      zoomOutBtn.disabled = currentSize <= 5;
+      zoomInBtn.disabled = currentSize >= 200;
+    }
+
+    function updateSizeDisplay() {
+      const mm = (currentSize / baseCM) * 10;
+      sizeDisplay.textContent = `一辺：${mm.toFixed(1)} mm`;
+    }
+
+    function renderGrid() {
+      grid.innerHTML = "";
+
+      grid.style.gridTemplateColumns = `repeat(${baseCols}, ${currentSize}px)`;
+      grid.style.gridTemplateRows = `repeat(${baseRows}, ${currentSize}px)`;
+      grid.style.width = `${baseCols * currentSize}px`;
+      grid.style.height = `${baseRows * currentSize}px`;
+
+      for (let i = 0; i < baseCols * baseRows; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'grid-cell';
+        grid.appendChild(cell);
+      }
+
+      updateZoomButtons();
+      updateSizeDisplay();
+    }
+
+    zoomInBtn.onclick = () => {
+      currentSize *= 2;
+      renderGrid();
+    };
+
+    zoomOutBtn.onclick = () => {
+      currentSize /= 2;
+      renderGrid();
+    };
+
+    renderGrid();
+  </script>
+</body>
+</html>
