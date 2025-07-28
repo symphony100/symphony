@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Symphony</title>
+  <script src="theme.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fff;
+      color: #008DBD;
+      margin: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+    }
+    h2, p {
+      text-align: center;
+      margin: 0 0 10px 0;
+    }
+    #line {
+      background: #008DBD;
+      margin: 20px 0 30px 0;
+      width: 380px; /* 10cmの目安 */
+      height: 12px; /* ちょっと太く */
+      align-self: flex-start; /* 左寄せ */
+      border-radius: 3px;
+      transition: width 0.2s ease;
+    }
+    input[type=range] {
+      width: 300px;
+      margin-bottom: 10px;
+      accent-color: #008DBD;
+      cursor: pointer;
+    }
+    #value {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+    button {
+      background: #008DBD;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #006a91;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>画面サイズのキャリブレーション</h2>
+  <p>下の青い線の長さが、<strong>定規で10cm</strong>になるように調整してください。</p>
+
+  <div id="line"></div>
+  <input type="range" id="scale" min="50" max="200" value="100" />
+  <p id="value">倍率: 100%</p>
+
+  <button onclick="save()">この倍率で保存</button>
+
+  <script>
+    const line = document.getElementById('line');
+    const scaleInput = document.getElementById('scale');
+    const valueDisplay = document.getElementById('value');
+
+    // ローカルストレージから倍率読み込み、なければ100
+    let scalePercent = Number(localStorage.getItem('dpiScalePercent')) || 100;
+
+    function updateLineWidth(percent) {
+      // 380px × scalePercent(%) → px換算。基準380pxに対して調整
+      line.style.width = `${(380 * percent) / 100}px`;
+      valueDisplay.textContent = `倍率: ${percent}%`;
+    }
+
+    scaleInput.value = scalePercent;
+    updateLineWidth(scalePercent);
+
+    scaleInput.addEventListener('input', () => {
+      scalePercent = Number(scaleInput.value);
+      updateLineWidth(scalePercent);
+    });
+
+    function save() {
+      localStorage.setItem('dpiScalePercent', scalePercent);
+      alert(`保存しました！倍率: ${scalePercent}%`);
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+
+      if (e.key === 'ArrowRight') {
+        if (scalePercent > 50) {
+          scalePercent--;
+          scaleInput.value = scalePercent;
+          updateLineWidth(scalePercent);
+        }
+        e.preventDefault();
+      } else if (e.key === 'ArrowLeft') {
+        if (scalePercent < 200) {
+          scalePercent++;
+          scaleInput.value = scalePercent;
+          updateLineWidth(scalePercent);
+        }
+        e.preventDefault();
+      }
+    });
+    
+      function save() {
+    localStorage.setItem('dpiScalePercent', scalePercent);
+    alert(`保存しました！倍率: ${scalePercent}%`);
+    window.location.href = '/symphony/measurement/1000'; // ここに飛ぶ
+  }
+  </script>
+
+</body>
+</html>
