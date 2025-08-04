@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<title>マウス軌跡⚠️＋増殖タブ</title>
+<style>
+  html, body {
+    margin: 0; 
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background-image: url('https://i.imgur.com/W2D6OGQ.png');
+    background-size: cover;
+    background-position: center;
+    user-select: none;
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><text x="0" y="20" font-size="20" fill="orange">⚠️</text></svg>') 12 20, auto;
+    position: relative;
+  }
+  .dialog {
+    width: 520px;
+    background: #fff;
+    border: 2px solid #000080;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+  }
+  .dialog-header {
+    background-color: #000080;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+    cursor: move;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+  .blink-dot {
+    width: 12px;
+    height: 12px;
+    background: red;
+    border-radius: 50%;
+    animation: blink 1s infinite;
+  }
+  @keyframes blink {
+    0%,100% {opacity:1;}
+    50% {opacity:0;}
+  }
+  .dialog-body {
+    padding: 20px;
+    font-size: 16px;
+    color: #000;
+    user-select: text;
+  }
+  .warning-text {
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse {
+    0%,100% {transform: scale(1); color: red;}
+    50% {transform: scale(1.05); color: darkred;}
+  }
+  .ip-display {
+    font-size: 14px;
+    color: #555;
+    margin-top: 15px;
+    background: #f2f2f2;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  .dialog-footer {
+    padding: 10px 20px;
+    text-align: right;
+  }
+  .btn {
+    background: #d6d6d6;
+    border: 1px solid #666;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .fake-tab {
+    position: absolute;
+    width: 280px;
+    height: 140px;
+    background: #fefefe;
+    border: 2px solid #000080;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    font-family: 'Segoe UI', sans-serif;
+    cursor: move;
+    user-select: none;
+    z-index: 9000;
+    border-radius: 4px;
+  }
+  .fake-tab-header {
+    background: #000080;
+    color: #fff;
+    font-weight: bold;
+    padding: 6px 10px;
+    font-size: 14px;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 4px 4px 0 0;
+  }
+  .fake-tab-body {
+    padding: 10px;
+    font-size: 13px;
+    color: #333;
+    user-select: text;
+    height: 90px;
+    overflow: hidden;
+  }
+  #trail-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 20000;
+  }
+  .warning-icon {
+    position: absolute;
+    font-size: 20px;
+    color: orange;
+    user-select: none;
+    pointer-events: none;
+    text-shadow: 0 0 3px #ff8c00;
+  }
+</style>
+<script>
+  let maxZ = 10000;
+  const fakeTabs = [
+    {title:"重要: セキュリティ警告", message:"システムファイルが破損しています。"},
+    {title:"更新通知", message:"最新のアップデートをインストールしてください。"},
+    {title:"Windows Defender", message:"不明なアプリケーションがアクセスを要求しています。"},
+    {title:"システムエラー", message:"データが暗号化されました。復号化ツールが必要です。"},
+    {title:"アプリケーションエラー", message:"重要なウイルス定義が見つかりません。"},
+    {title:"警告: ウイルス検出", message:"ネットワークに不正アクセスが検出されました。"},
+    {title:"サポート通知", message:"ディスク容量が不足しています。"},
+    {title:"ネットワーク警告", message:"Windows Defender が無効になっています。"},
+    {title:"バックアップ失敗", message:"アプリケーションが応答していません。"},
+    {title:"セキュリティスキャン完了", message:"バックアップが失敗しました。"}
+  ];
+
+  const TAB_WIDTH = 280;
+  const TAB_HEIGHT = 140;
+
+  function generateFakeIP() {
+    const rand = () => Math.floor(Math.random() * 255);
+    return `${rand()}.${rand()}.${rand()}.${rand()}`;
+  }
+
+  function makeDraggable(element) {
+    let isDragging = false, offsetX = 0, offsetY = 0;
+    const header = element.querySelector('.dialog-header, .fake-tab-header');
+    if(!header) return;
+    header.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      offsetX = e.clientX - element.offsetLeft;
+      offsetY = e.clientY - element.offsetTop;
+      element.style.zIndex = ++maxZ;
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      element.style.left = `${e.clientX - offsetX}px`;
+      element.style.top = `${e.clientY - offsetY}px`;
+      element.style.transform = 'none';
+    });
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+  }
+
+  let trailPoints = [];
+  const maxTrailTime = 10000; // 10秒
+  const trailContainerId = 'trail-container';
+
+  function initTrailContainer() {
+    let container = document.getElementById(trailContainerId);
+    if(!container){
+      container = document.createElement('div');
+      container.id = trailContainerId;
+      document.body.appendChild(container);
+    }
+    return container;
+  }
+
+  function cleanOldWarnings(container) {
+    const now = Date.now();
+    const warnings = Array.from(container.children);
+    for(const w of warnings){
+      const created = parseInt(w.getAttribute('data-time'));
+      if(now - created > maxTrailTime){
+        container.removeChild(w);
+      }
+    }
+  }
+
+  function addWarningIcon(container, x, y) {
+    const icon = document.createElement('div');
+    icon.className = 'warning-icon';
+    icon.style.left = (x - 10) + 'px';
+    icon.style.top = (y - 10) + 'px';
+    icon.setAttribute('data-time', Date.now());
+    icon.textContent = '⚠️';
+    container.appendChild(icon);
+  }
+
+  window.onload = () => {
+    document.getElementById('ip').innerText = generateFakeIP();
+
+    const mainDialog = document.querySelector('.dialog');
+    makeDraggable(mainDialog);
+
+    let count = 0;
+    const maxTabs = 50;
+
+    function createFakeTabRandom() {
+      const idx = Math.floor(Math.random() * fakeTabs.length);
+      const tab = document.createElement('div');
+      tab.className = 'fake-tab';
+
+      const x = Math.random() * (window.innerWidth - TAB_WIDTH);
+      const y = Math.random() * (window.innerHeight - TAB_HEIGHT);
+      tab.style.left = x + 'px';
+      tab.style.top = y + 'px';
+
+      tab.innerHTML = `
+        <div class="fake-tab-header">${fakeTabs[idx].title}<span style="font-weight:normal; cursor:pointer;" onclick="this.parentElement.parentElement.remove()">✕</span></div>
+        <div class="fake-tab-body">${fakeTabs[idx].message}</div>
+      `;
+      document.body.appendChild(tab);
+      makeDraggable(tab);
+    }
+
+    const intervalId = setInterval(() => {
+      if(count >= maxTabs){
+        clearInterval(intervalId);
+        return;
+      }
+      createFakeTabRandom();
+      count++;
+    }, 250);
+
+    const trailContainer = initTrailContainer();
+
+    window.addEventListener('mousemove', (e) => {
+      addWarningIcon(trailContainer, e.clientX, e.clientY);
+      cleanOldWarnings(trailContainer);
+    });
+  }
+
+  window.addEventListener('resize', () => {
+    const container = document.getElementById(trailContainerId);
+    if(container){
+      container.style.width = window.innerWidth + 'px';
+      container.style.height = window.innerHeight + 'px';
+    }
+  });
+</script>
+</head>
+<body>
+  <div class="dialog" id="mainDialog">
+    <div class="dialog-header">
+      Windows セキュリティセンター
+      <div class="blink-dot"></div>
+    </div>
+    <div class="dialog-body">
+      <p class="warning-text">⚠️ システムが危険なウイルスに感染しました！</p>
+      <p>アカウント情報・カード情報が漏洩する恐れがあります。</p>
+      <p>今すぐ <strong>03-1234-5678</strong>に連絡してください。</p>
+      <div class="ip-display">
+        あなたのIPアドレス：<span id="ip">取得中...</span>
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn" onclick="location.href='https://example.com'">OK</button>
+    </div>
+  </div>
+</body>
+</html>
