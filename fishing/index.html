@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>これはフィッシング詐欺の模擬体験でした</title>
+  <style>
+    body {
+      background: #fff4f4;
+      font-family: sans-serif;
+      color: #333;
+      margin: 0;
+      padding: 40px;
+      text-align: center;
+    }
+    h1 {
+      color: red;
+      font-size: 2em;
+    }
+    .box {
+      background: #fff;
+      border: 2px solid red;
+      padding: 30px;
+      max-width: 600px;
+      margin: 40px auto;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(255,0,0,0.2);
+    }
+    .important {
+      font-weight: bold;
+      color: darkred;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: red;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      margin-top: 30px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: darkred;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>あなたは今、フィッシング詐欺の模擬体験をしました</h1>
+    <p>このページは <span class="important">教育目的</span>で作られた模擬サイトです。</p>
+    <p>本物のログインページにそっくりな偽物を見せることで、<br>本物と偽物の見分けがどれだけ難しいかを体験してもらいました。</p>
+    <p class="important">実際の詐欺サイトでは、あなたの個人情報が盗まれてしまいます。</p>
+    <hr style="margin: 30px 0;">
+    <p>今後、こんなページに騙されないように気をつけよう：</p>
+    <ul style="text-align:left; max-width: 500px; margin: 0 auto;">
+      <li>URLを必ず確認する（<strong>https</strong> と <strong>正しいドメイン</strong>）</li>
+      <li>怪しいポップアップやエラー警告には反応しない</li>
+      <li>個人情報は、必ず「公式サイト」で入力する</li>
+    </ul>
+    <button onclick="location.href='https://www.npa.go.jp/bureau/cyber/'">安全な使い方を学ぶ（警察庁）</button>
+  </div>
+</body>
+</html>
