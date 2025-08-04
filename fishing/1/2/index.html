@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<title>Google アカウントのログイン</title>
+<style>
+  body {
+    margin: 0; padding: 0;
+    font-family: 'Roboto', Arial, sans-serif;
+    background: #f2f2f2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    user-select: none;
+  }
+  .login-container, .loading-container {
+    background: white;
+    padding: 40px 50px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    width: 360px;
+    text-align: center;
+  }
+  .logo {
+    margin-bottom: 30px;
+  }
+  .logo img {
+    width: 100px;
+  }
+  h1 {
+    font-weight: 400;
+    font-size: 24px;
+    margin-bottom: 30px;
+    color: #202124;
+  }
+  label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #202124;
+    text-align: left;
+  }
+  input[type="email"], input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  input[type="email"]:focus, input[type="password"]:focus {
+    border-color: #1a73e8;
+    outline: none;
+  }
+  button {
+    width: 100%;
+    background-color: #1a73e8;
+    border: none;
+    padding: 12px 0;
+    font-size: 16px;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+  }
+  button:hover {
+    background-color: #1669c1;
+  }
+  .footer-text {
+    margin-top: 30px;
+    font-size: 12px;
+    color: #5f6368;
+  }
+  /* ロード中グルグルアニメーション */
+  .spinner {
+    margin: 0 auto 20px auto;
+    width: 50px;
+    height: 50px;
+    border: 6px solid #e0e0e0;
+    border-top-color: #1a73e8;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+  <div class="login-container" id="loginContainer">
+    <div class="logo">
+      <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" alt="Google" />
+    </div>
+    <h1>アカウントにログイン</h1>
+    <form id="loginForm">
+      <label for="email">メールアドレスまたは電話番号</label>
+      <input type="email" id="email" name="email" autocomplete="username" required />
+      
+      <label for="password">パスワード</label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required />
+      
+      <button type="submit">ログイン</button>
+    </form>
+    <div class="footer-text">
+      © 2025 Google LLC
+    </div>
+  </div>
+
+  <div class="loading-container" id="loadingContainer" style="display:none;">
+    <div class="spinner"></div>
+    <div>ログイン情報を確認中...</div>
+  </div>
+
+<script>
+  const loginForm = document.getElementById('loginForm');
+  const loginContainer = document.getElementById('loginContainer');
+  const loadingContainer = document.getElementById('loadingContainer');
+
+  loginForm.addEventListener('submit', e => {
+    e.preventDefault();
+
+    // ログイン画面隠す
+    loginContainer.style.display = 'none';
+
+    // ロード中画面表示
+    loadingContainer.style.display = 'block';
+
+    // 3秒後に次のページへ遷移（本来はサーバー処理とかやけどダミー）
+    setTimeout(() => {
+      location.href = 'final.html';
+    }, 3000);
+  });
+</script>
+</body>
+</html>
