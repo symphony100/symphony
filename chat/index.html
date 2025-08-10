@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<title>CometChat グループチャット</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="https://unpkg.com/@cometchat-pro/chat@3.0.8/CometChat.js"></script>
+<script src="https://widget-js.cometchat.io/v3/cometchatwidget.js"></script>
+<style>
+  html, body, #cometchat {
+    margin: 0; padding: 0; height: 100%; width: 100%; font-family: sans-serif;
+  }
+  #cometchat {
+    box-sizing: border-box;
+  }
+</style>
+</head>
+<body>
+<div id="cometchat"></div>
+
+<script>
+// ==== ここに英大のCometChat設定をコピペしてくれ ====
+const APP_ID   = "28004289eda3d459";       // ここにApp ID
+const REGION   = "us";                      // ここは小文字のregionにすること
+const AUTH_KEY = "94b0cadb0e4bc2b240cc42ae3680ae3fe651ee92";  // ここにAuth Key
+
+// 初期化
+CometChat.init(APP_ID, { region: REGION }).then(() => {
+  console.log("CometChat初期化完了");
+
+  const UID = "eita"; // 固定ユーザーID（英大やで）
+  const user = new CometChat.User(UID);
+  user.setName("英大");
+
+  // ユーザー作成 or ログイン
+  CometChat.createUser(user, AUTH_KEY).then(() => {
+    loginUser(UID);
+  }).catch(error => {
+    if (error.code === "ERR_UID_ALREADY_EXISTS") {
+      loginUser(UID);
+    } else {
+      console.error("ユーザー作成失敗", error);
+    }
+  });
+
+  function loginUser(uid) {
+    CometChat.login(uid, AUTH_KEY).then(user => {
+      console.log("ログイン成功:", user);
+
+      // UIウィジェット初期化
+      CometChatWidget.init({
+        appID: APP_ID,
+        appRegion: REGION,
+        authKey: AUTH_KEY
+      }).then(() => {
+        CometChatWidget.login({ uid: uid }).then(() => {
+          CometChatWidget.launch({
+            widgetID: "default",
+            target: "#cometchat",
+            roundedCorners: "true",
+            height: "100%",
+            width: "100%",
+            defaultID: "SUPERGROUP", // ダッシュボードで作成したグループID
+            defaultType: "group"    // groupかuserを指定
+          });
+        });
+      });
+
+    }).catch(err => console.error("ログイン失敗", err));
+  }
+
+}).catch(err => {
+  console.error("CometChat初期化失敗", err);
+});
+</script>
+</body>
+</html>
