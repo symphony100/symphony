@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>VibeLab — レベル別バイブレーションデモ</title>
+<style>
+  :root{--bg:#0b1220;--card:#0f1724;--muted:#93a4b8;--accent:#0ea5e9;--accent2:#22c1c3;--glass:rgba(255,255,255,0.03)}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#06101a);color:#e6f1fb;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans JP',sans-serif}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .panel{width:min(980px,96vw);background:linear-gradient(180deg,var(--card),#06111a);border-radius:14px;padding:18px;box-shadow:0 18px 60px rgba(0,0,0,0.6)}
+  h1{margin:0;font-size:20px}
+  .muted{color:var(--muted);font-size:13px}
+  .grid{display:grid;grid-template-columns:320px 1fr;gap:16px;margin-top:14px}
+  .box{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+  .preset{display:flex;flex-wrap:wrap;gap:8px}
+  button,p{font:inherit}
+  .btn{background:linear-gradient(180deg,var(--accent),var(--accent2));border:none;padding:10px 12px;border-radius:8px;color:#022;cursor:pointer}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+  input[type=range]{width:100%}
+  textarea{width:100%;height:96px;background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:8px;color:inherit}
+  .row{display:flex;gap:8px;align-items:center}
+  .kbd{background:#08111a;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.03)}
+  .note{font-size:13px;color:var(--muted);margin-top:8px}
+  footer{margin-top:12px;font-size:13px;color:var(--muted)}
+  @media (max-width:900px){ .grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="panel" role="application" aria-label="VibeLab">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <h1>VibeLab — レベル別バイブレーション</h1>
+        <div class="muted">端末の振動APIに合わせてプリセットとカスタムの振動パターンを試せるデモ</div>
+      </div>
+      <div class="muted">英大用デモ — しろが作成</div>
+    </div>
+
+    <div class="grid">
+      <div class="box">
+        <label>プリセット</label>
+        <div class="preset" id="presets">
+          <!-- JSで埋める -->
+        </div>
+
+        <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)" />
+
+        <label for="levelRange">強さ (内部でパターンにマッピング)</label>
+        <input id="levelRange" type="range" min="0" max="100" value="50">
+        <div class="row" style="margin-top:8px">
+          <div class="kbd">レベル: <span id="levelVal">50</span></div>
+          <div style="flex:1"></div>
+          <button class="btn" id="playLevel">再生</button>
+          <button class="btn ghost" id="stopAll">停止</button>
+        </div>
+
+        <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)" />
+
+        <label for="patternText">カスタムパターン (ミリ秒の配列、例: 100,50,100)</label>
+        <textarea id="patternText" placeholder="例: 100,60,120,60,200"></textarea>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="playCustom">カスタム再生</button>
+          <button class="btn ghost" id="copyPattern">コピー</button>
+        </div>
+
+        <p class="note">注意: 一部ブラウザやPCではバイブレーション未対応。端末の設定で振動が無効だと動作せん。</p>
+      </div>
+
+      <div class="box">
+        <label>プレビュー / ログ</label>
+        <div id="log" style="height:260px;overflow:auto;padding:8px;border-radius:8px;background:rgba(0,0,0,0.04);font-size:13px">ログがここに出る</div>
+
+        <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)" />
+
+        <label>品質設定</label>
+        <div class="row">
+          <label class="muted">粒子(視覚だけ)</label>
+          <input id="fxCount" type="range" min="0" max="200" step="1" value="48">
+        </div>
+
+        <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)" />
+
+        <label>ブラウザ対応チェック</label>
+        <div class="note" id="supportNote"></div>
+
+      </div>
+    </div>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>操作: プリセットボタン / レベルスライダー / カスタムで自由に試す</div>
+        <div>ショートカット: <span class="kbd">Space</span>=レベル再生, <span class="kbd">Esc</span>=停止</div>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script>
+/*
+  Vibration demo script
+  - プリセットを定義し、レベル値(0-100)をパターンにマッピングする
+  - navigator.vibrate を使う。未対応時はログで案内
+  - カスタムパターンの入力とコピー機能
+  - シンプルな視覚エフェクト (canvasを使わずDOMで軽量表示)
+*/
+
+// ユーティリティ
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+function log(msg){ const el = $('#log'); const time = new Date().toLocaleTimeString(); el.innerHTML = `<div>[${time}] ${msg}</div>` + el.innerHTML; }
+
+// サポートチェック
+const isVibe = 'vibrate' in navigator;
+$('#supportNote').textContent = isVibe ? 'このブラウザは Vibrate API をサポートしている可能性がある' : 'Vibrate API 非対応（または制限）: スマホのChrome/Firefoxで動作を確認してや';
+log('サポート: ' + (isVibe ? 'Vibrate API 利用可能' : 'Vibrate API 利用不可'));
+
+// プリセット定義（ラベルと生成関数）
+const presets = [
+  { id:'gentle', label:'Gentle(短いポンポン)', gen: (lv)=> [60,40,60] },
+  { id:'heartbeat', label:'Heartbeat(心拍)', gen: (lv)=> [120,60,230,60,120] },
+  { id:'pulse', label:'Pulse(連打)', gen: (lv)=> {
+    const hits = Math.max(2, Math.round(lv/25));
+    const arr = [];
+    for(let i=0;i<hits;i++){ arr.push(40); arr.push(30); }
+    return arr; }
+  },
+  { id:'burst', label:'Burst(一気に弾ける)', gen: (lv)=> {
+    const p = Math.round(3 + lv/22);
+    const arr=[]; for(let i=0;i<p;i++){ arr.push(20); arr.push(15); } arr.push(80); return arr;
+  }},
+  { id:'earth', label:'Quake(地震モード)', gen: (lv)=> {
+    const base = Math.max(6, Math.round(lv/10));
+    const arr=[]; for(let i=0;i<base;i++){ arr.push(40); arr.push(20); } return arr;
+  }},
+  { id:'relax', label:'Relax(長めのゆっくり)', gen: (lv)=> [200,120,200] }
+];
+
+// DOMにプリセットボタンを作る
+const psEl = $('#presets');
+for(const p of presets){ const b = document.createElement('button'); b.className='btn ghost'; b.textContent = p.label; b.dataset.id = p.id; b.addEventListener('click', ()=>{ applyPreset(p); }); psEl.appendChild(b); }
+
+// レベル -> pattern マッピング
+function levelToPattern(lv){ // lv: 0-100
+  // 基本ルール: 高レベルほど短いインターバルを増やす、ヒット数を増やす
+  // ここではPulse系のプリセットを内部で使う
+  if(lv < 15) return presets.find(x=>x.id==='gentle').gen(lv);
+  if(lv < 35) return presets.find(x=>x.id==='heartbeat').gen(lv);
+  if(lv < 60) return presets.find(x=>x.id==='pulse').gen(lv);
+  if(lv < 85) return presets.find(x=>x.id==='burst').gen(lv);
+  return presets.find(x=>x.id==='earth').gen(lv);
+}
+
+// 再生・停止関数
+function vibratePattern(arr){ if(!isVibe){ log('振動API未対応: 試行停止'); return; }
+  try{ navigator.vibrate(arr); log('再生: [' + arr.join(',') + ']'); } catch(e){ log('振動API 呼び出しでエラー: ' + e.message); }
+}
+function stopVibe(){ if(!isVibe) return; navigator.vibrate(0); log('停止'); }
+
+// UI wiring
+const levelRange = $('#levelRange'); const levelVal = $('#levelVal');
+levelRange.addEventListener('input', ()=>{ levelVal.textContent = levelRange.value; });
+
+$('#playLevel').addEventListener('click', ()=>{
+  const lv = Number(levelRange.value);
+  const pat = levelToPattern(lv);
+  vibratePattern(pat);
+});
+
+$('#stopAll').addEventListener('click', ()=>{ stopVibe(); });
+
+$('#playCustom').addEventListener('click', ()=>{
+  const txt = $('#patternText').value.trim(); if(!txt) { log('カスタムが空'); return; }
+  const arr = txt.split(',').map(s=>parseInt(s.trim())).filter(n=>!Number.isNaN(n) && n>=0);
+  if(arr.length===0){ log('カスタム配列が不正'); return; }
+  vibratePattern(arr);
+});
+
+$('#copyPattern').addEventListener('click', ()=>{
+  const txt = $('#patternText').value.trim(); if(!txt) { log('コピーするテキストがない'); return; }
+  navigator.clipboard?.writeText(txt).then(()=> log('パターンコピー完了'), ()=> log('コピー失敗')); }
+);
+
+// 再生用ショートカット
+window.addEventListener('keydown', (e)=>{
+  if(e.code === 'Space'){ e.preventDefault(); $('#playLevel').click(); }
+  if(e.code === 'Escape'){ stopVibe(); }
+});
+
+// プリセット適用
+function applyPreset(p){ const lv = Number(levelRange.value); const pat = p.gen(lv); $('#patternText').value = pat.join(','); vibratePattern(pat); }
+
+// 視覚エフェクト (軽量): ログに短いアニメを入れる
+const fxCount = $('#fxCount'); fxCount.addEventListener('input', ()=>{ log('視覚エフェクト数: ' + fxCount.value); });
+
+// 初期ログ
+log('VibeLab 初期化');
+
+// 改善用に現在のプリセット情報をエクスポートできるようにする
+function exportConfig(){ return { presets: presets.map(p=> ({id:p.id,label:p.label}) ) } }
+
+// 端末サポートの注意(追加表示)
+(function(){ if(!isVibe){ const note = $('#supportNote'); note.textContent += ' (代替: ブラウザの音やアニメでフィードバックを用意してや)'; }})();
+
+</script>
+</body>
+</html>
