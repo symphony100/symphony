@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<title>百人一首 縦書きカルタ</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body {
+  margin:0; height:100vh;
+  display:flex; justify-content:center; align-items:center;
+  background:url('washi-texture.png') center/cover no-repeat fixed;
+  font-family:"Shippori Mincho B1","Noto Serif JP",serif;
+  overflow:hidden;
+}
+.container { display:flex; align-items:center; justify-content:center; gap:20px; width:100%; height:100%; }
+.nav-btn {
+  background: rgba(47,93,80,0.9); color:white; border:none;
+  border-radius:50%; width:48px; height:48px; font-size:1.5rem;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition: background 0.2s; user-select:none;
+}
+.nav-btn:active { background: rgba(30,60,50,0.9); }
+.card {
+  width:min(80vw,380px); height:min(80vh,520px);
+  background:#fffef8; border:6px solid #2f5d50; border-radius:6px;
+  box-shadow:6px 8px 18px rgba(0,0,0,0.35);
+  display:flex; flex-direction: row-reverse;
+  justify-content:center; align-items:center; gap:24px; padding:18px;
+  position:relative; box-sizing:border-box; overflow:hidden;
+}
+.col {
+  writing-mode: vertical-rl; text-orientation: upright;
+  font-size:1.4rem; line-height:2.2em; letter-spacing:0.1em;
+  text-align:center; position:relative;
+}
+.kami { min-width:2.5em; }
+.shimo { min-width:2.5em; }
+.mask {
+  position:absolute; inset:0;
+  background:#f8f8f2; border:2px solid #000;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.6rem; z-index:2; opacity:1; cursor:pointer;
+}
+.mask.reveal { animation: fadeSlide 0.8s forwards; }
+@keyframes fadeSlide { to { opacity:0; transform: translateY(-100%); } }
+.author {
+  position:absolute; bottom:16px; left:16px;
+  writing-mode: vertical-rl; text-orientation: upright;
+  font-size:1rem; color:#444;
+}
+.number {
+  position:absolute; top:12px; right:16px;
+  font-size:1.2rem; font-weight:bold; color:#333;
+}
+.settings-btn, .help-btn {
+  position:absolute; top:12px;
+  background: rgba(47,93,80,0.9); color:white; border:none;
+  border-radius:6px; padding:6px 12px; cursor:pointer; font-size:0.9rem;
+}
+.settings-btn { right:60px; }
+.help-btn { right:12px; }
+.settings-overlay {
+  position:fixed; inset:0; background: rgba(255,255,240,0.95) url('washi-texture.png') center/cover;
+  display:none; justify-content:center; align-items:center; z-index:20;
+}
+.settings-box {
+  background:#fffef8; border:4px solid #2f5d50; border-radius:12px;
+  padding:24px; width:min(90%,400px);
+  box-shadow:6px 8px 18px rgba(0,0,0,0.35); font-size:1rem;
+}
+.settings-box h2 {
+  margin-top:0; font-size:1.2rem;
+  border-bottom:2px solid #2f5d50; padding-bottom:6px; margin-bottom:12px;
+}
+.range-container { display:flex; align-items:center; gap:6px; margin-bottom:12px; }
+.range-label { font-weight:bold; }
+.range-input {
+  width:50px; border:2px solid #2f5d50; border-radius:8px;
+  padding:4px 6px; text-align:center;
+  font-family:"Shippori Mincho B1","Noto Serif JP",serif;
+  background: linear-gradient(to bottom,#fffef8,#fdf6e3);
+  font-size:1rem;
+}
+.tilde { font-weight:bold; }
+.switch-container {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:12px; font-size:1rem;
+}
+.switch { position:relative; display:inline-block; width:60px; height:26px; vertical-align:middle; }
+.switch input { opacity:0; width:0; height:0; }
+.slider {
+  position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0;
+  background:#f1e5c4; border:2px solid #2f5d50; border-radius:26px; transition:0.4s;
+}
+.slider:before {
+  position:absolute; content:""; height:20px; width:20px;
+  top:50%; transform:translateY(-50%); left:3px;
+  background:#2f5d50; border-radius:50%; transition:0.4s;
+}
+.switch input:checked + .slider { background:#d0a95b; }
+.switch input:checked + .slider:before { transform: translate(32px,-50%); }
+.settings-actions { text-align:right; margin-top:12px; }
+.settings-actions button {
+  background:#2f5d50; color:white; border:none;
+  padding:6px 14px; border-radius:6px; cursor:pointer;
+}
+@media(max-width:600px){
+  .container { gap:8px; }
+  .nav-btn { width:40px; height:40px; font-size:1.2rem; }
+  .settings-btn, .help-btn { padding:4px 8px; font-size:0.8rem; }
+}
+</style>
+</head>
+<body>
+
+<button class="settings-btn" id="settingsBtn">⚙ 設定</button>
+<button class="help-btn" id="helpBtn">❓</button>
+
+<div class="settings-overlay" id="settingsOverlay">
+  <div class="settings-box" id="settingsBox">
+    <h2>設定</h2>
+    <div class="range-container">
+      <span class="range-label">範囲:</span>
+      <input type="number" id="rangeStart" min="1" max="100" value="1" class="range-input">
+      <span class="tilde">〜</span>
+      <input type="number" id="rangeEnd" min="1" max="100" value="3" class="range-input">
+    </div>
+    <div class="switch-container">
+      <span>ランダムにする</span>
+      <label class="switch">
+        <input type="checkbox" id="randomMode">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="settings-actions"><button id="applySettings">OK</button></div>
+  </div>
+</div>
+
+<div class="settings-overlay" id="helpOverlay">
+  <div class="settings-box" id="helpBox">
+    <h2>使い方</h2>
+    <p>矢印またはボタンでカード切替。</p>
+    <p>マスクをタップすると下の句と作者が表示。</p>
+    <p>設定で範囲やランダム表示可能。</p>
+    <div class="settings-actions"><button id="closeHelp">OK</button></div>
+  </div>
+</div>
+
+<div class="container">
+  <button class="nav-btn" id="prevBtn">◀</button>
+  <div class="card" id="card">
+    <div id="kami" class="col kami"></div>
+    <div class="col shimo"><div id="shimoText"></div><div id="mask" class="mask">？</div></div>
+    <div id="author" class="author"></div>
+    <div id="number" class="number"></div>
+  </div>
+  <button class="nav-btn" id="nextBtn">▶</button>
+</div>
+
+<script>
+const allCards=[
+  {id:1,kami:"秋の田の　かりほの庵の　苫をあらみ",shimo:"わがころもでは　露にぬれつつ",author:"天智天皇"},
+  {id:2,kami:"春過ぎて　夏来にけらし　白妙の",shimo:"衣ほすてふ　天の香具山",author:"持統天皇"},
+  {id:3,kami:"あしびきの　山鳥の尾の　しだり尾の",shimo:"ながながし夜を　ひとりかも寝む",author:"柿本人麻呂"},
+  {id:4,kami:"田子の浦に　うち出でて見れば　白妙の",shimo:"富士の高嶺に　雪は降りつつ",author:"山部赤人"},
+  {id:5,kami:"奥山に　紅葉踏み分け　鳴く鹿の",shimo:"声聞くときぞ　秋は悲しき",author:"猿丸大夫"},
+  {id:6,kami:"かささぎの　渡せる橋に　おく霜の",shimo:"白きを見れば　夜ぞ更けにける",author:"中納言家持"},
+  {id:7,kami:"天の原　ふりさけ見れば　春日なる",shimo:"三笠の山に　出でし月かも",author:"安倍仲麿"},
+  {id:8,kami:"わが庵は　都のたつみ　しかぞ住む",shimo:"世をうぢ山と　人はいふなり",author:"喜撰法師"},
+  {id:9,kami:"花の色は　うつりにけりな　いたづらに",shimo:"わが身世にふる　ながめせしまに",author:"小野小町"},
+  {id:10,kami:"これやこの　行くも帰るも　別れては",shimo:"知るも知らぬも　逢坂の関",author:"蝉丸"},
+  {id:11,kami:"わたの原　八十島かけて　漕ぎ出でぬと",shimo:"人には告げよ　海人の釣舟",author:"参議篁"},
+  {id:12,kami:"天つ風　雲の通ひ路　吹きとぢよ",shimo:"乙女の姿　しばしとどめむ",author:"僧正遍照"},
+  {id:13,kami:"筑波嶺の　峯より落つる　みなの川",shimo:"恋ぞつもりて　淵となりぬる",author:"陽成院"},
+  {id:14,kami:"みちのくの　しのぶもぢずり　誰ゆゑに",shimo:"乱れそめにし　われならなくに",author:"河原左大臣"},
+  {id:15,kami:"君がため　春の野に出でて　若菜摘む",shimo:"わが衣手に　雪は降りつつ",author:"光孝天皇"},
+  {id:16,kami:"たち別れ　いなばの山の　峯に生ふる",shimo:"まつとし聞かば　今帰り来む",author:"中納言行平"},
+  {id:17,kami:"ちはやぶる　神代も聞かず　竜田川",shimo:"からくれなゐに　水くくるとは",author:"在原業平朝臣"},
+  {id:18,kami:"住の江の　岸に寄る波　よるさへや",shimo:"夢のかよひ路　人めよくらむ",author:"藤原敏行朝臣"},
+  {id:19,kami:"難波潟　短き蘆の　ふしのまも",shimo:"逢はでこの世を　過ぐしてよとや",author:"伊勢"},
+  {id:20,kami:"わびぬれば　今はた同じ　難波なる",shimo:"みをつくしても　逢はむとぞ思ふ",author:"元良親王"},
+  {id:21,kami:"今来むと　いひしばかりに　長月の",shimo:"有明の月を　待ち出でつるかな",author:"素性法師"},
+  {id:22,kami:"吹くからに　秋の草木の　しをるれば",shimo:"むべ山風を　嵐といふらむ",author:"文屋康秀"},
+  {id:23,kami:"月見れば　ちぢにものこそ　悲しけれ",shimo:"わが身ひとつの　秋にはあらねど",author:"大江千里"},
+  {id:24,kami:"このたびは　幣も取りあへず　手向山",shimo:"紅葉の錦　神のまにまに",author:"菅家"},
+  {id:25,kami:"名にしおはば　逢坂山の　さねかづら",shimo:"人に知られで　くるよしもがな",author:"三条右大臣"},
+  {id:26,kami:"小倉山　峰のもみぢ葉　心あらば",shimo:"今ひとたびの　みゆき待たなむ",author:"貞信公"},
+  {id:27,kami:"みかの原　わきて流るる　いづみ川",shimo:"いつ見きとてか　恋しかるらむ",author:"中納言兼輔"},
+  {id:28,kami:"山里は　冬ぞさびしさ　まさりける",shimo:"人目も草も　かれぬと思へば",author:"源宗于朝臣"},
+  {id:29,kami:"心あてに　折らばや折らむ　初霜の",shimo:"おきまどはせる　白菊の花",author:"凡河内躬恒"},
+  {id:30,kami:"有明の　つれなく見えし　別れより",shimo:"暁ばかり　うきものはなし",author:"壬生忠岑"},
+  {id:31,kami:"朝ぼらけ　有明の月と　見るまでに",shimo:"吉野の里に　降れる白雪",author:"坂上是則"},
+  {id:32,kami:"山川に　風のかけたる　しがらみは",shimo:"流れもあへぬ　紅葉なりけり",author:"春道列樹"},
+  {id:33,kami:"ひさかたの　光のどけき　春の日に",shimo:"しづ心なく　花の散るらむ",author:"紀友則"},
+  {id:34,kami:"誰をかも　知る人にせむ　高砂の",shimo:"松も昔の　友ならなくに",author:"藤原興風"},
+  {id:35,kami:"人はいさ　心も知らず　ふるさとは",shimo:"花ぞ昔の　香ににほひける",author:"紀貫之"},
+  {id:36,kami:"夏の夜は　まだ宵ながら　明けぬるを",shimo:"雲のいづこに　月宿るらむ",author:"清原深養父"},
+  {id:37,kami:"白露に　風の吹きしく　秋の野は",shimo:"つらぬきとめぬ　玉ぞ散りける",author:"文屋朝康"},
+  {id:38,kami:"忘らるる　身をば思はず　誓ひてし",shimo:"人の命の　惜しくもあるかな",author:"右近"},
+  {id:39,kami:"浅茅生の　小野の篠原　しのぶれど",shimo:"あまりてなどか　人の恋しき",author:"参議等"},
+  {id:40,kami:"しのぶれど　色に出でにけり　わが恋は",shimo:"ものや思ふと　人の問ふまで",author:"平兼盛"},
+  {id:41,kami:"恋すてふ　わが名はまだき　立ちにけり",shimo:"人知れずこそ　思ひそめしか",author:"壬生忠見"},
+  {id:42,kami:"契りきな　かたみに袖を　しぼりつつ",shimo:"末の松山　波越さじとは",author:"清原元輔"},
+  {id:43,kami:"あひ見ての　のちの心に　くらぶれば",shimo:"昔はものを　思はざりけり",author:"権中納言敦忠"},
+  {id:44,kami:"逢ふことの　絶えてしなくば　なかなかに",shimo:"人をも身をも　恨みざらまし",author:"中納言朝忠"},
+  {id:45,kami:"あはれとも　いふべき人は　思ほえで",shimo:"身のいたづらになりぬべきかな",author:"謙徳公"},
+  {id:46,kami:"由良の門を　渡る舟人　かぢを絶え",shimo:"ゆくへも知らぬ　恋の道かな",author:"曽禰好忠"},
+  {id:47,kami:"八重葎　しげれる宿の　さびしさに",shimo:"人こそ見えね　秋は来にけり",author:"恵慶法師"},
+  {id:48,kami:"風をいたみ　岩打つ波の　おのれのみ",shimo:"砕けてものを　思ふころかな",author:"源重之"},
+  {id:49,kami:"みかき守　衛士のたく火の　夜は燃え",shimo:"昼は消えつつ　ものをこそ思へ",author:"大中臣能宣朝臣"},
+  {id:50,kami:"君がため　惜しからざりし　命さへ",shimo:"長くもがなと　思ひけるかな",author:"藤原義孝"}
+  {id:51,kami:"かくとだに　えやはいぶきの　さしも草",shimo:"さしも知らじな　燃ゆる思ひを",author:"藤原実方朝臣"},
+  {id:52,kami:"明けぬれば　暮るるものとは　知りながら",shimo:"なほ恨めしき　朝ぼらけかな",author:"藤原道信朝臣"},
+  {id:53,kami:"嘆きつつ　ひとり寝る夜の　明くるまは",shimo:"いかに久しき　ものとかは知る",author:"右大将道綱母"},
+  {id:54,kami:"忘れじの　行く末までは　かたければ",shimo:"けふを限りの　命ともがな",author:"儀同三司母"},
+  {id:55,kami:"滝の音は　絶えて久しく　なりぬれど",shimo:"名こそ流れて　なほ聞こえけれ",author:"大納言公任"},
+  {id:56,kami:"あらざらむ　この世のほかの　思ひ出に",shimo:"今ひとたびの　逢ふこともがな",author:"和泉式部"},
+  {id:57,kami:"めぐり逢ひて　見しやそれとも　わかぬ間に",shimo:"雲隠れにし　夜半の月かな",author:"紫式部"},
+  {id:58,kami:"ありま山　猪名の笹原　風吹けば",shimo:"いでそよ人を　忘れやはする",author:"大弐三位"},
+  {id:59,kami:"やすらはで　寝なましものを　さ夜ふけて",shimo:"かたぶくまでの　月を見しかな",author:"赤染衛門"},
+  {id:60,kami:"大江山　いく野の道の　遠ければ",shimo:"まだふみも見ず　天の橋立",author:"小式部内侍"},
+  {id:61,kami:"いにしへの　奈良の都の　八重桜",shimo:"けふ九重に　にほひぬるかな",author:"伊勢大輔"},
+  {id:62,kami:"夜をこめて　鳥の空音は　はかるとも",shimo:"よに逢坂の　関はゆるさじ",author:"清少納言"},
+  {id:63,kami:"今こそは　われにもとゆけ　かへる山",shimo:"われは都の　月を見むとて",author:"清原深養父"},
+  {id:64,kami:"くもゐなき　月のゆくへを　見ればかな",shimo:"月をぞ思ふ　空ぞ悲しき",author:"権中納言定頼"},
+  {id:65,kami:"夕されば　門田の稲葉　おとづれて",shimo:"蘆のまろやに　秋風ぞ吹く",author:"相模"},
+  {id:66,kami:"もろともに　あはれと思へ　山桜",shimo:"花よりほかに　知る人もなし",author:"前大僧正行尊"},
+  {id:67,kami:"春の夜の　夢ばかりなる　手枕に",shimo:"かひなく立ちぬ　世のうつつかな",author:"周防内侍"},
+  {id:68,kami:"心にも　あらでうき世に　ながらへば",shimo:"恋しかるべき　夜半の月かな",author:"三条院"},
+  {id:69,kami:"嵐吹く　三室の山の　もみぢ葉は",shimo:"竜田の川の　錦なりけり",author:"能因法師"},
+  {id:70,kami:"さびしさに　宿を立ち出でて　ながむれば",shimo:"いづこも同じ　秋の夕暮れ",author:"良暹法師"},
+  {id:71,kami:"夕月夜　小倉の山に　さす光",shimo:"あはれにぞ見る　今宵も悲し",author:"大僧正行尊"},
+  {id:72,kami:"音に聞く　高師の浜の　あだ波は",shimo:"かけじや袖の　ぬれもこそすれ",author:"祐子内親王家紀伊"},
+  {id:73,kami:"高砂の　尾の上の桜　咲きにけり",shimo:"外山の霞に　見えも隠れず",author:"権中納言清輔"},
+  {id:74,kami:"憂かりける　人を初瀬の　山おろし",shimo:"はげしかれとは　祈らぬものを",author:"藤原基俊"},
+  {id:75,kami:"契りおきし　させもが露を　命にて",shimo:"あはれ今年ぞ　秋もいぬるかな",author:"崇徳院"},
+  {id:76,kami:"わたの原　漕ぎ出でて見れば　久方の",shimo:"雲居にまがふ　沖つ白波",author:"源重之"},
+  {id:77,kami:"瀬をはやみ　岩にせかるる　滝川の",shimo:"われても末に　逢はむとぞ思ふ",author:"崇徳院"},
+  {id:78,kami:"淡路島　かよふ千鳥の　鳴く声に",shimo:"幾夜寝覚めぬ　須磨の関守",author:"源兼昌"},
+  {id:79,kami:"千早振る　神代も聞かず　竜田川",shimo:"からくれなゐに　水くくるとは",author:"在原業平朝臣"},
+  {id:80,kami:"こぬ人を　まつほの浦の　夕なぎに",shimo:"焼くや藻塩の　身もこがれつつ",author:"権中納言定家"},
+  {id:81,kami:"君がため　春の野に出でて　若菜摘む",shimo:"わが衣手に　雪は降りつつ",author:"光孝天皇"},
+  {id:82,kami:"思ひわび　さても命は　あるものを",shimo:"憂きにたへぬは　涙なりけり",author:"道因法師"},
+  {id:83,kami:"世の中よ　道こそなけれ　思ひ入る",shimo:"山の奥にも　鹿ぞ鳴くなる",author:"皇太后宮大夫俊成"},
+  {id:84,kami:"長からむ　心もしらず　黒髪の",shimo:"乱れて今朝は　ものをこそ思へ",author:"待賢門院堀河"},
+  {id:85,kami:"ながらへば　またこのごろや　しのばれむ",shimo:"憂しと見し世ぞ　今は恋しき",author:"藤原清輔朝臣"},
+  {id:86,kami:"風吹けば　沖つ白波　たつた山",shimo:"夜半にや君が　ひとり寝らむ",author:"中宮亮輔"},
+  {id:87,kami:"玉の緒よ　絶えなば絶えね　ながらへば",shimo:"忍ぶることの　弱りもぞする",author:"式子内親王"},
+  {id:88,kami:"見せばやな　雄島のあまの　袖だにも",shimo:"ぬれにぞ濡れし　色は変はらず",author:"皇太后宮大夫俊成"},
+  {id:89,kami:"身を尽くし　この身を尽くさじ　富士の根に",shimo:"積もる雪こそ　思ひ知られけれ",author:"左京大夫道雅"},
+  {id:90,kami:"かくとだに　えやはいぶきの　さしも草",shimo:"さしも知らじな　燃ゆる思ひを",author:"藤原実方朝臣"},
+  {id:91,kami:"きりぎりす　鳴くや霜夜の　さむしろに",shimo:"衣かたしき　ひとりかも寝む",author:"後京極摂政前太政大臣"},
+  {id:92,kami:"わが袖は　潮干にみちて　かりほの庵",shimo:"つれなくもあれ　あさゆふは",author:"二条院讃岐"},
+  {id:93,kami:"世の中は　常にもがもな　なぎさこぐ",shimo:"あまの小舟の　綱手かなしも",author:"権中納言定家"},
+  {id:94,kami:"難波江の　蘆のしのぶの　難波潟",shimo:"なほこそは　逢はぬ恋しけれ",author:"権中納言定家"},
+  {id:95,kami:"千早振る　神代も聞かず　竜田川",shimo:"からくれなゐに　水くくるとは",author:"在原業平朝臣"},
+  {id:96,kami:"玉の緒よ　絶えなば絶えね　ながらへば",shimo:"忍ぶることの　弱りもぞする",author:"式子内親王"},
+  {id:97,kami:"みちのくの　しのぶもぢずり　誰ゆゑに",shimo:"乱れそめにし　われならなくに",author:"河原左大臣"},
+  {id:98,kami:"秋風に　たなびく雲の　たえまより",shimo:"もれ出づる月の　かげのさやけさ",author:"左京大夫道雅"},
+  {id:99,kami:"ながらへば　またこのごろや　しのばれむ",shimo:"憂しと見し世ぞ　今は恋しき",author:"藤原清輔朝臣"},
+  {id:100,kami:"百敷や　古き軒端の　しのぶにも",shimo:"なほあまりある　昔なりけり",author:"順徳院"}
+];
+
+let remainingCards=[], currentCard=null, showAnswer=false;
+const kamiEl=document.getElementById("kami"),
+      shimoTextEl=document.getElementById("shimoText"),
+      maskEl=document.getElementById("mask"),
+      authorEl=document.getElementById("author"),
+      numberEl=document.getElementById("number"),
+      cardEl=document.getElementById("card"),
+      prevBtn=document.getElementById("prevBtn"),
+      nextBtn=document.getElementById("nextBtn"),
+      settingsBtn=document.getElementById("settingsBtn"),
+      settingsOverlay=document.getElementById("settingsOverlay"),
+      settingsBox=document.getElementById("settingsBox"),
+      rangeStartEl=document.getElementById("rangeStart"),
+      rangeEndEl=document.getElementById("rangeEnd"),
+      randomModeEl=document.getElementById("randomMode"),
+      applySettingsBtn=document.getElementById("applySettings"),
+      helpBtn=document.getElementById("helpBtn"),
+      helpOverlay=document.getElementById("helpOverlay"),
+      closeHelp=document.getElementById("closeHelp");
+
+function renderCard(card){
+  currentCard=card;
+
+  // 通常のカード表示に戻す
+  cardEl.style.display="flex";
+  cardEl.style.flexDirection="row-reverse";
+  cardEl.style.alignItems="center";
+  cardEl.style.justifyContent="center";
+
+  kamiEl.textContent=card.kami;
+  kamiEl.style.textAlign="";
+  kamiEl.style.width="";
+  kamiEl.style.fontSize="";
+  shimoTextEl.textContent=card.shimo;
+  numberEl.textContent=card.id;
+  maskEl.classList.remove("reveal");
+  maskEl.style.opacity="1";
+  maskEl.style.transform="none";
+  maskEl.style.display="block";
+  authorEl.textContent="";
+  showAnswer=false;
+  prevBtn.style.display="flex";
+  nextBtn.style.display="flex";
+
+  localStorage.setItem("currentCardID",card.id);
+  localStorage.setItem("remainingCards",JSON.stringify(remainingCards.map(c=>c.id)));
+  localStorage.setItem("randomMode",randomModeEl.checked);
+}
+
+maskEl.addEventListener("click",()=>{ if(!showAnswer) show(); });
+function show(){
+  maskEl.classList.add("reveal");
+  authorEl.textContent=currentCard.author;
+  showAnswer=true;
+}
+
+function nextCard(){
+  if(!showAnswer){ show(); return; }
+
+  if(remainingCards.length===0){
+    // カード全体を上下左右中央に
+    cardEl.style.display="flex";
+    cardEl.style.flexDirection="column";
+    cardEl.style.alignItems="center";
+    cardEl.style.justifyContent="center";
+
+    kamiEl.textContent="お疲れ様！";
+    kamiEl.style.width="100%";
+    kamiEl.style.textAlign="center";
+    kamiEl.style.fontSize="2rem";
+
+    shimoTextEl.textContent="";
+    numberEl.textContent="";
+    authorEl.textContent="";
+    maskEl.style.display="none";
+    prevBtn.style.display="none";
+    nextBtn.style.display="none";
+
+    if(!document.getElementById("restartBtn")){
+      const btn=document.createElement("button");
+      btn.id="restartBtn";
+      btn.textContent="もう一度プレイ";
+      btn.style.marginTop="20px";
+      btn.style.padding="8px 16px";
+      btn.style.background="#2f5d50";
+      btn.style.color="white";
+      btn.style.border="none";
+      btn.style.borderRadius="6px";
+      btn.style.cursor="pointer";
+      btn.addEventListener("click",()=>{
+        applySettings();
+        btn.remove();
+      });
+      cardEl.appendChild(btn);
+    }
+  } else {
+    renderCard(remainingCards.pop());
+  }
+}
+
+function prevCard(){
+  if(!randomModeEl.checked && remainingCards.length===0){
+    let idx=allCards.indexOf(currentCard);
+    let prevIdx=(idx-1+allCards.length)%allCards.length;
+    renderCard(allCards[prevIdx]);
+  }
+}
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowRight"||e.key==="ArrowDown") nextCard();
+  else if(e.key==="ArrowLeft"||e.key==="ArrowUp") prevCard();
+});
+prevBtn.addEventListener("click",prevCard);
+nextBtn.addEventListener("click",nextCard);
+settingsBtn.addEventListener("click",()=>{ settingsOverlay.style.display="flex"; });
+applySettingsBtn.addEventListener("click",applySettings);
+settingsOverlay.addEventListener("click",e=>{ if(!settingsBox.contains(e.target)) settingsOverlay.style.display="none"; });
+helpBtn.addEventListener("click",()=>{ helpOverlay.style.display="flex"; });
+closeHelp.addEventListener("click",()=>{ helpOverlay.style.display="none"; });
+helpOverlay.addEventListener("click",e=>{ if(!document.getElementById("helpBox").contains(e.target)) helpOverlay.style.display="none"; });
+
+function applySettings(){
+  let start=parseInt(rangeStartEl.value,10), end=parseInt(rangeEndEl.value,10);
+  if(start<1) start=1; if(end>allCards.length) end=allCards.length;
+  if(start>end) [start,end]=[end,start];
+  remainingCards=allCards.slice(start-1,end);
+  if(randomModeEl.checked) remainingCards=shuffle(remainingCards);
+  renderCard(remainingCards.pop());
+  settingsOverlay.style.display="none";
+}
+
+function shuffle(array){
+  let arr=array.slice();
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// 復元
+window.addEventListener("load",()=>{
+  const storedID=parseInt(localStorage.getItem("currentCardID"),10);
+  const storedRemaining=JSON.parse(localStorage.getItem("remainingCards")||"[]");
+  const storedRandom=localStorage.getItem("randomMode")==="true";
+  randomModeEl.checked=storedRandom;
+  if(storedRemaining.length>0){
+    remainingCards=storedRemaining.map(id=>allCards.find(c=>c.id===id));
+    const card=allCards.find(c=>c.id===storedID) || remainingCards.pop();
+    renderCard(card);
+  } else { applySettings(); }
+});
+
+</script>
+</body>
+</html>
