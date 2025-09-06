@@ -201,37 +201,15 @@ body {
 </div>
 
 <script>
-function applySettings(){
-  let start=parseInt(rangeStartEl.value,10), end=parseInt(rangeEndEl.value,10);
-  if(start<1) start=1; if(end>allCards.length) end=allCards.length;
-  if(start>end) [start,end]=[end,start];
 
-  // ====== 設定を保存 ======
-  const settings = {
-    rangeStart: start,
-    rangeEnd: end,
-    randomMode: randomModeEl.checked
-  };
-  localStorage.setItem("karutaSettings", JSON.stringify(settings));
-  // ======================
-
-  remainingCards = allCards.slice(start-1,end);
-
-  if(randomModeEl.checked) remainingCards = shuffle(remainingCards);
-
-  renderCard(remainingCards.shift());
-  settingsOverlay.style.display="none";
-}
-
-// ページロード時に設定を復元
 function loadSettings(){
   const saved = localStorage.getItem("karutaSettings");
   if(saved){
     try {
       const s = JSON.parse(saved);
-      rangeStartEl.value = s.rangeStart ?? 1;
-      rangeEndEl.value = s.rangeEnd ?? allCards.length;
-      randomModeEl.checked = s.randomMode ?? false;
+      if(s.rangeStart) rangeStartEl.value = s.rangeStart;
+      if(s.rangeEnd)   rangeEndEl.value   = s.rangeEnd;
+      if(s.randomMode) randomModeEl.checked = s.randomMode;
     } catch(e){
       console.warn("設定の復元に失敗:", e);
     }
@@ -242,13 +220,41 @@ async function loadCards() {
   try {
     const res = await fetch("cards.json");
     allCards = await res.json();
-    loadSettings();   // ← ここで復元
+
+    // データが読み込まれた後に設定復元
+    loadSettings();
+    // 復元した設定でカードを描画
     applySettings();
+
   } catch (e) {
     console.error("カードデータの読み込みに失敗:", e);
   }
 }
 
+function applySettings(){
+  let start=parseInt(rangeStartEl.value,10),
+      end=parseInt(rangeEndEl.value,10);
+
+  if(start<1) start=1;
+  if(end>allCards.length) end=allCards.length;
+  if(start>end) [start,end]=[end,start];
+
+  // 設定を保存
+  const settings = {
+    rangeStart: start,
+    rangeEnd: end,
+    randomMode: randomModeEl.checked
+  };
+  localStorage.setItem("karutaSettings", JSON.stringify(settings));
+
+  remainingCards = allCards.slice(start-1,end);
+
+  if(randomModeEl.checked) remainingCards = shuffle(remainingCards);
+
+  renderCard(remainingCards.shift());
+  settingsOverlay.style.display="none";
+}
+	
 	
 </script>
 </body>
