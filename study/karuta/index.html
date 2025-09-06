@@ -201,139 +201,19 @@ body {
 </div>
 
 <script>
-let allCards = [];
-let remainingCards = [], currentCard = null, showAnswer = false;
-
-const kamiEl = document.getElementById("kami"),
-      shimoTextEl = document.getElementById("shimoText"),
-      maskEl = document.getElementById("mask"),
-      authorEl = document.getElementById("author"),
-      numberEl = document.getElementById("number"),
-      cardEl = document.getElementById("card"),
-      prevBtn = document.getElementById("prevBtn"),
-      nextBtn = document.getElementById("nextBtn"),
-      settingsBtn = document.getElementById("settingsBtn"),
-      settingsOverlay = document.getElementById("settingsOverlay"),
-      settingsBox = document.getElementById("settingsBox"),
-      rangeStartEl = document.getElementById("rangeStart"),
-      rangeEndEl = document.getElementById("rangeEnd"),
-      randomModeEl = document.getElementById("randomMode"),
-      applySettingsBtn = document.getElementById("applySettings"),
-      helpBtn = document.getElementById("helpBtn"),
-      helpOverlay = document.getElementById("helpOverlay"),
-      closeHelp = document.getElementById("closeHelp");
-
-async function loadCards() {
-  try {
-    // cards.json を同じフォルダに置く場合
-    const res = await fetch("cards.json");
-    allCards = await res.json();
-    applySettings();
-  } catch (e) {
-    console.error("カードデータの読み込みに失敗:", e);
-  }
-}
-
-function renderCard(card){
-  currentCard = card;
-
-  // フォントサイズ・幅・中央揃えリセット
-  kamiEl.style.fontSize = "";
-  kamiEl.style.width = "";
-  kamiEl.style.textAlign = "";
-
-  // 通常表示に戻す
-  cardEl.style.display="flex";
-  cardEl.style.flexDirection="row-reverse";
-  cardEl.style.alignItems="center";
-  cardEl.style.justifyContent="center";
-
-  kamiEl.textContent = card.kami;
-  shimoTextEl.textContent = card.shimo;
-  numberEl.textContent = card.id;
-  maskEl.classList.remove("reveal");
-  maskEl.style.opacity="1";
-  maskEl.style.transform="none";
-  maskEl.style.display="block";
-  authorEl.textContent = "";
-  showAnswer = false;
-  prevBtn.style.display="flex";
-  nextBtn.style.display="flex";
-}
-
-maskEl.addEventListener("click",()=>{ if(!showAnswer) show(); });
-
-function show(){
-  maskEl.classList.add("reveal");
-  authorEl.textContent = currentCard.author;
-  showAnswer = true;
-}
-
-function nextCard(){
-  if(!showAnswer){ show(); return; }
-
-  if(remainingCards.length===0){
-    cardEl.style.display="flex";
-    cardEl.style.flexDirection="column";
-    cardEl.style.alignItems="center";
-    cardEl.style.justifyContent="center";
-
-    kamiEl.textContent = "お疲れ様でした！";
-    kamiEl.style.width = "100%";
-    kamiEl.style.textAlign = "center";
-    kamiEl.style.fontSize = "2rem";
-
-    shimoTextEl.textContent = "";
-    numberEl.textContent = "";
-    authorEl.textContent = "";
-    maskEl.style.display = "none";
-    prevBtn.style.display = "none";
-    nextBtn.style.display = "none";
-
-    if(!document.getElementById("restartBtn")){
-      const btn = document.createElement("button");
-      btn.id = "restartBtn";
-      btn.textContent = "もう一度プレイ";
-      btn.style.marginTop = "20px";
-      btn.style.padding = "8px 16px";
-      btn.style.background = "#2f5d50";
-      btn.style.color = "white";
-      btn.style.border = "none";
-      btn.style.borderRadius = "6px";
-      btn.style.cursor = "pointer";
-      btn.addEventListener("click",()=>{ applySettings(); btn.remove(); });
-      cardEl.appendChild(btn);
-    }
-  } else {
-    renderCard(remainingCards.shift());
-  }
-}
-
-function prevCard(){
-  if(!randomModeEl.checked && currentCard){
-    let idx = allCards.findIndex(c=>c.id === currentCard.id);
-    let prevIdx = (idx - 1 + allCards.length) % allCards.length;
-    renderCard(allCards[prevIdx]);
-  }
-}
-
-document.addEventListener("keydown",e=>{
-  if(e.key==="ArrowRight"||e.key==="ArrowDown") nextCard();
-  else if(e.key==="ArrowLeft"||e.key==="ArrowUp") prevCard();
-});
-prevBtn.addEventListener("click",prevCard);
-nextBtn.addEventListener("click",nextCard);
-settingsBtn.addEventListener("click",()=>{ settingsOverlay.style.display="flex"; });
-applySettingsBtn.addEventListener("click",applySettings);
-settingsOverlay.addEventListener("click",e=>{ if(!settingsBox.contains(e.target)) settingsOverlay.style.display="none"; });
-helpBtn.addEventListener("click",()=>{ helpOverlay.style.display="flex"; });
-closeHelp.addEventListener("click",()=>{ helpOverlay.style.display="none"; });
-helpOverlay.addEventListener("click",e=>{ if(!document.getElementById("helpBox").contains(e.target)) helpOverlay.style.display="none"; });
-
 function applySettings(){
   let start=parseInt(rangeStartEl.value,10), end=parseInt(rangeEndEl.value,10);
   if(start<1) start=1; if(end>allCards.length) end=allCards.length;
   if(start>end) [start,end]=[end,start];
+
+  // ====== 設定を保存 ======
+  const settings = {
+    rangeStart: start,
+    rangeEnd: end,
+    randomMode: randomModeEl.checked
+  };
+  localStorage.setItem("karutaSettings", JSON.stringify(settings));
+  // ======================
 
   remainingCards = allCards.slice(start-1,end);
 
@@ -343,29 +223,33 @@ function applySettings(){
   settingsOverlay.style.display="none";
 }
 
-function shuffle(array){
-  let arr = array.slice();
-  for(let i=arr.length-1; i>0; i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]] = [arr[j],arr[i]];
+// ページロード時に設定を復元
+function loadSettings(){
+  const saved = localStorage.getItem("karutaSettings");
+  if(saved){
+    try {
+      const s = JSON.parse(saved);
+      rangeStartEl.value = s.rangeStart ?? 1;
+      rangeEndEl.value = s.rangeEnd ?? allCards.length;
+      randomModeEl.checked = s.randomMode ?? false;
+    } catch(e){
+      console.warn("設定の復元に失敗:", e);
+    }
   }
-  return arr;
 }
 
-// 初期表示
-window.addEventListener("load", loadCards);
-
-// モバイル向け: ピンチズーム・ダブルタップズーム無効化
-document.addEventListener('touchstart', function (event) {
-  if (event.touches.length > 1) {
-    event.preventDefault();
+async function loadCards() {
+  try {
+    const res = await fetch("cards.json");
+    allCards = await res.json();
+    loadSettings();   // ← ここで復元
+    applySettings();
+  } catch (e) {
+    console.error("カードデータの読み込みに失敗:", e);
   }
-}, { passive: false });
+}
 
-document.addEventListener('dblclick', function (event) {
-  event.preventDefault();
-}, { passive: false });
-
+	
 </script>
 </body>
 </html>
