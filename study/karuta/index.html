@@ -201,27 +201,9 @@ body {
 </div>
 
 <script>
+let allCards = [];
+let remainingCards = [], currentCard = null, showAnswer = false;
 
-const allCards = [
-  {id:1, kami:"朝ぼらけ　有明の月と　見るまでに", shimo:"吉野の里に　降れる白雪", author:"坂上是則"},
-{id:2, kami:"山川に　風のかけたる　しがらみは", shimo:"流れもあへぬ　紅葉なりけり", author:"春道列樹"},
-{id:3, kami:"ひさかたの　光のどけき　春の日に", shimo:"しづ心なく　花の散るらむ", author:"紀友則"},
-{id:4, kami:"誰をかも　知る人にせむ　高砂の", shimo:"松も昔の　友ならなくに", author:"藤原興風"},
-{id:5, kami:"人はいさ　心も知らず　ふるさとは", shimo:"花ぞ昔の　香ににほひける", author:"紀貫之"},
-{id:6, kami:"夏の夜は　まだ宵ながら　明けぬるを", shimo:"雲のいづこに　月宿るらむ", author:"清原深養父"},
-{id:7, kami:"白露に　風の吹きしく　秋の野は", shimo:"つらぬきとめぬ　玉ぞ散りける", author:"文屋朝康"},
-{id:8, kami:"忘らるる　身をば思はず　誓ひてし", shimo:"人の命の　惜しくもあるかな", author:"右近"},
-{id:9, kami:"浅茅生の　小野の篠原　しのぶれど", shimo:"あまりてなどか　人の恋しき", author:"参議等"},
-{id:10, kami:"しのぶれど　色に出でにけり　わが恋は", shimo:"ものや思ふと　人の問ふまで", author:"平兼盛"},
-{id:11, kami:"恋すてふ　わが名はまだき　立ちにけり", shimo:"人知れずこそ　思ひそめしか", author:"壬生忠見"},
-{id:12, kami:"契りきな　かたみに袖を　しぼりつつ", shimo:"末の松山　波越さじとは", author:"清原元輔"},
-{id:13, kami:"あひ見ての　のちの心に　くらぶれば", shimo:"昔はものを　思はざりけり", author:"権中納言敦忠"},
-{id:14, kami:"逢ふことの　絶えてしなくば　なかなかに", shimo:"人をも身をも　恨みざらまし", author:"中納言朝忠"},
-{id:15, kami:"あはれとも　いふべき人は　思ほえで", shimo:"身のいたづらになりぬべきかな", author:"謙徳公"}
-
-];
-
-let remainingCards=[], currentCard=null, showAnswer=false;
 const kamiEl = document.getElementById("kami"),
       shimoTextEl = document.getElementById("shimoText"),
       maskEl = document.getElementById("mask"),
@@ -240,6 +222,17 @@ const kamiEl = document.getElementById("kami"),
       helpBtn = document.getElementById("helpBtn"),
       helpOverlay = document.getElementById("helpOverlay"),
       closeHelp = document.getElementById("closeHelp");
+
+async function loadCards() {
+  try {
+    // cards.json を同じフォルダに置く場合
+    const res = await fetch("cards.json");
+    allCards = await res.json();
+    applySettings();
+  } catch (e) {
+    console.error("カードデータの読み込みに失敗:", e);
+  }
+}
 
 function renderCard(card){
   currentCard = card;
@@ -268,9 +261,7 @@ function renderCard(card){
   nextBtn.style.display="flex";
 }
 
-maskEl.addEventListener("click",()=>{
-  if(!showAnswer) show();
-});
+maskEl.addEventListener("click",()=>{ if(!showAnswer) show(); });
 
 function show(){
   maskEl.classList.add("reveal");
@@ -310,10 +301,7 @@ function nextCard(){
       btn.style.border = "none";
       btn.style.borderRadius = "6px";
       btn.style.cursor = "pointer";
-      btn.addEventListener("click",()=>{
-        applySettings();
-        btn.remove();
-      });
+      btn.addEventListener("click",()=>{ applySettings(); btn.remove(); });
       cardEl.appendChild(btn);
     }
   } else {
@@ -365,20 +353,19 @@ function shuffle(array){
 }
 
 // 初期表示
-window.addEventListener("load",()=>{
-  applySettings();
-});
+window.addEventListener("load", loadCards);
 
+// モバイル向け: ピンチズーム・ダブルタップズーム無効化
 document.addEventListener('touchstart', function (event) {
   if (event.touches.length > 1) {
-    event.preventDefault(); // ピンチズーム禁止
+    event.preventDefault();
   }
 }, { passive: false });
 
 document.addEventListener('dblclick', function (event) {
-  event.preventDefault(); // ダブルタップズーム禁止
+  event.preventDefault();
 }, { passive: false });
-  
+
 </script>
 </body>
 </html>
