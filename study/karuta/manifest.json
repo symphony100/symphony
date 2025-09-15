@@ -1,0 +1,20 @@
+{
+  "name": "百人一首",
+  "short_name": "百人一首",
+  "start_url": "https://symphony100.github.io/symphony/study/karuta/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "https://symphony100.github.io/symphony/study/karuta/app-icon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://symphony100.github.io/symphony/study/karuta/app-icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
