@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ログインページ風（6桁コード）</title>
+  <style>
+    body {
+      margin:0;
+      font-family:Arial, sans-serif;
+      background:#f1f3f4;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+    }
+    .login-box {
+      background:#fff;
+      padding:40px;
+      border-radius:8px;
+      box-shadow:0 4px 20px rgba(0,0,0,0.1);
+      width:360px;
+      text-align:center;
+    }
+    .logo {
+      font-size:28px;
+      font-weight:bold;
+      color:#4285f4;
+      margin-bottom:20px;
+    }
+    .input {
+      width:100%;
+      padding:12px;
+      margin:8px 0 4px 0;
+      border:1px solid #dadce0;
+      border-radius:4px;
+      font-size:16px;
+      transition:border 0.2s;
+    }
+    .input:focus {
+      outline:none;
+      border:1px solid #1a73e8;
+    }
+    .input.error {
+      border-color:#d93025;
+    }
+    .btn {
+      width:100%;
+      padding:12px;
+      background:#1a73e8;
+      color:#fff;
+      border:none;
+      border-radius:4px;
+      font-size:16px;
+      cursor:pointer;
+      margin-top:12px;
+    }
+    .btn:hover {
+      background:#1669c1;
+    }
+    .msg {
+      font-size:14px;
+      min-height:18px;
+      margin-bottom:8px;
+      text-align:left;
+    }
+    .footer {
+      margin-top:30px;
+      font-size:12px;
+      color:#5f6368;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <div class="logo">ログイン</div>
+    <div style="text-align:left;">
+      <input id="codeInput" class="input" type="text" inputmode="numeric" maxlength="6" placeholder="6桁コードを入力" />
+      <div id="message" class="msg"></div>
+    </div>
+    <button id="checkBtn" class="btn">次へ</button>
+    <div class="footer">Symphony System Group</div>
+  </div>
+
+  <script>
+    // コードとリンク（実際のリンクは隠す）
+    const codes = {
+      "011095": "https://symphony100.github.io/symphony/study/karuta/",
+      "223344": "https://symphony100.github.io/symphony/study/",
+      "334455": "https://symphony100.github.io/symphony/study/",
+      "445566": "https://symphony100.github.io/symphony/study/",
+      "556677": "https://symphony100.github.io/symphony/study/",
+      "667788": "https://symphony100.github.io/symphony/study/",
+      "778899": "https://symphony100.github.io/symphony/study/",
+      "889900": "https://symphony100.github.io/symphony/study/",
+      "990011": "https://symphony100.github.io/symphony/study/",
+      "000123": "https://symphony100.github.io/symphony/study/"
+    };
+
+    const input = document.getElementById('codeInput');
+    const btn = document.getElementById('checkBtn');
+    const msg = document.getElementById('message');
+
+    function validateSixDigits(s) {
+      return /^\d{6}$/.test(s);
+    }
+
+    function showMessage(text, cls) {
+      msg.textContent = text;
+      if (cls === 'success') {
+        msg.style.color = '#188038';
+        input.classList.remove('error');
+      } else if (cls === 'error') {
+        msg.style.color = '#d93025';
+        input.classList.add('error');
+      } else {
+        msg.style.color = '#5f6368';
+        input.classList.remove('error');
+      }
+    }
+
+    function handleCheck() {
+      const val = input.value.trim();
+      if (!validateSixDigits(val)) {
+        showMessage('6桁の数字を入力してください。', 'error');
+        return;
+      }
+      if (codes.hasOwnProperty(val)) {
+        const url = codes[val];
+        showMessage('認証が成功しました。', 'success');
+        location.href = url;  // 即リダイレクト
+      } else {
+        showMessage('コードが間違っています。', 'error');
+      }
+    }
+
+    btn.addEventListener('click', handleCheck);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleCheck();
+    });
+
+    // ブラウザの戻る/進む操作で入力内容をクリア
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+        input.value = '';
+        showMessage('', '');
+      }
+    });
+  </script>
+</body>
+</html>
