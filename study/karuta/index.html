@@ -6,7 +6,6 @@
 <link rel="icon" type="image/x-icon" href="icon.png">
 <meta name="keywords" content="かるた,百人一首,暗記,国語,対策">
 <meta name="description" content="百人一首を覚えよう！">
-	<!-- 「og」要素 -->
 <meta property="og:title" content="百人一首">
 <meta property="og:description" content="百人一首を覚えよう！">
 <meta property="og:image" content="https://symphony100.github.io/symphony/study/karuta/icon.png">
@@ -44,6 +43,7 @@ body {
   display:flex; flex-direction: row-reverse;
   justify-content:center; align-items:center; gap:24px; padding:18px;
   position:relative; box-sizing:border-box; overflow:hidden;
+  transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
 .col {
@@ -80,9 +80,9 @@ body {
   position:absolute; top:12px;
   background: rgba(47,93,80,0.9); color:white; border:none;
   border-radius:6px; padding:6px 12px; cursor:pointer; font-size:0.9rem;
-  white-space: nowrap; /* 文字が改行されないように */
+  white-space: nowrap;
 }
-.settings-btn { right:120px; } /* ヘルプと重ならないように調整 */
+.settings-btn { right:120px; }
 .help-btn { right:12px; }
 
 .settings-overlay {
@@ -143,21 +143,26 @@ body {
 }
 
 #helpBox a {
-  color: #2f5d50;     /* 緑色 */
-  text-decoration: underline; /* 常に下線あり */
+  color: #2f5d50;
+  text-decoration: underline;
+}
+#helpBox a:hover {
+  color: #2f5d50;
+  text-decoration: underline;
 }
 
-#helpBox a:hover {
-  color: #2f5d50;     /* ホバーしても同じ色 */
-  text-decoration: underline; /* 下線そのまま */
-}
-	
+/* スライドアニメーション */
+.card.slide-in-left { animation: slideInLeft 0.4s forwards; }
+.card.slide-in-right { animation: slideInRight 0.4s forwards; }
+
+@keyframes slideInLeft { from { transform: translateX(-100%); opacity:0; } to { transform: translateX(0); opacity:1; } }
+@keyframes slideInRight { from { transform: translateX(100%); opacity:0; } to { transform: translateX(0); opacity:1; } }
 </style>
 </head>
 <body>
 
-<button class="settings-btn" id="settingsBtn">設定</button>
-<button class="help-btn" id="helpBtn">使い方</button>
+<button class="settings-btn" id="settingsBtn" aria-label="設定">設定</button>
+<button class="help-btn" id="helpBtn" aria-label="使い方">使い方</button>
 
 <div class="settings-overlay" id="settingsOverlay">
   <div class="settings-box" id="settingsBox">
@@ -188,20 +193,20 @@ body {
     <a href="use/">▷操作方法</a><br>
     <a href="add-app/">▷アプリケーションの追加方法</a><br>
     <a href="news/">▷お知らせ</a><br>
-	<a href="terms-of-service/">▷利用規約</a><br>
+    <a href="terms-of-service/">▷利用規約</a><br>
     <div class="settings-actions"><button id="closeHelp">OK</button></div>
   </div>
 </div>
 
 <div class="container">
-  <button class="nav-btn" id="prevBtn">◀</button>
+  <button class="nav-btn" id="prevBtn" aria-label="前のカード">◀</button>
   <div class="card" id="card">
     <div id="kami" class="col kami"></div>
     <div class="col shimo"><div id="shimoText"></div><div id="mask" class="mask">？</div></div>
     <div id="author" class="author"></div>
     <div id="number" class="number"></div>
   </div>
-  <button class="nav-btn" id="nextBtn">▶</button>
+  <button class="nav-btn" id="nextBtn" aria-label="次のカード">▶</button>
 </div>
 
 <script>
@@ -229,17 +234,17 @@ const kamiEl = document.getElementById("kami"),
 
 async function loadCards() {
   try {
-    // cards.json を同じフォルダに置く場合
-    const res = await fetch("cards.json");
+    const res = await fetch("https://symphony100.github.io/symphony/study/karuta/cards.json");
     allCards = await res.json();
-
-    // 設定を復元
     loadSettings();
-    // 設定で表示開始
     applySettings();
-
   } catch (e) {
     console.error("カードデータの読み込みに失敗:", e);
+    kamiEl.textContent = "カードデータが読み込めませんでした。";
+    shimoTextEl.textContent = "";
+    maskEl.style.display = "none";
+    prevBtn.style.display = "none";
+    nextBtn.style.display = "none";
   }
 }
 
@@ -251,100 +256,97 @@ function loadSettings(){
       if(s.rangeStart) rangeStartEl.value = s.rangeStart;
       if(s.rangeEnd)   rangeEndEl.value   = s.rangeEnd;
       if(typeof s.randomMode === "boolean") randomModeEl.checked = s.randomMode;
-    } catch(e){
-      console.warn("設定の復元に失敗:", e);
-    }
+    } catch(e){ console.warn("設定の復元に失敗:", e); }
   }
 }
 
 function saveSettings(start,end,random){
-  const settings = {
-    rangeStart: start,
-    rangeEnd: end,
-    randomMode: random
-  };
+  const settings = { rangeStart: start, rangeEnd: end, randomMode: random };
   localStorage.setItem("karutaSettings", JSON.stringify(settings));
 }
 
-function renderCard(card){
-  currentCard = card;
+function adjustFontSize(el,maxFont=1.4){
+  let fontSize=maxFont;
+  el.style.fontSize=fontSize+"rem";
+  while(el.scrollHeight>el.clientHeight && fontSize>0.8){
+    fontSize-=0.05;
+    el.style.fontSize=fontSize+"rem";
+  }
+}
 
-  // 初期化
-  kamiEl.style.fontSize = "";
-  kamiEl.style.width = "";
-  kamiEl.style.textAlign = "";
+function renderCard(card, direction="right"){
+  currentCard=card;
+  kamiEl.style.fontSize="";
+  kamiEl.style.width="";
+  kamiEl.style.textAlign="";
   cardEl.style.display="flex";
   cardEl.style.flexDirection="row-reverse";
   cardEl.style.alignItems="center";
   cardEl.style.justifyContent="center";
 
-  kamiEl.textContent = card.kami;
-  shimoTextEl.textContent = card.shimo;
-  numberEl.textContent = card.id;
+  kamiEl.textContent=card.kami;
+  adjustFontSize(kamiEl);
+  shimoTextEl.textContent=card.shimo;
+  numberEl.textContent=card.id;
   maskEl.classList.remove("reveal");
   maskEl.style.opacity="1";
   maskEl.style.transform="none";
   maskEl.style.display="block";
-  authorEl.textContent = "";
-  showAnswer = false;
+  authorEl.textContent="";
+  showAnswer=false;
   prevBtn.style.display="flex";
   nextBtn.style.display="flex";
+
+  cardEl.classList.remove("slide-in-left","slide-in-right");
+  void cardEl.offsetWidth;
+  cardEl.classList.add(direction==="right"?"slide-in-right":"slide-in-left");
 }
 
 maskEl.addEventListener("click",()=>{ if(!showAnswer) show(); });
-
-function show(){
-  maskEl.classList.add("reveal");
-  authorEl.textContent = currentCard.author;
-  showAnswer = true;
-}
+function show(){ maskEl.classList.add("reveal"); authorEl.textContent=currentCard.author; showAnswer=true; }
 
 function nextCard(){
   if(!showAnswer){ show(); return; }
-
   if(remainingCards.length===0){
-    // 終了画面
     cardEl.style.display="flex";
     cardEl.style.flexDirection="column";
     cardEl.style.alignItems="center";
     cardEl.style.justifyContent="center";
-
-    kamiEl.textContent = "お疲れ様でした！";
-    kamiEl.style.width = "100%";
-    kamiEl.style.textAlign = "center";
-    kamiEl.style.fontSize = "2rem";
-
-    shimoTextEl.textContent = "";
-    numberEl.textContent = "";
-    authorEl.textContent = "";
-    maskEl.style.display = "none";
-    prevBtn.style.display = "none";
-    nextBtn.style.display = "none";
+    kamiEl.textContent="お疲れ様でした！";
+    kamiEl.style.width="100%";
+    kamiEl.style.textAlign="center";
+    kamiEl.style.fontSize="2rem";
+    shimoTextEl.textContent="";
+    numberEl.textContent="";
+    authorEl.textContent="";
+    maskEl.style.display="none";
+    prevBtn.style.display="none";
+    nextBtn.style.display="none";
 
     if(!document.getElementById("restartBtn")){
-      const btn = document.createElement("button");
-      btn.id = "restartBtn";
-      btn.textContent = "もう一度プレイ";
-      btn.style.marginTop = "20px";
-      btn.style.padding = "8px 16px";
-      btn.style.background = "#2f5d50";
-      btn.style.color = "white";
-      btn.style.border = "none";
-      btn.style.borderRadius = "6px";
-      btn.style.cursor = "pointer";
+      const btn=document.createElement("button");
+      btn.id="restartBtn";
+      btn.textContent="もう一度プレイ";
+      btn.style.marginTop="20px";
+      btn.style.padding="8px 16px";
+      btn.style.background="#2f5d50";
+      btn.style.color="white";
+      btn.style.border="none";
+      btn.style.borderRadius="6px";
+      btn.style.cursor="pointer";
       btn.addEventListener("click",()=>{ applySettings(); btn.remove(); });
       cardEl.appendChild(btn);
     }
   } else {
-    renderCard(remainingCards.shift());
+    renderCard(remainingCards.shift(),"right");
   }
 }
 
 function prevCard(){
   if(!randomModeEl.checked && currentCard){
-    let idx = allCards.findIndex(c=>c.id === currentCard.id);
-    let prevIdx = (idx - 1 + allCards.length) % allCards.length;
-    renderCard(allCards[prevIdx]);
+    let idx=allCards.findIndex(c=>c.id===currentCard.id);
+    let prevIdx=(idx-1+allCards.length)%allCards.length;
+    renderCard(allCards[prevIdx],"left");
   }
 }
 
@@ -352,8 +354,8 @@ document.addEventListener("keydown",e=>{
   if(e.key==="ArrowRight"||e.key==="ArrowDown") nextCard();
   else if(e.key==="ArrowLeft"||e.key==="ArrowUp") prevCard();
 });
-prevBtn.addEventListener("click",prevCard);
-nextBtn.addEventListener("click",nextCard);
+prevBtn.addEventListener("click",()=>prevCard());
+nextBtn.addEventListener("click",()=>nextCard());
 
 settingsBtn.addEventListener("click",()=>{ settingsOverlay.style.display="flex"; });
 applySettingsBtn.addEventListener("click",applySettings);
@@ -371,37 +373,39 @@ function applySettings(){
   if(end>allCards.length) end=allCards.length;
   if(start>end) [start,end]=[end,start];
 
-  // 設定保存
   saveSettings(start,end,randomModeEl.checked);
 
   remainingCards = allCards.slice(start-1,end);
   if(randomModeEl.checked) remainingCards = shuffle(remainingCards);
 
-  renderCard(remainingCards.shift());
+  renderCard(remainingCards.shift(),"right");
   settingsOverlay.style.display="none";
 }
 
 function shuffle(array){
-  let arr = array.slice();
-  for(let i=arr.length-1; i>0; i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]] = [arr[j],arr[i]];
+  let arr=array.slice();
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
   }
   return arr;
 }
+
+// モバイルスワイプ
+let touchStartX=0;
+cardEl.addEventListener("touchstart",e=>{ touchStartX=e.touches[0].clientX; });
+cardEl.addEventListener("touchend",e=>{
+  let touchEndX=e.changedTouches[0].clientX;
+  if(touchEndX-touchStartX>50) prevCard();
+  else if(touchStartX-touchEndX>50) nextCard();
+});
 
 // 初期表示
 window.addEventListener("load", loadCards);
 
 // モバイル用: ピンチズーム/ダブルタップズーム無効化
-document.addEventListener('touchstart', function (event) {
-  if (event.touches.length > 1) event.preventDefault();
-}, { passive: false });
-
-document.addEventListener('dblclick', function (event) {
-  event.preventDefault();
-}, { passive: false });
-
+document.addEventListener('touchstart',function(e){ if(e.touches.length>1) e.preventDefault();},{passive:false});
+document.addEventListener('dblclick',function(e){ e.preventDefault(); },{passive:false});
 </script>
 </body>
 </html>
