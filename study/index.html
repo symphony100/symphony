@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>App Garden — アプリ一覧</title>
 <style>
 :root{
@@ -12,11 +12,11 @@
   --accent:#0a84ff;
   --google-accent:#4285f4;
   --radius:16px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;
 }
 html,body{height:100%;margin:0;}
 body{
-  background: linear-gradient(180deg,var(--bg),#eef2fb 60%);
+  background:linear-gradient(180deg,var(--bg),#eef2fb 60%);
   color:#111827;
   overflow-x:hidden;
 }
@@ -75,7 +75,7 @@ h1{font-size:18px;margin:0}
 @media(max-width:880px){.modal-card{grid-template-columns:1fr}.icon{width:56px;height:56px}}
 footer{max-width:1100px;margin:28px auto;color:var(--muted);font-size:13px;padding:0 18px 80px;text-align:center}
 
-/* --- 認証ボタン & モーダル --- */
+/* 認証ボタン & モーダル */
 .auth-btn{
   background:linear-gradient(90deg,var(--accent),var(--google-accent));
   color:white;
@@ -93,28 +93,25 @@ footer{max-width:1100px;margin:28px auto;color:var(--muted);font-size:13px;paddi
 }
 .code-modal.open{display:flex;animation:fadeIn .25s ease;}
 .code-card{
-  width:100%;max-width:420px;border-radius:16px;background:var(--card);padding:20px;box-shadow:0 20px 60px rgba(2,6,23,0.25);animation:slideUp .35s ease;
-  text-align:center;
+  width:100%;max-width:420px;
+  max-height:300px; /* 縦を制限 */
+  border-radius:16px;background:var(--card);
+  padding:20px;box-shadow:0 20px 60px rgba(2,6,23,0.25);
+  animation:slideUp .35s ease;
+  text-align:center;overflow-y:auto;
 }
 .code-input{
-  display:block;
-  width:200px;
-  margin:12px auto 0 auto;
-  padding:10px;
-  border-radius:8px;
-  border:1px solid rgba(0,0,0,0.08);
-  font-size:16px;
-  letter-spacing:6px;
-  text-align:center;
+  display:block;width:200px;margin:12px auto 0 auto;padding:10px;border-radius:8px;
+  border:1px solid rgba(0,0,0,0.08);font-size:16px;letter-spacing:6px;text-align:center;
 }
 .code-hint{
-  color:red;
-  font-size:13px;
-  margin-bottom:10px;
-  display:none;
+  color:red;font-size:13px;margin-bottom:10px;display:none;
 }
 .auth-msg{
-  position:fixed;top:80px;right:24px;background:linear-gradient(90deg,#edf2ff,#e0f7ff);color:#0a3b5a;padding:10px 14px;border-radius:10px;box-shadow:0 8px 20px rgba(2,6,23,0.08);display:none;z-index:60;
+  position:fixed;bottom:24px;right:24px;
+  background:linear-gradient(90deg,#edf2ff,#e0f7ff);
+  color:#0a3b5a;padding:10px 14px;border-radius:10px;
+  box-shadow:0 8px 20px rgba(2,6,23,0.08);display:none;font-weight:600;z-index:60;
 }
 </style>
 </head>
@@ -127,12 +124,27 @@ footer{max-width:1100px;margin:28px auto;color:var(--muted);font-size:13px;paddi
       <div style="font-size:12px;color:var(--muted)">Apple × Google のいいとこ取りなアプリ一覧</div>
     </div>
   </div>
-  <button class="auth-btn" id="authBtn">認証コード</button>
+  <div style="display:flex;align-items:center;gap:12px">
+    <button class="auth-btn" id="authBtn">認証コード</button>
+    <div class="account-wrapper" style="position:relative;">
+      <div id="accountBtn" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--google-accent));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;cursor:pointer;">A</div>
+      <div id="accountMenu" style="display:none;position:absolute;top:50px;right:0;background:var(--card);border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,0.1);padding:10px;width:160px;z-index:50;">
+        <p style="margin:0 0 8px 0;font-weight:600">アカウントメニュー</p>
+        <a href="#" style="display:block;margin-bottom:6px;color:var(--accent);text-decoration:none">プロフィール</a>
+        <a href="#" style="display:block;color:var(--accent);text-decoration:none">ログアウト</a>
+      </div>
+    </div>
+  </div>
 </header>
 
 <div class="auth-msg" id="authMsg"></div>
 
 <main class="wrap">
+  <!-- お知らせスペース -->
+  <div id="notice" style="background:linear-gradient(90deg,#e0f2fe,#eef2fb);padding:8px 12px;border-radius:12px;margin-bottom:12px;font-size:14px;color:#0a3b5a;text-align:center;">
+    本日のおすすめアプリをチェックしてや！
+  </div>
+
   <div class="filters">
     <div class="pill active" data-filter="all">すべて</div>
     <div class="pill" data-filter="ios">iOS</div>
@@ -142,8 +154,10 @@ footer{max-width:1100px;margin:28px auto;color:var(--muted);font-size:13px;paddi
     <div class="pill" data-filter="game">ゲーム</div>
     <div class="pill" data-filter="education">教育</div>
   </div>
+
   <div class="grid" id="grid"></div>
 </main>
+
 
 <div class="modal" id="modal">
   <div class="modal-card" role="dialog" aria-modal="true">
@@ -186,13 +200,14 @@ footer{max-width:1100px;margin:28px auto;color:var(--muted);font-size:13px;paddi
 <footer>© App Garden — sample listing. データはダミーやで。</footer>
 
 <script>
-// ===== アプリデータ =====
-const apps = [
-  {id:1,name:'SkyMap',platform:'ios',category:'education',desc:'星座を観測・記録するためのアプリ。天体観測に便利。',rating:4.8,iconText:'SM',color:'#6EE7B7',badges:['おすすめ','無料'],pcLink:'https://apps.apple.com',mobileLink:'https://apps.apple.com'},
-  {id:2,name:'Pixel Studio',platform:'android',category:'photo',desc:'写真編集に特化した直感的なUIを持つツール。',rating:4.4,iconText:'PS',color:'#FFD166',badges:['有料','プロ向け'],pcLink:'https://play.google.com',mobileLink:'https://play.google.com'},
-  {id:3,name:'FocusFlow',platform:'ios',category:'productivity',desc:'集中タイマーとタスク管理を統合した生産性アプリ。',rating:4.7,iconText:'FF',color:'#A78BFA',badges:['人気','セール中'],pcLink:'https://apps.apple.com',mobileLink:'https://apps.apple.com'},
-  {id:4,name:'Neon Drift',platform:'android',category:'game',desc:'アーケード風レーシングゲーム。短時間で遊べるコースが魅力。',rating:4.2,iconText:'ND',color:'#FF6B6B',badges:['無料','おすすめ'],pcLink:'https://play.google.com',mobileLink:'https://play.google.com'}
+const appsDefault = [
+{id:1,name:'SkyMap',platform:'ios',category:'education',desc:'星座を観測・記録するためのアプリ。天体観測に便利。',rating:4.8,iconText:'SM',color:'#6EE7B7',badges:['おすすめ','無料'],pcLink:'https://apps.apple.com',mobileLink:'https://apps.apple.com'},
+{id:2,name:'Pixel Studio',platform:'android',category:'photo',desc:'写真編集に特化した直感的なUIを持つツール。',rating:4.4,iconText:'PS',color:'#FFD166',badges:['有料','プロ向け'],pcLink:'https://play.google.com',mobileLink:'https://play.google.com'},
+{id:3,name:'FocusFlow',platform:'ios',category:'productivity',desc:'集中タイマーとタスク管理を統合した生産性アプリ。',rating:4.7,iconText:'FF',color:'#A78BFA',badges:['人気','セール中'],pcLink:'https://apps.apple.com',mobileLink:'https://apps.apple.com'},
+{id:4,name:'Neon Drift',platform:'android',category:'game',desc:'アーケード風レーシングゲーム。短時間で遊べるコースが魅力。',rating:4.2,iconText:'ND',color:'#FF6B6B',badges:['無料','おすすめ'],pcLink:'https://play.google.com',mobileLink:'https://play.google.com'}
 ];
+
+let apps = []; // 現在のアプリ配列
 
 // 認証コードマッピング
 const authMap = {
@@ -219,6 +234,20 @@ const submitAuthBtn = document.getElementById('submitAuthBtn');
 const closeAuthBtn = document.getElementById('closeAuthBtn');
 const codeHint = document.getElementById('codeHint');
 const authMsg = document.getElementById('authMsg');
+
+// ===== ローカル保存 =====
+function saveApps(){
+  localStorage.setItem('appGardenApps', JSON.stringify(apps));
+}
+function loadApps(){
+  const stored = localStorage.getItem('appGardenApps');
+  if(stored){
+    const parsed = JSON.parse(stored);
+    apps.splice(0, apps.length, ...parsed);
+  } else {
+    apps.splice(0, apps.length, ...appsDefault);
+  }
+}
 
 // ===== グリッド描画 =====
 function render(list){
@@ -281,6 +310,12 @@ authBtn.addEventListener('click',()=>{
 });
 closeAuthBtn.addEventListener('click',()=>codeModal.classList.remove('open'));
 
+// Enterキー送信
+authCodeInput.addEventListener('keydown', (e)=>{
+  if(e.key==='Enter') submitAuthBtn.click();
+});
+
+// ===== 送信処理 =====
 submitAuthBtn.addEventListener('click', ()=>{
   const code = authCodeInput.value.trim();
   if(!/^\d{6}$/.test(code)){
@@ -296,6 +331,7 @@ submitAuthBtn.addEventListener('click', ()=>{
       codeHint.style.display = 'block';
     } else {
       apps.push(appToAdd);
+      saveApps(); // ローカルに保存
       applyFilters();
       codeModal.classList.remove('open');
       showAuthMessage(`認証成功：id:${appToAdd.id} の「${appToAdd.name}」を追加したで。`);
@@ -306,10 +342,11 @@ submitAuthBtn.addEventListener('click', ()=>{
   }
 });
 
+// ===== 成功メッセージ表示 =====
 function showAuthMessage(text){
   authMsg.textContent = text;
   authMsg.style.display='block';
-  setTimeout(()=>authMsg.style.display='none',2500);
+  setTimeout(()=>authMsg.style.display='none',5000);
 }
 
 // ===== スワイプ更新 =====
@@ -326,8 +363,25 @@ window.addEventListener('touchend',e=>{
   }
 });
 
-// 初期描画
-render(apps);
+// ===== 初期描画 =====
+loadApps();
+applyFilters();
+  
+  const accountBtn = document.getElementById('accountBtn');
+const accountMenu = document.getElementById('accountMenu');
+
+// クリックでトグル表示
+accountBtn.addEventListener('click', ()=>{
+  accountMenu.style.display = accountMenu.style.display === 'block' ? 'none' : 'block';
+});
+
+// 外側クリックで閉じる
+document.addEventListener('click', (e)=>{
+  if(!accountBtn.contains(e.target) && !accountMenu.contains(e.target)){
+    accountMenu.style.display='none';
+  }
+});
+
 </script>
 </body>
 </html>
