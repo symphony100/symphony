@@ -218,10 +218,15 @@ const appsDefault = [
 
 let apps = []; // 現在のアプリ配列
 
-// 認証コードマッピング
+// 認証コードマッピング（5つ追加）
 const authMap = {
-  '112233': {id:5,name:'百人一首',platform:'ios',category:'education',desc:'百人一首を楽しめるアプリ。',rating:4.5,iconText:'百人一首',color:'#FBBF24',badges:['無料','人気'],pcLink:'https://apps.apple.com',mobileLink:'karuta/'}
+  '112233': {id:5,name:'百人一首',platform:'ios',category:'education',desc:'百人一首を楽しめるアプリ。',rating:4.5,iconText:'百人一首',color:'#FBBF24',badges:['無料','人気'],pcLink:'https://apps.apple.com',mobileLink:'karuta/'},
+  '123456': {id:6,name:'暗記マスター',platform:'android',category:'education',desc:'単語や知識を効率的に暗記できるアプリ。',rating:4.6,iconText:'AM',color:'#34D399',badges:['無料','人気'],pcLink:'https://play.google.com',mobileLink:'https://play.google.com'},
+  '654321': {id:7,name:'フォトエディットPro',platform:'ios',category:'photo',desc:'写真編集をプロ並みにこなせるアプリ。',rating:4.7,iconText:'PE',color:'#F87171',badges:['有料','プロ向け'],pcLink:'https://apps.apple.com',mobileLink:'https://apps.apple.com'},
+  '111222': {id:8,name:'タスクキーパー',platform:'android',category:'productivity',desc:'タスク管理とリマインダー機能が充実。',rating:4.8,iconText:'TK',color:'#60A5FA',badges:['人気','無料'],pcLink:'https://play.google.com',mobileLink:'https://play.google.com'},
+  '222333': {id:9,name:'レースドリフトX',platform:'ios',category:'game',desc:'爽快なアーケードレーシングゲーム。',rating:4.4,iconText:'RD',color:'#FBBF24',badges:['無料','おすすめ'],pcLink:'https://apps.apple.com',mobileLink:'https://apps.apple.com'}
 };
+
 
 // ===== DOM =====
 const grid = document.getElementById('grid');
