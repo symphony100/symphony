@@ -1,9 +1,17 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>App Garden — アプリ一覧</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<link rel="icon" type="image/x-icon" href="icon.png">
+<meta name="keywords" content="アプリ,学習,暗記,エンタメ,ウェブサイト">
+<meta name="description" content="あなたの毎日を変える。学習、生産性、エンタメなど多様なウェブサイトを掲示。">
+<meta property="og:title" content="App Garden">
+<meta property="og:description" content="あなたの毎日を変える。学習、生産性、エンタメなど多様なウェブサイトを掲示。">
+<meta property="og:image" content="https://symphony100.github.io/symphony/study/icon.png">
+<meta property="og:url" content="https://symphony100.github.io/symphony/study/">
+<meta property="og:type" content="website">
+<title>App Garden</title>
 <style>
 :root{
   --bg:#f7f8fb;
@@ -121,17 +129,17 @@ footer{max-width:1100px;margin:28px auto;color:var(--muted);font-size:13px;paddi
     <div class="logo">AG</div>
     <div>
       <h1>App Garden</h1>
-      <div style="font-size:12px;color:var(--muted)">Apple × Google のいいとこ取りなアプリ一覧</div>
+      <div style="font-size:12px;color:var(--muted)">アプリ一覧</div>
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:12px">
-    <button class="auth-btn" id="authBtn">認証コード</button>
+    <button class="auth-btn" id="authBtn">追加</button>
     <div class="account-wrapper" style="position:relative;">
       <div id="accountBtn" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--google-accent));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;cursor:pointer;">A</div>
       <div id="accountMenu" style="display:none;position:absolute;top:50px;right:0;background:var(--card);border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,0.1);padding:10px;width:160px;z-index:50;">
-        <p style="margin:0 0 8px 0;font-weight:600">アカウントメニュー</p>
-        <a href="#" style="display:block;margin-bottom:6px;color:var(--accent);text-decoration:none">プロフィール</a>
-        <a href="#" style="display:block;color:var(--accent);text-decoration:none">ログアウト</a>
+        <p style="margin:0 0 8px 0;font-weight:600">アカウント</p>
+        <p style="margin:0 0 8px 0;font-weight:600">ゲストモード</p>        
+        <a href="#" style="display:block;color:var(--accent);text-decoration:none">お問い合わせ</a>
       </div>
     </div>
   </div>
@@ -142,7 +150,7 @@ footer{max-width:1100px;margin:28px auto;color:var(--muted);font-size:13px;paddi
 <main class="wrap">
   <!-- お知らせスペース -->
   <div id="notice" style="background:linear-gradient(90deg,#e0f2fe,#eef2fb);padding:8px 12px;border-radius:12px;margin-bottom:12px;font-size:14px;color:#0a3b5a;text-align:center;">
-    本日のおすすめアプリをチェックしてや！
+    百人一首が追加されました！認証コードを入力し、アプリを入手！
   </div>
 
   <div class="filters">
@@ -173,11 +181,11 @@ footer{max-width:1100px;margin:28px auto;color:var(--muted);font-size:13px;paddi
     </div>
     <div class="meta-right">
       <h2 id="modalTitle">アプリ名</h2>
-      <p id="modalDesc" style="color:var(--muted)">詳細説明</p>
+      <p id="modalDesc" style="color:var(--muted)">詳細説明ああああ</p>
       <div class="badges" id="modalBadges"></div>
       <div class="actions">
-        <a href="#" class="btn primary" id="pcBtn" target="_blank">ダウンロードページへ（PC）</a>
-        <a href="#" class="btn primary" id="mobileBtn" target="_blank">ダウンロードページへ（スマートフォン）</a>
+        <a href="#" class="btn primary" id="pcBtn" target="_blank">PC版</a>
+        <a href="#" class="btn primary" id="mobileBtn" target="_blank">スマートフォン版</a>
         <button class="btn ghost" id="closeBtn">閉じる</button>
       </div>
     </div>
@@ -186,8 +194,8 @@ footer{max-width:1100px;margin:28px auto;color:var(--muted);font-size:13px;paddi
 
 <div class="code-modal" id="codeModal" aria-hidden="true">
   <div class="code-card" role="dialog" aria-modal="true">
-    <h3 style="margin-top:0">認証コード入力（6桁）</h3>
-    <p style="color:var(--muted);font-size:13px;margin:6px 0 0 0">管理側から渡された6桁のコードを入力してな</p>
+    <h3 style="margin-top:0">認証コード</h3>
+    <p style="color:var(--muted);font-size:13px;margin:6px 0 0 0">6桁のコードを入力してください。</p>
     <div class="code-hint" id="codeHint"></div>
     <input id="authCodeInput" class="code-input" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="●●●●●●" />
     <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
@@ -197,7 +205,7 @@ footer{max-width:1100px;margin:28px auto;color:var(--muted);font-size:13px;paddi
   </div>
 </div>
 
-<footer>© App Garden — sample listing. データはダミーやで。</footer>
+<footer>© App Garden</footer>
 
 <script>
 const appsDefault = [
@@ -211,7 +219,7 @@ let apps = []; // 現在のアプリ配列
 
 // 認証コードマッピング
 const authMap = {
-  '112233': {id:5,name:'百人一首',platform:'ios',category:'education',desc:'百人一首を楽しめるアプリ。',rating:4.5,iconText:'KU',color:'#FBBF24',badges:['無料','人気'],pcLink:'https://apps.apple.com',mobileLink:'https://apps.apple.com'}
+  '112233': {id:5,name:'百人一首',platform:'ios',category:'education',desc:'百人一首を楽しめるアプリ。',rating:4.5,iconText:'百人一首',color:'#FBBF24',badges:['無料','人気'],pcLink:'https://apps.apple.com',mobileLink:'karuta/'}
 };
 
 // ===== DOM =====
@@ -319,7 +327,7 @@ authCodeInput.addEventListener('keydown', (e)=>{
 submitAuthBtn.addEventListener('click', ()=>{
   const code = authCodeInput.value.trim();
   if(!/^\d{6}$/.test(code)){
-    codeHint.textContent = '6桁の数字を入力してや';
+    codeHint.textContent = '6桁の数字を入力してください。';
     codeHint.style.display = 'block';
     return;
   }
@@ -334,10 +342,10 @@ submitAuthBtn.addEventListener('click', ()=>{
       saveApps(); // ローカルに保存
       applyFilters();
       codeModal.classList.remove('open');
-      showAuthMessage(`認証成功：id:${appToAdd.id} の「${appToAdd.name}」を追加したで。`);
+      showAuthMessage(`認証成功：id:${appToAdd.id} の「${appToAdd.name}」を追加しました！`);
     }
   } else {
-    codeHint.textContent = '無効な認証コードや。確認してや。';
+    codeHint.textContent = '無効な認証コードです。';
     codeHint.style.display = 'block';
   }
 });
