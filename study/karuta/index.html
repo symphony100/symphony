@@ -155,6 +155,33 @@ body {
 .card.slide-in-left { animation: slideInLeft 0.4s forwards; }
 .card.slide-in-right { animation: slideInRight 0.4s forwards; }
 
+/* ホームボタン */
+#homeBtn {
+  position: fixed;
+  bottom: 0;    /* 画面下端 */
+  right: 0;     /* 画面右端 */
+  width: 70px;  /* 正方形サイズ */
+  height: 70px;
+  z-index: 30;  /* カードより前面 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(47,93,80,0.9); /* 背景色 */
+  border-top-left-radius: 12px;   /* 少し角丸 */
+  box-shadow: -2px -2px 6px rgba(0,0,0,0.3);
+  cursor: pointer;
+  transition: background 0.2s;
+  padding: 8px; /* 内側余白 */
+}
+#homeBtn:hover {
+  background: rgba(30,60,50,0.9);
+}
+#homeBtn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* アイコンが潰れないように */
+}
+  
 @keyframes slideInLeft { from { transform: translateX(-100%); opacity:0; } to { transform: translateX(0); opacity:1; } }
 @keyframes slideInRight { from { transform: translateX(100%); opacity:0; } to { transform: translateX(0); opacity:1; } }
 </style>
@@ -208,7 +235,11 @@ body {
   </div>
   <button class="nav-btn" id="nextBtn" aria-label="次のカード">▶</button>
 </div>
-
+  
+<!-- ホームボタン -->
+<a href="index.html" id="homeBtn" aria-label="ホーム" title="ホーム">
+  <img src="home-icon.png" alt="ホーム" />
+</a>
 <script>
 let allCards = [];
 let remainingCards = [], currentCard = null, showAnswer = false;
