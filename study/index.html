@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>App Garden — アプリ一覧</title>
+<style>
+:root{
+  --bg:#f7f8fb;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --accent:#0a84ff;
+  --google-accent:#4285f4;
+  --radius:16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
+}
+html,body{height:100%;margin:0;}
+body{
+  background: linear-gradient(180deg,var(--bg),#eef2fb 60%);
+  color:#111827;
+  overflow-x:hidden;
+}
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 28px;position:sticky;top:0;backdrop-filter:blur(6px);
+  background:rgba(255,255,255,0.6);border-bottom:1px solid rgba(15,23,42,0.04);
+  z-index:10;animation:fadeInDown 0.6s ease;
+}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+
+.brand{display:flex;align-items:center;gap:12px;}
+.logo{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(10,20,60,0.08);background:linear-gradient(135deg,var(--accent),var(--google-accent));color:white;font-weight:700;font-size:18px;}
+h1{font-size:18px;margin:0}
+
+.wrap{max-width:1100px;margin:28px auto;padding:0 18px}
+.filters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.pill{background:var(--card);padding:8px 12px;border-radius:999px;box-shadow:0 6px 18px rgba(12,20,40,0.04);cursor:pointer;font-size:13px;transition:all .2s ease;}
+.pill.active{outline:2px solid rgba(10,132,255,0.12);background:linear-gradient(90deg,#e0f2fe,#e0e7ff)}
+.pill:hover{transform:translateY(-2px)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;animation:fadeInUp .8s ease;}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+.card{background:var(--card);border-radius:14px;padding:14px;box-shadow:0 8px 24px rgba(15,23,42,0.06);transition:transform .25s ease,box-shadow .25s ease;cursor:pointer;display:flex;gap:12px;align-items:flex-start;opacity:0;animation:popIn .4s ease forwards;}
+@keyframes popIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
+.card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 12px 30px rgba(15,23,42,0.1)}
+
+.icon{width:64px;height:64px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;color:white}
+.meta{flex:1}
+.title{font-weight:600;margin:0 0 6px 0}
+.desc{color:var(--muted);font-size:13px;margin:0 0 10px 0}
+.badges{display:flex;gap:8px;flex-wrap:wrap}
+.badge{font-size:12px;padding:6px 8px;border-radius:999px;background:linear-gradient(90deg,rgba(66,133,244,0.08),rgba(10,132,255,0.06));color:var(--google-accent)}
+
+.rating{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+
+.modal{position:fixed;inset:0;background:rgba(10,12,20,0.36);display:none;align-items:center;justify-content:center;padding:32px;z-index:30;backdrop-filter:blur(4px);}
+.modal.open{display:flex;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.modal-card{width:100%;max-width:920px;border-radius:16px;background:var(--card);padding:20px;box-shadow:0 30px 80px rgba(2,6,23,0.45);display:grid;grid-template-columns:240px 1fr;gap:20px;animation:slideUp .4s ease;}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+.screenshot{width:100%;height:160px;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,#eef2ff,#fff)}
+.meta-right h2{margin:0 0 8px 0}
+.actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.btn{padding:10px 14px;border-radius:12px;border:0;cursor:pointer;font-weight:600;text-decoration:none;display:inline-block;text-align:center;min-width:140px}
+.btn.primary{background:linear-gradient(90deg,var(--accent),var(--google-accent));color:white;transition:all .25s ease;}
+.btn.primary:hover{filter:brightness(1.1);transform:scale(1.04)}
+.btn.ghost{background:transparent;border:1px solid rgba(10,20,40,0.06)}
+
+.refresh-spinner{position:fixed;top:20px;left:50%;transform:translateX(-50%);width:36px;height:36px;border:4px solid rgba(0,0,0,0.1);border-top:4px solid var(--accent);border-radius:50%;animation:spin 1s linear infinite;display:none;z-index:100;}
+@keyframes spin{0%{transform:translateX(-50%) rotate(0deg);}100%{transform:translateX(-50%) rotate(360deg);}}
+
+@media(max-width:880px){.modal-card{grid-template-columns:1fr}.icon{width:56px;height:56px}}
+footer{max-width:1100px;margin:28px auto;color:var(--muted);font-size:13px;padding:0 18px 80px;text-align:center}
+
+/* --- 認証ボタン & モーダル --- */
+.auth-btn{
+  background:linear-gradient(90deg,var(--accent),var(--google-accent));
+  color:white;
+  border:0;
+  border-radius:12px;
+  padding:10px 16px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .25s ease;
+}
+.auth-btn:hover{transform:scale(1.05);filter:brightness(1.1);}
+
+.code-modal{
+  position:fixed;inset:0;background:rgba(10,12,20,0.36);display:none;align-items:center;justify-content:center;padding:32px;z-index:40;backdrop-filter:blur(4px);
+}
+.code-modal.open{display:flex;animation:fadeIn .25s ease;}
+.code-card{
+  width:100%;max-width:420px;border-radius:16px;background:var(--card);padding:20px;box-shadow:0 20px 60px rgba(2,6,23,0.25);animation:slideUp .35s ease;
+  text-align:center;
+}
+.code-input{
+  display:block;
+  width:200px;
+  margin:12px auto 0 auto;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid rgba(0,0,0,0.08);
+  font-size:16px;
+  letter-spacing:6px;
+  text-align:center;
+}
+.code-hint{
+  color:red;
+  font-size:13px;
+  margin-bottom:10px;
+  display:none;
+}
+.auth-msg{
+  position:fixed;top:80px;right:24px;background:linear-gradient(90deg,#edf2ff,#e0f7ff);color:#0a3b5a;padding:10px 14px;border-radius:10px;box-shadow:0 8px 20px rgba(2,6,23,0.08);display:none;z-index:60;
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">AG</div>
+    <div>
+      <h1>App Garden</h1>
+      <div style="font-size:12px;color:var(--muted)">Apple × Google のいいとこ取りなアプリ一覧</div>
+    </div>
+  </div>
+  <button class="auth-btn" id="authBtn">認証コード</button>
+</header>
+
+<div class="auth-msg" id="authMsg"></div>
+
+<main class="wrap">
+  <div class="filters">
+    <div class="pill active" data-filter="all">すべて</div>
+    <div class="pill" data-filter="ios">iOS</div>
+    <div class="pill" data-filter="android">Android</div>
+    <div class="pill" data-filter="productivity">生産性</div>
+    <div class="pill" data-filter="photo">写真・動画</div>
+    <div class="pill" data-filter="game">ゲーム</div>
+    <div class="pill" data-filter="education">教育</div>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<div class="modal" id="modal">
+  <div class="modal-card" role="dialog" aria-modal="true">
+    <div>
+      <div class="screenshot" id="modalScreenshot"></div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <div class="icon" id="modalIcon">A</div>
+        <div>
+          <div id="modalPlatform" style="font-size:13px;color:var(--muted)"></div>
+          <div class="rating" id="modalRating"></div>
+        </div>
+      </div>
+    </div>
+    <div class="meta-right">
+      <h2 id="modalTitle">アプリ名</h2>
+      <p id="modalDesc" style="color:var(--muted)">詳細説明</p>
+      <div class="badges" id="modalBadges"></div>
+      <div class="actions">
+        <a href="#" class="btn primary" id="pcBtn" target="_blank">ダウンロードページへ（PC）</a>
+        <a href="#" class="btn primary" id="mobileBtn" target="_blank">ダウンロードページへ（スマートフォン）</a>
+        <button class="btn ghost" id="closeBtn">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="code-modal" id="codeModal" aria-hidden="true">
+  <div class="code-card" role="dialog" aria-modal="true">
+    <h3 style="margin-top:0">認証コード入力（6桁）</h3>
+    <p style="color:var(--muted);font-size:13px;margin:6px 0 0 0">管理側から渡された6桁のコードを入力してな</p>
+    <div class="code-hint" id="codeHint"></div>
+    <input id="authCodeInput" class="code-input" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="●●●●●●" />
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
+      <button class="btn primary" id="submitAuthBtn">送信</button>
+      <button class="btn ghost" id="closeAuthBtn">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<footer>© App Garden — sample listing. データはダミーやで。</footer>
+
+<script>
+// ===== アプリデータ =====
+const apps = [
+  {id:1,name:'SkyMap',platform:'ios',category:'education',desc:'星座を観測・記録するためのアプリ。天体観測に便利。',rating:4.8,iconText:'SM',color:'#6EE7B7',badges:['おすすめ','無料'],pcLink:'https://apps.apple.com',mobileLink:'https://apps.apple.com'},
+  {id:2,name:'Pixel Studio',platform:'android',category:'photo',desc:'写真編集に特化した直感的なUIを持つツール。',rating:4.4,iconText:'PS',color:'#FFD166',badges:['有料','プロ向け'],pcLink:'https://play.google.com',mobileLink:'https://play.google.com'},
+  {id:3,name:'FocusFlow',platform:'ios',category:'productivity',desc:'集中タイマーとタスク管理を統合した生産性アプリ。',rating:4.7,iconText:'FF',color:'#A78BFA',badges:['人気','セール中'],pcLink:'https://apps.apple.com',mobileLink:'https://apps.apple.com'},
+  {id:4,name:'Neon Drift',platform:'android',category:'game',desc:'アーケード風レーシングゲーム。短時間で遊べるコースが魅力。',rating:4.2,iconText:'ND',color:'#FF6B6B',badges:['無料','おすすめ'],pcLink:'https://play.google.com',mobileLink:'https://play.google.com'}
+];
+
+// 認証コードマッピング
+const authMap = {
+  '112233': {id:5,name:'百人一首',platform:'ios',category:'education',desc:'百人一首を楽しめるアプリ。',rating:4.5,iconText:'KU',color:'#FBBF24',badges:['無料','人気'],pcLink:'https://apps.apple.com',mobileLink:'https://apps.apple.com'}
+};
+
+// ===== DOM =====
+const grid = document.getElementById('grid');
+const modal = document.getElementById('modal');
+const modalTitle = document.getElementById('modalTitle');
+const modalDesc = document.getElementById('modalDesc');
+const modalIcon = document.getElementById('modalIcon');
+const modalBadges = document.getElementById('modalBadges');
+const modalPlatform = document.getElementById('modalPlatform');
+const modalRating = document.getElementById('modalRating');
+const pcBtn = document.getElementById('pcBtn');
+const mobileBtn = document.getElementById('mobileBtn');
+
+const spinner = document.getElementById('spinner');
+const authBtn = document.getElementById('authBtn');
+const codeModal = document.getElementById('codeModal');
+const authCodeInput = document.getElementById('authCodeInput');
+const submitAuthBtn = document.getElementById('submitAuthBtn');
+const closeAuthBtn = document.getElementById('closeAuthBtn');
+const codeHint = document.getElementById('codeHint');
+const authMsg = document.getElementById('authMsg');
+
+// ===== グリッド描画 =====
+function render(list){
+  grid.innerHTML = '';
+  list.forEach(app => {
+    const c = document.createElement('div');
+    c.className = 'card';
+    c.tabIndex = 0;
+    c.innerHTML = `
+      <div class="icon" style="background:${app.color}">${app.iconText}</div>
+      <div class="meta">
+        <h3 class="title">${app.name}</h3>
+        <p class="desc">${app.desc}</p>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="badges">${app.badges.map(b=>`<span class="badge">${b}</span>`).join('')}</div>
+          <div class="rating">★ ${app.rating.toFixed(1)}</div>
+        </div>
+      </div>`;
+    c.addEventListener('click',()=>openModal(app));
+    grid.appendChild(c);
+  });
+}
+
+// ===== モーダル =====
+function openModal(app){
+  modalTitle.textContent = app.name;
+  modalDesc.textContent = app.desc;
+  modalIcon.textContent = app.iconText;
+  modalIcon.style.background = app.color;
+  modalBadges.innerHTML = app.badges.map(b=>`<span class="badge">${b}</span>`).join('');
+  modalPlatform.textContent = app.platform === 'ios' ? 'iOS' : 'Android';
+  modalRating.textContent = `★ ${app.rating.toFixed(1)}`;
+  pcBtn.href = app.pcLink;
+  mobileBtn.href = app.mobileLink;
+  modal.classList.add('open');
+}
+document.getElementById('closeBtn').addEventListener('click',()=>modal.classList.remove('open'));
+modal.addEventListener('click',(e)=>{if(e.target===modal)modal.classList.remove('open')});
+
+// ===== カテゴリフィルタ =====
+document.querySelectorAll('.pill[data-filter]').forEach(p=>{
+  p.addEventListener('click',()=>{
+    document.querySelectorAll('.pill[data-filter]').forEach(x=>x.classList.remove('active'));
+    p.classList.add('active');
+    applyFilters();
+  });
+});
+function applyFilters(){
+  const active=document.querySelector('.pill.active').dataset.filter;
+  let list=apps.slice();
+  if(active!=='all')list=list.filter(a=>a.platform===active||a.category===active);
+  render(list);
+}
+
+// ===== 認証コードモーダル =====
+authBtn.addEventListener('click',()=>{ 
+  codeModal.classList.add('open'); 
+  codeHint.style.display='none';
+  authCodeInput.value='';
+});
+closeAuthBtn.addEventListener('click',()=>codeModal.classList.remove('open'));
+
+submitAuthBtn.addEventListener('click', ()=>{
+  const code = authCodeInput.value.trim();
+  if(!/^\d{6}$/.test(code)){
+    codeHint.textContent = '6桁の数字を入力してや';
+    codeHint.style.display = 'block';
+    return;
+  }
+  if(authMap.hasOwnProperty(code)){
+    const appToAdd = authMap[code];
+    const existingIndex = apps.findIndex(a => a.id === appToAdd.id);
+    if(existingIndex >= 0){
+      codeHint.textContent = 'このアプリは既に追加されています。';
+      codeHint.style.display = 'block';
+    } else {
+      apps.push(appToAdd);
+      applyFilters();
+      codeModal.classList.remove('open');
+      showAuthMessage(`認証成功：id:${appToAdd.id} の「${appToAdd.name}」を追加したで。`);
+    }
+  } else {
+    codeHint.textContent = '無効な認証コードや。確認してや。';
+    codeHint.style.display = 'block';
+  }
+});
+
+function showAuthMessage(text){
+  authMsg.textContent = text;
+  authMsg.style.display='block';
+  setTimeout(()=>authMsg.style.display='none',2500);
+}
+
+// ===== スワイプ更新 =====
+let startY=0;
+window.addEventListener('touchstart',e=>startY=e.touches[0].clientY);
+window.addEventListener('touchend',e=>{
+  const endY=e.changedTouches[0].clientY;
+  if(endY-startY>120){
+    spinner.style.display='block';
+    setTimeout(()=>{
+      spinner.style.display='none';
+      applyFilters();
+    },1000);
+  }
+});
+
+// 初期描画
+render(apps);
+</script>
+</body>
+</html>
