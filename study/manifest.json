@@ -1,0 +1,20 @@
+{
+  "name": "App Garden",
+  "short_name": "App Garden",
+  "start_url": "https://symphony100.github.io/symphony/study/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "https://symphony100.github.io/symphony/study/icon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://symphony100.github.io/symphony/study/icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
