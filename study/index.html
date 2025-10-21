@@ -45,26 +45,14 @@ body{
   -webkit-font-smoothing:antialiased;
   transition:background .25s ease,color .25s ease;
 }
+
 header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:20px 28px;
-  position:fixed;  /* ← sticky → fixed に変更 */
-  top:0;
-  left:0;
-  right:0;
-  backdrop-filter:blur(6px);
-  background:rgba(255,255,255,0.6);
-  border-bottom:1px solid rgba(15,23,42,0.04);
-  z-index:100; /* 少し高めにして最前面へ */
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 28px;position:sticky;top:0;backdrop-filter:blur(6px);
+  background:rgba(255,255,255,0.6);border-bottom:1px solid rgba(15,23,42,0.04);
+  z-index:10;
 }
   
-  .wrap {
-  max-width:1100px;
-  margin:100px auto 28px; /* ←上に100pxくらい余白 */
-  padding:0 18px;
-}
 
 
 body.dark header{
