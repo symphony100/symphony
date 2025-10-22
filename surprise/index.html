@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Happy Birthday</title>
+<style>
+  /* ベーシック */
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:radial-gradient(circle at 50% 28%, #fffaf6, #f3e3d4 80%);
+    font-family: "Noto Sans JP", "Segoe UI", sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+  }
+
+  /* コンテナ（中央固定） */
+  .stage {
+    position:relative;
+    width:920px;
+    max-width:94vw;
+    height:520px;
+    max-height:86vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* 背景ケーキ（淡色） */
+  .cake-bg{
+    position:absolute;
+    left:50%;
+    bottom:-40px;
+    transform:translateX(-50%) scale(0.75);
+    opacity:0;
+    transition:transform 900ms cubic-bezier(.2,.9,.2,1), opacity 900ms;
+    pointer-events:none;
+    z-index:10; /* 背面 */
+  }
+  .cake-bg.show{ transform:translateX(-50%) scale(1); opacity:0.95; }
+  .cake{ width:480px; height:300px; border-radius:20px 20px 10px 10px; background:linear-gradient(180deg,#ffe9dc,#ffd6bf); box-shadow:0 18px 40px rgba(0,0,0,0.12); }
+
+  /* 封筒（クリックで開封） */
+  .envelope{
+    width:420px;
+    height:260px;
+    perspective:1200px;
+    position:relative;
+    z-index:200; /* 手紙は最前面 */
+    cursor:pointer;
+    user-select:none;
+  }
+  .env-body{
+    position:absolute; inset:0;
+    border-radius:12px;
+    background:linear-gradient(145deg,#fffdfb,#f8f1e8);
+    border:1px solid rgba(180,130,70,0.12);
+    box-shadow:0 22px 50px rgba(0,0,0,0.12);
+    overflow:visible;
+  }
+
+  /* フラップ */
+  .flap{
+    position:absolute; top:0; left:0; width:100%; height:60%;
+    background:linear-gradient(180deg,#d9b98f,#caa56c);
+    border-top-left-radius:12px; border-top-right-radius:12px;
+    transform-origin:top center;
+    transform:rotateX(0deg);
+    transition:transform 900ms cubic-bezier(.2,.9,.2,1);
+    z-index:260; /* フラップは手紙上 */
+  }
+  .envelope.open .flap{ transform:rotateX(180deg) translateY(-6px); }
+
+  /* 差出人 */
+  .seal{ position:absolute; top:14%; left:50%; transform:translateX(-50%); font-size:13px; color:rgba(30,20,10,0.86); letter-spacing:1.4px; z-index:270; pointer-events:none; }
+
+  /* 手紙（確実にフラップの下から出る見た目にする） */
+  .letter{
+    position:absolute;
+    left:14px; right:14px; top:66px; bottom:16px;
+    background:linear-gradient(180deg,#fffdfc,#fffaf8);
+    border-radius:6px;
+    border:1px solid rgba(180,140,100,0.06);
+    padding:22px;
+    transform:translateY(36px);
+    opacity:0;
+    transition:transform 700ms cubic-bezier(.2,.9,.2,1), opacity 700ms;
+    z-index:240; /* フラップ(260)より下、封筒(200)より上 */
+    box-shadow: 0 10px 26px rgba(0,0,0,0.06) inset;
+  }
+  .envelope.open .letter{ transform:translateY(0); opacity:1; }
+
+  .letter h2{ text-align:center; font-size:18px; color:#b2793b; margin-bottom:8px; }
+  .message{
+    text-align:center;
+    color:#3c2a1a;
+    font-size:15px;
+    line-height:1.9;
+    white-space:pre-wrap;
+    opacity:0; transform:translateY(6px);
+    transition:opacity 500ms ease, transform 500ms ease;
+  }
+  .message.visible{ opacity:1; transform:translateY(0); }
+
+  /* ヒント */
+  .hint{ position:absolute; bottom:10px; left:0; width:100%; text-align:center; font-size:13px; color:rgba(70,50,40,0.6); z-index:280; pointer-events:none; }
+
+  /* キラ粒（控えめ） */
+  .sparkle{ position:fixed; width:4px; height:4px; background:rgba(255,245,200,0.9); border-radius:50%; pointer-events:none; z-index:50; }
+
+  /* 紙吹雪DOMは背面に（手紙が前） */
+  .confetti { position:fixed; width:8px; height:8px; border-radius:2px; z-index:80; will-change:transform,opacity; }
+
+  /* 花火キャンバス（手紙より背面） */
+  canvas#fw { position:fixed; left:0; top:0; width:100vw; height:100vh; z-index:120; pointer-events:none; }
+
+  /* レスポンシブ */
+  @media(max-width:520px){
+    .stage{ height:68vh; }
+    .envelope{ width:340px; height:200px; }
+    .cake-bg{ width:560px; height:360px; bottom:-80px; }
+    .cake{ width:420px; height:280px; }
+  }
+</style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <div class="cake-bg" id="cakeBg" aria-hidden="true">
+      <div class="cake" aria-hidden="true"></div>
+    </div>
+
+    <div class="envelope" id="envelope" tabindex="0" aria-label="誕生日の手紙（クリックで開封）">
+      <div class="env-body">
+        <div class="flap" id="flap"></div>
+        <div class="seal" id="seal">手紙カード</div>
+
+        <!-- 手紙本文は data-text に格納しておく（JSが確実に拾う） -->
+        <div class="letter" id="letter" aria-hidden="false">
+          <h2>お誕生日おめでとう</h2>
+          <div id="message" class="message" data-text="もう14歳だね！これからもよろしく～！いい一年になりますように。"> </div>
+        </div>
+
+        <div class="hint" id="hint">クリックして開封</div>
+      </div>
+    </div>
+
+    <canvas id="fw" aria-hidden="true"></canvas>
+  </div>
+<div class="date" id="dateArea"></div>
+<script>
+/* --- 初期セットアップ --- */
+const envelope = document.getElementById('envelope');
+const flap = document.getElementById('flap');
+const cakeBg = document.getElementById('cakeBg');
+const messageEl = document.getElementById('message');
+const hint = document.getElementById('hint');
+const canvas = document.getElementById('fw');
+const ctx = canvas.getContext('2d');
+
+/* canvas 高解像度対応 */
+function resizeCanvas(){
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.floor(window.innerWidth * dpr);
+  canvas.height = Math.floor(window.innerHeight * dpr);
+  canvas.style.width = window.innerWidth + 'px';
+  canvas.style.height = window.innerHeight + 'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+/* --- 粒子系（花火） --- */
+let particles = [];
+let last = performance.now();
+function createExplosion(x,y,count=40){
+  const colors = ['#ffd166','#ff8fa3','#7bd389','#7aa2ff','#ffb347','#c39eff','#ffffff'];
+  for(let i=0;i<count;i++){
+    const ang = Math.random()*Math.PI*2;
+    const sp = 1.8 + Math.random()*5.5;
+    particles.push({
+      x,y,
+      vx:Math.cos(ang)*sp,
+      vy:Math.sin(ang)*sp,
+      life:40 + Math.random()*90,
+      maxLife:40 + Math.random()*90,
+      color: colors[Math.floor(Math.random()*colors.length)]
+    });
+  }
+}
+function updateParticles(now){
+  const dt = Math.min(40, now - last) / 16.666;
+  last = now;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(let i=particles.length-1;i>=0;i--){
+    const p = particles[i];
+    p.vx *= 0.995; p.vy *= 0.995;
+    p.vy += 0.06 * dt; // gravity
+    p.x += p.vx * dt * 10;
+    p.y += p.vy * dt * 10;
+    p.life -= dt;
+    const alpha = Math.max(0, p.life / p.maxLife);
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, Math.max(1, (p.life / p.maxLife) * 3.6), 0, Math.PI*2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    if (p.life <= 0) particles.splice(i,1);
+  }
+  requestAnimationFrame(updateParticles);
+}
+requestAnimationFrame(updateParticles);
+
+/* --- 紙吹雪（DOM）: 発射位置を封筒中央からに固定 --- */
+function spawnConfettiBurst(count=160){
+  const colors = ['#ff6b6b','#ffd166','#f9b5ac','#7bd389','#7aa2ff','#ffb347','#c39eff'];
+  const rect = envelope.getBoundingClientRect();
+  const originX = rect.left + rect.width/2;
+  const originY = rect.top + rect.height/2;
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'confetti';
+    const w = 6 + Math.random()*12;
+    const h = Math.max(4, w * (0.5 + Math.random()*0.7));
+    el.style.width = w + 'px';
+    el.style.height = h + 'px';
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.left = originX + 'px';
+    el.style.top = originY + 'px';
+    document.body.appendChild(el);
+
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 220 + Math.random() * 900;
+    const destX = Math.cos(angle) * distance;
+    const destY = Math.sin(angle) * distance - (80 + Math.random()*220);
+    const rotate = (Math.random()*720 - 360);
+    const duration = 900 + Math.random()*1000;
+
+    const anim = el.animate([
+      { transform: `translate(0px,0px) rotate(0deg)`, opacity: 1 },
+      { transform: `translate(${destX}px, ${destY}px) rotate(${rotate}deg)`, opacity: 0 }
+    ], { duration: duration, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards' });
+
+    anim.onfinish = () => { el.remove(); };
+    setTimeout(()=>{ if(el.parentNode) el.remove(); }, duration + 500);
+  }
+}
+
+/* --- 音（軽め） --- */
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioCtx();
+async function resumeAudio(){ if (audioCtx.state === 'suspended') await audioCtx.resume(); }
+function playPop(){ const now = audioCtx.currentTime; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.type='triangle'; o.frequency.setValueAtTime(420,now); o.frequency.exponentialRampToValueAtTime(140,now+0.22); g.gain.setValueAtTime(0.0001,now); g.gain.exponentialRampToValueAtTime(0.6,now+0.01); g.gain.exponentialRampToValueAtTime(0.0001,now+0.6); o.connect(g); g.connect(audioCtx.destination); o.start(now); o.stop(now+0.7); }
+function playCracker(){ const now = audioCtx.currentTime; const len = 0.36; const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * len, audioCtx.sampleRate); const data = buffer.getChannelData(0); for(let i=0;i<data.length;i++) data[i] = (Math.random()*2-1)*(1 - i/data.length); const bs = audioCtx.createBufferSource(); bs.buffer = buffer; const bi = audioCtx.createBiquadFilter(); bi.type='bandpass'; bi.frequency.setValueAtTime(1500,now); bi.Q.setValueAtTime(0.7,now); const g = audioCtx.createGain(); g.gain.setValueAtTime(0.02,now); g.gain.exponentialRampToValueAtTime(0.9, now+0.02); g.gain.exponentialRampToValueAtTime(0.0001, now+len); bs.connect(bi); bi.connect(g); g.connect(audioCtx.destination); bs.start(now); bs.stop(now+len); }
+
+/* --- タイプライター処理（確実に動くように） --- */
+function typeWriter(el, fullText, speed=36){
+  el.textContent = ''; // まず空にする
+  el.style.opacity = '1'; // 表示確実に
+  let i = 0;
+  function step(){
+    // guard
+    if(i >= fullText.length) {
+      el.classList.add('visible'); // 最終状態で確実にvisibleクラス付与
+      return;
+    }
+    el.textContent += fullText[i];
+    // 句読点や改行でちょっとだけ長めのポーズ
+    let delay = speed;
+    const ch = fullText[i];
+    if(ch === '、' || ch === '，' || ch === ',' ) delay = speed * 3;
+    if(ch === '。' || ch === '．' || ch === '.' ) delay = speed * 4;
+    if(ch === '\n') delay = speed * 2;
+    i++;
+    setTimeout(step, delay);
+  }
+  step();
+}
+
+/* --- 開封シーケンス（1回だけ） --- */
+let opened = false;
+async function openSequence(){
+  if(opened) return;
+  opened = true;
+  // ブラウザのポリシーでaudioがサスペンドされてることあるからresumeを試みる
+  try{ await resumeAudio(); }catch(e){ /* 失敗しても続行 */ }
+
+  envelope.classList.add('open');
+  hint.style.opacity = '0';
+
+  // 音とビジュアルタイミング
+  playPop();
+  setTimeout(playCracker, 100);
+  setTimeout(()=> cakeBg.classList.add('show'), 140);
+
+  // confetti & fireworks
+  setTimeout(()=> spawnConfettiBurst(180), 320);
+  setTimeout(()=>{
+    for(let i=0;i<5;i++){
+      const x = window.innerWidth * (0.15 + Math.random()*0.7);
+      const y = window.innerHeight * (0.12 + Math.random()*0.25);
+      createExplosion(x,y, 40);
+    }
+  }, 420);
+
+  setTimeout(()=> spawnConfettiBurst(110), 700);
+  setTimeout(()=> {
+    for(let i=0;i<4;i++){
+      const x = window.innerWidth * (0.2 + Math.random()*0.6);
+      const y = window.innerHeight * (0.08 + Math.random()*0.25);
+      createExplosion(x,y, 48);
+    }
+  }, 820);
+
+  // 3秒後にタイプライターでテキスト表示（data-textから取得）
+  setTimeout(()=>{
+    const full = messageEl.getAttribute('data-text') || 'おたんじょうびおめでとう';
+    typeWriter(messageEl, full, 36);
+  }, 3000);
+}
+
+/* イベントバインド（クリックとキーボード） */
+envelope.addEventListener('click', openSequence);
+envelope.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSequence(); }
+});
+
+/* モバイルでのダブルタップ抑制 */
+let lastTap = 0;
+envelope.addEventListener('touchend', (e)=>{
+  const now = Date.now();
+  if(now - lastTap < 300) e.preventDefault();
+  lastTap = now;
+});
+
+  
+  
+  
+  
+  
+</script>
+<script>
+const customDate = new Date(2025, 9, 22); // 10月は0始まり
+const expireDate = new Date(customDate);
+expireDate.setDate(customDate.getDate() + 3);
+const today = new Date();
+
+if(today > expireDate){
+  document.body.innerHTML = `
+    <div style="
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      background:linear-gradient(to bottom, #fffaf6, #f3e3d4);
+      font-family:'Noto Sans JP', 'Segoe UI', sans-serif;
+      color:#8b6b3e;
+      text-align:center;
+      padding:2rem;
+    ">
+      <h1 style="
+        font-size:2.4rem;
+        letter-spacing:1.2px;
+        margin-bottom:1rem;
+        text-shadow:1px 1px 3px rgba(0,0,0,0.2);
+        animation:fadeIn 1.2s ease forwards;
+        opacity:0;
+      ">この手紙の閲覧期限は終了しました。</h1>
+      <p style="
+        font-size:1.2rem;
+        letter-spacing:0.8px;
+        animation:fadeIn 1.8s ease forwards;
+        opacity:0;
+      ">（閲覧可能期限：2025年10月22日〜2025年10月25日）</p>
+    </div>
+    <style>
+      @keyframes fadeIn {
+        0% {opacity:0; transform:translateY(20px);}
+        100% {opacity:1; transform:translateY(0);}
+      }
+    </style>
+  `;
+}
+</script>
+
+
+
+  
+ </body>
+</html>
