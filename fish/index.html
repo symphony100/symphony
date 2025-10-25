@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>釣り日記</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:#f5f5f5;color:#202124;max-width:900px;margin:auto;padding:20px;}
+h1{text-align:center;margin-bottom:20px;}
+.sort-buttons{display:flex;justify-content:center;gap:10px;margin-bottom:20px;}
+.sort-buttons button,.open-post-btn{padding:8px 16px;border:none;background:#1a73e8;color:#fff;border-radius:24px;cursor:pointer;transition:.2s;font-weight:500;}
+.sort-buttons button:hover,.open-post-btn:hover{background:#1558b0;}
+.diary-list{display:flex;flex-direction:column;gap:20px;}
+.diary-card{display:flex;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 6px rgba(32,33,36,0.28);transition:transform .2s;position:relative;}
+.diary-card:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(32,33,36,0.2);}
+.content-left{flex:2;padding:15px; display:flex; flex-direction:column; justify-content:center;}
+.content-left .date{font-size:0.85rem;color:#5f6368;margin-bottom:6px;}
+.content-left h2{font-size:1.2rem;color:#1a73e8;margin-bottom:8px;}
+.content-left .summary{font-size:0.95rem;color:#5f6368;line-height:1.5;}
+.content-right{flex:1;overflow:hidden;}
+.content-right img{width:100%;height:100%;object-fit:cover;transition:transform .3s;}
+.content-right img:hover{transform:scale(1.05);}
+.delete-btn{position:absolute;top:10px;right:10px;background:red;color:#fff;border:none;border-radius:4px;padding:4px 6px;cursor:pointer;}
+.modal{position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:1000;}
+.modal.active{display:flex;}
+.modal-content{background:#fff; border-radius:8px; max-width:90%; max-height:85%; overflow:auto; padding:20px; position:relative;}
+.modal-content .date{font-size:0.9rem;color:#5f6368;margin-bottom:8px;}
+.modal-content h2{font-size:1.4rem;color:#1a73e8;margin-bottom:12px;}
+.modal-content p{line-height:1.7;color:#202124;white-space:pre-wrap;}
+.modal-content img{width:100%;border-radius:8px;margin-top:15px;cursor:pointer;}
+.close-btn{position:absolute; top:10px; right:10px; font-size:24px; background:#1a73e8;color:#fff; border:none; border-radius:50%; width:32px; height:32px; cursor:pointer;}
+.close-btn:hover{background:#1558b0;}
+.lightbox{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); z-index:1100;}
+.lightbox.active{display:flex;}
+.lightbox img{max-width:90%;max-height:90%;border-radius:8px;}
+.lightbox .close{position:absolute;top:20px;right:30px;font-size:32px;color:#fff;cursor:pointer;background:none;border:none;}
+.pagination{display:flex; justify-content:center; gap:5px; margin:30px 0; flex-wrap:wrap;}
+.pagination button{padding:6px 12px;border:none;background:#fff;color:#1a73e8;border:1px solid #dadce0;border-radius:4px;cursor:pointer;transition:.2s;}
+.pagination button.active{background:#1a73e8;color:#fff;}
+.pagination button:hover:not(.active){background:#e8f0fe;}
+@media(max-width:768px){.diary-card{flex-direction:column;}.content-right{height:200px;}}
+footer{text-align:center;padding:20px;color:#5f6368;font-size:0.85rem;margin-top:40px;}
+.post-modal{display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1200;}
+.post-modal.active{display:flex;}
+.post-modal .post-content{background:#fff;padding:20px;border-radius:12px;max-width:400px;width:90%;position:relative;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+.post-modal .close-post{position:absolute;top:10px;right:10px;background:#1a73e8;color:#fff;border:none;border-radius:50%;width:28px;height:28px;font-size:20px;cursor:pointer;}
+.post-modal input[type="text"], .post-modal input[type="date"], .post-modal textarea, .post-modal input[type="file"]{padding:10px;border:1px solid #dadce0;border-radius:24px;width:100%;outline:none;transition:.2s;}
+.post-modal input[type="text"]:focus, .post-modal input[type="date"]:focus, .post-modal textarea:focus, .post-modal input[type="file"]:focus{border-color:#1a73e8;box-shadow:0 0 0 2px rgba(26,115,232,0.2);}
+.post-modal button#addPost{background:#1a73e8;color:#fff;border-radius:24px;padding:10px;font-weight:500;cursor:pointer;border:none;transition:.2s;}
+.post-modal button#addPost:hover{background:#1558b0;}
+</style>
+</head>
+<body>
+
+<h1>増田莉久の釣り日記</h1>
+
+<div class="sort-buttons">
+  <button id="sortNew">新しい順</button>
+  <button id="sortOld">古い順</button>
+  <button class="open-post-btn" id="openPost">記事を投稿</button>
+</div>
+
+<div class="diary-list" id="diaryList"></div>
+<div class="pagination" id="pagination"></div>
+
+<!-- 記事モーダル -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <button class="close-btn" id="closeModal">×</button>
+    <div class="date" id="modalDate"></div>
+    <h2 id="modalTitle"></h2>
+    <p id="modalText"></p>
+    <img id="modalImg" src="" alt="">
+  </div>
+</div>
+
+<!-- 投稿フォームモーダル -->
+<div class="post-modal" id="postModal">
+  <div class="post-content">
+    <button class="close-post" id="closePost">×</button>
+    <h3>新しい記事を投稿</h3>
+    <input type="text" id="postTitle" placeholder="タイトル">
+    <input type="date" id="postDate">
+    <input type="file" id="postImg">
+    <textarea id="postText" placeholder="文章"></textarea>
+    <button id="addPost">投稿</button>
+  </div>
+</div>
+
+<!-- ライトボックス -->
+<div class="lightbox" id="lightbox">
+  <button class="close" id="closeLightbox">×</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<footer>© 2025 釣り日記 by Symphony System Group</footer>
+
+<script>
+const diaryList=document.getElementById('diaryList');
+const pagination=document.getElementById('pagination');
+const modal=document.getElementById('modal');
+const modalTitle=document.getElementById('modalTitle');
+const modalText=document.getElementById('modalText');
+const modalImg=document.getElementById('modalImg');
+const modalDate=document.getElementById('modalDate');
+const closeModal=document.getElementById('closeModal');
+const lightbox=document.getElementById('lightbox');
+const lightboxImg=document.getElementById('lightboxImg');
+const closeLightbox=document.getElementById('closeLightbox');
+
+const postModal=document.getElementById('postModal');
+const openPost=document.getElementById('openPost');
+const closePost=document.getElementById('closePost');
+const postTitleInput=document.getElementById('postTitle');
+const postDateInput=document.getElementById('postDate');
+const postImgInput=document.getElementById('postImg');
+const postTextInput=document.getElementById('postText');
+const addPost=document.getElementById('addPost');
+
+let currentPage=1;
+const perPage=5;
+
+// 記事データ
+let currentArticles=JSON.parse(localStorage.getItem('articles')) || [];
+if(currentArticles.length===0){
+  currentArticles=[
+    {title:"江ノ島でシーバス爆釣！",date:"2025-10-25",img:"https://picsum.photos/id/1015/600/400",text:"朝まずめの江ノ島でシーバス連発！"},
+    {title:"葉山の磯でチヌ狙い",date:"2025-10-22",img:"https://picsum.photos/id/1025/600/400",text:"磯でフカセ釣り。"}
+  ];
+  localStorage.setItem('articles',JSON.stringify(currentArticles));
+}
+function saveArticles(){localStorage.setItem('articles',JSON.stringify(currentArticles));}
+
+// 投稿フォームオープン
+openPost.addEventListener('click',()=>postModal.classList.add('active'));
+closePost.addEventListener('click',()=>postModal.classList.remove('active'));
+
+// 画像アップロード対応
+function getImageBase64(file, callback){
+  const reader=new FileReader();
+  reader.onload=function(e){callback(e.target.result);}
+  reader.readAsDataURL(file);
+}
+
+// 投稿追加
+addPost.addEventListener('click',()=>{
+  if(!postTitleInput.value || !postDateInput.value || !postTextInput.value){
+    return alert('タイトル・日付・文章は必須');
+  }
+  const file=postImgInput.files[0];
+  const addArticle=(imgData)=>{
+    const newArticle={title:postTitleInput.value,date:postDateInput.value,img:imgData||'https://picsum.photos/600/400',text:postTextInput.value};
+    currentArticles.unshift(newArticle);
+    saveArticles();
+    postTitleInput.value=''; postDateInput.value=''; postTextInput.value=''; postImgInput.value='';
+    postModal.classList.remove('active');
+    currentPage=1;
+    renderList();
+  };
+  if(file) getImageBase64(file,addArticle);
+  else addArticle(null);
+});
+
+// 記事リスト描画
+function renderList(){
+  const scrollY=window.scrollY;
+  diaryList.innerHTML="";
+  const start=(currentPage-1)*perPage;
+  const end=start+perPage;
+  const pageArticles=currentArticles.slice(start,end);
+  pageArticles.forEach((article,index)=>{
+    const card=document.createElement('div');
+    card.className='diary-card';
+    card.innerHTML=`<div class="content-left">
+      <div class="date">${article.date}</div>
+      <h2>${article.title}</h2>
+      <div class="summary">${article.text.substring(0,100)}...</div>
+    </div>
+    <div class="content-right"><img src="${article.img}" alt=""></div>
+    <button class="delete-btn">削除</button>`;
+    diaryList.appendChild(card);
+
+    card.querySelector('.content-left').addEventListener('click',()=>{
+      modalTitle.textContent=article.title;
+      modalText.textContent=article.text;
+      modalImg.src=article.img;
+      modalDate.textContent=article.date;
+      modal.classList.add('active');
+    });
+
+    card.querySelector('img').addEventListener('click',(e)=>{e.stopPropagation(); lightboxImg.src=article.img; lightbox.classList.add('active');});
+
+    card.querySelector('.delete-btn').addEventListener('click',(e)=>{
+      e.stopPropagation();
+      currentArticles.splice((currentPage-1)*perPage+index,1);
+      saveArticles();
+      renderList();
+    });
+  });
+  renderPagination();
+  window.scrollTo(0,scrollY);
+}
+
+// ページネーション
+function renderPagination(){
+  pagination.innerHTML="";
+  const pageCount=Math.ceil(currentArticles.length/perPage);
+  const prevBtn=document.createElement('button');
+  prevBtn.textContent="‹"; prevBtn.disabled=currentPage===1;
+  prevBtn.addEventListener('click',()=>{if(currentPage>1){currentPage--;renderList();}});
+  pagination.appendChild(prevBtn);
+  for(let i=1;i<=pageCount;i++){
+    const btn=document.createElement('button');
+    btn.textContent=i;
+    if(i===currentPage) btn.classList.add('active');
+    btn.addEventListener('click',()=>{currentPage=i;renderList();});
+    pagination.appendChild(btn);
+  }
+  const nextBtn=document.createElement('button');
+  nextBtn.textContent="›"; nextBtn.disabled=currentPage===pageCount;
+  nextBtn.addEventListener('click',()=>{if(currentPage<pageCount){currentPage++;renderList();}});
+  pagination.appendChild(nextBtn);
+}
+
+// ソート
+document.getElementById('sortNew').addEventListener('click',()=>{currentArticles.sort((a,b)=>new Date(b.date)-new Date(a.date)); currentPage=1; renderList();});
+document.getElementById('sortOld').addEventListener('click',()=>{currentArticles.sort((a,b)=>new Date(a.date)-new Date(b.date)); currentPage=1; renderList();});
+
+// モーダル
+closeModal.addEventListener('click',()=>modal.classList.remove('active'));
+modal.addEventListener('click',e=>{if(e.target===modal) modal.classList.remove('active');});
+closeLightbox.addEventListener('click',()=>lightbox.classList.remove('active'));
+lightbox.addEventListener('click',e=>{if(e.target===lightbox) lightbox.classList.remove('active');});
+
+renderList();
+</script>
+
+</body>
+</html>
