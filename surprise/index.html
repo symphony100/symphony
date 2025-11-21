@@ -141,7 +141,7 @@
         <!-- 手紙本文は data-text に格納しておく（JSが確実に拾う） -->
         <div class="letter" id="letter" aria-hidden="false">
           <h2>お誕生日おめでとう</h2>
-          <div id="message" class="message" data-text="お父さん、いつもいろいろなことを俺のために教えてくれたり面白いことをしてくれてありがとう。これからもよろしく。"> </div>
+          <div id="message" class="message" data-text="いつもマイクラとかありがとう！これからもよろしく。"> </div>
         </div>
 
         <div class="hint" id="hint">クリックして開封</div>
@@ -343,50 +343,7 @@ envelope.addEventListener('touchend', (e)=>{
   
   
 </script>
-<script>
-const customDate = new Date(2025, 9, 25); // 10月は0始まり
-const expireDate = new Date(customDate);
-expireDate.setDate(customDate.getDate() + 3);
-const today = new Date();
 
-if(today > expireDate){
-  document.body.innerHTML = `
-    <div style="
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      align-items:center;
-      height:100vh;
-      background:linear-gradient(to bottom, #fffaf6, #f3e3d4);
-      font-family:'Noto Sans JP', 'Segoe UI', sans-serif;
-      color:#8b6b3e;
-      text-align:center;
-      padding:2rem;
-    ">
-      <h1 style="
-        font-size:2.4rem;
-        letter-spacing:1.2px;
-        margin-bottom:1rem;
-        text-shadow:1px 1px 3px rgba(0,0,0,0.2);
-        animation:fadeIn 1.2s ease forwards;
-        opacity:0;
-      ">この手紙の閲覧期限は終了しました。</h1>
-      <p style="
-        font-size:1.2rem;
-        letter-spacing:0.8px;
-        animation:fadeIn 1.8s ease forwards;
-        opacity:0;
-      ">（閲覧可能期限：2025年10月22日〜2025年10月25日）</p>
-    </div>
-    <style>
-      @keyframes fadeIn {
-        0% {opacity:0; transform:translateY(20px);}
-        100% {opacity:1; transform:translateY(0);}
-      }
-    </style>
-  `;
-}
-</script>
 
 
 
