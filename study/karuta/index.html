@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 <link rel="icon" type="image/x-icon" href="icon.png">
 <meta name="keywords" content="かるた,百人一首,暗記,国語,対策">
 <meta name="description" content="百人一首を覚えよう！">
@@ -13,358 +13,462 @@
 <meta property="og:type" content="website">
 <title>百人一首</title>
 <link rel="manifest" href="manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&family=Noto+Serif+JP:wght=400;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap" rel="stylesheet">
 <style>
-body {
-  margin:0; height:100vh;
-  display:flex; justify-content:center; align-items:center;
-  background:url('tatami.png') center/cover no-repeat fixed;
+/* --- ベーススタイル --- */
+body {  
+  margin:0; 
+  min-height:100vh; 
+  display:flex; 
+  justify-content:center; 
+  align-items:center;  
+  background:url('tatami.png') center/cover no-repeat fixed;  
   font-family:"Yuji Syuku","Shippori Mincho B1",serif;
-  overflow:hidden;
+  /* ★修正: タップアニメーションの準備 */
+  transition: transform 0.1s; 
 }
 
-.container { 
-  display:flex; align-items:center; justify-content:center; gap:20px; width:100%; height:100%; 
+.container {   
+  display:flex; 
+  align-items:center; 
+  justify-content:center; 
+  gap:20px; 
+  width:100%; 
+  min-height:100vh; 
+  padding: 20px 0; 
+  box-sizing: border-box; 
+}
+.nav-btn {  background: rgba(47,93,80,0.9); color:white; border:none;  border-radius:50%; width:48px; height:48px; font-size:1.5rem;  cursor:pointer; display:flex; align-items:center; justify-content:center;  transition: background 0.2s; user-select:none;}.nav-btn:active { background: rgba(30,60,50,0.9); }
+
+/* --- カード本体 --- */
+.card {  
+  width:min(80vw,380px); height:min(80vh,520px);  
+  background:#fffef8; border:6px solid #2f5d50; border-radius:6px;  
+  box-shadow:6px 8px 18px rgba(0,0,0,0.35);  
+  display:flex; flex-direction: row-reverse; 
+  justify-content:center; align-items:center; gap:24px; padding:18px;  
+  position:relative; box-sizing:border-box; overflow:hidden;  
+  will-change: transform, opacity; 
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-.nav-btn {
-  background: rgba(47,93,80,0.9); color:white; border:none;
-  border-radius:50%; width:48px; height:48px; font-size:1.5rem;
-  cursor:pointer; display:flex; align-items:center; justify-content:center;
-  transition: background 0.2s; user-select:none;
-}
-.nav-btn:active { background: rgba(30,60,50,0.9); }
-
-.card {
-  width:min(80vw,380px); height:min(80vh,520px);
-  background:#fffef8; border:6px solid #2f5d50; border-radius:6px;
-  box-shadow:6px 8px 18px rgba(0,0,0,0.35);
-  display:flex; flex-direction: row-reverse;
-  justify-content:center; align-items:center; gap:24px; padding:18px;
-  position:relative; box-sizing:border-box; overflow:hidden;
-  transition: transform 0.4s ease, opacity 0.4s ease;
-}
-
-.col {
-  writing-mode: vertical-rl; text-orientation: upright;
-  font-size:1.4rem; line-height:2.2em; letter-spacing:0.1em;
+/* --- 縦書きカラム設定 --- */
+.col {  
+  writing-mode: vertical-rl; text-orientation: upright;  
+  font-size:1.4rem; line-height:2.2em; letter-spacing:0.1em;  
   text-align:center; position:relative;
+  height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;
+  font-family:"Yuji Syuku","Shippori Mincho B1",serif;
 }
 .kami { min-width:2.5em; }
-.shimo { min-width:2.5em; }
 
-.mask {
-  position:absolute; inset:0;
-  background:#f8f8f2; border:2px solid #000;
-  display:flex; align-items:center; justify-content:center;
-  font-size:1.6rem; z-index:2; opacity:1; cursor:pointer;
-}
-.mask.reveal { animation: fadeSlide 0.8s forwards; }
-
-@keyframes fadeSlide { to { opacity:0; transform: translateY(-100%); } }
-
-.author {
-  position:absolute; bottom:16px; left:16px;
-  writing-mode: vertical-rl; text-orientation: upright;
-  font-size:1rem; color:#444;
+/* --- 下の句エリア（重要） --- */
+.shimo { 
+  min-width: 2.5em; 
+  flex-direction: row; 
+  align-items: center;
+  will-change: opacity;
+  transition: opacity 0.3s ease-in-out;
 }
 
-.number {
-  position:absolute; top:12px; right:16px;
-  font-size:1.2rem; font-weight:bold; color:#333;
-}
-
-/* 設定とヘルプボタン */
-.settings-btn, .help-btn {
-  position:absolute; top:12px;
-  background: rgba(47,93,80,0.9); color:white; border:none;
-  border-radius:6px; padding:6px 12px; cursor:pointer; font-size:0.9rem;
-  white-space: nowrap;
-}
-.settings-btn { right:120px; }
-.help-btn { right:12px; }
-
-.settings-overlay {
-  position:fixed; inset:0; background: rgba(255,255,240,0.95) url('washi-texture.png') center/cover;
-  display:none; justify-content:center; align-items:center; z-index:20;
-}
-
-.settings-box {
-  background:#fffef8; border:4px solid #2f5d50; border-radius:12px;
-  padding:24px; width:min(90%,400px);
-  box-shadow:6px 8px 18px rgba(0,0,0,0.35); font-size:1rem;
-}
-
-.settings-box h2 {
-  margin-top:0; font-size:1.2rem;
-  border-bottom:2px solid #2f5d50; padding-bottom:6px; margin-bottom:12px;
-}
-
-.range-container { display:flex; align-items:center; gap:6px; margin-bottom:12px; }
-.range-label { font-weight:bold; }
-.range-input {
-  width:50px; border:2px solid #2f5d50; border-radius:8px;
-  padding:4px 6px; text-align:center;
-  font-family:"Shippori Mincho B1","Noto Serif JP",serif;
-  background: linear-gradient(to bottom,#fffef8,#fdf6e3);
-  font-size:1rem;
-}
-.tilde { font-weight:bold; }
-
-.switch-container {
-  display:flex; align-items:center; justify-content:space-between;
-  margin-bottom:12px; font-size:1rem;
-}
-.switch { position:relative; display:inline-block; width:60px; height:26px; vertical-align:middle; }
-.switch input { opacity:0; width:0; height:0; }
-.slider {
-  position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0;
-  background:#f1e5c4; border:2px solid #2f5d50; border-radius:26px; transition:0.4s;
-}
-.slider:before {
-  position:absolute; content:""; height:20px; width:20px;
-  top:50%; transform:translateY(-50%); left:3px;
-  background:#2f5d50; border-radius:50%; transition:0.4s;
-}
-.switch input:checked + .slider { background:#d0a95b; }
-.switch input:checked + .slider:before { transform: translate(32px,-50%); }
-
-.settings-actions { text-align:right; margin-top:12px; }
-.settings-actions button {
-  background:#2f5d50; color:white; border:none;
-  padding:6px 14px; border-radius:6px; cursor:pointer;
-}
-
-@media(max-width:600px){
-  .container { gap:8px; }
-  .nav-btn { width:40px; height:40px; font-size:1.2rem; }
-  .settings-btn, .help-btn { padding:4px 8px; font-size:0.8rem; }
-}
-
-#helpBox a {
-  color: #2f5d50;
-  text-decoration: underline;
-}
-#helpBox a:hover {
-  color: #2f5d50;
-  text-decoration: underline;
-}
-
-/* スライドアニメーション */
-.card.slide-in-left { animation: slideInLeft 0.4s forwards; }
-.card.slide-in-right { animation: slideInRight 0.4s forwards; }
-
-/* ホームボタン */
-#homeBtn {
-  position: fixed;
-  bottom: 0;    /* 画面下端 */
-  right: 0;     /* 画面右端 */
-  width: 70px;  /* 正方形サイズ */
-  height: 70px;
-  z-index: 30;  /* カードより前面 */
+/* --- マスク（擬似要素で？を表現） --- */
+.full-mask, .hint-mask {
+  background: #f8f8f2;
+  border: 3px solid #2f5d50;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(47,93,80,0.9); /* 背景色 */
-  border-top-left-radius: 12px;   /* 少し角丸 */
-  box-shadow: -2px -2px 6px rgba(0,0,0,0.3);
   cursor: pointer;
-  transition: background 0.2s;
-  padding: 8px; /* 内側余白 */
+  color: #2f5d50;
+  position: absolute; 
+  will-change: opacity;
+  transition: opacity 0.2s ease-out; 
 }
-#homeBtn:hover {
-  background: rgba(30,60,50,0.9);
+.full-mask {
+  width: 100%; 
+  height: 100%; 
+  top: 0; left: 0;
 }
-#homeBtn img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* アイコンが潰れないように */
+.full-mask::after {
+  content: '?';
+  font-size: 2.5rem; 
+  font-weight: bold;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  font-family: Arial, sans-serif;
+  line-height: 1;
 }
-  
+.hint-mask {
+  width: 2.5em;
+  height: 6em; 
+  margin-top: 0.5em; 
+  position: static; 
+}
+.hint-mask::after {
+  content: '?';
+  font-size: 1.8rem;
+  font-weight: bold;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  font-family: Arial, sans-serif;
+  line-height: 1;
+}
+.fade-out {
+  opacity: 0 !important;
+  pointer-events: none; 
+}
+.col.shimo > span {
+    font-family:"Yuji Syuku","Shippori Mincho B1",serif;
+}
+
+/* --- UIパーツアニメーション --- */
+.card.slide-in-left { animation: slideInLeft 0.3s forwards; }.card.slide-in-right { animation: slideInRight 0.3s forwards; }
 @keyframes slideInLeft { from { transform: translateX(-100%); opacity:0; } to { transform: translateX(0); opacity:1; } }
 @keyframes slideInRight { from { transform: translateX(100%); opacity:0; } to { transform: translateX(0); opacity:1; } }
+
+/* ヒントボタンのスタイル */
+.hint-btn { 
+  position: absolute; top: 12px; left: 12px; z-index: 3; 
+  background: rgba(224, 172, 76, 0.9); 
+  color: white; border: none; 
+  border-radius: 6px; 
+  padding: 6px 12px; 
+  font-size: 0.9rem; 
+  white-space: nowrap; 
+  cursor: pointer; box-shadow: 2px 2px 4px rgba(0,0,0,0.2); 
+  display: flex; align-items: center; justify-content: center; 
+  /* ★修正: タップアニメーションのための transition の調整 */
+  transition: background 0.2s, transform 0.1s, opacity 0.2s ease-out; 
+}
+/* ★修正: タップアニメーション (scale 0.95 はすでに設定済み) */
+.hint-btn:active { background: rgba(190, 140, 50, 0.9); transform: scale(0.95); }
+.hint-btn.fade-out { opacity: 0; pointer-events: none; }
+.hint-btn img { 
+    width: 85%; 
+    height: 85%; 
+    object-fit: contain; 
+    filter: invert(100%) brightness(100%); 
+}
+
+/* --- エラーボックスのスタイル --- */
+#errorBox {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%); 
+    background: rgba(220, 50, 50, 0.95); 
+    color: white;
+    padding: 12px 20px;
+    border-radius: 0 0 8px 8px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000; 
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    max-width: 90%;
+    /* ★修正: エラーメッセージをゴシック体にする */
+    font-family: Arial, "Helvetica Neue", Helvetica, "Noto Sans JP", sans-serif;
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+#errorBox.show {
+    transform: translateX(-50%) translateY(0); 
+}
+
+/* --- 設定/使い方オーバーレイ表示アニメーション --- */
+.settings-overlay {  
+  position:fixed; inset:0; 
+  background: rgba(255,255,240,0.95) url('washi-texture.png') center/cover;  
+  display:none; justify-content:center; align-items:center; 
+  z-index: 1010; 
+  opacity: 0; 
+  transition: opacity 0.2s ease-in-out; 
+  overflow-y: auto; 
+}
+.settings-overlay.show {
+  opacity: 1;
+  display: flex;
+}
+
+/* --- その他UIパーツ（変更なし） --- */
+.author {  position:absolute; bottom:16px; left:16px;  writing-mode: vertical-rl; text-orientation: upright;  font-size:1rem; color:#444;}
+.number {  position:absolute; top:12px; right:16px;  font-size:1.2rem; font-weight:bold; color:#333;}
+.settings-btn, .help-btn {  position:absolute; top:12px;  background: rgba(47,93,80,0.9); color:white; border:none;  border-radius:6px; padding:6px 12px; cursor:pointer; font-size:0.9rem;  white-space: nowrap;}.settings-btn { right:120px; }.help-btn { right:12px; }
+.settings-box {  background:#fffef8; border:4px solid #2f5d50; border-radius:12px;  padding:24px; width:min(90%,400px);  box-shadow:6px 8px 18px rgba(0,0,0,0.35); font-size:1rem;}
+.settings-box h2 {  margin-top:0; font-size:1.2rem;  border-bottom:2px solid #2f5d50; padding-bottom:6px; margin-bottom:12px;}
+.range-container { display:flex; align-items:center; gap:6px; margin-bottom:12px; }.range-label { font-weight:bold; }.range-input {  width:50px; border:2px solid #2f5d50; border-radius:8px;  padding:4px 6px; text-align:center;  font-family:"Shippori Mincho B1","Noto Serif JP",serif;  background: linear-gradient(to bottom,#fffef8,#fdf6e3);  font-size:1rem;}.tilde { font-weight:bold; }
+.switch-container {  display:flex; align-items:center; justify-content:space-between;  margin-bottom:12px; font-size:1rem;}.switch { position:relative; display:inline-block; width:60px; height:26px; vertical-align:middle; }.switch input { opacity:0; width:0; height:0; }.slider {  position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0;  background:#f1e5c4; border:2px solid #2f5d50; border-radius:26px; transition:0.4s;}.slider:before {  position:absolute; content:""; height:20px; width:20px;  top:50%; transform:translateY(-50%); left:3px;  background:#2f5d50; border-radius:50%; transition:0.4s;}.switch input:checked + .slider { background:#d0a95b; }.switch input:checked + .slider:before { transform: translate(32px,-50%); }
+.settings-actions { text-align:right; margin-top:12px; }.settings-actions button {  background:#2f5d50; color:white; border:none;  padding:6px 14px; border-radius:6px; cursor:pointer;}
+@media(max-width:600px){  .container { gap:8px; }  .nav-btn { width:40px; height:40px; font-size:1.2rem; }  .settings-btn, .help-btn { padding:4px 8px; font-size:0.8rem; }}
+#helpBox a {  color: #2f5d50;  text-decoration: underline;}#helpBox a:hover {  color: #2f5d50;  text-decoration: underline;}
+#homeBtn {  position: fixed;  bottom: 0; right: 0; width: 70px; height: 70px; z-index: 30; display: flex; align-items: center; justify-content: center; background: rgba(47,93,80,0.9); border-top-left-radius: 12px; box-shadow: -2px -2px 6px rgba(0,0,0,0.3); cursor: pointer; transition: background 0.2s; padding: 8px; }#homeBtn:hover {  background: rgba(30,60,50,0.9);}#homeBtn img {  width: 100%;  height: 100%;  object-fit: contain; }  
+/* ★追加: テストボタンのスタイル */
+#testErrorBtn {
+    position: fixed;
+    bottom: 80px; 
+    right: 10px;
+    padding: 8px 12px;
+    background: #505050;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    z-index: 50;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#testErrorBtn:active {
+    background: #303030;
+}
 </style>
-</head>
-<body>
+</head><body>
 
-<button class="settings-btn" id="settingsBtn" aria-label="設定">設定</button>
-<button class="help-btn" id="helpBtn" aria-label="使い方">使い方</button>
+<div id="errorBox"></div>
 
-<div class="settings-overlay" id="settingsOverlay">
-  <div class="settings-box" id="settingsBox">
-    <h2>設定</h2>
-    <div class="range-container">
-      <span class="range-label">範囲:</span>
-      <input type="number" id="rangeStart" min="1" max="100" value="1" class="range-input">
-      <span class="tilde">〜</span>
-      <input type="number" id="rangeEnd" min="1" max="100" value="100" class="range-input">
-    </div>
-    <div class="switch-container">
-      <span>ランダムにする</span>
-      <label class="switch">
-        <input type="checkbox" id="randomMode">
-        <span class="slider"></span>
-      </label>
-    </div>
-    <div class="settings-actions"><button id="applySettings">OK</button></div>
-  </div>
-</div>
-
-<div class="settings-overlay" id="helpOverlay">
-  <div class="settings-box" id="helpBox">
-    <h2>使い方</h2>
-    <p>矢印またはボタンでカード切替。</p>
-    <p>マスクをタップすると下の句と作者が表示。</p>
-    <p>設定で範囲やランダム表示可能。</p>
-    <a href="use/">▷操作方法</a><br>
-    <a href="add-app/">▷アプリケーションの追加方法</a><br>
-    <a href="news/">▷お知らせ</a><br>
-    <a href="terms-of-service/">▷利用規約</a><br>
-    <div class="settings-actions"><button id="closeHelp">OK</button></div>
-  </div>
-</div>
-
+<button class="settings-btn" id="settingsBtn" aria-label="設定">設定</button><button class="help-btn" id="helpBtn" aria-label="使い方">使い方</button>
+<div class="settings-overlay" id="settingsOverlay">  <div class="settings-box" id="settingsBox">    <h2>設定</h2>    <div class="range-container">      <span class="range-label">範囲:</span>      <input type="number" id="rangeStart" min="1" max="100" value="1" class="range-input">      <span class="tilde">〜</span>      <input type="number" id="rangeEnd" min="1" max="100" value="100" class="range-input">    </div>    <div class="switch-container">      <span>ランダムにする</span>      <label class="switch">        <input type="checkbox" id="randomMode">        <span class="slider"></span>      </label>    </div>    <div class="settings-actions"><button id="applySettings">OK</button></div>  </div></div>
+<div class="settings-overlay" id="helpOverlay">  <div class="settings-box" id="helpBox">    <h2>使い方</h2>    <p>矢印またはボタンでカード切替。</p>    <p>マスクをタップすると下の句と作者が表示。</p>
+    <p>ヒント<span class="hint-img-inline">💡</span>ボタンで一文字ヒント。マスクをタップで答え表示。</p>
+    <p>設定で範囲やランダム表示可能。</p>    <a href="use/">▷操作方法</a><br>    <a href="add-app/">▷アプリケーションの追加方法</a><br>    <a href="news/">▷お知らせ</a><br>    <a href="terms-of-service/">▷利用規約</a><br>    <div class="settings-actions"><button id="closeHelp">OK</button></div>  </div></div>
 <div class="container">
   <button class="nav-btn" id="prevBtn" aria-label="前のカード">◀</button>
   <div class="card" id="card">
     <div id="kami" class="col kami"></div>
-    <div class="col shimo"><div id="shimoText"></div><div id="mask" class="mask">？</div></div>
+    <div class="col shimo" id="shimoCol">
+      </div>
     <div id="author" class="author"></div>
     <div id="number" class="number"></div>
+    <button class="hint-btn" id="hintBtn" aria-label="ヒント">
+        ヒント
+    </button>
   </div>
   <button class="nav-btn" id="nextBtn" aria-label="次のカード">▶</button>
 </div>
-  
-<!-- ホームボタン -->
-<a href="https://symphony100.github.io/symphony/study/" id="homeBtn" aria-label="ホーム" title="ホーム">
-  <img src="home-icon.png" alt="ホーム" />
-</a>
-<script>
-let allCards = [];
-let remainingCards = [], currentCard = null, showAnswer = false;
+<a href="https://symphony100.github.io/symphony/study/" id="homeBtn" aria-label="ホーム" title="ホーム">  <img src="home-icon.png" alt="ホーム" /></a>
 
-const kamiEl = document.getElementById("kami"),
-      shimoTextEl = document.getElementById("shimoText"),
-      maskEl = document.getElementById("mask"),
-      authorEl = document.getElementById("author"),
-      numberEl = document.getElementById("number"),
-      cardEl = document.getElementById("card"),
-      prevBtn = document.getElementById("prevBtn"),
+<script>
+// --- 変数 ---
+let allCards = [];
+let remainingCards = [], currentCard = null, hintState = 0; 
+
+// --- DOM要素 ---
+const kamiEl = document.getElementById("kami"),      
+      shimoCol = document.getElementById("shimoCol"),
+      authorEl = document.getElementById("author"),      
+      numberEl = document.getElementById("number"),      
+      cardEl = document.getElementById("card"),      
+      prevBtn = document.getElementById("prevBtn"),      
       nextBtn = document.getElementById("nextBtn"),
-      settingsBtn = document.getElementById("settingsBtn"),
+      hintBtn = document.getElementById("hintBtn"),
       settingsOverlay = document.getElementById("settingsOverlay"),
+      helpOverlay = document.getElementById("helpOverlay"),
       settingsBox = document.getElementById("settingsBox"),
+      applySettingsBtn = document.getElementById("applySettings"),
       rangeStartEl = document.getElementById("rangeStart"),
       rangeEndEl = document.getElementById("rangeEnd"),
       randomModeEl = document.getElementById("randomMode"),
-      applySettingsBtn = document.getElementById("applySettings"),
-      helpBtn = document.getElementById("helpBtn"),
-      helpOverlay = document.getElementById("helpOverlay"),
-      closeHelp = document.getElementById("closeHelp");
+      errorBox = document.getElementById("errorBox");
 
+// PNG画像へのインライン表示（テキスト/絵文字対応に修正）
+function insertHelpTextForHint() {
+    const hintTextContainer = document.querySelector('.hint-img-inline');
+    if (hintTextContainer) {
+        hintTextContainer.textContent = '💡'; 
+    }
+}
+window.addEventListener("load", insertHelpTextForHint);
+
+// --- 画面全体のタップアニメーション ---
+function tapAnimation(e) {
+    // ボタンやリンクなど、特定要素からのタップは除外
+    if (e.target.closest('button, a, input, .settings-box, .card')) return;
+
+    document.body.classList.add('tapped');
+    setTimeout(() => {
+        document.body.classList.remove('tapped');
+    }, 100); 
+}
+document.body.addEventListener('touchstart', tapAnimation, { passive: true });
+
+
+// --- エラー表示関数 ---
+let errorTimeout;
+function showError(message) {
+    clearTimeout(errorTimeout);
+    
+    errorBox.textContent = 'エラー: ' + message;
+    errorBox.classList.add("show");
+    
+    // 5秒後に消す
+    errorTimeout = setTimeout(() => {
+        errorBox.classList.remove("show");
+    }, 5000);
+}
+
+
+// --- 処理 ---
 async function loadCards() {
-  try {
-    const res = await fetch("https://symphony100.github.io/symphony/study/karuta/cards.json");
-    allCards = await res.json();
-    loadSettings();
-    applySettings();
-  } catch (e) {
-    console.error("カードデータの読み込みに失敗:", e);
-    kamiEl.textContent = "カードデータが読み込めませんでした。";
-    shimoTextEl.textContent = "";
-    maskEl.style.display = "none";
-    prevBtn.style.display = "none";
-    nextBtn.style.display = "none";
+  try {    
+    const res = await fetch("https://symphony100.github.io/symphony/study/karuta/cards.json");    
+    if (!res.ok) {
+        throw new Error('データファイルの取得に失敗しました。');
+    }
+    allCards = await res.json();    
+    loadSettings();    
+    applySettings();  
+  } catch (e) {    
+    let errorMessage = e.message || "ネットワークの接続が切断されました。もう一度アプリを起動してください。";
+    console.error("読み込み失敗:", errorMessage);
+    
+    showError('百人一首データの読み込みに失敗しました (' + errorMessage + ')'); 
+    
+    kamiEl.textContent = "百人一首データの読み込みに失敗しました。";
+    shimoCol.innerHTML = "";
+    numberEl.textContent = "";
+    authorEl.textContent = "";
+    hintBtn.style.display = "none";
   }
 }
 
 function loadSettings(){
-  const saved = localStorage.getItem("karutaSettings");
-  if(saved){
-    try {
-      const s = JSON.parse(saved);
-      if(s.rangeStart) rangeStartEl.value = s.rangeStart;
-      if(s.rangeEnd)   rangeEndEl.value   = s.rangeEnd;
-      if(typeof s.randomMode === "boolean") randomModeEl.checked = s.randomMode;
-    } catch(e){ console.warn("設定の復元に失敗:", e); }
+  const saved = localStorage.getItem("karutaSettings");  
+  if(saved){    
+    try {      
+      const s = JSON.parse(saved);      
+      if(s.rangeStart) rangeStartEl.value = s.rangeStart;      
+      if(s.rangeEnd)   rangeEndEl.value   = s.rangeEnd;      
+      if(typeof s.randomMode === "boolean") randomModeEl.checked = s.randomMode;    
+    } catch(e){}  
   }
 }
-
 function saveSettings(start,end,random){
-  const settings = { rangeStart: start, rangeEnd: end, randomMode: random };
-  localStorage.setItem("karutaSettings", JSON.stringify(settings));
+  localStorage.setItem("karutaSettings", JSON.stringify({ rangeStart: start, rangeEnd: end, randomMode: random }));
 }
 
-function adjustFontSize(el,maxFont=1.4){
-  let fontSize=maxFont;
-  el.style.fontSize=fontSize+"rem";
-  while(el.scrollHeight>el.clientHeight && fontSize>0.8){
-    fontSize-=0.05;
-    el.style.fontSize=fontSize+"rem";
+function adjustFontSize(el){
+  let fontSize=1.4;  
+  el.style.fontSize=fontSize+"rem";  
+  while(el.scrollHeight > el.clientHeight && fontSize > 0.8){    
+    fontSize-=0.05;    
+    el.style.fontSize=fontSize+"rem";  
   }
 }
 
 function renderCard(card, direction="right"){
-  currentCard=card;
-  kamiEl.style.fontSize="";
-  kamiEl.style.width="";
-  kamiEl.style.textAlign="";
-  cardEl.style.display="flex";
-  cardEl.style.flexDirection="row-reverse";
-  cardEl.style.alignItems="center";
-  cardEl.style.justifyContent="center";
-
-  kamiEl.textContent=card.kami;
-  adjustFontSize(kamiEl);
-  shimoTextEl.textContent=card.shimo;
-  numberEl.textContent=card.id;
-  maskEl.classList.remove("reveal");
-  maskEl.style.opacity="1";
-  maskEl.style.transform="none";
-  maskEl.style.display="block";
-  authorEl.textContent="";
-  showAnswer=false;
-  prevBtn.style.display="flex";
-  nextBtn.style.display="flex";
-
+  currentCard = card;
+  hintState = 0;
+  
+  // スタイルリセット
+  kamiEl.style.fontSize=""; kamiEl.style.width=""; kamiEl.style.textAlign="";
   cardEl.classList.remove("slide-in-left","slide-in-right");
   void cardEl.offsetWidth;
   cardEl.classList.add(direction==="right"?"slide-in-right":"slide-in-left");
+  
+  kamiEl.textContent = card.kami;
+  adjustFontSize(kamiEl);
+  numberEl.textContent = card.id;
+  authorEl.textContent = "";
+  
+  // 下の句エリアをリセット
+  shimoCol.innerHTML = ""; 
+  shimoCol.style.opacity = '1'; 
+  
+  // 全体マスク要素を作成
+  const maskDiv = document.createElement("div");
+  maskDiv.className = "full-mask";
+  maskDiv.onclick = show; 
+  shimoCol.appendChild(maskDiv); 
+
+  hintBtn.classList.remove("fade-out"); 
+  hintBtn.style.display = "flex"; 
+  prevBtn.style.display="flex";
+  nextBtn.style.display="flex";
 }
 
-maskEl.addEventListener("click",()=>{ if(!showAnswer) show(); });
-function show(){ maskEl.classList.add("reveal"); authorEl.textContent=currentCard.author; showAnswer=true; }
+// 答えを表示する関数 
+function show(){ 
+  if(hintState === 2) return;
+  
+  const currentMask = shimoCol.querySelector('.full-mask, .hint-mask');
+  
+  // 1. マスクをフェードアウトさせる
+  if (currentMask) {
+    currentMask.classList.add("fade-out");
+  }
+  
+  // 2. 下の句をふわっと表示する
+  shimoCol.style.opacity = '0'; 
+  setTimeout(() => {
+    // ShimoColを答えのテキストに書き換え
+    shimoCol.innerHTML = ""; 
+    const textNode = document.createTextNode(currentCard.shimo);
+    shimoCol.appendChild(textNode);
+    shimoCol.style.opacity = '1'; // フェードイン
+  }, 200); 
 
-function nextCard(){
-  if(!showAnswer){ show(); return; }
+  authorEl.textContent = currentCard.author; 
+  hintState = 2; 
+  hintBtn.classList.add("fade-out"); // ヒントボタンをフェードアウト
+  setTimeout(() => {
+    hintBtn.style.display = "none";
+  }, 200); 
+}
+
+// ヒントを表示する関数 
+function showFirstCharHint(){
+  if(hintState !== 0) return;
+  
+  const firstChar = currentCard.shimo.charAt(0);
+  
+  // マスクをフェードアウト
+  const fullMask = shimoCol.querySelector('.full-mask');
+  if (fullMask) {
+    fullMask.classList.add("fade-out");
+  }
+
+  // DOMを書き換え：「一文字目」＋「ヒントマスク」にする
+  shimoCol.innerHTML = ""; // クリア
+  
+  // 1. 一文字目 (spanでフォントを確実に適用)
+  const charSpan = document.createElement("span");
+  charSpan.textContent = firstChar;
+  shimoCol.appendChild(charSpan);
+  
+  // 2. ヒントマスク (四角)
+  const hintDiv = document.createElement("div");
+  hintDiv.className = "hint-mask";
+  hintDiv.onclick = show;
+  shimoCol.appendChild(hintDiv);
+  
+  // フェードアウトしたフルマスクをDOMから削除 (200ms後に)
+  setTimeout(() => {
+    if(fullMask && fullMask.parentNode) fullMask.parentNode.removeChild(fullMask);
+  }, 200); 
+
+  hintState = 1; 
+  // ★修正: ヒント表示後、ヒントボタンを非表示にする
+  hintBtn.style.display = "none"; 
+}
+
+hintBtn.addEventListener("click", () => {
+    if(currentCard && hintState === 0) showFirstCharHint();
+});
+
+// 次へ・前へ
+function nextCard(){ 
+  if(hintState !== 2 && currentCard){ show(); return; } 
   if(remainingCards.length===0){
-    cardEl.style.display="flex";
-    cardEl.style.flexDirection="column";
-    cardEl.style.alignItems="center";
-    cardEl.style.justifyContent="center";
+    // 終了処理
     kamiEl.textContent="お疲れ様でした！";
-    kamiEl.style.width="100%";
-    kamiEl.style.textAlign="center";
-    kamiEl.style.fontSize="2rem";
-    shimoTextEl.textContent="";
-    numberEl.textContent="";
-    authorEl.textContent="";
-    maskEl.style.display="none";
-    prevBtn.style.display="none";
-    nextBtn.style.display="none";
-
+    shimoCol.innerHTML = "";
+    numberEl.textContent=""; authorEl.textContent="";
+    hintBtn.style.display="none"; prevBtn.style.display="none"; nextBtn.style.display="none";
     if(!document.getElementById("restartBtn")){
       const btn=document.createElement("button");
       btn.id="restartBtn";
       btn.textContent="もう一度プレイ";
-      btn.style.marginTop="20px";
-      btn.style.padding="8px 16px";
-      btn.style.background="#2f5d50";
-      btn.style.color="white";
-      btn.style.border="none";
-      btn.style.borderRadius="6px";
-      btn.style.cursor="pointer";
+      btn.style.marginTop="20px"; btn.style.padding="8px 16px"; btn.style.background="#2f5d50"; btn.style.color="white"; btn.style.border="none"; btn.style.borderRadius="6px"; btn.style.cursor="pointer";
       btn.addEventListener("click",()=>{ applySettings(); btn.remove(); });
       cardEl.appendChild(btn);
     }
@@ -373,70 +477,98 @@ function nextCard(){
   }
 }
 
-function prevCard(){
+function prevCard(){  
   if(!randomModeEl.checked && currentCard){
-    let idx=allCards.findIndex(c=>c.id===currentCard.id);
-    let prevIdx=(idx-1+allCards.length)%allCards.length;
+    let idx = allCards.findIndex(c=>c.id===currentCard.id);
+    let prevIdx = (idx-1+allCards.length)%allCards.length;
     renderCard(allCards[prevIdx],"left");
   }
 }
 
-document.addEventListener("keydown",e=>{
-  if(e.key==="ArrowRight"||e.key==="ArrowDown") nextCard();
-  else if(e.key==="ArrowLeft"||e.key==="ArrowUp") prevCard();
-});
-prevBtn.addEventListener("click",()=>prevCard());
-nextBtn.addEventListener("click",()=>nextCard());
+// オーバーレイ表示関数
+function showOverlay(overlayEl) {
+    overlayEl.style.display = "flex";
+    setTimeout(() => {
+        overlayEl.classList.add("show");
+    }, 10);
+}
+// オーバーレイ非表示関数 
+function hideOverlay(overlayEl) {
+    overlayEl.classList.remove("show");
+    setTimeout(() => {
+        overlayEl.style.display = "none";
+    }, 200); 
+}
 
-settingsBtn.addEventListener("click",()=>{ settingsOverlay.style.display="flex"; });
+// イベントリスナー
+document.addEventListener("keydown",e=>{ if(e.key==="ArrowRight"||e.key==="ArrowDown") nextCard(); else if(e.key==="ArrowLeft"||e.key==="ArrowUp") prevCard(); });
+prevBtn.addEventListener("click",prevCard);
+nextBtn.addEventListener("click",nextCard);
+document.getElementById("settingsBtn").addEventListener("click",()=>{ showOverlay(settingsOverlay); });
 applySettingsBtn.addEventListener("click",applySettings);
-settingsOverlay.addEventListener("click",e=>{ if(!settingsBox.contains(e.target)) settingsOverlay.style.display="none"; });
+settingsOverlay.addEventListener("click",e=>{ 
+    const settingsBox = document.getElementById("settingsBox");
+    if (e.target.id === 'settingsOverlay' || (e.target.parentElement && e.target.parentElement.id === 'settingsOverlay')) {
+        hideOverlay(settingsOverlay); 
+    }
+});
+document.getElementById("helpBtn").addEventListener("click",()=>{ showOverlay(helpOverlay); });
+document.getElementById("closeHelp").addEventListener("click",()=>{ hideOverlay(helpOverlay); });
+document.getElementById("helpOverlay").addEventListener("click",e=>{ 
+    const helpBox = document.getElementById("helpBox");
+    if (e.target.id === 'helpOverlay' || (e.target.parentElement && e.target.parentElement.id === 'helpOverlay')) {
+        hideOverlay(helpOverlay);
+    }
+});
 
-helpBtn.addEventListener("click",()=>{ helpOverlay.style.display="flex"; });
-closeHelp.addEventListener("click",()=>{ helpOverlay.style.display="none"; });
-helpOverlay.addEventListener("click",e=>{ if(!document.getElementById("helpBox").contains(e.target)) helpOverlay.style.display="none"; });
-
-function applySettings(){
-  let start=parseInt(rangeStartEl.value,10),
-      end=parseInt(rangeEndEl.value,10);
-
-  if(start<1) start=1;
-  if(end>allCards.length) end=allCards.length;
-  if(start>end) [start,end]=[end,start];
-
-  saveSettings(start,end,randomModeEl.checked);
-
-  remainingCards = allCards.slice(start-1,end);
-  if(randomModeEl.checked) remainingCards = shuffle(remainingCards);
-
-  renderCard(remainingCards.shift(),"right");
-  settingsOverlay.style.display="none";
-}
-
-function shuffle(array){
-  let arr=array.slice();
-  for(let i=arr.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]]=[arr[j],arr[i]];
+function applySettings(){  
+  if(allCards.length === 0) {
+    showError("データが読み込まれていないため、設定を適用できません。"); 
+    hideOverlay(settingsOverlay);
+    return;
   }
-  return arr;
+  
+  let start=parseInt(rangeStartEl.value,10), end=parseInt(rangeEndEl.value,10);
+  if(start<1) start=1; if(end>allCards.length) end=allCards.length; if(start>end) [start,end]=[end,start];
+  saveSettings(start,end,randomModeEl.checked);
+  remainingCards = allCards.slice(start-1,end); 
+  if(randomModeEl.checked) remainingCards = shuffle(remainingCards);
+  
+  // 再開ボタンがあれば消す
+  const rb = document.getElementById("restartBtn"); if(rb) rb.remove();
+  
+  // ★修正: テストボタンがあれば消す
+  const testBtn = document.getElementById("testErrorBtn"); if(testBtn) testBtn.remove();
+  
+  renderCard(remainingCards.shift(),"right");  
+  hideOverlay(settingsOverlay);
 }
 
-// モバイルスワイプ
+function shuffle(array){  
+  let arr=array.slice(); for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr;
+}
+
+// タッチ操作
 let touchStartX=0;
 cardEl.addEventListener("touchstart",e=>{ touchStartX=e.touches[0].clientX; });
-cardEl.addEventListener("touchend",e=>{
-  let touchEndX=e.changedTouches[0].clientX;
-  if(touchEndX-touchStartX>50) prevCard();
-  else if(touchStartX-touchEndX>50) nextCard();
+cardEl.addEventListener("touchend",e=>{  
+  let touchEndX=e.changedTouches[0].clientX;  
+  if(touchEndX-touchStartX>50) prevCard(); else if(touchStartX-touchEndX>50) nextCard();
 });
-
-// 初期表示
-window.addEventListener("load", loadCards);
-
-// モバイル用: ピンチズーム/ダブルタップズーム無効化
-document.addEventListener('touchstart',function(e){ if(e.touches.length>1) e.preventDefault();},{passive:false});
+document.addEventListener('touchstart',function(e){ 
+    if(e.touches.length > 2) return; 
+},{passive:false});
+// ダブルタップによる拡大のみ禁止を維持
 document.addEventListener('dblclick',function(e){ e.preventDefault(); },{passive:false});
-</script>
-</body>
-</html>
+
+// --- テストボタンイベントリスナー (コードで簡単に消せるように、下のコメントブロックに記述) ---
+/*
+document.getElementById("testErrorBtn").addEventListener("click", () => {
+    // 発生させるエラーの例
+    showError("テスト用エラーが発生しました。ネットワークまたはデータを確認してください。");
+});
+*/
+
+// 初期実行
+window.addEventListener("load", loadCards);
+</script></body></html>
