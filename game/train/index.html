@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="https://symphony100.github.io/game/train/train-logo.png">
+    <title>鉄道シュミレーター</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 背景画像とタイトル */
+        .header {
+            position: relative;
+            background-image: url('https://symphony100.github.io/game/train/train-yamanote-line.png'); /* 画像のパスを指定 */
+            background-size: cover;
+            background-position: center;
+            height: 300px;
+        }
+
+        .title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+            color: white; /* 文字色を白に */
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black; /* 黒いふち */
+        }
+
+        /* 白背景 */
+        .content {
+            background-color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* ボタンスタイル */
+        .button {
+            background-color: #87CEEB; /* 水色 */
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: block; /* ボタンを改行 */
+            font-size: 16px;
+            margin: 10px auto; /* 中央に配置 */
+            width: 200px;
+            border-radius: 4px;
+        }
+
+        .button:hover {
+            background-color: #66b3cc; /* ホバー時の色 */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ヘッダー画像とタイトル -->
+    <div class="header">
+        <div class="title">鉄道ドア開閉シュミレーター</div>
+    </div>
+
+    <!-- 白背景のコンテンツ -->
+    <div class="content">
+        <a href="menu/index.html" class="button">スタート</a>
+        <a href="https://symphony100.github.io/game/" class="button">ホームページに戻る</a>
+    </div>
+
+</body>
+</html>
