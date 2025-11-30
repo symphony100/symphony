@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="https://symphony100.github.io/game/train/train-logo.png">
+    <title>鉄道シュミレーター</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 背景画像とタイトル */
+        .header {
+            position: relative;
+            background-image: url('https://symphony100.github.io/game/train/train-yamanote-line.png'); /* 画像のパスを指定 */
+            background-size: cover;
+            background-position: center;
+            height: 300px;
+        }
+
+        .title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+            color: white; /* 文字色を白に */
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black; /* 黒いふち */
+        }
+
+        /* 白背景 */
+        .content {
+            background-color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* メニュータイトル */
+        .menu-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black; /* 黒いふち */
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* ボタンスタイル */
+        .button {
+            background-color: #87CEEB; /* 水色 */
+            color: white;
+            padding: 20px 50px; /* 余白を大きく */
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center; /* アイコンとテキストを縦揃え */
+            justify-content: center; /* 中央揃え */
+            font-size: 18px;
+            margin: 15px auto; /* 中央に配置 */
+            width: 250px; /* 大きめのボタン */
+            border-radius: 4px;
+            gap: 10px; /* アイコンとテキストの間に余白 */
+        }
+
+        .button img {
+            width: 24px; /* アイコンの大きさ */
+            height: 24px;
+        }
+
+        .button:hover {
+            background-color: #66b3cc; /* ホバー時の色 */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ヘッダー画像とタイトル -->
+    <div class="header">
+        <div class="title"></div>
+        <div class="menu-title">メニュー</div> <!-- メニュータイトル -->
+    </div>
+
+    <!-- 白背景のコンテンツ -->
+    <div class="content">
+        <a href="https://symphony100.github.io/game/train/menu/JR/index.html" class="button">
+            <img src="https://symphony100.github.io/game/train/JR-icon.png" alt="JR Icon">
+ 　　JR　 　   
+        </a>
+        <a href="simulation-page.html" class="button">
+            <img src="https://symphony100.github.io/game/train/train-logo.png" alt="Private Railway Icon"> 私鉄・その他
+        </a>
+
+        <a href="https://symphony100.github.io/game/train/" class="button">元のサイトに戻る。
+        </a>
+    </div>
+
+</body>
+</html>
