@@ -229,7 +229,7 @@ body {
 <button class="settings-btn" id="settingsBtn" aria-label="設定">設定</button><button class="help-btn" id="helpBtn" aria-label="使い方">使い方</button>
 <div class="settings-overlay" id="settingsOverlay">  <div class="settings-box" id="settingsBox">    <h2>設定</h2>    <div class="range-container">      <span class="range-label">範囲:</span>      <input type="number" id="rangeStart" min="1" max="100" value="1" class="range-input">      <span class="tilde">〜</span>      <input type="number" id="rangeEnd" min="1" max="100" value="100" class="range-input">    </div>    <div class="switch-container">      <span>ランダムにする</span>      <label class="switch">        <input type="checkbox" id="randomMode">        <span class="slider"></span>      </label>    </div>    <div class="settings-actions"><button id="applySettings">OK</button></div>  </div></div>
 <div class="settings-overlay" id="helpOverlay">  <div class="settings-box" id="helpBox">    <h2>使い方</h2>    <p>矢印またはボタンでカード切替。</p>    <p>マスクをタップすると下の句と作者が表示。</p>
-    <p>ヒント<span class="hint-img-inline">💡</span>ボタンで一文字ヒント。マスクをタップで答え表示。</p>
+    <p>ヒント<span class="hint-img-inline">ヒント</span>ボタンで一文字ヒント。マスクをタップで答え表示。</p>
     <p>設定で範囲やランダム表示可能。</p>    <a href="use/">▷操作方法</a><br>    <a href="add-app/">▷アプリケーションの追加方法</a><br>    <a href="news/">▷お知らせ</a><br>    <a href="terms-of-service/">▷利用規約</a><br>    <div class="settings-actions"><button id="closeHelp">OK</button></div>  </div></div>
 <div class="container">
   <button class="nav-btn" id="prevBtn" aria-label="前のカード">◀</button>
@@ -245,7 +245,7 @@ body {
   </div>
   <button class="nav-btn" id="nextBtn" aria-label="次のカード">▶</button>
 </div>
-<a href="https://symphony100.github.io/symphony/study/" id="homeBtn" aria-label="ホーム" title="ホーム">  <img src="home-icon.png" alt="ホーム" /></a>
+<a href="https://symphony100.github.io/symphony/study/play/" id="homeBtn" aria-label="ホーム" title="ホーム">  <img src="home-icon.png" alt="ホーム" /></a>
 
 <script>
 // --- 変数 ---
@@ -274,7 +274,7 @@ const kamiEl = document.getElementById("kami"),
 function insertHelpTextForHint() {
     const hintTextContainer = document.querySelector('.hint-img-inline');
     if (hintTextContainer) {
-        hintTextContainer.textContent = '💡'; 
+        hintTextContainer.textContent = 'ヒント'; 
     }
 }
 window.addEventListener("load", insertHelpTextForHint);
@@ -310,7 +310,7 @@ function showError(message) {
 // --- 処理 ---
 async function loadCards() {
   try {    
-    const res = await fetch("https://symphony100.github.io/symphony/study/karuta/cards.json");    
+    const res = await fetch("https://symphony100.github.io/symphony/study/karuta/play/cards.json");    
     if (!res.ok) {
         throw new Error('データファイルの取得に失敗しました。');
     }
