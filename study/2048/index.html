@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048 Game</title>
+    
+    <style>
+        /* --- CSS部分 --- */
+        :root {
+            --tile-size: 80px;
+            --gap: 10px;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #faf8ef;
+            color: #776e65;
+            user-select: none; /* テキスト選択を無効化 */
+        }
+
+        #game-container {
+            text-align: center;
+            padding: 10px;
+        }
+
+        /* --- ヘッダーとボタン --- */
+        #header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: calc(4 * var(--tile-size) + 5 * var(--gap)); /* ボードの幅に合わせる */
+            margin-bottom: 15px;
+        }
+
+        .header-column {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            color: #776e65;
+            margin: 0;
+        }
+
+        #score-container {
+            background-color: #bbada0;
+            color: #f9f6f2;
+            padding: 8px 12px;
+            border-radius: 3px;
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 1;
+            margin-top: 5px;
+        }
+        
+        #score-container span {
+            font-size: 24px;
+            display: block;
+        }
+
+        #controls-info {
+            font-size: 14px;
+            color: #8f7a66;
+            margin-bottom: 15px;
+        }
+
+        /* --- 新しいゲームボタンのデザイン (デザイン統一) --- */
+        .game-button {
+            background-color: #8f7a66; /* タイルの背景色に近い色 */
+            color: #f9f6f2;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 3px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.1s;
+            margin-top: 5px; /* スコアの下に配置 */
+        }
+        
+        .game-button:hover {
+            background-color: #9f8c7b;
+        }
+
+
+        /* --- ボード --- */
+        #board {
+            display: grid;
+            grid-template-columns: repeat(4, var(--tile-size));
+            grid-template-rows: repeat(4, var(--tile-size));
+            gap: var(--gap);
+            background-color: #bbada0;
+            padding: var(--gap);
+            border-radius: 6px;
+            position: relative; 
+            touch-action: none; 
+            overflow: hidden;
+        }
+
+        .cell {
+            width: var(--tile-size);
+            height: var(--tile-size);
+            background-color: #ccc0b3;
+            border-radius: 3px;
+        }
+
+        /* --- タイル共通スタイル --- */
+        .tile {
+            width: var(--tile-size);
+            height: var(--tile-size);
+            border-radius: 3px;
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            /* transformで位置とサイズを制御 */
+            transition: transform 100ms ease-out; 
+            z-index: 2; 
+            box-sizing: border-box; 
+            /* JSで設定する位置 */
+            transform: translate(var(--tile-c), var(--tile-r));
+        }
+        
+        /* タイル出現アニメーション */
+        .tile-new {
+            animation: appear 200ms ease-in;
+        }
+        
+        @keyframes appear {
+            0% {
+                opacity: 0;
+                transform: translate(var(--tile-c), var(--tile-r)) scale(0);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(var(--tile-c), var(--tile-r)) scale(1);
+            }
+        }
+        
+        /* タイル結合アニメーション */
+        .tile-merged {
+            animation: pop 150ms ease-in-out;
+        }
+
+        @keyframes pop {
+            0% { transform: translate(var(--tile-c), var(--tile-r)) scale(1); }
+            50% { transform: translate(var(--tile-c), var(--tile-r)) scale(1.1); }
+            100% { transform: translate(var(--tile-c), var(--tile-r)) scale(1); }
+        }
+
+        /* --- 数字ごとの色の設定 (前回のものを使用) --- */
+        .tile-2 { background-color: #eee4da; color: #776e65; font-size: 35px; }
+        .tile-4 { background-color: #ede0c8; color: #776e65; font-size: 35px; }
+        .tile-8 { background-color: #f2b179; color: #f9f6f2; font-size: 35px; }
+        .tile-16 { background-color: #f59563; color: #f9f6f2; font-size: 30px; }
+        .tile-32 { background-color: #f67c5f; color: #f9f6f2; font-size: 30px; }
+        .tile-64 { background-color: #f65e3b; color: #f9f6f2; font-size: 30px; }
+        .tile-128 { background-color: #edcf72; color: #f9f6f2; font-size: 25px; }
+        .tile-256 { background-color: #edcc61; color: #f9f6f2; font-size: 25px; }
+        .tile-512 { background-color: #edc850; color: #f9f6f2; font-size: 25px; }
+        .tile-1024 { background-color: #edc53f; color: #f9f6f2; font-size: 20px; }
+        .tile-2048 { background-color: #edc22e; color: #f9f6f2; font-size: 20px; }
+        
+        .tile > span {
+            line-height: var(--tile-size);
+        }
+
+        .hidden { display: none !important; }
+
+        /* --- ゲームオーバーメッセージ --- */
+        #game-over-message {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(238, 228, 218, 0.85); /* 不透明度を少し上げて強調 */
+            border-radius: 6px;
+            z-index: 10;
+        }
+        
+        #game-over-message h2 {
+            color: #8f7a66;
+            margin-bottom: 20px;
+        }
+        
+        /* ゲームオーバー画面のボタンを統一デザインにする */
+        #game-over-message .game-button {
+            margin-top: 0;
+            padding: 12px 25px;
+            font-size: 20px;
+        }
+
+        /* --- CSS終わり --- */
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        
+        <div id="header-row">
+            <h1>2048</h1>
+            <div class="header-column">
+                <div id="score-container">
+                    SCORE 
+                    <span id="score">0</span>
+                </div>
+                <button onclick="initGame(true)" class="game-button">新しいゲーム</button>
+            </div>
+        </div>
+
+        <div id="controls-info">
+            矢印キー又はスワイプで操作
+        </div>
+
+        <div id="board">
+            </div>
+
+    </div>
+
+    <script>
+        // --- JavaScript部分 ---
+        const SIZE = 4;
+        const STORAGE_KEY = '2048_game_state'; // ローカルストレージのキー
+        
+        let board = [];
+        let score = 0;
+        let isGameOver = false;
+        let isGameWon = false;
+        let isMoved = false; 
+
+        const boardElement = document.getElementById('board');
+        const scoreElement = document.getElementById('score');
+        
+        // スワイプ変数
+        let touchStartX = 0;
+        let touchStartY = 0;
+        const SWIPE_THRESHOLD = 50;
+
+        // --- 初期化と描画 ---
+
+        /**
+         * @brief ゲーム状態をローカルストレージに保存する
+         */
+        function saveGameState() {
+            const gameState = {
+                board: board,
+                score: score,
+                isGameWon: isGameWon
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
+        }
+
+        /**
+         * @brief ゲーム状態をローカルストレージから読み込む
+         * @returns {boolean} - 読み込みに成功したか
+         */
+        function loadGameState() {
+            const savedState = localStorage.getItem(STORAGE_KEY);
+            if (savedState) {
+                const gameState = JSON.parse(savedState);
+                board = gameState.board;
+                score = gameState.score;
+                isGameWon = gameState.isGameWon;
+                isGameOver = false; // 読み込み時は常にプレイ可能状態
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * @brief ゲームを開始/初期化する
+         * @param {boolean} forceNew - 強制的に新しいゲームを開始するか
+         */
+        function initGame(forceNew = false) {
+            // 強制新規ゲームでなく、保存された状態があればそれを読み込む
+            if (!forceNew && loadGameState()) {
+                // 読み込み完了
+            } else {
+                // 新しいゲームを開始
+                board = Array(SIZE).fill(0).map(() => Array(SIZE).fill(0));
+                score = 0;
+                isGameWon = false;
+                addRandomTile();
+                addRandomTile();
+                saveGameState(); // 初期状態を保存
+            }
+            
+            isGameOver = false;
+            // ゲームオーバーメッセージを非表示にする
+            const existingMessage = document.getElementById('game-over-message');
+            if (existingMessage) existingMessage.remove();
+            
+            updateScore();
+            drawBoard();
+        }
+
+        /**
+         * @brief ランダムな空きマスに2または4のタイルを配置する
+         * @param {boolean} isNew - 新規配置であるか (アニメーション用)
+         */
+        function addRandomTile(isNew = true) {
+            if (isGameOver) return;
+            
+            const emptyCells = [];
+            for (let r = 0; r < SIZE; r++) {
+                for (let c = 0; c < SIZE; c++) {
+                    if (board[r][c] === 0) emptyCells.push({ r, c });
+                }
+            }
+
+            if (emptyCells.length === 0) {
+                checkGameOver();
+                return;
+            }
+
+            const index = Math.floor(Math.random() * emptyCells.length);
+            const { r, c } = emptyCells[index];
+            board[r][c] = Math.random() < 0.9 ? 2 : 4;
+            
+            // 新規タイルを即座に描画するためのフラグを設定 (アニメーション用)
+            if (isNew) {
+                drawTile(r, c, board[r][c], true);
+            }
+        }
+
+        /**
+         * @brief ボード配列の内容に基づいて、DOMを更新（タイルの描画）する
+         */
+        function drawBoard() {
+            // 背景のセルを描画
+            boardElement.innerHTML = ''; 
+            for (let i = 0; i < SIZE * SIZE; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                boardElement.appendChild(cell);
+            }
+            
+            // タイルを描画
+            for (let r = 0; r < SIZE; r++) {
+                for (let c = 0; c < SIZE; c++) {
+                    const value = board[r][c];
+                    if (value !== 0) {
+                        drawTile(r, c, value, false);
+                    }
+                }
+            }
+        }
+        
+        /**
+         * @brief 個別のタイルを描画する関数
+         * @param {number} r - 行
+         * @param {number} c - 列
+         * @param {number} value - タイルの値
+         * @param {boolean} isNew - 新規タイルかどうか (出現アニメーション用)
+         * @param {boolean} isMerged - 結合されたタイルかどうか (結合アニメーション用)
+         */
+        function drawTile(r, c, value, isNew, isMerged = false) {
+            const TILE_OFFSET = 10; 
+            const TILE_SIZE = 80;
+
+            const tile = document.createElement('div');
+            tile.classList.add('tile', `tile-${value}`);
+            if (isNew) tile.classList.add('tile-new');
+            if (isMerged) tile.classList.add('tile-merged');
+
+            // タイルの位置をCSS変数で設定 (transformでアニメーションに対応)
+            const leftPos = c * (TILE_SIZE + TILE_OFFSET) + TILE_OFFSET;
+            const topPos = r * (TILE_SIZE + TILE_OFFSET) + TILE_OFFSET;
+            
+            tile.style.setProperty('--tile-c', `${leftPos}px`);
+            tile.style.setProperty('--tile-r', `${topPos}px`);
+
+            tile.innerHTML = `<span>${value}</span>`;
+            boardElement.appendChild(tile);
+        }
+
+        function updateScore() {
+            scoreElement.textContent = score;
+        }
+        
+        function showMessage(win) {
+            isGameOver = true;
+            localStorage.removeItem(STORAGE_KEY); // ゲームオーバー/勝利時は保存データを消す
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.id = 'game-over-message';
+            messageDiv.innerHTML = `
+                <h2>${win ? '2048達成!' : 'GAMEOVER!'}</h2>
+                <button onclick="initGame(true)" class="game-button">もう一度</button>
+            `;
+            boardElement.appendChild(messageDiv);
+        }
+        
+        function checkGameOver() {
+            if (isGameWon) return;
+
+            // 空きマスチェックと結合可能チェックは前回と同じ
+            for (let r = 0; r < SIZE; r++) {
+                for (let c = 0; c < SIZE; c++) {
+                    if (board[r][c] === 0) return;
+                    if (c < SIZE - 1 && board[r][c] === board[r][c + 1]) return;
+                    if (r < SIZE - 1 && board[r][c] === board[r + 1][c]) return;
+                }
+            }
+            showMessage(false);
+        }
+
+        // --- ゲームロジック (コア部分) ---
+        
+        /**
+         * @brief 一つの行/列を移動・結合する (左方向のロジックを一般化)
+         */
+        function operateLine(line) {
+            let scoreDelta = 0;
+            
+            // 1. ゼロを詰める
+            let newArray = line.filter(val => val !== 0);
+            
+            // 2. 結合する
+            for (let i = 0; i < newArray.length - 1; i++) {
+                if (newArray[i] !== 0 && newArray[i] === newArray[i + 1]) {
+                    newArray[i] *= 2; 
+                    scoreDelta += newArray[i];
+                    if (newArray[i] === 2048) isGameWon = true;
+                    newArray[i + 1] = 0; 
+                }
+            }
+            
+            // 3. 再度ゼロを詰めて、SIZEの長さにする
+            newArray = newArray.filter(val => val !== 0);
+            while (newArray.length < SIZE) {
+                newArray.push(0);
+            }
+            
+            const moved = JSON.stringify(line) !== JSON.stringify(newArray);
+            if (moved) isMoved = true;
+
+            return { line: newArray, scoreDelta };
+        }
+        
+        /**
+         * @brief ボードを90度時計回りに回転させる関数
+         */
+        function rotateBoard(b) {
+            const newBoard = Array(SIZE).fill(0).map(() => Array(SIZE).fill(0));
+            for (let r = 0; r < SIZE; r++) {
+                for (let c = 0; c < SIZE; c++) {
+                    newBoard[c][SIZE - 1 - r] = b[r][c];
+                }
+            }
+            return newBoard;
+        }
+
+        /**
+         * @brief ボード全体を左に移動させる (回転と組み合わせるための基本操作)
+         */
+        function moveLeftOnly() {
+            let totalScoreDelta = 0;
+
+            for (let r = 0; r < SIZE; r++) {
+                const result = operateLine(board[r]);
+                board[r] = result.line;
+                totalScoreDelta += result.scoreDelta;
+            }
+            return totalScoreDelta;
+        }
+
+        /**
+         * @brief 方向キー入力時のメイン処理
+         * @param {number} direction - 0:左, 1:上, 2:右, 3:下
+         */
+        function handleMove(direction) {
+            if (isGameOver) return;
+            
+            // 1. 盤面を回転させて左移動の形にする
+            let rotations = (4 - direction) % 4; 
+            for (let i = 0; i < rotations; i++) {
+                board = rotateBoard(board);
+            }
+
+            // 2. 左に移動させる
+            isMoved = false; 
+            const scoreDelta = moveLeftOnly();
+            score += scoreDelta;
+            
+            // 3. 元の方向に戻す
+            let reverseRotations = direction;
+            for (let i = 0; i < reverseRotations; i++) {
+                board = rotateBoard(board);
+            }
+
+            // 4. 移動があった場合のみ処理を進める
+            if (isMoved) {
+                // アニメーションのための時間稼ぎをしてから、新しいタイルを生成・描画・保存する
+                setTimeout(() => {
+                    addRandomTile(true); // 新規アニメーションフラグをtrue
+                    drawBoard(); // 全体の再描画 (結合アニメーションは省略)
+                    updateScore();
+                    saveGameState(); // 移動後の状態を保存
+                    
+                    if (isGameWon && !isGameOver) {
+                        showMessage(true);
+                    } else {
+                        checkGameOver();
+                    }
+                }, 100); // CSSのtransition時間と同じか少し長めに設定
+                
+            } else {
+                checkGameOver();
+            }
+        }
+
+        // --- キーボード操作 ---
+        function handleKeydown(event) {
+            if (isGameOver) return;
+            
+            let direction = -1; 
+            
+            switch (event.key) {
+                case 'ArrowLeft': case 'a': direction = 0; break;
+                case 'ArrowUp': case 'w': direction = 1; break;
+                case 'ArrowRight': case 'd': direction = 2; break;
+                case 'ArrowDown': case 's': direction = 3; break;
+                default: return; 
+            }
+            
+            handleMove(direction);
+            event.preventDefault();
+        }
+        
+        // --- スワイプ操作 ---
+        boardElement.addEventListener('touchstart', (event) => {
+            if (isGameOver) return;
+            touchStartX = event.touches[0].clientX;
+            touchStartY = event.touches[0].clientY;
+        }, { passive: false });
+
+        boardElement.addEventListener('touchend', (event) => {
+            if (isGameOver) return;
+
+            const touchEndX = event.changedTouches[0].clientX;
+            const touchEndY = event.changedTouches[0].clientY;
+            
+            const dx = touchEndX - touchStartX;
+            const dy = touchEndY - touchStartY;
+            
+            if (Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD) {
+                return;
+            }
+
+            let direction = -1;
+            
+            if (Math.abs(dx) > Math.abs(dy)) {
+                direction = dx > 0 ? 2 : 0; // 右(2) or 左(0)
+            } else {
+                direction = dy > 0 ? 3 : 1; // 下(3) or 上(1)
+            }
+            
+            if (direction !== -1) {
+                handleMove(direction);
+            }
+        });
+        
+        // --- メイン実行部分 ---
+        
+        document.addEventListener('keydown', handleKeydown);
+        initGame(false); // 起動時に保存データがあればロードする
+        
+    </script>
+</body>
+</html>
