@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>発車ベルスイッチシミュレーター</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* 1. 基本設定と背景 (マテリアルデザイン/ライトテーマ) */
+        body {
+            font-family: 'Roboto', 'Noto Sans JP', sans-serif;
+            text-align: center;
+            background-color: #f8f9fa; 
+            color: #3c4043; 
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Pointer Lock使用時、カーソルを隠す準備 */
+            cursor: default;
+        }
+
+        /* 2. メインコンテナ (カードスタイル) */
+        .container {
+            max-width: 800px;
+            width: 90%; 
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); 
+            transition: box-shadow 0.3s;
+        }
+
+        h1 {
+            color: #1a73e8;
+            font-size: 2.5em;
+            font-weight: 500; 
+            margin-bottom: 20px;
+        }
+        
+        /* 3. 操作説明パネル */
+        .instructions {
+            margin: 20px 0 30px 0;
+            font-size: 1em;
+            font-weight: 400;
+            color: #5f6368;
+            background-color: #e8f0fe;
+            padding: 15px;
+            border-radius: 8px; 
+            text-align: left;
+            border-left: 5px solid #1a73e8;
+        }
+
+        .instructions span {
+            display: block;
+            margin-bottom: 5px;
+            line-height: 1.5;
+        }
+
+        .instructions strong {
+            font-weight: 700;
+            color: #1a73e8; 
+        }
+        
+        /* 4. 設定項目 */
+        .setting-controls {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 25px;
+            padding: 15px 0;
+        }
+
+        .control-group {
+            margin: 15px 10px;
+            text-align: left;
+            flex-grow: 1;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #3c4043;
+            font-size: 0.9em;
+        }
+
+        select {
+            padding: 12px 16px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #dadce0;
+            background-color: #ffffff; 
+            color: #3c4043;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            appearance: none; 
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231a73e8'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        select:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 1px #1a73e8;
+            outline: none;
+        }
+        
+        /* 設定変更時のアニメーション */
+        .setting-controls .changed-setting {
+            animation: pulse-border 0.5s ease-out;
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(26, 115, 232, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(26, 115, 232, 0); }
+            100% { box-shadow: none; }
+        }
+
+        /* 5. 運行状態ボタンとスマホ用ON/OFFボタン */
+        .button-container {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #toggle-button {
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: 500;
+            color: white;
+            border: none;
+            border-radius: 28px; 
+            cursor: default;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            pointer-events: none;
+            min-width: 250px;
+            box-shadow: 0 2px 5px 0 rgba(0,0,0,0.26);
+            margin-bottom: 15px;
+        }
+
+        /* スマホ/タッチデバイス用ボタン */
+        .mobile-buttons {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .mobile-buttons button {
+            padding: 12px 25px;
+            font-size: 18px;
+            font-weight: 500;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        #mobile-on-button {
+            background-color: #4CAF50; 
+            color: white;
+        }
+
+        #mobile-off-button {
+            background-color: #D32F2F; 
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>発車ベルスイッチシミュレーター</h1>
+
+        <div class="instructions">
+            <span>
+                【PCユーザー】右クリックを押し続けるとメロディーが流れ、離すと停止します。<br>
+                Pointer Lock APIにより、右クリック中はカーソルが非表示になり、固定されます。<br>
+                ESCキーを押すとロックが解除されます。
+            </span>
+            <hr style="border: 0; border-top: 1px solid #c8d1e2; margin: 10px 0;">
+            <span>ショートカットキーで設定を素早く変更できます。</span>
+            <span>１：発車メロディー変更 → <strong id="melody-current-key">water crown</strong></span>
+            <span>２：動作モード変更 → <strong id="mode-current-key">通常モード</strong></span>
+            <span>３：戸閉め放送変更 → <strong id="announcement-current-key">パターン 1</strong></span>
+        </div>
+
+        <div class="setting-controls">
+            <div class="control-group">
+                <label for="melody-select">発車メロディー</label>
+                <select id="melody-select">
+                    
+                    <optgroup label="発車ブザー">
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/発車ベルA.mp3">発車ブザー</option>
+                    </optgroup>
+                    <optgroup label="東京臨海高速鉄道">
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/ハクナ・マタタ.mp3">ハクナ・マタタ</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/サークル・オブ・ライフ.mp3">サークル・オブ・ライフ</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/C.X..mp3">C.X.</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/Rhythm and Police.mp3">Rhythm and Police</option>
+                    </optgroup>
+                    
+                    <optgroup label="東武鉄道">
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/Step by step.mp3">Step by step</option>
+                    </optgroup>
+
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="mode-select">動作モード</label>
+                <select id="mode-select">
+                    <option value="normal">通常</option>
+                    <option value="tachikawa">立川式</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="announcement-select">戸閉放送</label>
+                <select id="announcement-select">
+                    <option value="https://symphony100.github.io/symphony/game/train/menu/switch/stop-1.mp3">パターン１（女声）</option>
+                    <option value="https://symphony100.github.io/symphony/game/train/menu/switch/stop-2.mp3">パターン２（男声）</option>
+                    <option value="https://symphony100.github.io/symphony/game/train/menu/switch/stop-3.mp3">パターン３（津田英治）</option>
+                    <option value="https://symphony100.github.io/symphony/game/train/menu/switch/りんかい女声2番.mp3">パターン４（東京臨海高速鉄道女声）</option>
+                    <option value="https://symphony100.github.io/symphony/game/train/menu/switch/りんかい男声1番.mp3">パターン５（東京臨海高速鉄道男性声）</option>
+                    <option value="https://symphony100.github.io/symphony/game/train/menu/switch/巌根型女声.mp3">パターン６（巌根型女声）</option>
+                    <option value="https://symphony100.github.io/symphony/game/train/menu/switch/巌根型男声.mp3">パターン７（巌根型男声）</option>
+                    <option value="https://symphony100.github.io/symphony/game/train/menu/switch/tobu-stop-1.mp3">パターン８（東武鉄道）</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button id="toggle-button" style="background-color: #4CAF50;">OFF</button>
+            
+            <div class="mobile-buttons">
+                <button id="mobile-on-button">ON</button>
+                <button id="mobile-off-button">OFF</button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="departure-melody" preload="auto" loop></audio>
+    <audio id="announcement" src="https://symphony100.github.io/symphony/game/train/menu/switch/stop-1.mp3" preload="auto"></audio>
+    <audio id="return-sound" src="https://symphony100.github.io/symphony/game/train/menu/switch/train-stop.mp3" preload="auto"></audio> 
+
+    <script>
+        // ロジック
+        let isPlaying = false; 
+        let isRightMouseButtonDown = false; 
+        let tachikawaStopListener = null; 
+        let isMobilePlay = false; 
+
+        const melody = document.getElementById("departure-melody");
+        const announcement = document.getElementById("announcement");
+        const returnSound = document.getElementById("return-sound");
+        const toggleButton = document.getElementById("toggle-button");
+        const melodySelect = document.getElementById("melody-select");
+        const modeSelect = document.getElementById("mode-select");
+        const announcementSelect = document.getElementById("announcement-select");
+        const mobileOnButton = document.getElementById("mobile-on-button");
+        const mobileOffButton = document.getElementById("mobile-off-button");
+
+        // optgroupの都合上、optionsはタグ全体から取得
+        const melodyOptions = Array.from(melodySelect.options).map(opt => opt.value);
+        let currentMelodyIndex = 0; // インデックスは常に全体で管理
+        
+        const modeOptions = Array.from(modeSelect.options).map(opt => opt.value);
+        let currentModeIndex = 0;
+        const announcementOptions = Array.from(announcementSelect.options).map(opt => opt.value);
+        let currentAnnouncementIndex = 0;
+
+        const melodyKeyDisplay = document.getElementById("melody-current-key");
+        const modeKeyDisplay = document.getElementById("mode-current-key");
+        const announcementKeyDisplay = document.getElementById("announcement-current-key");
+        
+        // 初期化
+        melody.src = melodySelect.value;
+        announcement.src = announcementSelect.value;
+        updateIndicesFromSelects();
+        updateKeyDisplay(); 
+
+        // --- ユーティリティ関数 ---
+        function updateIndicesFromSelects() {
+            currentMelodyIndex = melodySelect.selectedIndex;
+            currentModeIndex = modeSelect.selectedIndex;
+            currentAnnouncementIndex = announcementSelect.selectedIndex;
+        }
+
+        function updateKeyDisplay() {
+            melodyKeyDisplay.textContent = melodySelect.options[currentMelodyIndex].textContent;
+            modeKeyDisplay.textContent = modeSelect.options[currentModeIndex].textContent;
+            announcementKeyDisplay.textContent = announcementSelect.options[currentAnnouncementIndex].textContent;
+        }
+        
+        // --- 設定変更ハンドラー ---
+        melodySelect.addEventListener('change', handleSettingChange);
+        modeSelect.addEventListener('change', handleSettingChange);
+        announcementSelect.addEventListener('change', handleSettingChange);
+
+        function handleSettingChange(event) {
+            if (tachikawaStopListener) {
+                melody.removeEventListener('ended', tachikawaStopListener);
+                tachikawaStopListener = null;
+            }
+            
+            announcement.src = announcementSelect.value;
+            melody.src = melodySelect.value;
+            
+            updateIndicesFromSelects();
+            updateKeyDisplay();
+            
+            const selectElement = event ? event.target : null;
+            if (selectElement) {
+                const parentGroup = selectElement.closest('.control-group');
+                parentGroup.classList.remove('changed-setting');
+                void parentGroup.offsetWidth; 
+                parentGroup.classList.add('changed-setting');
+            }
+
+            if (isPlaying) {
+                melody.pause();
+                melody.currentTime = 0;
+                melody.loop = true;
+                if (!isMobilePlay) {
+                    melody.play().catch(error => {
+                        console.error("メロディー再生エラー:", error);
+                    });
+                }
+            }
+        }
+        
+        // --- キーボード操作 ---
+        document.addEventListener('keydown', function(e) {
+            if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+
+            let selectElement = null;
+            let changed = false;
+            
+            if (e.key === '1') {
+                currentMelodyIndex = (currentMelodyIndex + 1) % melodyOptions.length;
+                melodySelect.value = melodyOptions[currentMelodyIndex];
+                selectElement = melodySelect;
+                changed = true;
+                e.preventDefault();
+            } else if (e.key === '2') {
+                currentModeIndex = (currentModeIndex + 1) % modeOptions.length;
+                modeSelect.value = modeOptions[currentModeIndex];
+                selectElement = modeSelect;
+                changed = true;
+                e.preventDefault();
+            } else if (e.key === '3') {
+                currentAnnouncementIndex = (currentAnnouncementIndex + 1) % announcementOptions.length;
+                announcementSelect.value = announcementOptions[currentAnnouncementIndex];
+                selectElement = announcementSelect;
+                changed = true;
+                e.preventDefault();
+            }
+
+            if (changed && selectElement) {
+                handleSettingChange({ target: selectElement });
+            }
+            
+            // Enterキーでの ON/OFF 切り替え機能
+            if (e.key === 'Enter') {
+                if (isPlaying) {
+                    const mode = modeSelect.value;
+                    if (mode === 'tachikawa') {
+                        offSignalTachikawa();
+                    } else {
+                        stopMelodyImmediately();
+                    }
+                } else {
+                    playMelody();
+                    isMobilePlay = false; 
+                }
+                e.preventDefault();
+            }
+        });
+
+        // --- マウス操作: 右クリックダウン (ON) ---
+        document.addEventListener('mousedown', function(e) {
+            if (e.button === 2) {
+                if (!isPlaying) {
+                    isMobilePlay = false; 
+                    playMelody();
+                }
+                isRightMouseButtonDown = true;
+                e.preventDefault();
+
+                // 【Pointer Lock APIの要求】
+                if (document.pointerLockElement !== document.body) {
+                    document.body.requestPointerLock().catch(err => {
+                        console.warn("Pointer Lockの要求が拒否されました。ブラウザの設定をご確認ください。", err);
+                    });
+                }
+            }
+        });
+
+        // --- マウス操作: 右クリックアップ (OFF) ---
+        document.addEventListener('mouseup', function(e) {
+            if (e.button === 2) {
+                if (isPlaying) {
+                    const mode = modeSelect.value;
+                    if (mode === 'tachikawa') {
+                        offSignalTachikawa();
+                    } else {
+                        stopMelodyImmediately();
+                    }
+                }
+                isRightMouseButtonDown = false;
+                
+                // 【Pointer Lock APIの解除】
+                document.exitPointerLock();
+            }
+        });
+
+        // 標準の右クリックメニューを抑制
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault(); 
+        });
+
+        // --- スマホ/タブレット操作 ---
+        mobileOnButton.addEventListener('click', function() {
+            if (!isPlaying) {
+                isMobilePlay = true;
+                playMelody();
+            }
+        });
+
+        mobileOffButton.addEventListener('click', function() {
+            if (isPlaying) {
+                const mode = modeSelect.value;
+                if (mode === 'tachikawa') {
+                    offSignalTachikawa();
+                } else {
+                    stopMelodyImmediately();
+                }
+                isMobilePlay = false;
+            }
+        });
+
+        // --- 機能関数 ---
+        function playMelody() {
+            if (tachikawaStopListener) {
+                melody.removeEventListener('ended', tachikawaStopListener);
+                tachikawaStopListener = null;
+            }
+
+            returnSound.currentTime = 0;
+            returnSound.play();
+            
+            melody.src = melodySelect.value;
+            melody.currentTime = 0;
+            melody.loop = true;
+            melody.play().catch(error => {
+                console.error("メロディー再生エラー:", error);
+                alert("音声を再生できませんでした。画面を一度タップ/クリックしてから再度お試しください。");
+            });
+
+            isPlaying = true;
+            toggleButton.textContent = isMobilePlay ? "ON (再生中)" : "ON (ホールド中 / カーソルロック中)";
+            toggleButton.style.backgroundColor = "#D32F2F"; 
+            toggleButton.style.boxShadow = "0 4px 6px rgba(211, 47, 47, 0.4)";
+        }
+
+        function stopMelodyImmediately() {
+            if (!isPlaying) return;
+
+            melody.pause();
+            melody.currentTime = 0;
+            
+            announcement.src = announcementSelect.value;
+            announcement.currentTime = 0;
+            announcement.play(); 
+
+            isPlaying = false;
+            toggleButton.textContent = "OFF (待機中)";
+            toggleButton.style.backgroundColor = "#4CAF50"; 
+            toggleButton.style.boxShadow = "0 2px 5px 0 rgba(0,0,0,0.26)";
+            isMobilePlay = false;
+        }
+
+        function offSignalTachikawa() {
+            if (!isPlaying || tachikawaStopListener) return;
+
+            announcement.src = announcementSelect.value;
+            announcement.currentTime = 0;
+            announcement.play(); 
+
+            melody.loop = false;
+            toggleButton.textContent = "OFF (メロディー終了待ち)";
+            toggleButton.style.backgroundColor = "#FFC107"; 
+            toggleButton.style.boxShadow = "0 4px 6px rgba(255, 193, 7, 0.4)";
+
+            tachikawaStopListener = () => {
+                melody.removeEventListener('ended', tachikawaStopListener);
+                tachikawaStopListener = null;
+                
+                melody.pause();
+                melody.currentTime = 0;
+                
+                isPlaying = false;
+                toggleButton.textContent = "OFF (待機中)";
+                toggleButton.style.backgroundColor = "#4CAF50";
+                toggleButton.style.boxShadow = "0 2px 5px 0 rgba(0,0,0,0.26)";
+                isMobilePlay = false;
+            };
+            
+            melody.addEventListener('ended', tachikawaStopListener);
+        }
+
+    </script>
+
+</body>
+</html>
