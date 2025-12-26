@@ -41,38 +41,18 @@
             text-align: center;
         }
 
-        /* メニュータイトル */
-        .menu-title {
-            font-size: 32px;
-            font-weight: bold;
-            color: white;
-            text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black; /* 黒いふち */
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
         /* ボタンスタイル */
         .button {
             background-color: #87CEEB; /* 水色 */
             color: white;
-            padding: 20px 50px; /* 余白を大きく */
+            padding: 15px 32px;
             text-align: center;
             text-decoration: none;
-            display: flex;
-            align-items: center; /* アイコンとテキストを縦揃え */
-            justify-content: center; /* 中央揃え */
-            font-size: 18px;
-            margin: 15px auto; /* 中央に配置 */
-            width: 250px; /* 大きめのボタン */
+            display: block; /* ボタンを改行 */
+            font-size: 16px;
+            margin: 10px auto; /* 中央に配置 */
+            width: 200px;
             border-radius: 4px;
-            gap: 10px; /* アイコンとテキストの間に余白 */
-        }
-
-        .button img {
-            width: 24px; /* アイコンの大きさ */
-            height: 24px;
         }
 
         .button:hover {
@@ -84,8 +64,7 @@
 
     <!-- ヘッダー画像とタイトル -->
     <div class="header">
-        <div class="title"></div>
-        <div class="menu-title">発車ベルスイッチシュミレーター
+        <div class="title">発車ベルシュミレーター
     </div>
 
     <!-- 白背景のコンテンツ -->
@@ -96,9 +75,6 @@
         </a>
         <a href="https://symphony100.github.io/symphony/game/train/menu/switch/2/" class="button">
             <img src="https://symphony100.github.io/game/train/train-logo.png" alt="Private Railway Icon"> 私鉄・その他
-        </a>
-
-        <a href="https://symphony100.github.io/game/train/" class="button">元のサイトに戻る。
         </a>
     </div>
 
