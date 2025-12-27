@@ -420,20 +420,25 @@
             after: "https://raw.githubusercontent.com/ssmn93/depart-melody/main/approach/%E7%BE%BD%E7%94%B0%E7%A9%BA%E6%B8%AF%E7%AC%AC%E4%B8%89%E3%82%BF%E3%83%BC%E3%83%9F%E3%83%8A%E3%83%AB_1%E7%95%AA_%E6%8E%A5%E8%BF%91%E4%B8%AD.gif"
         };
         
+        // --- 💡 修正箇所：APPROACH_MELODY_DATAの定義を修正 ---
+        // 接近メロディの音源が置かれているベースURL
+        const APPROACH_MELODY_BASE_URL = "https://symphony100.github.io/symphony/game/train/menu/switch/"; 
+        
         const APPROACH_MELODY_DATA = {
-            '1': { name: "1", melody: "1.mp3" },
-            '2': { name: "2", melody: "2.mp3" },
-            '3': { name: "3", melody: "3.mp3" },
-            '4': { name: "4", melody: "4.mp3" }
-            '5': { name: "5", melody: "5.mp3" },
-            '6': { name: "6", melody: "6.mp3" },
-            '7': { name: "7", melody: "7.mp3" },
-            '8': { name: "8", melody: "8.mp3" }
-            '9': { name: "9", melody: "9.mp3" },
-            '10': { name: "10", melody: "10.mp3" },
-            '11': { name: "11", melody: "11.mp3" },
-            '12': { name: "12", melody: "12.mp3" } 
+            '1': { name: "1", melody: APPROACH_MELODY_BASE_URL + "1.mp3" },
+            '2': { name: "2", melody: APPROACH_MELODY_BASE_URL + "2.mp3" },
+            '3': { name: "3", melody: APPROACH_MELODY_BASE_URL + "3.mp3" },
+            '4': { name: "4", melody: APPROACH_MELODY_BASE_URL + "4.mp3" },
+            '5': { name: "5", melody: APPROACH_MELODY_BASE_URL + "5.mp3" },
+            '6': { name: "6", melody: APPROACH_MELODY_BASE_URL + "6.mp3" },
+            '7': { name: "7", melody: APPROACH_MELODY_BASE_URL + "7.mp3" },
+            '8': { name: "8", melody: APPROACH_MELODY_BASE_URL + "8.mp3" },
+            '9': { name: "9", melody: APPROACH_MELODY_BASE_URL + "9.mp3" },
+            '10': { name: "10", melody: APPROACH_MELODY_BASE_URL + "10.mp3" },
+            '11': { name: "11", melody: APPROACH_MELODY_BASE_URL + "11.mp3" },
+            '12': { name: "12", melody: APPROACH_MELODY_BASE_URL + "12.mp3" } 
         };
+        // ----------------------------------------------------
         
         // --- 変数定義 ---
         let isPlaying = false; 
@@ -473,6 +478,10 @@
         
         // 接近メロディ選択肢の動的生成と初期設定
         function initializeApproachSelect() {
+            // 💡 初期表示の修正: 最初はAPPROACH_MELODY_DATAの最初の項目を選択状態にする
+            const firstApproachKey = Object.keys(APPROACH_MELODY_DATA)[0];
+            const firstApproachData = APPROACH_MELODY_DATA[firstApproachKey];
+
             for (const key in APPROACH_MELODY_DATA) {
                 const data = APPROACH_MELODY_DATA[key];
                 const option = document.createElement('option');
@@ -480,6 +489,10 @@
                 option.textContent = data.name;
                 approachMelodySelect.appendChild(option);
             }
+            
+            // 初期状態の接近メロディ表示を更新
+            document.getElementById("approach-note").textContent = 
+                `現在の接近メロディー: ${firstApproachData.name}`;
         }
         
         // --- ブラウザバック無効化のための履歴操作 ---
@@ -538,8 +551,16 @@
         function loadSettings() {
             try {
                 const savedSettings = localStorage.getItem('trainSimulatorSettings');
+                
+                // 接近メロディ選択肢のキーの配列を取得
+                const approachKeys = Object.keys(APPROACH_MELODY_DATA);
+                const defaultApproachKey = approachKeys.length > 0 ? approachKeys[0] : null;
+
                 if (!savedSettings) {
                     // 保存データがなければ、初期設定を適用し、保存する
+                    if (defaultApproachKey) {
+                        approachMelodySelect.value = defaultApproachKey;
+                    }
                     updateApproachMelodySource(false);
                     updateApproachToggleButton(false);
                     handleSettingChange(null, false);
@@ -553,11 +574,12 @@
                 melodySelect.value = settings.melody || melodySelect.options[0].value;
                 modeSelect.value = settings.mode || modeSelect.options[0].value;
                 announcementSelect.value = settings.announcement || announcementSelect.options[0].value;
+                
                 // 接近メロディはキーで扱うため、APPROACH_MELODY_DATAに存在するか確認
                 if (settings.approachMelody && APPROACH_MELODY_DATA[settings.approachMelody]) {
                     approachMelodySelect.value = settings.approachMelody;
-                } else {
-                    approachMelodySelect.value = Object.keys(APPROACH_MELODY_DATA)[0];
+                } else if (defaultApproachKey) {
+                    approachMelodySelect.value = defaultApproachKey;
                 }
 
                 // 2. 状態変数の復元
@@ -599,10 +621,12 @@
             if (isApproachEnabled) {
                 approachToggleButton.textContent = "接近 ON";
                 approachToggleButton.style.backgroundColor = "#4CAF50";
-                approachBoard.src = HANEDA_GIF_SRC.before;
+                // 💡 GIFもON状態（到着前）のものに更新
+                approachBoard.src = HANEDA_GIF_SRC.before; 
             } else {
                 approachToggleButton.textContent = "接近 OFF";
                 approachToggleButton.style.backgroundColor = "#D32F2F";
+                // 💡 OFF状態ではGIFを停止させるか、停止状態の画像に切り替える（今回は前者の処理は不要だが、GIFは到着前で停止しているものとする）
                 stopApproachMelody();
             }
         }
@@ -611,18 +635,24 @@
         function updateApproachMelodySource(showNotify = false) { 
             const selectedKey = approachMelodySelect.value;
             const data = APPROACH_MELODY_DATA[selectedKey];
+            
+            // data.melody が既に完全なURLになっているため、このまま使用する
 
             if (isApproachPlaying) {
                 stopApproachMelody();
             }
-
-            approachMelody.src = data.melody;
+            
+            // 💡 音源URLを直接設定
+            approachMelody.src = data.melody; 
+            
             document.getElementById("approach-note").textContent = 
                 `現在の接近メロディー: ${data.name}`;
 
+            // 音源がある場合、接近が有効なら再生を開始
             if (isApproachEnabled && data.melody !== '') {
                 playApproachMelody();
             } else if (data.melody === '' && isApproachEnabled) {
+                // 音源がない場合、有効でも再生はしない
                 stopApproachMelody();
             }
             saveSettings(); // 設定変更時に保存
@@ -671,19 +701,21 @@
         // --- 接近メロディの再生/停止関数 ---
         
         function playApproachMelody() {
-            if (!isApproachEnabled || approachMelody.src === '' || isPlaying) return;
+            // 💡 approachMelody.src が空の場合は再生しない
+            if (!isApproachEnabled || approachMelody.src === '' || isPlaying || isApproachPlaying) return;
 
             isApproachPlaying = true;
-            approachBoard.src = HANEDA_GIF_SRC.after;
+            // 💡 GIFを「接近中」のものに切り替え
+            approachBoard.src = HANEDA_GIF_SRC.after; 
             approachMelody.loop = true;
             approachMelody.currentTime = 0; 
             
             approachMelody.play().catch(error => {
                 console.error("接近メロディー再生エラー:", error);
+                // エラーが発生した場合、再生を停止し、設定をOFFにする
                 isApproachEnabled = false;
                 updateApproachToggleButton(false);
                 stopApproachMelody();
-                // エラー時も通知は行いません
             });
         }
         
@@ -691,7 +723,8 @@
             if (!isApproachPlaying) return;
             
             isApproachPlaying = false;
-            approachBoard.src = HANEDA_GIF_SRC.before;
+            // 💡 GIFを「到着前」のものに切り替え
+            approachBoard.src = HANEDA_GIF_SRC.before; 
             approachMelody.loop = false;
             approachMelody.pause();
             approachMelody.currentTime = 0;
@@ -720,6 +753,7 @@
             }
             
             if (isApproachPlaying) {
+                // 💡 発車メロディ再生中は接近メロディを停止
                 stopApproachMelody();
             }
 
@@ -759,7 +793,8 @@
             isMobilePlay = false;
             
             if (isApproachEnabled) {
-                playApproachMelody();
+                // 💡 発車メロディ停止後、接近メロディを再開
+                updateApproachMelodySource(false); // これで接近メロディのsrcが設定され、playApproachMelody()が呼ばれる
             }
         }
 
@@ -789,7 +824,8 @@
                 isMobilePlay = false;
 
                 if (isApproachEnabled) {
-                    playApproachMelody();
+                    // 💡 発車メロディ終了後、接近メロディを再開
+                    updateApproachMelodySource(false); 
                 }
             };                        
             melody.addEventListener('ended', tachikawaStopListener);
@@ -801,7 +837,8 @@
         modeSelect.addEventListener('change', handleSettingChange);
         announcementSelect.addEventListener('change', handleSettingChange);
 
-        approachMelodySelect.addEventListener('change', () => updateApproachMelodySource(false));
+        // 💡 接近メロディが変更された時、音源と表示を更新する
+        approachMelodySelect.addEventListener('change', () => updateApproachMelodySource(false)); 
         approachToggleButton.addEventListener('click', toggleApproachEnabled);
 
         // --- その他のキーボード/マウス/モバイル操作ロジックは変更なし ---
