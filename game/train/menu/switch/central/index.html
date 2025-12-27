@@ -1,0 +1,957 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>発車ベルスイッチシミュレーター</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* 1. 基本設定と背景 */
+        body {
+            font-family: 'Roboto', 'Noto Sans JP', sans-serif;
+            text-align: center;
+            background-color: #f8f9fa; 
+            color: #3c4043; 
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: default;
+            /* ページ全体の配置を調整するためにflex-directionをcolumnにする */
+            flex-direction: column; 
+            align-items: stretch; /* 戻るリンクを左端に寄せるため */
+        }
+        /* 💡 戻るリンクのスタイル (固定解除、通常のフローに配置) */
+        #back-link-container {
+            /* 固定を解除し、paddingで位置を微調整 */
+            position: relative; 
+            padding: 10px 20px 0 20px; /* 左右に余白 */
+            z-index: 10; 
+            background-color: transparent; 
+            box-shadow: none; 
+            width: 100%;
+            box-sizing: border-box;
+            order: -1; /* bodyの先頭に配置 */
+        }
+        #back-link {
+            display: inline-block;
+            text-decoration: none;
+            color: #007aff; /* Apple設定風の青色 */
+            font-size: 1.1em;
+            font-weight: 400;
+            padding: 5px 10px; 
+            transition: opacity 0.2s;
+            float: left; /* 左寄せ */
+        }
+        #back-link:hover {
+            opacity: 0.7;
+        }
+        #back-link::before {
+            content: '＜'; /* 戻るアイコン */
+            margin-right: 5px;
+            font-weight: 600; /* 矢印を太く */
+        }
+
+        /* 2. メインコンテナ */
+        .container {
+            max-width: 800px;
+            width: 90%; 
+            /* リンクの分、上マージンを減らす */
+            margin: 10px auto 20px auto; 
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); 
+            transition: box-shadow 0.3s;
+        }
+        h1 {
+            color: #1a73e8;
+            font-size: 2.5em;
+            font-weight: 500; 
+            margin-bottom: 20px;
+        }
+
+        /* 3. 操作説明パネル */
+        .instructions {
+            margin: 20px 0 30px 0;
+            font-size: 1em;
+            font-weight: 400;
+            color: #5f6368;
+            background-color: #e8f0fe;
+            padding: 15px;
+            border-radius: 8px; 
+            text-align: left;
+            border-left: 5px solid #1a73e8;
+        }
+        .instructions span {
+            display: block;
+            margin-bottom: 5px;
+            line-height: 1.5;
+        }
+        .instructions strong {
+            font-weight: 700;
+            color: #1a73e8; 
+        }
+        /* 4. 設定項目 */
+        .setting-controls {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 25px;
+            padding: 15px 0;
+            border-top: 1px dashed #dadce0; 
+        }
+        .control-group {
+            margin: 15px 10px;
+            text-align: left;
+            flex-grow: 1;
+            min-width: 200px;
+        }
+        /* 💡 接近設定エリア */
+        .approach-settings-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end; 
+            padding: 10px 0;
+            margin-top: 5px; 
+            margin-bottom: 20px; 
+            border-bottom: 1px dashed #dadce0;
+        }
+        .approach-settings-group .control-group {
+            flex-basis: 70%;
+            margin: 0;
+        }
+        #approach-toggle-button { 
+            padding: 12px 20px; 
+            font-size: 16px;
+            font-weight: 500;
+            color: white;
+            border: none;
+            border-radius: 8px; 
+            cursor: pointer;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            min-width: 100px;
+            margin-left: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            height: 48px; 
+            box-sizing: border-box;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #3c4043;
+            font-size: 0.9em;
+        }
+        select {
+            padding: 12px 16px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #dadce0;
+            background-color: #ffffff; 
+            color: #3c4043;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            appearance: none; 
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231a73e8'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            height: 48px; 
+        }
+        select:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 1px #1a73e8;
+            outline: none;
+        }
+        /* 設定変更時のアニメーション */
+        .setting-controls .changed-setting {
+            animation: pulse-border 0.5s ease-out;
+        }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(26, 115, 232, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(26, 115, 232, 0); }
+            100% { box-shadow: none; }
+        }
+        /* 💡 GIF表示エリアのスタイル */
+        #approach-board {
+            width: 80%;
+            max-width: 600px;
+            height: auto;
+            margin: 20px auto 10px auto; 
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: opacity 0.3s;
+            cursor: default; 
+            opacity: 1; 
+        }
+        #approach-note {
+            display: block;
+            margin-bottom: 5px; 
+            font-size: 1.1em;
+            color: #5f6368;
+            font-weight: 500;
+            opacity: 1 !important; 
+        }
+        /* 5. 運行状態ボタンとスマホ用ON/OFFボタン */
+        .button-container {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #toggle-button {
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: 500;
+            color: white;
+            border: none;
+            border-radius: 28px; 
+            cursor: default;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            pointer-events: none;
+            min-width: 250px;
+            box-shadow: 0 2px 5px 0 rgba(0,0,0,0.26);
+            margin-bottom: 15px;
+        }
+        /* スマホ/タッチデバイス用ボタン */
+        .mobile-buttons {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .mobile-buttons button {
+            padding: 12px 25px;
+            font-size: 18px;
+            font-weight: 500;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+        #mobile-on-button {
+            background-color: #4CAF50; 
+            color: white;
+        }
+        #mobile-off-button {
+            background-color: #D32F2F; 
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="back-link-container">
+        <a id="back-link" href="https://symphony100.github.io/symphony/game/train/menu/switch/home/b/">元のサイトに戻る</a>
+    </div>
+
+    <div class="container">
+        <h1>発車ベルスイッチシミュレーター</h1>
+
+        
+        <div class="instructions">
+            <span>
+                【PCユーザー】右クリックを押し続けるとメロディーが流れ、離すと停止します。<br>
+                Pointer Lock APIにより、右クリック中はカーソルが非表示になり、固定されます。<br>
+                ESCキーを押すとロックが解除されます。
+            </span>
+            <hr style="border: 0; border-top: 1px solid #c8d1e2; margin: 10px 0;">
+            <span>ショートカットキーで設定を素早く変更できます。</span>
+            <span>１：発車メロディー変更 → <strong id="melody-current-key">water crown</strong></span>
+            <span>２：動作モード変更 → <strong id="mode-current-key">通常モード</strong></span>
+            <span>３：戸閉め放送変更 → <strong id="announcement-current-key">パターン １</strong></span>
+        </div>
+
+        
+        <img 
+            id="approach-board" 
+            src="https://raw.githubusercontent.com/ssmn93/depart-melody/main/approach/%E7%BE%BD%E7%94%B0%E7%A9%BA%E6%B8%AF%E7%AC%AC%E4%B8%89%E3%82%BF%E3%83%BC%E3%83%9F%E3%83%8A%E3%83%AB_1%E7%95%AA_%E5%88%B0%E7%9D%80%E5%89%8D.gif" 
+            alt="駅の電光掲示板" 
+        />
+        <span id="approach-note">現在の接近メロディー: 京急（パプリカ）</span>
+        
+        <div class="approach-settings-group">
+            <div class="control-group">
+                <label for="approach-melody-select">接近メロディー</label>
+                <select id="approach-melody-select">
+                    </select>
+            </div>
+            <button id="approach-toggle-button" style="background-color: #4CAF50;">接近 ON</button>
+        </div>
+        
+        
+        <div class="setting-controls">
+            <div class="control-group">
+                <label for="melody-select">発車メロディー</label>
+                <select id="melody-select">
+                    <optgroup label="発車ベル">
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/発車ベルA.mp3">発車ベルA</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/発車ベルB.mp3">発車ベルB</option>
+                    </optgroup>
+                    <optgroup label="東京臨海高速鉄道">
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/ハクナ・マタタ.mp3">ハクナ・マタタ</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/サークル・オブ・ライフ.mp3">サークル・オブ・ライフ</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/C.X..mp3">C.X.</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/Rhythm and Police.mp3">Rhythm and Police</option>
+                    </optgroup>
+                    <optgroup label="JR東日本">
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/water-crown.mp3">water crown</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/CieloEstrellado.mp3">CieloEstrellado</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/せせらぎ.mp3">せせらぎ</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/春 標準ver.mp3">春 標準ver</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/Verde Rayo V2.mp3">Verde Rayo V2</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/スプリングボックス.mp3">スプリングボックス</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/鉄道唱歌 verB.mp3">鉄道唱歌</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/光と風と.mp3">光と風と</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/古いオルゴール.mp3">古いオルゴール</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/Twilight.mp3">Twilight</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/小川のせせらぎV1.mp3">小川のせせらぎV1</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/チャイム3B4.mp3">チャイム3B4</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/チャイム3B5.mp3">チャイム3B5</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/新幹線仙台駅旧発車メロディー.mp3">杜の都</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/仙台駅青葉城恋唄.mp3">青葉城恋唄（仙台ver）</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/Around The World.mp3">Around The World</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/ff.mp3">ff（フォルティシモ）</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/海の駅.mp3">海の駅</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/常磐2番.mp3">常磐2番</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/常磐3-1番.mp3">常磐3-1番</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/春風.mp3">春風</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/陽だまり.mp3">陽だまり</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/Glorious Gateway A.mp3">Glorious Gateway A</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/Glorious Gateway B.mp3">Glorious Gateway B</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/Glorious Gateway C.mp3">Glorious Gateway C</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/Glorious Gateway D.mp3">Glorious Gateway D</option>
+                    </optgroup>
+                    <optgroup label="IKST">
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-001-01.mp3">JRE-IKST-001-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-001-02.mp3">JRE-IKST-001-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-002-01.mp3">JRE-IKST-002-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-002-02.mp3">JRE-IKST-002-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-003-01.mp3">JRE-IKST-003-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-003-02.mp3">JRE-IKST-003-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-004-01.mp3">JRE-IKST-004-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-004-02.mp3">JRE-IKST-004-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-005-01.mp3">JRE-IKST-005-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-005-02.mp3">JRE-IKST-005-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-006-01.mp3">JRE-IKST-006-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-006-02.mp3">JRE-IKST-006-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-007-01.mp3">JRE-IKST-007-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-007-02.mp3">JRE-IKST-007-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-008-01.mp3">JRE-IKST-008-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-008-02.mp3">JRE-IKST-008-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-009-01.mp3">JRE-IKST-009-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-009-02.mp3">JRE-IKST-009-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-010-01.mp3">JRE-IKST-010-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-010-02.mp3">JRE-IKST-010-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-011-01.mp3">JRE-IKST-011-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-011-02.mp3">JRE-IKST-011-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-012-01.mp3">JRE-IKST-012-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-012-02.mp3">JRE-IKST-012-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-013-01.mp3">JRE-IKST-013-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-013-02.mp3">JRE-IKST-013-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-014-01.mp3">JRE-IKST-014-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-014-02.mp3">JRE-IKST-014-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-015-01.mp3">JRE-IKST-015-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-015-02.mp3">JRE-IKST-015-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-016-01.mp3">JRE-IKST-016-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-016-02.mp3">JRE-IKST-016-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-017-01.mp3">JRE-IKST-017-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-017-02.mp3">JRE-IKST-017-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-018-01.mp3">JRE-IKST-018-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-018-02.mp3">JRE-IKST-018-02</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-019-01.mp3">JRE-IKST-019-01</option>
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/JRE-IKST-019-02.mp3">JRE-IKST-019-02</option>
+                    </optgroup>
+                    <optgroup label="東武鉄道">
+                        <option value="https://symphony100.github.io/symphony/game/train/menu/switch/Step by step.mp3">Step by step</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="mode-select">動作モード</label>
+                <select id="mode-select">
+                    <option value="normal">通常</option>
+                    <option value="tachikawa">立川式</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="announcement-select">戸閉放送</label>
+                <select id="announcement-select">
+                    <option value="none">なし</option>
+                    <option value="https://symphony100.github.io/symphony/game/train/menu/switch/stop-1.mp3">パターン１（女声）</option>
+                    <option value="https://symphony100.github.io/symphony/game/train/menu/switch/stop-2.mp3">パターン２（男声）</option>
+                    <option value="https://symphony100.github.io/symphony/game/train/menu/switch/stop-3.mp3">パターン３（津田英治）</option>
+                    <option value="https://symphony100.github.io/symphony/game/train/menu/switch/りんかい女声2番.mp3">パターン４（東京臨海高速鉄道女声）</option>
+                    <option value="https://symphony100.github.io/symphony/game/train/menu/switch/りんかい男声1番.mp3">パターン５（東京臨海高速鉄道男性声）</option>
+                    <option value="https://symphony100.github.io/symphony/game/train/menu/switch/巌根型女声.mp3">パターン６（巌根型女声）</option>
+                    <option value="https://symphony100.github.io/symphony/game/train/menu/switch/巌根型男声.mp3">パターン７（巌根型男声）</option>
+                    <option value="https://symphony100.github.io/symphony/game/train/menu/switch/tobu-stop-1.mp3">パターン８（東武鉄道）</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <button id="toggle-button" style="background-color: #4CAF50;">OFF</button>
+            <div class="mobile-buttons">
+                <button id="mobile-on-button">ON</button>
+                <button id="mobile-off-button">OFF</button>
+            </div>
+        </div>
+    </div>
+    
+    <audio id="departure-melody" preload="auto" loop></audio>    
+    <audio id="announcement" src="https://symphony100.github.io/symphony/game/train/menu/switch/stop-1.mp3" preload="auto"></audio>    
+    <audio id="return-sound" src="https://symphony100.github.io/symphony/game/train/menu/switch/train-stop.mp3" preload="auto"></audio> 
+    <audio 
+        id="approach-melody" 
+        src="" 
+        preload="auto"
+    ></audio>
+    
+    <script>
+        // --- データ定義 ---
+        const HANEDA_GIF_SRC = {
+            before: "https://raw.githubusercontent.com/ssmn93/depart-melody/main/approach/%E7%BE%BD%E7%94%B0%E7%A9%BA%E6%B8%AF%E7%AC%AC%E4%B8%89%E3%82%BF%E3%83%BC%E3%83%9F%E3%83%8A%E3%83%AB_1%E7%95%AA_%E5%88%B0%E7%9D%80%E5%89%8D.gif",
+            after: "https://raw.githubusercontent.com/ssmn93/depart-melody/main/approach/%E7%BE%BD%E7%94%B0%E7%A9%BA%E6%B8%AF%E7%AC%AC%E4%B8%89%E3%82%BF%E3%83%BC%E3%83%9F%E3%83%8A%E3%83%AB_1%E7%95%AA_%E6%8E%A5%E8%BF%91%E4%B8%AD.gif"
+        };
+        
+        // --- 💡 修正箇所：APPROACH_MELODY_DATAの定義を修正 ---
+        // 接近メロディの音源が置かれているベースURL
+        const APPROACH_MELODY_BASE_URL = "https://symphony100.github.io/symphony/game/train/menu/switch/"; 
+        
+        const APPROACH_MELODY_DATA = {
+            '1': { name: "1", melody: APPROACH_MELODY_BASE_URL + "1.mp3" },
+            '2': { name: "2", melody: APPROACH_MELODY_BASE_URL + "2.mp3" },
+            '3': { name: "3", melody: APPROACH_MELODY_BASE_URL + "3.mp3" },
+            '4': { name: "4", melody: APPROACH_MELODY_BASE_URL + "4.mp3" },
+            '5': { name: "5", melody: APPROACH_MELODY_BASE_URL + "5.mp3" },
+            '6': { name: "6", melody: APPROACH_MELODY_BASE_URL + "6.mp3" },
+            '7': { name: "7", melody: APPROACH_MELODY_BASE_URL + "7.mp3" },
+            '8': { name: "8", melody: APPROACH_MELODY_BASE_URL + "8.mp3" },
+            '9': { name: "9", melody: APPROACH_MELODY_BASE_URL + "9.mp3" },
+            '10': { name: "10", melody: APPROACH_MELODY_BASE_URL + "10.mp3" },
+            '11': { name: "11", melody: APPROACH_MELODY_BASE_URL + "11.mp3" },
+            '12': { name: "12", melody: APPROACH_MELODY_BASE_URL + "12.mp3" } 
+        };
+        // ----------------------------------------------------
+        
+        // --- 変数定義 ---
+        let isPlaying = false; 
+        let isRightMouseButtonDown = false; 
+        let tachikawaStopListener = null; 
+        let isMobilePlay = false; 
+        let isApproachPlaying = false; 
+        let isApproachEnabled = true; // 初期値
+
+        // --- 要素の取得 ---
+        const melody = document.getElementById("departure-melody");
+        const announcement = document.getElementById("announcement");
+        const returnSound = document.getElementById("return-sound");
+        const toggleButton = document.getElementById("toggle-button");
+        const melodySelect = document.getElementById("melody-select");
+        const modeSelect = document.getElementById("mode-select");
+        const announcementSelect = document.getElementById("announcement-select");
+        const mobileOnButton = document.getElementById("mobile-on-button");
+        const mobileOffButton = document.getElementById("mobile-off-button");
+        const approachBoard = document.getElementById("approach-board"); 
+        const approachMelody = document.getElementById("approach-melody"); 
+        
+        const approachMelodySelect = document.getElementById("approach-melody-select");
+        const approachToggleButton = document.getElementById("approach-toggle-button");
+
+        // --- 初期化ロジック ---
+        const melodyKeyDisplay = document.getElementById("melody-current-key");
+        const modeKeyDisplay = document.getElementById("mode-current-key");
+        const announcementKeyDisplay = document.getElementById("announcement-current-key");
+
+        const melodyOptions = Array.from(melodySelect.options).map(opt => opt.value);
+        let currentMelodyIndex = 0; 
+        const modeOptions = Array.from(modeSelect.options).map(opt => opt.value);
+        let currentModeIndex = 0;
+        const announcementOptions = Array.from(announcementSelect.options).map(opt => opt.value);
+        let currentAnnouncementIndex = 0;
+        
+        // 接近メロディ選択肢の動的生成と初期設定
+        function initializeApproachSelect() {
+            // 💡 初期表示の修正: 最初はAPPROACH_MELODY_DATAの最初の項目を選択状態にする
+            const firstApproachKey = Object.keys(APPROACH_MELODY_DATA)[0];
+            const firstApproachData = APPROACH_MELODY_DATA[firstApproachKey];
+
+            for (const key in APPROACH_MELODY_DATA) {
+                const data = APPROACH_MELODY_DATA[key];
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = data.name;
+                approachMelodySelect.appendChild(option);
+            }
+            
+            // 初期状態の接近メロディ表示を更新
+            document.getElementById("approach-note").textContent = 
+                `現在の接近メロディー: ${firstApproachData.name}`;
+        }
+        
+        // --- ブラウザバック無効化のための履歴操作 ---
+        function disableBrowserBack() {
+            // 現在のURLで新しい履歴エントリを作成
+            history.pushState(null, null, location.href);
+            
+            // ユーザーが「戻る」ボタンを押したときに、再度新しい履歴エントリを作成し、事実上何もしないようにする
+            window.addEventListener('popstate', function (event) {
+                history.pushState(null, null, location.href);
+                // 通知は行いません。
+            });
+            
+             // 左スワイプでの誤操作防止 (タッチイベントの監視)
+             let touchstartX = 0;
+             let touchendX = 0;
+             
+             document.addEventListener('touchstart', function(event) {
+                // シングルタッチイベントのみを対象にする
+                if (event.touches.length === 1) {
+                    touchstartX = event.touches[0].screenX;
+                }
+             }, false);
+             
+             document.addEventListener('touchend', function(event) {
+                // event.changedTouches[0]は指を離した位置
+                touchendX = event.changedTouches[0].screenX;
+                handleGesture();
+             }, false);
+
+             function handleGesture() {
+                // 左から右へのスワイプ（戻る動作）を検知。履歴操作で無効化されます。
+                const swipeThreshold = 50; 
+                if (touchendX > touchstartX + swipeThreshold) {
+                    // ここでの明示的なイベント阻止は、他のスクロールを妨げる可能性があるため行いません。
+                }
+             }
+        }
+
+        // --- 設定保存/読み込み関数 ---
+        function saveSettings() {
+            try {
+                const settings = {
+                    melody: melodySelect.value,
+                    mode: modeSelect.value,
+                    announcement: announcementSelect.value,
+                    approachMelody: approachMelodySelect.value,
+                    approachEnabled: isApproachEnabled 
+                };
+                localStorage.setItem('trainSimulatorSettings', JSON.stringify(settings));
+            } catch (e) {
+                console.error("localStorageへの保存に失敗しました:", e);
+            }
+        }
+        
+        function loadSettings() {
+            try {
+                const savedSettings = localStorage.getItem('trainSimulatorSettings');
+                
+                // 接近メロディ選択肢のキーの配列を取得
+                const approachKeys = Object.keys(APPROACH_MELODY_DATA);
+                const defaultApproachKey = approachKeys.length > 0 ? approachKeys[0] : null;
+
+                if (!savedSettings) {
+                    // 保存データがなければ、初期設定を適用し、保存する
+                    if (defaultApproachKey) {
+                        approachMelodySelect.value = defaultApproachKey;
+                    }
+                    updateApproachMelodySource(false);
+                    updateApproachToggleButton(false);
+                    handleSettingChange(null, false);
+                    saveSettings(); // 初期設定を保存
+                    return;
+                }
+
+                const settings = JSON.parse(savedSettings);
+
+                // 1. 各Select要素の値を復元
+                melodySelect.value = settings.melody || melodySelect.options[0].value;
+                modeSelect.value = settings.mode || modeSelect.options[0].value;
+                announcementSelect.value = settings.announcement || announcementSelect.options[0].value;
+                
+                // 接近メロディはキーで扱うため、APPROACH_MELODY_DATAに存在するか確認
+                if (settings.approachMelody && APPROACH_MELODY_DATA[settings.approachMelody]) {
+                    approachMelodySelect.value = settings.approachMelody;
+                } else if (defaultApproachKey) {
+                    approachMelodySelect.value = defaultApproachKey;
+                }
+
+                // 2. 状態変数の復元
+                isApproachEnabled = settings.approachEnabled === true; // booleanとして復元
+
+                // 3. Select要素の変更を適用 (これにより音源のsrcやキー表示が更新される)
+                handleSettingChange(null, false); // 発車メロディ、モード、戸閉放送の更新
+                updateApproachMelodySource(false); // 接近メロディの更新 (音源とnote)
+                updateApproachToggleButton(false); // 接近ボタンの表示更新
+                
+                // 4. 接近メロディの再生を開始
+                if (isApproachEnabled) {
+                    playApproachMelody();
+                }
+
+            } catch (e) {
+                console.error("localStorageからの読み込みに失敗しました:", e);
+                // 読み込み失敗時も、最低限の初期化は行う
+                updateApproachMelodySource(false);
+                updateApproachToggleButton(false);
+                handleSettingChange(null, false);
+            }
+        }
+        // --- ユーティリティ関数 ---
+        function updateIndicesFromSelects() {
+            currentMelodyIndex = melodySelect.selectedIndex;
+            currentModeIndex = modeSelect.selectedIndex;
+            currentAnnouncementIndex = announcementSelect.selectedIndex;
+        }
+
+        function updateKeyDisplay() {
+            melodyKeyDisplay.textContent = melodySelect.options[currentMelodyIndex].textContent;
+            modeKeyDisplay.textContent = modeSelect.options[currentModeIndex].textContent;
+            announcementKeyDisplay.textContent = announcementSelect.options[currentAnnouncementIndex].textContent;
+        }
+        
+        // 接近メロディのON/OFFボタン表示を更新 
+        function updateApproachToggleButton(showNotify = false) { 
+            if (isApproachEnabled) {
+                approachToggleButton.textContent = "接近 ON";
+                approachToggleButton.style.backgroundColor = "#4CAF50";
+                // 💡 GIFもON状態（到着前）のものに更新
+                approachBoard.src = HANEDA_GIF_SRC.before; 
+            } else {
+                approachToggleButton.textContent = "接近 OFF";
+                approachToggleButton.style.backgroundColor = "#D32F2F";
+                // 💡 OFF状態ではGIFを停止させるか、停止状態の画像に切り替える（今回は前者の処理は不要だが、GIFは到着前で停止しているものとする）
+                stopApproachMelody();
+            }
+        }
+
+        // 接近メロディの音源と注意書きを更新する関数
+        function updateApproachMelodySource(showNotify = false) { 
+            const selectedKey = approachMelodySelect.value;
+            const data = APPROACH_MELODY_DATA[selectedKey];
+            
+            // data.melody が既に完全なURLになっているため、このまま使用する
+
+            if (isApproachPlaying) {
+                stopApproachMelody();
+            }
+            
+            // 💡 音源URLを直接設定
+            approachMelody.src = data.melody; 
+            
+            document.getElementById("approach-note").textContent = 
+                `現在の接近メロディー: ${data.name}`;
+
+            // 音源がある場合、接近が有効なら再生を開始
+            if (isApproachEnabled && data.melody !== '') {
+                playApproachMelody();
+            } else if (data.melody === '' && isApproachEnabled) {
+                // 音源がない場合、有効でも再生はしない
+                stopApproachMelody();
+            }
+            saveSettings(); // 設定変更時に保存
+        }
+
+        // 発車メロディ/モード/放送の設定変更関数
+        function handleSettingChange(event, showNotify = false) { 
+            if (tachikawaStopListener) {
+                melody.removeEventListener('ended', tachikawaStopListener);
+                tachikawaStopListener = null;
+            }
+
+            if (announcementSelect.value === 'none') {
+                announcement.src = '';
+            } else {
+                announcement.src = announcementSelect.value;
+            }
+            
+            melody.src = melodySelect.value;
+
+            updateIndicesFromSelects();
+            updateKeyDisplay();
+            
+            const selectElement = event ? event.target : null;
+            if (selectElement) {
+                const parentGroup = selectElement.closest('.control-group');
+                parentGroup.classList.remove('changed-setting');
+                void parentGroup.offsetWidth; 
+                parentGroup.classList.add('changed-setting');
+            }
+
+            if (isPlaying) {
+                melody.pause();
+                melody.currentTime = 0;
+                melody.loop = true;
+                if (!isMobilePlay) {
+                    melody.play().catch(error => {
+                        console.error("メロディー再生エラー:", error);
+                        // エラー時も通知は行いません
+                    });
+                }
+            }
+            saveSettings(); // 設定変更時に保存
+        }
+        
+        // --- 接近メロディの再生/停止関数 ---
+        
+        function playApproachMelody() {
+            // 💡 approachMelody.src が空の場合は再生しない
+            if (!isApproachEnabled || approachMelody.src === '' || isPlaying || isApproachPlaying) return;
+
+            isApproachPlaying = true;
+            // 💡 GIFを「接近中」のものに切り替え
+            approachBoard.src = HANEDA_GIF_SRC.after; 
+            approachMelody.loop = true;
+            approachMelody.currentTime = 0; 
+            
+            approachMelody.play().catch(error => {
+                console.error("接近メロディー再生エラー:", error);
+                // エラーが発生した場合、再生を停止し、設定をOFFにする
+                isApproachEnabled = false;
+                updateApproachToggleButton(false);
+                stopApproachMelody();
+            });
+        }
+        
+        function stopApproachMelody() {
+            if (!isApproachPlaying) return;
+            
+            isApproachPlaying = false;
+            // 💡 GIFを「到着前」のものに切り替え
+            approachBoard.src = HANEDA_GIF_SRC.before; 
+            approachMelody.loop = false;
+            approachMelody.pause();
+            approachMelody.currentTime = 0;
+        }
+
+        // 接近メロディON/OFFを切り替える関数 (ボタン専用)
+        function toggleApproachEnabled() {
+            isApproachEnabled = !isApproachEnabled;
+            
+            if (isApproachEnabled) {
+                playApproachMelody();
+            } else {
+                stopApproachMelody();
+            }
+
+            updateApproachToggleButton(false);
+            saveSettings(); // 状態変更時に保存
+        }
+
+        // --- 既存機能：発車メロディの操作関数 ---
+        
+        function playMelody() {
+            if (tachikawaStopListener) {
+                melody.removeEventListener('ended', tachikawaStopListener);
+                tachikawaStopListener = null;
+            }
+            
+            if (isApproachPlaying) {
+                // 💡 発車メロディ再生中は接近メロディを停止
+                stopApproachMelody();
+            }
+
+            returnSound.currentTime = 0;
+            returnSound.play();                        
+            
+            melody.src = melodySelect.value;
+            melody.currentTime = 0;
+            melody.loop = true;
+            melody.play().catch(error => {
+                console.error("メロディー再生エラー:", error);
+                // エラー時も通知は行いません
+            });
+
+            isPlaying = true;
+            toggleButton.textContent = isMobilePlay ? "ON (再生中)" : "ON (ホールド中 / カーソルロック中)";
+            toggleButton.style.backgroundColor = "#D32F2F"; 
+            toggleButton.style.boxShadow = "0 4px 6px rgba(211, 47, 47, 0.4)";
+        }
+
+        function stopMelodyImmediately() {
+            if (!isPlaying) return;
+
+            melody.pause();
+            melody.currentTime = 0;                        
+
+            if (announcementSelect.value !== 'none') {
+                announcement.src = announcementSelect.value;
+                announcement.currentTime = 0;
+                announcement.play(); 
+            }
+
+            isPlaying = false;
+            toggleButton.textContent = "OFF (待機中)";
+            toggleButton.style.backgroundColor = "#4CAF50"; 
+            toggleButton.style.boxShadow = "0 2px 5px 0 rgba(0,0,0,0.26)";
+            isMobilePlay = false;
+            
+            if (isApproachEnabled) {
+                // 💡 発車メロディ停止後、接近メロディを再開
+                updateApproachMelodySource(false); // これで接近メロディのsrcが設定され、playApproachMelody()が呼ばれる
+            }
+        }
+
+        function offSignalTachikawa() {
+            if (!isPlaying || tachikawaStopListener) return;
+
+            if (announcementSelect.value !== 'none') {
+                announcement.src = announcementSelect.value;
+                announcement.currentTime = 0;
+                announcement.play(); 
+            }
+
+            melody.loop = false;
+            toggleButton.textContent = "OFF (メロディー終了待ち)";
+            toggleButton.style.backgroundColor = "#FFC107"; 
+            toggleButton.style.boxShadow = "0 4px 6px rgba(255, 193, 7, 0.4)";
+
+            tachikawaStopListener = () => {
+                melody.removeEventListener('ended', tachikawaStopListener);
+                tachikawaStopListener = null;                                
+                melody.pause();
+                melody.currentTime = 0;                                
+                isPlaying = false;
+                toggleButton.textContent = "OFF (待機中)";
+                toggleButton.style.backgroundColor = "#4CAF50";
+                toggleButton.style.boxShadow = "0 2px 5px 0 rgba(0,0,0,0.26)";
+                isMobilePlay = false;
+
+                if (isApproachEnabled) {
+                    // 💡 発車メロディ終了後、接近メロディを再開
+                    updateApproachMelodySource(false); 
+                }
+            };                        
+            melody.addEventListener('ended', tachikawaStopListener);
+        }
+
+        // --- イベントリスナー ---
+        
+        melodySelect.addEventListener('change', handleSettingChange);
+        modeSelect.addEventListener('change', handleSettingChange);
+        announcementSelect.addEventListener('change', handleSettingChange);
+
+        // 💡 接近メロディが変更された時、音源と表示を更新する
+        approachMelodySelect.addEventListener('change', () => updateApproachMelodySource(false)); 
+        approachToggleButton.addEventListener('click', toggleApproachEnabled);
+
+        // --- その他のキーボード/マウス/モバイル操作ロジックは変更なし ---
+        document.addEventListener('keydown', function(e) {
+            if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+            
+            let selectElement = null;
+            let changed = false;
+
+            if (e.key === '1') {
+                currentMelodyIndex = (currentMelodyIndex + 1) % melodyOptions.length;
+                melodySelect.value = melodyOptions[currentMelodyIndex];
+                selectElement = melodySelect;
+                changed = true;
+                e.preventDefault();
+            } else if (e.key === '2') {
+                currentModeIndex = (currentModeIndex + 1) % modeOptions.length;
+                modeSelect.value = modeOptions[currentModeIndex];
+                selectElement = modeSelect;
+                changed = true;
+                e.preventDefault();
+            } else if (e.key === '3') {
+                currentAnnouncementIndex = (currentAnnouncementIndex + 1) % announcementOptions.length;
+                announcementSelect.value = announcementOptions[currentAnnouncementIndex];
+                selectElement = announcementSelect;
+                changed = true;
+                e.preventDefault();
+            }
+
+            if (changed && selectElement) {
+                handleSettingChange({ target: selectElement }, false); 
+            }
+
+            if (e.key === 'Enter') {
+                if (isPlaying) {
+                    const mode = modeSelect.value;
+                    if (mode === 'tachikawa') {
+                        offSignalTachikawa();
+                    } else {
+                        stopMelodyImmediately();
+                    }
+                } else {
+                    playMelody();
+                    isMobilePlay = false; 
+                }
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener('mousedown', function(e) {
+            if (e.button === 2) {
+                if (!isPlaying) {
+                    isMobilePlay = false; 
+                    playMelody();
+                }
+                isRightMouseButtonDown = true;
+                e.preventDefault();
+                if (document.pointerLockElement !== document.body) {
+                    document.body.requestPointerLock().catch(err => {
+                        console.warn("Pointer Lockの要求が拒否されました。ブラウザの設定をご確認ください。", err);
+                        // エラー時も通知は行いません
+                    });
+                }
+            }
+        });
+
+        document.addEventListener('mouseup', function(e) {
+            if (e.button === 2) {
+                if (isPlaying) {
+                    const mode = modeSelect.value;
+                    if (mode === 'tachikawa') {
+                        offSignalTachikawa();
+                    } else {
+                        stopMelodyImmediately();
+                    }
+                }
+                isRightMouseButtonDown = false;
+                document.exitPointerLock();
+            }
+        });
+
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault(); 
+        });
+
+        mobileOnButton.addEventListener('click', function() {
+            if (!isPlaying) {
+                isMobilePlay = true;
+                playMelody();
+            }
+        });
+
+        mobileOffButton.addEventListener('click', function() {
+            if (isPlaying) {
+                const mode = modeSelect.value;
+                if (mode === 'tachikawa') {
+                    offSignalTachikawa();
+                } else {
+                    stopMelodyImmediately();
+                }
+                isMobilePlay = false;
+            }
+        });
+
+        // 起動時の初期化処理
+        initializeApproachSelect();
+        // 保存された設定を読み込む
+        loadSettings();
+        // ブラウザバックを無効化
+        disableBrowserBack();
+    </script>
+</body>
+</html>
