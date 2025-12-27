@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>発車ベルシミュレーター - 路線選択</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        /* --- 1. 基本設定とレイアウト --- */
+        body {
+            font-family: 'Roboto', 'Noto Sans JP', sans-serif;
+            text-align: center;
+            background-color: #f8f9fa; 
+            color: #3c4043; 
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column; 
+            align-items: stretch;
+        }
+
+        /* --- 2. 戻るリンクのスタイル --- */
+        #back-link-container {
+            position: relative; 
+            padding: 10px 20px 0 20px;
+            z-index: 10; 
+            background-color: transparent; 
+            box-shadow: none; 
+            width: 100%;
+            box-sizing: border-box;
+            order: -1;
+        }
+        #back-link {
+            display: inline-block;
+            text-decoration: none;
+            color: #007aff;
+            font-size: 1.1em;
+            font-weight: 400;
+            padding: 5px 10px; 
+            transition: opacity 0.2s;
+            float: left;
+        }
+        #back-link:hover {
+            opacity: 0.7;
+        }
+        #back-link::before {
+            content: '＜';
+            margin-right: 5px;
+            font-weight: 600;
+        }
+        
+        /* --- 3. メインコンテナとタイトル --- */
+        .container {
+            max-width: 700px; 
+            width: 90%; 
+            margin: 10px auto 20px auto; 
+            background-color: #ffffff;
+            padding: 40px 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+        }
+        h1 {
+            color: #1a73e8;
+            font-size: 2.0em; 
+            font-weight: 700;
+            margin-bottom: 20px; 
+            white-space: normal;
+        }
+        .description {
+            color: #5f6368;
+            font-size: 1.1em;
+            margin-bottom: 40px;
+        }
+
+        /* --- 4. 選択ボタンの配置 --- */
+        .selection-grid {
+            display: flex;
+            justify-content: space-around;
+            gap: 30px; 
+            margin-top: 20px;
+            flex-wrap: wrap; 
+        }
+
+        /* --- 5. 個別ボタンのスタイル --- */
+        .selection-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-basis: 45%; 
+            min-height: 200px; 
+            padding: 25px;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            cursor: pointer;
+            border: 1px solid #dadce0;
+        }
+        .selection-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+        
+        /* 🚨 JRボタンのカラーを緑系に修正 🚨 */
+        #jr-button {
+            background-color: #e6fce8; /* 薄い緑 */
+        }
+        #jr-button h2 {
+            color: #34a853; /* 濃い緑 */
+        }
+        #jr-button .material-icons {
+            color: #34a853;
+        }
+
+        /* 私鉄・その他ボタン (変更なし) */
+        #other-button {
+            background-color: #e8f0fe;
+        }
+        #other-button h2 {
+            color: #1a73e8;
+        }
+        #other-button .material-icons {
+            color: #1a73e8;
+        }
+
+        .selection-button h2 {
+            font-size: 1.5em;
+            margin: 10px 0;
+            font-weight: 700;
+        }
+        .selection-button p {
+            font-size: 0.9em;
+            color: #5f6368;
+            margin: 5px 0 0 0;
+            text-align: center;
+        }
+        .selection-button .material-icons {
+            font-size: 3.5em;
+        }
+
+        /* --- 6. スマートフォン向け調整 --- */
+        @media (max-width: 768px) {
+            .selection-grid {
+                flex-direction: column; 
+                gap: 20px;
+            }
+            .selection-button {
+                flex-basis: 100%;
+                min-height: 150px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="back-link-container">
+        <a id="back-link" href="https://example.com">元のサイトに戻る</a>
+    </div>
+
+    <div class="container">
+        
+        <h1>発車ベルスイッチシミュレーター</h1>
+        <p class="description">
+            体験したいシミュレーターの路線ジャンルを選んでください。
+        </p>
+
+        <div class="selection-grid">
+            
+            <a href="jr_simulator.html" class="selection-button" id="jr-button">
+                <i class="material-icons">train</i>
+                <h2>JR</h2>
+                <p>JRグループ各社の在来線・新幹線音源、および関連路線の音源を収録しています。</p>
+            </a>
+
+            <a href="private_simulator.html" class="selection-button" id="other-button">
+                <i class="material-icons">directions_railway</i>
+                <h2>私鉄・その他</h2>
+                <p>京急、東武、近鉄、地下鉄などの、幅広いメロディーやベル音源を収録しています。</p>
+            </a>
+            
+        </div>
+        
+    </div>
+    
+</body>
+</html>
