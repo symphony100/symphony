@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JRシミュレーター - 会社選択</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        /* --- 1. 基本設定とレイアウト --- */
+        body {
+            font-family: 'Roboto', 'Noto Sans JP', sans-serif;
+            text-align: center;
+            background-color: #f8f9fa; 
+            color: #3c4043; 
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column; 
+            align-items: stretch;
+        }
+
+        /* --- 2. 戻るリンクのスタイル (路線ジャンル選択画面に戻る) --- */
+        #back-link-container {
+            position: relative; 
+            padding: 10px 20px 0 20px;
+            z-index: 10; 
+            width: 100%;
+            box-sizing: border-box;
+            order: -1;
+        }
+        #back-link {
+            display: inline-block;
+            text-decoration: none;
+            color: #007aff;
+            font-size: 1.1em;
+            font-weight: 400;
+            padding: 5px 10px; 
+            transition: opacity 0.2s;
+            float: left;
+        }
+        #back-link:hover {
+            opacity: 0.7;
+        }
+        #back-link::before {
+            content: '＜'; 
+            margin-right: 5px;
+            font-weight: 600;
+        }
+        
+        /* --- 3. メインコンテナとタイトル --- */
+        .container {
+            max-width: 900px; 
+            width: 90%; 
+            margin: 10px auto 20px auto; 
+            background-color: #ffffff;
+            padding: 40px 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+        }
+        h1 {
+            color: #3c4043; 
+            font-size: 2.2em; 
+            font-weight: 700;
+            margin-bottom: 5px; 
+            white-space: normal;
+        }
+        .description {
+            color: #5f6368;
+            font-size: 1.0em;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* --- 4. 会社選択グリッド --- */
+        .company-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        /* --- 5. 個別会社ボタンのスタイル --- */
+        .company-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 140px; 
+            padding: 15px;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            border: 1px solid #dadce0;
+            background-color: #f7f7f7; 
+        }
+        .company-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .company-button h2 {
+            font-size: 1.2em;
+            margin: 5px 0 0 0;
+            font-weight: 700;
+        }
+        .company-button p {
+            font-size: 0.8em;
+            color: #5f6368;
+            margin: 5px 0 0 0;
+            text-align: center;
+        }
+        .company-button .material-icons {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+
+        /* --- 6. 各社カラー定義 (変更なし) --- */
+
+        /* JR北海道 (ライトグリーン) */
+        .jr-hokkaido {
+            background-color: #e8f9ed;
+        }
+        .jr-hokkaido h2, .jr-hokkaido .material-icons {
+            color: #4CAF50; 
+        }
+
+        /* JR東日本 (濃い緑) */
+        .jr-east {
+            background-color: #e4f5e7;
+        }
+        .jr-east h2, .jr-east .material-icons {
+            color: #008000; 
+        }
+
+        /* JR東海 (オレンジ) */
+        .jr-central {
+            background-color: #fff4e6;
+        }
+        .jr-central h2, .jr-central .material-icons {
+            color: #FF6600; 
+        }
+
+        /* JR西日本 (青) */
+        .jr-west {
+            background-color: #eaf3ff;
+        }
+        .jr-west h2, .jr-west .material-icons {
+            color: #004d9c; 
+        }
+
+        /* JR四国 (水色) */
+        .jr-shikoku {
+            background-color: #e8ffff;
+        }
+        .jr-shikoku h2, .jr-shikoku .material-icons {
+            color: #00c0f0; 
+        }
+
+        /* JR九州 (赤) */
+        .jr-kyushu {
+            background-color: #ffe6e6;
+        }
+        .jr-kyushu h2, .jr-kyushu .material-icons {
+            color: #FF0000; 
+        }
+        
+        /* --- 7. スマートフォン向け調整 --- */
+        @media (max-width: 600px) {
+            .company-grid {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="back-link-container">
+        <a id="back-link" href="https://symphony100.github.io/symphony/game/train/menu/switch/home/a/">元のサイトに戻る</a>
+    </div>
+
+    <div class="container">
+        
+        <h1>シミュレーター一覧</h1>
+        <p class="description">
+            体験したいエリアを選んでください。各社の在来線、新幹線、特急列車などの音源をシミュレートできます。
+        </p>
+
+        <div class="company-grid">
+            
+            <a href="https://symphony100.github.io/symphony/game/train/menu/switch/hokkaido/" class="company-button jr-hokkaido">
+                <i class="material-icons">directions_subway</i>
+                <h2>北海道エリア</h2>
+                <p>道内の特急・在来線ベル、チャイム</p>
+            </a>
+
+            <a href="https://symphony100.github.io/symphony/game/train/menu/switch/east/" class="company-button jr-east">
+                <i class="material-icons">directions_subway</i>
+                <h2>東日本エリア</h2>
+                <p>首都圏、東北・信越地域のメロディー・ベル</p>
+            </a>
+
+            <a href="https://symphony100.github.io/symphony/game/train/menu/switch/central/" class="company-button jr-central">
+                <i class="material-icons">directions_subway</i>
+                <h2>東海エリア</h2>
+                <p>東海道新幹線、在来線ベル・チャイム</p>
+            </a>
+
+            <a href="https://symphony100.github.io/symphony/game/train/menu/switch/west/" class="company-button jr-west">
+                <i class="material-icons">directions_subway</i>
+                <h2>西日本エリア</h2>
+                <p>京阪神、山陽新幹線などのメロディー</p>
+            </a>
+
+            <a href="https://symphony100.github.io/symphony/game/train/menu/switch/shikoku/" class="company-button jr-shikoku">
+                <i class="material-icons">directions_subway</i>
+                <h2>四国エリア</h2>
+                <p>四国エリアの鉄道のメロディー</p>
+            </a>
+            
+            <a href="https://symphony100.github.io/symphony/game/train/menu/switch/kyushu/" class="company-button jr-kyushu">
+                <i class="material-icons">directions_subway</i>
+                <h2>九州エリア</h2>
+                <p>九州新幹線、特急・在来線のベル・チャイム</p>
+            </a>
+            
+        </div>
+        
+    </div>
+    
+</body>
+</html>
