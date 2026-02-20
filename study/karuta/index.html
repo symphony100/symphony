@@ -17,7 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap" rel="stylesheet">
     
     <style>
-        /* ベーススタイル */
+        /* --- 基本スタイル --- */
         body {
             margin: 0;
             min-height: 100vh;
@@ -31,193 +31,183 @@
             position: relative;
         }
 
-        /* 伝統的な模様のオーバーレイ (オプション) */
         body::before {
             content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="%23d8c3a5" d="M0 0h50v50H0zm50 50h50v50H50z"/><path fill="%23c2ae90" d="M0 50h50v50H0zm50 0h50v50H50z" opacity=".2"/></svg>');
-            background-size: 200px 200px;
-            opacity: 0.2;
-            z-index: -1;
+            background-size: 200px 200px; opacity: 0.2; z-index: -1;
         }
 
         .start-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 30px; 
-            max-width: 600px;
-            width: 90%;
-            box-sizing: border-box;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 50px 30px; max-width: 600px; width: 90%; box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.9); border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); backdrop-filter: blur(8px);
+            margin-bottom: 80px;
         }
 
-        /* タイトルエリア */
-        .title-area {
-            margin-bottom: 50px; 
-            text-align: center;
-        }
+        .main-title { font-family: "Yuji Syuku", cursive; font-size: 3.8rem; color: #4a2a16; text-align: center; margin: 0; }
+        .sub-title { font-family: "Shippori Mincho B1", serif; font-size: 1.1rem; color: #7a5f4c; margin-top: 10px; text-align: center; }
 
-        .main-title {
-            font-family: "Yuji Syuku", cursive;
-            font-size: 3.8rem;
-            color: #4a2a16;
-            text-shadow: 
-                -2px -2px 0 #f0e6d3, 
-                2px -2px 0 #f0e6d3, 
-                -2px 2px 0 #f0e6d3, 
-                2px 2px 0 #f0e6d3,
-                4px 4px 6px rgba(0,0,0,0.2);
-            letter-spacing: 0.1em;
-            line-height: 1;
-            margin: 0;
-        }
-
-        .sub-title {
-            font-family: "Shippori Mincho B1", serif;
-            font-size: 1.1rem;
-            color: #7a5f4c;
-            margin-top: 10px;
-            letter-spacing: 0.05em;
-        }
-
-        /* ボタン群のスタイル */
-        .button-group {
-            display: flex;
-            flex-direction: column;
-            gap: 25px; 
-            width: 70%; 
-            max-width: 350px;
-        }
-
-        /* 全てのボタンのスタイル */
+        .button-group { display: flex; flex-direction: column; gap: 20px; width: 80%; max-width: 320px; margin-top: 40px; }
         .action-button {
-            width: 100%;
-            padding: 18px 25px;
-            border-radius: 8px;
-            font-size: 1.4rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: "Noto Serif JP", serif;
-            letter-spacing: 0.05em;
-            color: white;
-            background: linear-gradient(135deg, #7b9c7b 0%, #4d684d 100%);
-            border: none;
+            width: 100%; padding: 18px 25px; border-radius: 8px; font-size: 1.4rem; font-weight: bold;
+            text-decoration: none; display: flex; justify-content: center; align-items: center;
+            color: white; background: linear-gradient(135deg, #7b9c7b 0%, #4d684d 100%);
             border-bottom: 3px solid #3a503a;
         }
 
-        .action-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-            background: linear-gradient(135deg, #8cb58c 0%, #5a7b5a 100%);
-            border-bottom: 3px solid #4a604a;
+        /* --- 広告エリア --- */
+        #google-ad-container {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background-color: #ffffff; border-top: 1px solid #e0e0e0;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.08); z-index: 9999;
+            font-family: 'Noto Sans JP', sans-serif;
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
-        .action-button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            background: linear-gradient(135deg, #6a8c6a 0%, #405740 100%);
-            border-bottom: 1px solid #3a503a;
+        /* 進行バー（プログレスバー） */
+        .ad-progress-bar {
+            width: 100%; height: 3px; background: #eee; position: absolute; top: 0; left: 0;
         }
-        
-        /* バージョン情報 */
-        .version-info {
-            position: fixed; 
-            bottom: 10px;    
-            right: 10px;     
-            font-size: 0.8rem;
-            color: #7a5f4c; 
-            opacity: 0.7; 
-            z-index: 1000;
-            font-family: Arial, sans-serif; 
+        #ad-progress-inner {
+            width: 0%; height: 100%; background: #1a73e8; transition: width 0.1s linear;
         }
 
+        .ad-meta {
+            width: 100%; display: flex; justify-content: space-between; align-items: center;
+            padding: 4px 10px 2px; box-sizing: border-box;
+        }
+        .ad-label { font-size: 10px; color: #aaa; }
+        #ad-close-btn { color: #888; font-size: 20px; cursor: pointer; padding: 2px 5px; line-height: 1; }
 
-        /* モバイル向け調整 */
+        .ad-main {
+            width: 100%; height: 80px; display: flex; align-items: center;
+            padding: 5px 15px 10px; box-sizing: border-box; text-decoration: none; color: #202124; gap: 12px;
+            transition: opacity 0.3s ease; /* 切り替わり時のふわっと感 */
+        }
+
+        .ad-img-box { width: 50px; height: 50px; background: #f1f3f4; border-radius: 6px; overflow: hidden; flex-shrink: 0; }
+        .ad-logo-img { width: 100%; height: 100%; object-fit: cover; }
+        .ad-text-content { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; }
+        .ad-title { font-size: 14px; font-weight: 500; color: #1a73e8; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ad-desc { font-size: 11px; color: #5f6368; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .ad-cta-button { background-color: #1a73e8; color: white; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 500; flex-shrink: 0; }
+
+        .version-info { position: fixed; bottom: 95px; right: 10px; font-size: 0.8rem; color: #7a5f4c; opacity: 0.7; transition: bottom 0.5s ease; }
+
         @media (max-width: 600px) {
-            .start-container {
-                width: 95%;
-                padding: 40px 20px; 
-            }
-            .main-title {
-                font-size: 3rem;
-            }
-            .sub-title {
-                font-size: 0.9rem;
-            }
-            .action-button {
-                font-size: 1.2rem;
-                padding: 15px 20px;
-            }
-            .title-area {
-                margin-bottom: 50px; 
-            }
-            .button-group {
-                gap: 20px; 
-                width: 100%; 
-                max-width: none;
-            }
-            .version-info {
-                bottom: 5px;
-                right: 5px;
-                font-size: 0.7rem;
-            }
+            .ad-desc { display: none; }
+            .ad-main { height: 65px; }
+            .version-info { bottom: 80px; }
         }
     </style>
 </head>
 <body>
-
     <div class="start-container">
         <div class="title-area">
             <h1 class="main-title">百人一首</h1>
             <p class="sub-title">〜学びと詠みの世界へ〜</p>
         </div>
-
         <div class="button-group">
-            <a href="https://symphony100.github.io/symphony/study/karuta/play/" class="action-button">ゲームスタート</a>
-            
-            <a href="https://symphony100.github.io/symphony/study/karuta/use/" class="action-button">遊び方</a>
-            <a href="https://symphony100.github.io/symphony/study/karuta/news/" class="action-button">お知らせ</a>
+            <a href="play/" class="action-button">ゲームスタート</a>
+            <a href="/" class="action-button">アプリを閉じる。</a>
         </div>
     </div>
-    
-    <p class="version-info">Ver. 4.4.0</p>
+
+    <div id="google-ad-container">
+        <div class="ad-progress-bar"><div id="ad-progress-inner"></div></div>
+        <div class="ad-meta">
+            <span class="ad-label">スポンサー広告</span>
+            <div id="ad-close-btn" onclick="closeAdBanner(event)">×</div>
+        </div>
+        <a id="ad-link" href="https://symphony100.github.io/shikenyou/" class="ad-main">
+            <div class="ad-img-box">
+                <img id="ad-img" src="https://symphony100.github.io/shikenyou/symphony.png" alt="logo" class="ad-logo-img">
+            </div>
+            <div class="ad-text-content">
+                <span id="ad-title" class="ad-title">Symphony System Group</span>
+                <span id="ad-desc" class="ad-desc">いろいろな機能が搭載！</span>
+            </div>
+            <div id="ad-cta" class="ad-cta-button">開く</div>
+        </a>
+    </div>
+
+    <p class="version-info" id="v-info">Ver. 4.5.0</p>
 
     <script>
-        document.querySelectorAll('.action-button').forEach(button => {
-            button.addEventListener('mousedown', () => {
-                button.style.transform = 'translateY(1px)';
-                button.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-            });
-            button.addEventListener('mouseup', () => {
-                button.style.transform = ''; 
-                button.style.boxShadow = '';
-            });
-            button.addEventListener('mouseleave', () => {
-                 button.style.transform = '';
-                 button.style.boxShadow = '';
-            });
-        });
+        // --- 広告データ（3パターン） ---
+        const adData = [
+            {
+                title: "Symphony System Group",
+                desc: "Symphonyのサイトでいろいろ楽しもう！",
+                img: "https://symphony100.github.io/shikenyou/symphony.png",
+                url: "https://symphony100.github.io/shikenyou/",
+                cta: "開く"
+            },
+            {
+                title: "２０４８ゲーム",
+                desc: "勉強の合間に少し息抜き！２０４８ゲーム",
+                img: "https://symphony100.github.io/symphony/study/2048/2048.png",
+                url: "https://symphony100.github.io/symphony/study/2048/",
+                cta: "遊ぶ"
+            },
+            {
+                title: "App Garden",
+                desc: "App Gardenで、新しい体験をしよう！（メンテナンス中）",
+                img: "https://symphony100.github.io/symphony/study/icon.png",
+                url: "https://symphony100.github.io/symphony/study/icon.png",
+                cta: "開く"
+            }
+        ];
 
-        window.addEventListener('load', () => {
-            console.log('百人一首スタート画面がロードされました。');
-        });
+        let currentAdIndex = 0;
+        let progress = 0;
+        const duration = 10000; // 10秒
+        const interval = 100;   // 0.1秒ごとに更新
+        const step = (interval / duration) * 100;
+
+        const adContainer = document.getElementById('google-ad-container');
+        const progressBar = document.getElementById('ad-progress-inner');
+        const adMain = document.querySelector('.ad-main');
+
+        // 広告内容を更新する関数
+        function updateAd() {
+            adMain.style.opacity = '0'; // 一旦消す
+            
+            setTimeout(() => {
+                currentAdIndex = (currentAdIndex + 1) % adData.length;
+                const data = adData[currentAdIndex];
+                
+                document.getElementById('ad-title').innerText = data.title;
+                document.getElementById('ad-desc').innerText = data.desc;
+                document.getElementById('ad-img').src = data.img;
+                document.getElementById('ad-link').href = data.url;
+                document.getElementById('ad-cta').innerText = data.cta;
+                
+                adMain.style.opacity = '1'; // ふわっと出す
+            }, 300);
+        }
+
+        // プログレスバーを動かすタイマー
+        const timer = setInterval(() => {
+            progress += step;
+            if (progress >= 100) {
+                progress = 0;
+                updateAd();
+            }
+            progressBar.style.width = progress + '%';
+        }, interval);
+
+        // 広告を閉じる
+        function closeAdBanner(e) {
+            e.preventDefault(); e.stopPropagation();
+            clearInterval(timer); // タイマー停止
+            adContainer.style.opacity = '0';
+            adContainer.style.transform = 'translateY(100%)';
+            document.getElementById('v-info').style.bottom = '10px';
+            setTimeout(() => adContainer.style.display = 'none', 500);
+        }
     </script>
-
 </body>
 </html>
