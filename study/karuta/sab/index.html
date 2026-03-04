@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>百人一首</title>
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&family=Noto+Serif+JP:wght@400;700&family=Yuji+Syuku&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2f5d50;
+            --accent: #ffd700;
+            --bg: #e9e4d1;
+            --white: #fffef8;
+            --transition: 0.3s ease-out;
+        }
+
+        body {
+            margin: 0; padding: 10px; min-height: 100vh;
+            background: var(--bg);
+            font-family: "Yuji Syuku", serif;
+            display: flex; flex-direction: column; align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* ページ遷移 */
+        .page-transition { animation: slideIn 0.4s ease forwards; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* 設定エリア */
+        .setup-area {
+            background: rgba(255, 255, 248, 0.95);
+            padding: 25px; border-radius: 16px; border: 2px solid var(--primary);
+            width: 100%; max-width: 400px;
+            display: flex; flex-direction: column; gap: 20px;
+            align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .range-container { display: flex; align-items: center; gap: 8px; font-weight: bold; color: var(--primary); }
+        input[type="number"] {
+            background: var(--white); border: 2px solid var(--primary);
+            border-radius: 8px; padding: 10px; width: 80px; font-size: 1.1rem; 
+            text-align: center; font-family: inherit;
+        }
+
+        /* --- 選択ボックスのCSS改善 --- */
+        select {
+            appearance: none; /* 標準デザイン解除 */
+            background: var(--white);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 8px 30px 8px 15px;
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--primary);
+            cursor: pointer;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232f5d50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 15px;
+        }
+        select:disabled { background-color: #eee; border-color: #999; color: #999; }
+
+        .switch-row { display: flex; align-items: center; gap: 15px; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; inset: 0;
+            background-color: #ccc; transition: .4s; border-radius: 28px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 22px; width: 22px;
+            left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* --- ターン表示（控えめ版） --- */
+        .info-panel {
+            display: none; width: 100%; max-width: 400px;
+            justify-content: space-around; background: var(--primary); color: white;
+            padding: 12px; border-radius: 12px; margin-bottom: 10px;
+        }
+        .score-box { 
+            padding: 2px 10px; 
+            border-bottom: 3px solid transparent; 
+            transition: var(--transition);
+            opacity: 0.7;
+        }
+        .active-turn { 
+            opacity: 1;
+            border-bottom: 3px solid var(--accent);
+            transform: scale(1.05);
+        }
+
+        .game-board {
+            display: none; grid-template-columns: repeat(3, 1fr);
+            gap: 10px; width: 100%; max-width: 400px;
+        }
+
+        /* 札 */
+        .card {
+            aspect-ratio: 3 / 4; position: relative; cursor: pointer;
+            transform-style: preserve-3d; transition: transform 0.4s;
+            border-radius: 5px; box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
+        }
+        .card.flipped { transform: rotateY(180deg); }
+        .card.matched { opacity: 0; pointer-events: none; transform: scale(0.8); transition: 0.5s; }
+
+        .card-front, .card-back {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            backface-visibility: hidden; border-radius: 5px; box-sizing: border-box;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .card-back { background: var(--primary); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .card-front {
+            background: var(--white); transform: rotateY(180deg);
+            writing-mode: vertical-rl; padding: 8px; font-size: 0.85rem;
+            text-align: center; color: #333; display: flex; align-items: center; justify-content: center;
+        }
+
+        .btn-base { border: none; border-radius: 40px; cursor: pointer; font-family: inherit; font-weight: bold; transition: var(--transition); }
+        .btn-start {
+            background: var(--primary); color: white; padding: 15px 40px; font-size: 1.2rem;
+            box-shadow: 0 4px 0 #1a3a32;
+        }
+        .btn-start:active { transform: translateY(2px); box-shadow: 0 2px 0 #1a3a32; }
+
+        .btn-abort {
+            display: none; background: #a63d3d; color: white; margin-top: 15px;
+            padding: 10px 30px; font-size: 0.9rem; box-shadow: 0 4px 0 #6e2929;
+        }
+
+        #modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+            z-index: 1000; justify-content: center; align-items: center;
+        }
+        .modal-body {
+            background: var(--white); padding: 30px; border-radius: 15px;
+            border: 3px solid var(--primary); text-align: center; width: 80%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="setup-area page-transition" id="setupArea">
+        <div class="range-container">
+            範囲: <input type="number" id="startR"> 〜 <input type="number" id="endR">
+        </div>
+        <div class="switch-row">
+            <div class="switch-container">
+                AIと対戦:
+                <label class="switch">
+                    <input type="checkbox" id="aiToggle" onchange="toggleDiffSelect()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <select id="diff">
+                <option value="easy">初級</option>
+                <option value="normal">中級</option>
+                <option value="hard">上級</option>
+            </select>
+        </div>
+        <button class="btn-base btn-start" onclick="saveAndStart()">開始！</button>
+    </div>
+
+    <div class="info-panel page-transition" id="info">
+        <div id="pScore" class="score-box">あなた: 0</div>
+        <div id="aScore" class="score-box">相手: 0</div>
+        <div id="timer">0.0s</div>
+    </div>
+    
+    <div id="board" class="game-board page-transition"></div>
+    <button id="abortBtn" class="btn-base btn-abort" onclick="abortGame()">中断して戻る</button>
+
+    <div id="modal">
+        <div class="modal-body">
+            <h2 id="resMsg" style="color:var(--primary); margin-top:0;"></h2>
+            <p id="resDetail" style="font-size:1.2rem; margin-bottom:20px;"></p>
+            <button class="btn-base btn-start" onclick="closeModal()">もう一度プレイ</button>
+        </div>
+    </div>
+
+    <script>
+        let cardsData = [], gameCards = [], flipped = [], aiMemory = [];
+        let scores = {p:0, a:0}, turn = 'p', isLock = false, matchedPairs = 0;
+        let timerId = null, startTime = 0, isAiMode = false;
+
+        window.onload = async () => {
+            const savedStart = localStorage.getItem('karuta_start') || 1;
+            const savedEnd = localStorage.getItem('karuta_end') || 100;
+            const savedDiff = localStorage.getItem('karuta_diff') || 'normal';
+            const savedAi = localStorage.getItem('karuta_ai') === 'true';
+            document.getElementById('startR').value = savedStart;
+            document.getElementById('endR').value = savedEnd;
+            document.getElementById('diff').value = savedDiff;
+            document.getElementById('aiToggle').checked = savedAi;
+            toggleDiffSelect();
+            await loadData();
+        };
+
+        async function loadData() {
+            try {
+                const res = await fetch("https://symphony100.github.io/symphony/study/karuta/play/cards.json");
+                cardsData = await res.json();
+            } catch (e) { console.error("Data load error"); }
+        }
+
+        function toggleDiffSelect() {
+            document.getElementById('diff').disabled = !document.getElementById('aiToggle').checked;
+        }
+
+        function saveAndStart() {
+            localStorage.setItem('karuta_start', document.getElementById('startR').value);
+            localStorage.setItem('karuta_end', document.getElementById('endR').value);
+            localStorage.setItem('karuta_diff', document.getElementById('diff').value);
+            localStorage.setItem('karuta_ai', document.getElementById('aiToggle').checked);
+            document.getElementById('setupArea').style.display = 'none';
+            document.getElementById('info').style.display = 'flex';
+            document.getElementById('board').style.display = 'grid';
+            document.getElementById('abortBtn').style.display = 'block';
+            startGame();
+        }
+
+        function startGame() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            clearInterval(timerId);
+            flipped = []; aiMemory = []; scores = {p:0, a:0}; turn = 'p'; isLock = false; matchedPairs = 0;
+            isAiMode = localStorage.getItem('karuta_ai') === 'true';
+
+            const s = parseInt(localStorage.getItem('karuta_start'));
+            const e = parseInt(localStorage.getItem('karuta_end'));
+            const filtered = cardsData.filter(c => c.id >= s && c.id <= e);
+            if(filtered.length < 6) { alert("札が足りません！"); abortGame(); return; }
+
+            const selected = filtered.sort(() => Math.random() - 0.5).slice(0, 6);
+            gameCards = [];
+            selected.forEach(p => {
+                gameCards.push({id:p.id, text:p.kami});
+                gameCards.push({id:p.id, text:p.shimo});
+            });
+            gameCards.sort(() => Math.random() - 0.5);
+
+            gameCards.forEach((d, i) => {
+                const c = document.createElement('div');
+                c.className = 'card';
+                c.dataset.id = d.id;
+                c.dataset.index = i;
+                c.innerHTML = `<div class="card-back">？</div><div class="card-front">${d.text}</div>`;
+                c.onclick = () => { if(turn === 'p') handleFlip(c); };
+                board.appendChild(c);
+            });
+
+            document.getElementById('aScore').style.display = isAiMode ? 'block' : 'none';
+            updateUI();
+            startTime = Date.now();
+            timerId = setInterval(() => {
+                document.getElementById('timer').textContent = ((Date.now() - startTime)/1000).toFixed(1) + "s";
+            }, 100);
+        }
+
+        function handleFlip(c, force = false) {
+            if((isLock && !force) || c.classList.contains('flipped') || c.classList.contains('matched')) return;
+            c.classList.add('flipped');
+            flipped.push(c);
+            if(!aiMemory.find(m => m.index == c.dataset.index)) {
+                aiMemory.push({id: c.dataset.id, index: c.dataset.index});
+            }
+            if(flipped.length === 2) { isLock = true; checkMatch(); }
+        }
+
+        function checkMatch() {
+            const [c1, c2] = flipped;
+            if(c1.dataset.id === c2.dataset.id) {
+                setTimeout(() => {
+                    c1.classList.add('matched'); c2.classList.add('matched');
+                    scores[turn]++; matchedPairs++; flipped = []; isLock = false;
+                    updateUI();
+                    if(matchedPairs === 6) endGame();
+                    else if(isAiMode && turn === 'a') aiTurn();
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    c1.classList.remove('flipped'); c2.classList.remove('flipped');
+                    flipped = [];
+                    if (isAiMode) {
+                        turn = (turn === 'p') ? 'a' : 'p';
+                        if(turn === 'a') aiTurn();
+                        else isLock = false;
+                    } else isLock = false;
+                    updateUI();
+                }, 1000);
+            }
+        }
+
+        function aiTurn() {
+            if(matchedPairs === 6) return;
+            isLock = true;
+            const diff = localStorage.getItem('karuta_diff');
+            const forgetRate = (diff === 'easy') ? 0.8 : (diff === 'normal') ? 0.4 : 0;
+            const currentMem = aiMemory.filter(() => Math.random() > forgetRate);
+            let firstIdx = -1;
+            const pair = findPairInMem(currentMem);
+            if(pair) firstIdx = pair[0];
+            else {
+                const av = Array.from(document.querySelectorAll('.card:not(.flipped):not(.matched)'));
+                firstIdx = av[Math.floor(Math.random()*av.length)].dataset.index;
+            }
+            const card1 = document.querySelector(`.card[data-index="${firstIdx}"]`);
+            setTimeout(() => {
+                handleFlip(card1, true); 
+                setTimeout(() => {
+                    let secondIdx = -1;
+                    const match = currentMem.find(m => m.id === card1.dataset.id && m.index != firstIdx);
+                    if(match && !document.querySelector(`.card[data-index="${match.index}"]`).classList.contains('matched')) secondIdx = match.index;
+                    else {
+                        const av = Array.from(document.querySelectorAll('.card:not(.flipped):not(.matched)'));
+                        secondIdx = av[Math.floor(Math.random()*av.length)].dataset.index;
+                    }
+                    handleFlip(document.querySelector(`.card[data-index="${secondIdx}"]`), true);
+                }, 800);
+            }, 600);
+        }
+
+        function findPairInMem(mem) {
+            const counts = {};
+            for(const m of mem) {
+                if(document.querySelector(`.card[data-index="${m.index}"]`).classList.contains('matched')) continue;
+                if(!counts[m.id]) counts[m.id] = [];
+                counts[m.id].push(m.index);
+                if(counts[m.id].length === 2) return counts[m.id];
+            }
+            return null;
+        }
+
+        function updateUI() {
+            const p = document.getElementById('pScore'), a = document.getElementById('aScore');
+            p.textContent = `あなた: ${scores.p}`; a.textContent = `相手: ${scores.a}`;
+            p.classList.toggle('active-turn', turn === 'p');
+            a.classList.toggle('active-turn', turn === 'a' && isAiMode);
+        }
+
+        function endGame() {
+            clearInterval(timerId);
+            document.getElementById('abortBtn').style.display = 'none';
+            const msg = document.getElementById('resMsg'), detail = document.getElementById('resDetail');
+            if(isAiMode) {
+                if(scores.p > scores.a) msg.textContent = "あなたの勝ち！";
+                else if(scores.p < scores.a) msg.textContent = "相手の勝ち！";
+                else msg.textContent = "引き分け！";
+            } else msg.textContent = "クリア！";
+            detail.textContent = `タイム: ${document.getElementById('timer').textContent}`;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function abortGame() {
+            clearInterval(timerId);
+            document.getElementById('board').style.display = 'none';
+            document.getElementById('info').style.display = 'none';
+            document.getElementById('abortBtn').style.display = 'none';
+            document.getElementById('setupArea').style.display = 'flex';
+            document.getElementById('timer').textContent = "0.0s";
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            abortGame();
+        }
+    </script>
+</body>
+</html>
