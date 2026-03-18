@@ -2,211 +2,1481 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-   <link rel="icon" type="image/x-icon" href="https://symphony100.github.io/symphony/study/karuta/icon.png">
-    <meta name="keywords" content="かるた,百人一首,暗記,国語,対策">
-    <meta name="description" content="百人一首を覚えよう！">
-    <meta property="og:title" content="百人一首">
-    <meta property="og:description" content="百人一首を覚えよう！">
-    <meta property="og:image" content="https://symphony100.github.io/symphony/study/karuta/icon.png">
-    <meta property="og:url" content="https://symphony100.github.io/symphony/study/karuta/">
-    <meta property="og:type" content="website">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <title>百人一首</title>
-    <link rel="manifest" href="manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap" rel="stylesheet">
-    
+    <!-- 和風フォントとGoogle Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+    <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
     <style>
-        /* --- 基本スタイル --- */
-        body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, #f0e6d3 0%, #d8c3a5 100%);
-            font-family: "Noto Serif JP", serif;
-            color: #333;
-            overflow: hidden;
-            position: relative;
+        :root {
+            --primary: #2F5D50; 
+            --primary-light: #4A7A6D; 
+            --accent: #D7A953; 
+            --bg-color: #F4F1EA; 
+            --surface: #FFFFFF; 
+            --text-main: #333333;
+            --text-sub: #666666;
+            --error: #B7282E; 
+            --header-h: 56px; 
+            --nav-h: 60px;
         }
 
-        body::before {
-            content: '';
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="%23d8c3a5" d="M0 0h50v50H0zm50 50h50v50H50z"/><path fill="%23c2ae90" d="M0 50h50v50H0zm50 0h50v50H50z" opacity=".2"/></svg>');
-            background-size: 200px 200px; opacity: 0.2; z-index: -1;
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; height: 100dvh; overflow: hidden; background-color: var(--bg-color); font-family: 'Noto Sans JP', sans-serif; color: var(--text-main); user-select: none; display: flex; flex-direction: column; }
+        
+        header { height: var(--header-h); background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: height 0.3s, opacity 0.3s;}
+        header.hide { height: 0; opacity: 0; overflow: hidden; padding: 0; margin: 0; box-shadow: none;}
+        header h1 { margin: 0; font-size: 1.2rem; font-family: 'Shippori Mincho B1', serif; letter-spacing: 2px;}
+
+        .main-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        
+        .card { background: var(--surface); border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; margin-bottom: 12px; }
+        .card-title { font-size: 1.05rem; font-weight: bold; color: var(--primary); margin: 0; border-bottom: 2px solid #eee; padding-bottom: 6px; text-align: center; display:flex; align-items:center; justify-content:center; gap:5px;}
+        
+        .input-box { width: 100%; padding: 12px; font-size: 1rem; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; background: #fafafa; outline: none; transition: 0.2s; text-align: center; font-family: inherit;}
+        .input-box:focus { border-color: var(--primary); background: #fff; }
+        .custom-select { appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="%232F5D50" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); background-repeat: no-repeat; background-position: right 8px center; padding-right: 30px; cursor: pointer; }
+
+        .btn { width: 100%; padding: 12px; font-size: 1rem; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.15); font-family: inherit;}
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:active { transform: scale(0.96); box-shadow: none; }
+        .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); box-shadow: none;}
+        .btn-danger { background: var(--error); color: white; }
+
+        .icon-btn { background: transparent; border: none; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 8px; border-radius: 50%; transition: background 0.2s;}
+        .icon-btn:active { background: rgba(255,255,255,0.2); }
+
+        .tab-link { color: var(--primary); text-decoration: underline; text-align: center; font-size: 0.85rem; cursor: pointer; margin-top: 5px; }
+
+        .toggle-switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2);}
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        #auth-layer { flex: 1; display: flex; flex-direction: column; padding: 16px; overflow-y: auto; justify-content: center;}
+        .auth-screen { display: none; flex-direction: column; animation: fadeIn 0.3s ease; }
+        .auth-screen.active { display: flex; }
+
+        #main-app { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+        #tab-container { flex: 1; overflow-y: auto; padding: 12px; position: relative; }
+        .tab-page { display: none; flex-direction: column; animation: slideUpFade 0.3s ease forwards; }
+        .tab-page.active { display: flex; }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* ボトムナビゲーション */
+        .bottom-nav { height: var(--nav-h); background: #fff; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); flex-shrink: 0; z-index: 100; align-items: center;}
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #aaa; cursor: pointer; transition: 0.2s; height: 100%; gap: 2px;}
+        .nav-item.active { color: var(--primary); }
+        .nav-item .material-symbols-outlined { font-size: 1.6rem; transition: transform 0.2s; }
+        .nav-item.active .material-symbols-outlined { transform: scale(1.15); }
+        .nav-label { font-size: 0.7rem; font-weight: bold; }
+
+        .nav-item-center-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; cursor: pointer;}
+        .nav-item-center { width: 48px; height: 48px; background: var(--primary); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; transition: transform 0.2s; box-shadow: 0 0 10px rgba(47, 93, 80, 0.3);}
+        .nav-item-center .material-symbols-outlined { font-size: 1.3rem; margin-top: 2px;}
+        .nav-item-center span.text { font-size: 0.65rem; font-weight: bold; line-height: 1; margin-top: 1px;}
+        .nav-item-center-wrapper:active .nav-item-center { transform: scale(0.92); }
+
+        .live-item { background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;}
+        
+        .ranking-list { display: flex; flex-direction: column; gap: 8px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; margin-bottom: 15px;}
+        .stats-box { background: #f0f0f0; padding: 12px; border-radius: 8px; }
+        .stats-num { font-size: 1.6rem; font-weight: bold; color: var(--primary); display: block; margin-top: 4px;}
+
+        /* マッチング＆ロード画面 */
+        .overlay-screen { position: fixed; inset: 0; background: var(--bg-color); z-index: 300; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+        .loader-icon { font-size: 4rem; color: var(--primary); animation: bounce 1s infinite alternate; margin-bottom: 15px;}
+        .loader-title { font-size: 1.3rem; font-weight: bold; color: var(--primary); margin-bottom: 10px; line-height: 1.4;}
+        .loader-tips { font-size: 0.95rem; color: var(--text-sub); background: #fff; padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 300px; line-height: 1.5; margin-top: 20px; display: none;}
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-15px); } }
+        
+        .news-box { background: #fff9e6; border-left: 4px solid var(--accent); padding: 10px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 10px; text-align: left;}
+        .news-date { color: #888; font-size: 0.75rem; margin-bottom: 2px;}
+        .news-title { font-weight: bold; color: var(--primary); margin-bottom: 4px;}
+
+        /* オリジナルポップアップ */
+        .custom-dialog-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 9999; opacity: 0; transition: opacity 0.2s; }
+        .custom-dialog-overlay.show { display: flex; opacity: 1; }
+        .custom-dialog { background: var(--surface); padding: 24px; border-radius: 12px; width: 85%; max-width: 320px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-align: center; transform: scale(0.9); transition: transform 0.2s; }
+        .custom-dialog-overlay.show .custom-dialog { transform: scale(1); }
+        .custom-dialog-title { font-size: 1.1rem; font-weight: bold; color: var(--primary); margin-bottom: 12px; }
+        .custom-dialog-msg { font-size: 0.95rem; color: var(--text-sub); margin-bottom: 20px; line-height: 1.5; white-space: pre-wrap; }
+        .custom-dialog-btns { display: flex; gap: 10px; justify-content: center; }
+
+        /* ====================
+           ゲーム画面（完全同期 横9 × 縦2）
+           ==================== */
+        #game-screen { position: fixed; inset: 0; background: var(--bg-color); z-index: 200; display: none; flex-direction: column; padding: 4px; box-sizing: border-box; }
+        
+        .baseball-scoreboard { display: flex; justify-content: space-between; align-items: center; background: #222; color: #fff; padding: 6px 12px; border-radius: 6px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); margin-bottom: 2px; flex-shrink: 0; }
+        .sb-team { display: flex; align-items: center; gap: 8px; font-size: 1rem; }
+        .sb-name { max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #ccc;}
+        .sb-score { font-size: 1.3rem; color: var(--accent); }
+        .sb-center { font-size: 0.8rem; color: #aaa; display: flex; align-items: center; gap: 10px;}
+        .exit-btn { background: var(--error); color: white; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer; display: flex; align-items: center; font-size: 0.8rem;}
+
+        .territory { flex: 1; display: grid; grid-template-columns: repeat(9, 1fr); grid-template-rows: repeat(2, 1fr); gap: 2px; background: rgba(0,0,0,0.03); border-radius: 4px; padding: 2px; place-items: center; min-height: 0;}
+        .enemy-territory { transform: rotate(180deg); }
+
+        .yomi-area { height: 50px; flex-shrink: 0; background: var(--primary); color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'Shippori Mincho B1', serif; font-size: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2); text-align: center; line-height: 1.3; z-index: 10; margin: 2px 0;}
+
+        .karuta-card { 
+            width: 100%; height: 100%; max-height: 100%;
+            aspect-ratio: 5 / 7; 
+            background: #fff; border: 1.5px solid var(--primary);
+            border-radius: 2px; box-sizing: border-box;
+            display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            padding: 1px; overflow: hidden; margin: auto;
+        }
+        .karuta-card:active { background: #e2e8f0; }
+        .karuta-card.taken { opacity: 0; pointer-events: none; }
+        
+        .card-inner {
+            writing-mode: vertical-rl; text-orientation: upright; font-family: 'Shippori Mincho B1', serif;
+            font-size: clamp(0.35rem, 1.8vh, 0.75rem); 
+            line-height: 1.1; display: flex; flex-wrap: wrap; align-content: center; justify-content: center;
+            height: 100%; gap: 1px;
         }
 
-        .start-container {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 50px 30px; max-width: 600px; width: 90%; box-sizing: border-box;
-            background: rgba(255, 255, 255, 0.9); border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); backdrop-filter: blur(8px);
-            margin-bottom: 80px;
-        }
+        .overlay-center { position: absolute; inset: 0; background: rgba(0,0,0,0.8); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 250; padding: 20px;}
+        .countdown-text { font-size: 6rem; font-weight: bold; color: var(--accent); text-shadow: 0 4px 10px rgba(0,0,0,0.5); animation: pop 1s infinite; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+        th, td { border: 1px solid #ddd; padding: 4px; text-align: center; word-break: break-all;}
+        th { background: var(--primary); color: white; }
+        .status-on { color: #4CAF50; font-weight: bold; }
+        .status-off { color: #9E9E9E; }
 
-        .main-title { font-family: "Yuji Syuku", cursive; font-size: 3.8rem; color: #4a2a16; text-align: center; margin: 0; }
-        .sub-title { font-family: "Shippori Mincho B1", serif; font-size: 1.1rem; color: #7a5f4c; margin-top: 10px; text-align: center; }
+        /* リザルト（勝敗）エフェクト */
+        .result-box { background: var(--surface); padding: 30px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; z-index: 10; width: 90%; max-width: 400px; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin: auto;}
+        @keyframes popIn { 0%{transform:scale(0.5); opacity:0;} 100%{transform:scale(1); opacity:1;} }
+        .result-icon { font-size: 6rem; margin-bottom: 10px; }
+        .result-title { font-size: 1.8rem; margin: 0 0 20px 0; font-family: 'Shippori Mincho B1', serif;}
+        .result-score { display: flex; justify-content: center; align-items: center; gap: 15px; font-weight: bold;}
+        .rs-team { display: flex; flex-direction: column; align-items: center; flex: 1;}
+        .rs-label { font-size: 0.9rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;}
+        .rs-val { font-size: 3rem; color: var(--primary); line-height: 1;}
+        .rs-vs { font-size: 2rem; color: #aaa; }
+        
+        .bg-win { background: linear-gradient(135deg, #FFD700 0%, #FF8C00 100%); }
+        .bg-win .result-icon { color: #FFD700; text-shadow: 0 2px 10px rgba(255,215,0,0.5); }
+        .bg-lose { background: linear-gradient(135deg, #2c3e50 0%, #000000 100%); }
+        .bg-lose .result-icon { color: #64B5F6; }
+        .bg-lose .result-box { background: #333; color: white; }
+        .bg-lose .rs-val { color: #fff; }
+        .bg-lose .rs-label { color: #ccc; }
+        .bg-draw { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .bg-draw .result-icon { color: #fff; }
+        
+        .result-effect { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 5; }
+        .confetti { position: absolute; width: 10px; height: 20px; top: -20px; animation: fall linear infinite; }
+        .rain-drop { position: absolute; width: 2px; height: 30px; background: rgba(255,255,255,0.4); top: -30px; animation: rainFall linear infinite; }
+        @keyframes fall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1;} 100% { transform: translateY(100vh) rotate(720deg); opacity: 0;} }
+        @keyframes rainFall { 0% { transform: translateY(-30px); opacity: 1;} 100% { transform: translateY(100vh); opacity: 0;} }
 
-        .button-group { display: flex; flex-direction: column; gap: 20px; width: 80%; max-width: 320px; margin-top: 40px; }
-        .action-button {
-            width: 100%; padding: 18px 25px; border-radius: 8px; font-size: 1.4rem; font-weight: bold;
-            text-decoration: none; display: flex; justify-content: center; align-items: center;
-            color: white; background: linear-gradient(135deg, #7b9c7b 0%, #4d684d 100%);
-            border-bottom: 3px solid #3a503a;
-        }
+        /* フルオーバーレイ (一覧・暗記・チュートリアル) */
+        .full-overlay { position: fixed; inset: 0; background: var(--bg-color); z-index: 400; display: none; flex-direction: column; overflow: hidden;}
+        .header-bar { height: var(--header-h); background: var(--primary); color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
+        .header-bar h2 { margin: 0; font-size: 1.1rem; font-family: 'Shippori Mincho B1', serif;}
 
-        /* --- 広告エリア --- */
-        #google-ad-container {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background-color: #ffffff; border-top: 1px solid #e0e0e0;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.08); z-index: 9999;
-            font-family: 'Noto Sans JP', sans-serif;
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
+        #list-container { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px;}
+        .list-item { background: #fff; border-radius: 8px; padding: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); border-left: 4px solid var(--primary); display: flex; gap: 15px; align-items: center;}
+        .list-num { font-size: 1.2rem; font-weight: bold; color: var(--accent); min-width: 30px; text-align: center;}
+        .list-text { flex: 1; font-family: 'Shippori Mincho B1', serif; line-height: 1.5;}
+        .list-kami { font-size: 0.95rem; color: #333;}
+        .list-shimo { font-size: 0.95rem; color: var(--primary); font-weight: bold;}
+        .list-author { font-size: 0.75rem; color: #888; text-align: right; margin-top: 4px;}
 
-        /* 進行バー（プログレスバー） */
-        .ad-progress-bar {
-            width: 100%; height: 3px; background: #eee; position: absolute; top: 0; left: 0;
-        }
-        #ad-progress-inner {
-            width: 0%; height: 100%; background: #1a73e8; transition: width 0.1s linear;
-        }
+        /* 暗記モード */
+        #study-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.03"><rect width="100" height="100" fill="none"/><circle cx="50" cy="50" r="40" stroke="%232F5D50" stroke-width="2" fill="none"/></svg>');}
+        .study-card-wrapper { width: min(85vw, 350px); height: min(65vh, 450px); background: #fffef8; border: 4px solid var(--primary); border-radius: 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); display: flex; flex-direction: row-reverse; justify-content: center; align-items: center; padding: 20px; position: relative; box-sizing: border-box; overflow: hidden; transition: opacity 0.2s;}
+        .study-col { writing-mode: vertical-rl; text-orientation: upright; font-family: "Shippori Mincho B1", serif; font-size: clamp(1.2rem, 4vh, 1.8rem); line-height: 2em; letter-spacing: 0.1em; text-align: center; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; transition: opacity 0.3s;}
+        .study-kami { min-width: 2.5em; color: var(--text-main); }
+        .study-shimo { min-width: 2.5em; color: var(--primary); font-weight: bold;}
+        .study-mask { position: absolute; inset: 0; background: #f4f1ea; border: 2px dashed var(--primary); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary); transition: opacity 0.3s;}
+        .study-mask::after { content: '?'; font-size: 2rem; font-weight: bold; writing-mode: horizontal-tb; font-family: sans-serif;}
+        
+        .study-hint-inline { display: inline-flex; align-items: center; justify-content: center; width: 1.2em; height: 2.5em; background: #f4f1ea; border: 2px dashed var(--primary); border-radius: 4px; margin-top: 0.2em; cursor: pointer; color: var(--primary); vertical-align: text-top;}
+        .study-hint-inline::after { content: '?'; font-family: sans-serif; font-size: 1.5rem; font-weight: bold; writing-mode: horizontal-tb;}
 
-        .ad-meta {
-            width: 100%; display: flex; justify-content: space-between; align-items: center;
-            padding: 4px 10px 2px; box-sizing: border-box;
-        }
-        .ad-label { font-size: 10px; color: #aaa; }
-        #ad-close-btn { color: #888; font-size: 20px; cursor: pointer; padding: 2px 5px; line-height: 1; }
+        .study-hint-btn { position: absolute; top: 12px; left: 12px; background: var(--accent); color: white; border: none; border-radius: 4px; padding: 6px 12px; font-size: 0.85rem; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;}
+        .study-hint-btn:active { transform: scale(0.95); }
+        
+        .study-author { position: absolute; bottom: 12px; left: 12px; writing-mode: vertical-rl; font-size: 0.85rem; color: #666; font-family: "Shippori Mincho B1", serif;}
+        .study-num { position: absolute; top: 12px; right: 12px; font-size: 1.1rem; font-weight: bold; color: #aaa; font-family: sans-serif;}
+        
+        .study-controls { display: flex; justify-content: center; gap: 30px; width: 100%; max-width: 350px; margin-top: 20px;}
+        .study-btn { background: var(--primary); color: white; border: none; border-radius: 50%; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.2s;}
+        .study-btn:active { transform: scale(0.9); }
+        .study-btn .material-symbols-outlined { font-size: 2rem; }
 
-        .ad-main {
-            width: 100%; height: 80px; display: flex; align-items: center;
-            padding: 5px 15px 10px; box-sizing: border-box; text-decoration: none; color: #202124; gap: 12px;
-            transition: opacity 0.3s ease; /* 切り替わり時のふわっと感 */
-        }
-
-        .ad-img-box { width: 50px; height: 50px; background: #f1f3f4; border-radius: 6px; overflow: hidden; flex-shrink: 0; }
-        .ad-logo-img { width: 100%; height: 100%; object-fit: cover; }
-        .ad-text-content { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; }
-        .ad-title { font-size: 14px; font-weight: 500; color: #1a73e8; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ad-desc { font-size: 11px; color: #5f6368; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .ad-cta-button { background-color: #1a73e8; color: white; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 500; flex-shrink: 0; }
-
-        .version-info { position: fixed; bottom: 95px; right: 10px; font-size: 0.8rem; color: #7a5f4c; opacity: 0.7; transition: bottom 0.5s ease; }
-
-        @media (max-width: 600px) {
-            .ad-desc { display: none; }
-            .ad-main { height: 65px; }
-            .version-info { bottom: 80px; }
-        }
+        #toast { position: fixed; bottom: -60px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 24px; border-radius: 30px; font-weight: bold; z-index: 1000; transition: bottom 0.3s; white-space: nowrap; font-size: 0.85rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        #toast.show { bottom: 80px; }
+        
+        /* チュートリアル */
+        .tutorial-content { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 15px; }
+        .tutorial-img { width: 100px; height: 100px; background: #e9ecef; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; color: var(--primary); }
+        .tutorial-img .material-symbols-outlined { font-size: 4rem; }
     </style>
 </head>
 <body>
-    <div class="start-container">
-        <div class="title-area">
-            <h1 class="main-title">百人一首</h1>
-            <p class="sub-title">〜学びと詠みの世界へ〜</p>
+
+    <header id="main-header">
+        <h1>オンライン百人一首</h1>
+    </header>
+
+    <!-- 認証レイヤー -->
+    <div id="auth-layer">
+        <div id="login-screen" class="auth-screen active">
+            <div class="card">
+                <h2 class="card-title">ログイン</h2>
+                <p style="font-size:0.8rem; text-align:center; margin:0; color:#666;">パスワードは自動保存されます</p>
+                <input type="text" id="logId" class="input-box" placeholder="ユーザーID (半角英数字)">
+                <input type="password" id="logPass" class="input-box" placeholder="パスワード">
+                <button class="btn btn-primary" onclick="doLogin()">ログイン</button>
+                <div class="tab-link" onclick="switchAuth('register')">新規登録はこちら</div>
+            </div>
         </div>
-        <div class="button-group">
-            <a href="play/" class="action-button">通常</a>
-            <a href="sab//" class="action-button">NEW！神経衰弱</a>
+
+        <div id="register-screen" class="auth-screen">
+            <div class="card">
+                <h2 class="card-title">新規プレイヤー登録</h2>
+                <input type="text" id="regId" class="input-box" placeholder="希望するユーザーID">
+                <input type="password" id="regPass" class="input-box" placeholder="パスワード">
+                <input type="text" id="regName" class="input-box" placeholder="表示されるニックネーム">
+                
+                <div style="font-size:0.8rem; background:#f9f9f9; padding:8px; border-radius:4px; border:1px solid #eee; margin-top:5px; height:60px; overflow-y:auto; text-align:left;">
+                    【利用規約】<br>1. 本アプリは楽しくご利用ください。<br>2. 迷惑行為・不正アクセスは禁止です。<br>3. アカウントデータはお使いのブラウザに保存されます。
+                </div>
+                <label style="display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.85rem; cursor:pointer; margin-top:5px; margin-bottom:5px;">
+                    <input type="checkbox" id="termsCheck" style="width:16px; height:16px;">
+                    <span>利用規約に同意する</span>
+                </label>
+
+                <button class="btn btn-primary" onclick="doRegister()">登録してはじめる</button>
+                <div class="tab-link" onclick="switchAuth('login')">ログイン画面へ戻る</div>
+            </div>
+        </div>
+
+        <!-- 管理者画面 -->
+        <div id="admin-screen" class="auth-screen" style="height: 100%;">
+            <div class="card">
+                <h2 class="card-title" style="color:var(--error);">お知らせ投稿</h2>
+                <input type="text" id="newsDate" class="input-box" placeholder="例) 2026/03/16 21:00">
+                <input type="text" id="newsTitle" class="input-box" placeholder="タイトル">
+                <textarea id="newsBody" class="input-box" rows="2" placeholder="本文（1〜2行程度）" style="resize:none; font-family:inherit;"></textarea>
+                <button class="btn btn-primary" onclick="postNews()">お知らせを投稿</button>
+            </div>
+            <div class="card" style="flex:1;">
+                <h2 class="card-title" style="color:var(--error);">ユーザー管理</h2>
+                <button class="btn btn-outline" style="padding:6px;" onclick="loadAdminData()"><span class="material-symbols-outlined" style="font-size:1rem;">refresh</span> 更新</button>
+                <div style="overflow-y:auto; flex:1; margin-top:5px;">
+                    <table id="adminTable">
+                        <thead><tr><th>ID</th><th>Pass</th><th>状態/最終アクセス</th><th>削</th><th>Rank削</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <button class="btn btn-outline" style="margin-top:10px;" onclick="doLogout()">ログアウト</button>
+            </div>
         </div>
     </div>
 
-    <div id="google-ad-container">
-        <div class="ad-progress-bar"><div id="ad-progress-inner"></div></div>
-        <div class="ad-meta">
-            <span class="ad-label">Symphony System Group</span>
-            <div id="ad-close-btn" onclick="closeAdBanner(event)">×</div>
+    <!-- メインアプリ -->
+    <div id="main-app">
+        <div id="tab-container">
+            
+            <!-- ホーム -->
+            <div id="tab-home" class="tab-page active">
+                <div class="card">
+                    <p style="margin:0; font-size:0.9rem;">ようこそ、<strong id="dispName" style="color:var(--primary); font-size:1.1rem;"></strong> さん</p>
+                </div>
+                
+                <!-- お知らせ枠 -->
+                <div class="card" id="newsContainer" style="display:none; padding:12px;">
+                    <h2 class="card-title" style="text-align:left; font-size:0.9rem;"><span class="material-symbols-outlined" style="vertical-align:middle; font-size:1.1rem;">campaign</span> 運営からのお知らせ</h2>
+                    <div id="newsList"></div>
+                </div>
+
+                <!-- 覚える・見る -->
+                <div class="card">
+                    <h2 class="card-title"><span class="material-symbols-outlined" style="vertical-align:middle;">menu_book</span> 覚える・見る</h2>
+                    <button class="btn btn-primary" style="background:#4A7A6D;" onclick="openDialogEl('study-settings-modal')">
+                        <span class="material-symbols-outlined">style</span> ひとりで覚える（暗記モード）
+                    </button>
+                    <button class="btn btn-outline" onclick="openListView()">
+                        <span class="material-symbols-outlined">format_list_bulleted</span> 百人一首 一覧を見る
+                    </button>
+                </div>
+
+                <div class="card" style="flex:1;">
+                    <h2 class="card-title"><span class="material-symbols-outlined" style="vertical-align:middle;">military_tech</span> ユーザー表彰（勝利数ランキング）</h2>
+                    <div class="ranking-list" id="rankingList"></div>
+                </div>
+            </div>
+
+            <!-- 対戦 -->
+            <div id="tab-battle" class="tab-page">
+                <div class="card">
+                    <h2 class="card-title">出題設定</h2>
+                    <div style="display:flex; align-items:center; justify-content:center; gap:5px; font-size:0.9rem;">
+                        範囲: <input type="number" id="rangeStart" class="input-box" style="width:60px; padding:6px;" value="1" min="1" max="100" onchange="validateRange(this)"> 〜
+                        <input type="number" id="rangeEnd" class="input-box" style="width:60px; padding:6px;" value="100" min="1" max="100" onchange="validateRange(this)">
+                    </div>
+                    <div style="display:flex; align-items:center; justify-content:center; gap:5px; font-size:0.9rem; margin-top:5px;">
+                        スピード: 
+                        <select id="readSpeed" class="input-box custom-select" style="width:120px; padding:6px;">
+                            <option value="300">遅い</option>
+                            <option value="200" selected>普通</option>
+                            <option value="100">速い</option>
+                        </select>
+                    </div>
+                    <p style="font-size:0.75rem; text-align:center; color:#888; margin:0;">※範囲内に最低36首（18枚×2）必要です</p>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">対戦する</h2>
+                    <div style="display:flex; align-items:center; justify-content:center; gap:5px; font-size:0.9rem; margin-bottom: 5px;">
+                        AIレベル: 
+                        <select id="aiLevel" class="input-box custom-select" style="width:120px; padding:6px;">
+                            <option value="easy">初級（簡単）</option>
+                            <option value="normal" selected>中級（普通）</option>
+                            <option value="hard">上級（速い）</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" style="background:#4A7A6D;" onclick="startAiMatch()">
+                        <span class="material-symbols-outlined">smart_toy</span> AI（コンピュータ）と対戦
+                    </button>
+                    <hr style="width:100%; border:0; border-top:1px dashed #ccc; margin: 5px 0;">
+                    <button class="btn btn-primary" onclick="createMyRoom()">
+                        <span class="material-symbols-outlined">add_box</span> 部屋を作って友達を待つ
+                    </button>
+                    <button class="btn btn-outline" style="background:#fff;" onclick="startRandomMatch()">
+                        <span class="material-symbols-outlined">shuffle</span> ランダムな相手を探す
+                    </button>
+                    
+                    <div style="display:flex; gap:8px; margin-top:5px;">
+                        <input type="text" id="targetId" class="input-box" placeholder="合言葉(4桁)" style="text-transform:uppercase; font-size:1.1rem; letter-spacing:2px; padding:10px;">
+                        <button class="btn btn-primary" style="width:auto; padding:0 20px;" onclick="joinRoomByCode()">入室</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- プロフィール -->
+            <div id="tab-profile" class="tab-page">
+                <div class="card">
+                    <h2 class="card-title">プレイヤー実績</h2>
+                    <div class="stats-grid">
+                        <div class="stats-box">試合数<span class="stats-num" id="statPlay">0</span></div>
+                        <div class="stats-box">勝利数<span class="stats-num" id="statWin">0</span></div>
+                        <div class="stats-box">敗北数<span class="stats-num" id="statLose" style="color:var(--error);">0</span></div>
+                        <div class="stats-box">お手付き<span class="stats-num" id="statPenalty" style="color:#555;">0</span></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2 class="card-title">アカウント設定</h2>
+                    <input type="text" id="setLogId" class="input-box" disabled>
+                    <input type="password" id="setPass" class="input-box" placeholder="新しいパスワード">
+                    <input type="text" id="setName" class="input-box" placeholder="新しいニックネーム">
+                    <button class="btn btn-primary" onclick="saveSettings()">設定を保存</button>
+                    
+                    <button class="btn btn-outline" style="margin-top:10px;" onclick="openDialogEl('tutorial-modal')">チュートリアルを見る</button>
+                    <button class="btn btn-danger" style="margin-top:10px;" onclick="doLogout()"><span class="material-symbols-outlined">logout</span> ログアウト</button>
+                </div>
+            </div>
         </div>
-        <a id="ad-link" href="https://symphony100.github.io/shikenyou/" class="ad-main">
-            <div class="ad-img-box">
-                <img id="ad-img" src="https://symphony100.github.io/shikenyou/symphony.png" alt="logo" class="ad-logo-img">
+        
+        <!-- ボトムナビ -->
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('home')" id="nav-home">
+                <span class="material-symbols-outlined">home</span><span class="nav-label">ホーム</span>
             </div>
-            <div class="ad-text-content">
-                <span id="ad-title" class="ad-title">Symphony System Group</span>
-                <span id="ad-desc" class="ad-desc">いろいろな機能が搭載！</span>
+            
+            <div class="nav-item-center-wrapper" onclick="switchTab('battle')" id="nav-battle">
+                <div class="nav-item-center">
+                    <span class="material-symbols-outlined">swords</span>
+                    <span class="text">対戦</span>
+                </div>
             </div>
-            <div id="ad-cta" class="ad-cta-button">開く</div>
-        </a>
+            
+            <div class="nav-item" onclick="switchTab('profile')" id="nav-profile">
+                <span class="material-symbols-outlined">person</span><span class="nav-label">設定</span>
+            </div>
+        </nav>
     </div>
 
-    <p class="version-info" id="v-info">Ver. 6.5.0</p>
+    <!-- 百人一首 一覧 画面 -->
+    <div id="list-screen" class="full-overlay">
+        <div class="header-bar">
+            <button class="icon-btn" onclick="closeFullOverlay('list-screen')"><span class="material-symbols-outlined">arrow_back</span></button>
+            <h2>百人一首 一覧</h2>
+            <div style="width:40px;"></div>
+        </div>
+        <div id="list-container"></div>
+    </div>
+
+    <!-- 暗記モード 画面 -->
+    <div id="study-screen" class="full-overlay">
+        <div class="header-bar">
+            <button class="icon-btn" onclick="closeFullOverlay('study-screen')"><span class="material-symbols-outlined">arrow_back</span></button>
+            <h2>暗記モード</h2>
+            <div style="width:40px;"></div>
+        </div>
+        <div id="study-content">
+            <div class="study-card-wrapper" id="studyCard">
+                <div class="study-col study-kami" id="studyKami"></div>
+                <div class="study-col study-shimo" id="studyShimoCol">
+                    <div class="study-mask" id="studyMask" onclick="showStudyAnswer()"></div>
+                </div>
+                <div class="study-author" id="studyAuthor"></div>
+                <div class="study-num" id="studyNum"></div>
+                <button class="study-hint-btn" id="studyHintBtn" onclick="showStudyHint()">ヒント</button>
+            </div>
+            
+            <div class="study-controls">
+                <button class="study-btn" onclick="prevStudyCard()"><span class="material-symbols-outlined">arrow_back</span></button>
+                <button class="study-btn" onclick="nextStudyCard()"><span class="material-symbols-outlined">arrow_forward</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 暗記モード設定モーダル -->
+    <div id="study-settings-modal" class="custom-dialog-overlay">
+        <div class="custom-dialog">
+            <div class="custom-dialog-title">暗記モードの設定</div>
+            <div style="display:flex; align-items:center; justify-content:center; gap:5px; font-size:0.9rem; margin-bottom: 15px;">
+                範囲: <input type="number" id="studyRangeStart" class="input-box" style="width:60px; padding:6px;" value="1" min="1" max="100" onchange="validateRange(this)"> 〜
+                <input type="number" id="studyRangeEnd" class="input-box" style="width:60px; padding:6px;" value="100" min="1" max="100" onchange="validateRange(this)">
+            </div>
+            <div style="display:flex; align-items:center; justify-content:center; gap:15px; margin-bottom:20px;">
+                <span style="font-weight:bold; color:var(--primary);">ランダム出題</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="studyRandom">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="custom-dialog-btns">
+                <button class="btn btn-outline" style="padding:8px;" onclick="closeDialogEl('study-settings-modal')">キャンセル</button>
+                <button class="btn btn-primary" style="padding:8px;" onclick="startStudy()">開始する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- チュートリアルモーダル -->
+    <div id="tutorial-modal" class="custom-dialog-overlay">
+        <div class="custom-dialog" style="width:90%; max-width:400px; padding:30px 20px;">
+            <div class="tutorial-content">
+                <div class="tutorial-img"><span class="material-symbols-outlined">playing_cards</span></div>
+                <h2 class="card-title" style="font-size:1.3rem; border:none; padding:0;">百人一首へようこそ！</h2>
+                <p style="font-size:0.9rem; color:var(--text-sub); line-height:1.5;">
+                    上の句が詠まれたら、場にある下の句の札をタップして取りましょう。<br><br>
+                    <strong>【遊び方】</strong><br>
+                    下のメニューの<strong>「対戦」</strong>から、AIや友達と遊べます。<br>
+                    覚えるときは<strong>「ホーム」</strong>の暗記モードが便利です。<br><br>
+                    お手付きには2秒間のペナルティがあるので注意！
+                </p>
+                <button class="btn btn-primary" style="margin-top:10px; padding:14px;" onclick="closeTutorial()">はじめる</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- オリジナルダイアログ -->
+    <div id="custom-dialog" class="custom-dialog-overlay">
+        <div class="custom-dialog">
+            <div class="custom-dialog-title" id="cd-title">確認</div>
+            <div class="custom-dialog-msg" id="cd-msg">メッセージ</div>
+            <div class="custom-dialog-btns">
+                <button class="btn btn-outline" id="cd-btn-no" style="display:none; padding:8px;">キャンセル</button>
+                <button class="btn btn-primary" id="cd-btn-yes" style="padding:8px;">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- マッチング・ロード統合画面 -->
+    <div id="matching-screen" class="overlay-screen">
+        <span class="material-symbols-outlined loader-icon" id="loaderIcon">radar</span>
+        <div class="loader-title" id="loaderTitle">対戦相手を探しています...</div>
+        
+        <div id="matchReadyBox" style="display:none; margin-top:15px; width:100%; text-align:center;">
+            <p id="matchWaitText" style="color:var(--text-sub); margin-bottom:10px; font-weight:bold; display:none;">相手の準備を待機中...</p>
+            <button id="matchReadyBtn" class="btn btn-primary" style="padding:16px; font-size:1.2rem;" onclick="proceedToGame()">対戦へ進む</button>
+        </div>
+
+        <!-- タイムアウト時の再試行ボックス -->
+        <div id="matchTimeoutBox" style="display:none; margin-top:15px; width:100%; text-align:center;">
+            <button class="btn btn-primary" style="padding:14px; font-size:1.1rem; margin-bottom:10px;" onclick="startRandomMatch()">再試行する</button>
+            <button class="btn btn-outline" style="padding:12px; font-size:1rem;" onclick="cancelRandomMatch()">ロビーに戻る</button>
+        </div>
+
+        <div id="loaderRoomCode" style="display:none; margin-top:15px;">
+            <p style="margin:0; font-size:0.9rem; color:#666;">友達に教える合言葉</p>
+            <div style="font-size:2.5rem; font-weight:bold; color:var(--accent); letter-spacing:6px; background:#fff; border-radius:8px; padding:5px 20px; border:2px solid var(--primary);">----</div>
+        </div>
+
+        <div class="loader-tips" id="loaderTips" style="font-size:1rem; padding:20px;">百人一首の豆知識がここに表示されます</div>
+        
+        <button class="btn btn-outline" id="loaderCancelBtn" style="margin-top:25px; width:auto; padding:10px 30px;" onclick="cancelRandomMatch()">キャンセル</button>
+    </div>
+
+    <!-- リザルト画面（豪華エフェクト） -->
+    <div id="result-screen" class="full-overlay" style="z-index: 500;">
+        <div class="result-effect" id="result-effect"></div>
+        <div id="result-content" class="result-box" style="margin: auto;">
+            <span class="material-symbols-outlined result-icon" id="resultIcon">emoji_events</span>
+            <h2 id="resultTitle" class="result-title">あなたの勝ち！</h2>
+            <div class="result-score">
+                <div class="rs-team"><span class="rs-label">あなた</span><span class="rs-val" id="rsMyScore">0</span></div>
+                <div class="rs-vs">-</div>
+                <div class="rs-team"><span class="rs-val" id="rsEnemyScore">0</span><span class="rs-label" id="rsEnemyName">相手</span></div>
+            </div>
+            <button class="btn btn-primary" style="margin-top: 30px; font-size:1.2rem; padding: 15px;" onclick="closeResult()">ロビーへ戻る</button>
+        </div>
+    </div>
+
+    <!-- ゲーム画面 -->
+    <div id="game-screen">
+        <div class="baseball-scoreboard">
+            <div class="sb-team">
+                <span class="sb-name" id="sbHostName">ホスト</span>
+                <span class="sb-score" id="sbHostScore">0</span>
+            </div>
+            <div class="sb-center">
+                <button class="exit-btn" onclick="requestExitGame()"><span class="material-symbols-outlined" style="font-size:1rem;">logout</span></button>
+            </div>
+            <div class="sb-team">
+                <span class="sb-score" id="sbGuestScore">0</span>
+                <span class="sb-name" id="sbGuestName">ゲスト</span>
+            </div>
+        </div>
+        
+        <div class="territory enemy-territory" id="enemyTerritory"></div>
+        <div class="yomi-area" id="yomiText">（待機中...）</div>
+        <div class="territory my-territory" id="myTerritory"></div>
+
+        <div class="overlay-center" id="countdownOverlay"><div class="countdown-text" id="countdownText">3</div></div>
+    </div>
+
+    <div id="toast"></div>
 
     <script>
-        // --- 広告データ（3パターン） ---
-        const adData = [
-            {
-                title: "Symphony System Group",
-                desc: "Symphonyのサイトでいろいろ楽しもう！",
-                img: "https://symphony100.github.io/shikenyou/symphony.png",
-                url: "https://symphony100.github.io/shikenyou/",
-                cta: "開く"
-            },
-            {
-                title: "２０４８ゲーム",
-                desc: "勉強の合間に少し息抜き！２０４８ゲーム",
-                img: "https://symphony100.github.io/symphony/study/2048/2048.png",
-                url: "https://symphony100.github.io/symphony/study/2048/",
-                cta: "遊ぶ"
-            },
-            {
-                title: "App Garden",
-                desc: "App Gardenで、新しい体験をしよう！（メンテナンス中）",
-                img: "https://symphony100.github.io/symphony/study/icon.png",
-                url: "https://symphony100.github.io/symphony/study/icon.png",
-                cta: "開く"
-            }
-        ];
-
-        let currentAdIndex = 0;
-        let progress = 0;
-        const duration = 10000; // 10秒
-        const interval = 100;   // 0.1秒ごとに更新
-        const step = (interval / duration) * 100;
-
-        const adContainer = document.getElementById('google-ad-container');
-        const progressBar = document.getElementById('ad-progress-inner');
-        const adMain = document.querySelector('.ad-main');
-
-        // 広告内容を更新する関数
-        function updateAd() {
-            adMain.style.opacity = '0'; // 一旦消す
-            
-            setTimeout(() => {
-                currentAdIndex = (currentAdIndex + 1) % adData.length;
-                const data = adData[currentAdIndex];
-                
-                document.getElementById('ad-title').innerText = data.title;
-                document.getElementById('ad-desc').innerText = data.desc;
-                document.getElementById('ad-img').src = data.img;
-                document.getElementById('ad-link').href = data.url;
-                document.getElementById('ad-cta').innerText = data.cta;
-                
-                adMain.style.opacity = '1'; // ふわっと出す
-            }, 300);
+        // ==========================================
+        // UI・ダイアログ・入力制限
+        // ==========================================
+        function validateRange(el) {
+            let val = parseInt(el.value);
+            if(isNaN(val)) val = 1;
+            if(val < 1) val = 1;
+            if(val > 100) val = 100;
+            el.value = val;
         }
 
-        // プログレスバーを動かすタイマー
-        const timer = setInterval(() => {
-            progress += step;
-            if (progress >= 100) {
-                progress = 0;
-                updateAd();
-            }
-            progressBar.style.width = progress + '%';
-        }, interval);
+        function customAlert(title, msg, onOk = null) {
+            document.getElementById('cd-title').textContent = title;
+            document.getElementById('cd-msg').textContent = msg;
+            document.getElementById('cd-btn-no').style.display = 'none';
+            const yesBtn = document.getElementById('cd-btn-yes');
+            yesBtn.textContent = 'OK';
+            yesBtn.onclick = () => { document.getElementById('custom-dialog').classList.remove('show'); if(onOk) onOk(); };
+            document.getElementById('custom-dialog').classList.add('show');
+        }
+        function customConfirm(title, msg, onYes) {
+            document.getElementById('cd-title').textContent = title;
+            document.getElementById('cd-msg').textContent = msg;
+            document.getElementById('cd-btn-no').style.display = 'block';
+            document.getElementById('cd-btn-no').onclick = () => document.getElementById('custom-dialog').classList.remove('show');
+            const yesBtn = document.getElementById('cd-btn-yes');
+            yesBtn.textContent = 'はい';
+            yesBtn.onclick = () => { document.getElementById('custom-dialog').classList.remove('show'); onYes(); };
+            document.getElementById('custom-dialog').classList.add('show');
+        }
+        function closeDialogEl(id) { document.getElementById(id).classList.remove('show'); }
+        function openDialogEl(id) { document.getElementById(id).classList.add('show'); }
+        function closeFullOverlay(id) { document.getElementById(id).style.display = 'none'; }
 
-        // 広告を閉じる
-        function closeAdBanner(e) {
-            e.preventDefault(); e.stopPropagation();
-            clearInterval(timer); // タイマー停止
-            adContainer.style.opacity = '0';
-            adContainer.style.transform = 'translateY(100%)';
-            document.getElementById('v-info').style.bottom = '10px';
-            setTimeout(() => adContainer.style.display = 'none', 500);
+        function showToast(msg, bg="#333") {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.style.background = bg;
+            t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 3000);
+        }
+
+        // ==========================================
+        // ローカルDB・膨大なTips
+        // ==========================================
+        function getDB(key) { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : {}; } catch(e) { return {}; } }
+        function setDB(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+        const TIPS = [
+            "【かるた】お手付きをすると、2秒間札が取れなくなるペナルティがあります。",
+            "【かるた】「秋の田の〜」は天智天皇の作で、百人一首の1番です。",
+            "【宇宙】太陽の光が地球に届くまで、約8分20秒かかります。",
+            "【歴史】織田信長は日本で初めて「黒人奴隷（弥助）」を家来にしたと言われています。",
+            "【科学】バナナは実は「ベリー（ベリー類）」の仲間です。",
+            "【生き物】キリンは木に登れないのに、ライオンより高いところの葉っぱを食べられます。",
+            "【言葉】「マジ」という言葉は、江戸時代からすでに使われていました。",
+            "【地理】日本で一番面積が小さい都道府県は「香川県」です。",
+            "【人体】人間の血管をすべてつなぎ合わせると、地球を約2周半できます。",
+            "【かるた】上の句は「五・七・五」、下の句は「七・七」の文字数で構成されています。",
+            "【食べ物】ケチャップの容器を振ると、中のケチャップは一時的にサラサラの液体になります（ダイラタンシー現象）。",
+            "【歴史】ピラミッドが建設されていた頃、シベリアにはまだマンモスが生きていました。",
+            "【生き物】タコの舌は脳みそのすぐ隣にあります。",
+            "【宇宙】宇宙空間には、アルコールの成分が漂っている巨大な雲が存在します。",
+            "【かるた】「坊主めくり」は、札に描かれている人物の絵を使った日本の伝統的な遊びです。"
+        ];
+
+        let currentUser = null; 
+        let allCardsData = [];
+        let tipsInterval = null;
+
+        function switchAuth(type) {
+            document.querySelectorAll('.auth-screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(type + '-screen').classList.add('active');
+            
+            // 管理者画面の場合はヘッダーを隠す
+            const header = document.getElementById('main-header');
+            if(type === 'admin') header.classList.add('hide');
+            else header.classList.remove('hide');
+        }
+        
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-page').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.querySelectorAll('.nav-item, .nav-item-center-wrapper').forEach(el => el.classList.remove('active'));
+            const normalNav = document.getElementById('nav-' + tab);
+            if(normalNav) normalNav.classList.add('active');
+        }
+
+        function checkTutorial() {
+            if(!getDB('karuta_tutorial_done')) { openDialogEl('tutorial-modal'); }
+        }
+        function closeTutorial() {
+            setDB('karuta_tutorial_done', true);
+            closeDialogEl('tutorial-modal');
+        }
+
+        // ==========================================
+        // 認証・設定・管理者
+        // ==========================================
+        window.onload = async () => {
+            try {
+                const res = await fetch("https://symphony100.github.io/symphony/study/karuta/play/cards.json");
+                allCardsData = await res.json();
+                
+                const saved = getDB('karuta_last_login');
+                if(saved.id) {
+                    document.getElementById('logId').value = saved.id;
+                    document.getElementById('logPass').value = saved.pass;
+                }
+            } catch(e) { showToast("データ読込失敗", "var(--error)"); }
+        };
+
+        function doLogin() {
+            const id = document.getElementById('logId').value.trim();
+            const pass = document.getElementById('logPass').value.trim();
+            if(!id || !pass) return showToast("入力してください");
+
+            if(id === 'symphony' && pass === 'symphony') { switchAuth('admin'); loadAdminData(); return; }
+
+            const users = getDB('karuta_users');
+            if(!users[id] || users[id].pass !== pass) return showToast("IDかパスワードが違います", "var(--error)");
+            loginSuccess(id, users[id]);
+        }
+
+        function doRegister() {
+            const id = document.getElementById('regId').value.trim();
+            const pass = document.getElementById('regPass').value.trim();
+            const name = document.getElementById('regName').value.trim();
+            if(!id || !pass || !name) return showToast("入力してください");
+            
+            if(!document.getElementById('termsCheck').checked) return showToast("利用規約に同意してください", "var(--error)");
+            
+            if(id === 'symphony') return showToast("そのIDは使えません");
+            
+            let users = getDB('karuta_users');
+            if(users[id]) return showToast("既に使用されています", "var(--error)");
+
+            users[id] = { pass, name }; setDB('karuta_users', users);
+            
+            let stats = getDB('karuta_stats');
+            stats[id] = { play: 0, win: 0, lose: 0, penalty: 0 }; setDB('karuta_stats', stats);
+
+            loginSuccess(id, users[id]);
+        }
+
+        function loginSuccess(id, data) {
+            if(allCardsData.length === 0) return showToast("データ準備中...");
+            currentUser = { id: id, pass: data.pass, name: data.name };
+            setDB('karuta_last_login', currentUser);
+            
+            document.getElementById('dispName').textContent = currentUser.name;
+            updateProfileStats();
+            
+            document.getElementById('auth-layer').style.display = 'none';
+            document.getElementById('main-app').style.display = 'flex';
+            
+            startLobbySync();
+            setInterval(updateOnlineStatus, 5000);
+            checkTutorial();
+        }
+
+        function doLogout() {
+            customConfirm("ログアウト", "ログアウトしてタイトルに戻りますか？", () => {
+                if(peer) peer.destroy();
+                currentUser = null; 
+                document.getElementById('main-app').style.display = 'none';
+                document.getElementById('auth-layer').style.display = 'flex';
+                switchAuth('login');
+            });
+        }
+
+        function updateOnlineStatus() {
+            if(!currentUser) return;
+            let online = getDB('karuta_online'); online[currentUser.id] = Date.now(); setDB('karuta_online', online);
+        }
+
+        function saveSettings() {
+            const p = document.getElementById('setPass').value.trim();
+            const n = document.getElementById('setName').value.trim();
+            if(!p||!n) return;
+            let users = getDB('karuta_users');
+            users[currentUser.id] = { pass: p, name: n }; setDB('karuta_users', users);
+            currentUser.pass = p; currentUser.name = n;
+            setDB('karuta_last_login', currentUser);
+            document.getElementById('dispName').textContent = n;
+            showToast("保存しました", "var(--primary)"); 
+            document.getElementById('setPass').value = '';
+            updateRanking();
+        }
+
+        function updateProfileStats() {
+            if(!currentUser) return;
+            const stats = getDB('karuta_stats')[currentUser.id] || { play: 0, win: 0, lose: 0, penalty: 0 };
+            document.getElementById('statPlay').textContent = stats.play;
+            document.getElementById('statWin').textContent = stats.win;
+            document.getElementById('statLose').textContent = stats.lose;
+            document.getElementById('statPenalty').textContent = stats.penalty;
+            
+            document.getElementById('setLogId').value = currentUser.id;
+            document.getElementById('setName').value = currentUser.name;
+        }
+
+        function updateStat(key) {
+            if(!currentUser) return;
+            let db = getDB('karuta_stats');
+            if(!db[currentUser.id]) db[currentUser.id] = { play: 0, win: 0, lose: 0, penalty: 0 };
+            db[currentUser.id][key]++; setDB('karuta_stats', db);
+            updateProfileStats();
+            updateRanking();
+        }
+
+        // --- 管理者機能 ---
+        function loadAdminData() {
+            const users = getDB('karuta_users'); const online = getDB('karuta_online');
+            const tbody = document.querySelector('#adminTable tbody'); tbody.innerHTML = '';
+            for(const [id, data] of Object.entries(users)) {
+                let statusHtml = `<span style="color:#9E9E9E;">○ オフライン</span><br><span style="font-size:0.65rem;color:#999;">-</span>`;
+                if(online[id]) {
+                    const isOnline = (Date.now() - online[id] < 10000);
+                    const d = new Date(online[id]);
+                    const timeStr = `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+                    statusHtml = isOnline ? `<span style="color:#4CAF50; font-weight:bold;">● オンライン</span>` : `<span style="color:#9E9E9E;">○ オフライン</span><br><span style="font-size:0.65rem;color:#999;">${timeStr}</span>`;
+                }
+                tbody.innerHTML += `<tr>
+                    <td>${id}</td><td>${data.pass}</td><td>${statusHtml}</td>
+                    <td><button class="btn-danger" style="padding:4px;" onclick="deleteUser('${id}')">削</button></td>
+                    <td><button class="btn-outline" style="padding:4px;" onclick="resetRank('${id}')">Rank削</button></td>
+                </tr>`;
+            }
+        }
+        function deleteUser(id) { 
+            customConfirm("ユーザー削除", `${id} を削除しますか？`, () => {
+                let u = getDB('karuta_users'); delete u[id]; setDB('karuta_users', u); loadAdminData();
+            }); 
+        }
+        function resetRank(id) { 
+            customConfirm("実績リセット", `${id} の戦績（ランキング）をリセットしますか？`, () => {
+                let s = getDB('karuta_stats'); 
+                if(s[id]) { s[id].play=0; s[id].win=0; s[id].lose=0; s[id].penalty=0; setDB('karuta_stats', s); loadAdminData(); showToast("リセットしました");}
+            }); 
+        }
+        
+        function postNews() {
+            const dateStr = document.getElementById('newsDate').value.trim();
+            const title = document.getElementById('newsTitle').value.trim();
+            const body = document.getElementById('newsBody').value.trim();
+            if(!dateStr || !title || !body) return showToast("全て入力してください");
+            
+            let news = getDB('karuta_news'); if(!Array.isArray(news)) news = [];
+            news.unshift({ date: dateStr, title: title, body: body });
+            setDB('karuta_news', news.slice(0, 5)); 
+            
+            showToast("投稿しました", "var(--primary)");
+            document.getElementById('newsDate').value = ''; document.getElementById('newsTitle').value = ''; document.getElementById('newsBody').value = '';
+            loadNews();
+        }
+
+        function loadNews() {
+            let news = getDB('karuta_news');
+            const container = document.getElementById('newsContainer');
+            const list = document.getElementById('newsList');
+            if(!Array.isArray(news) || news.length === 0) { container.style.display = 'none'; return; }
+            
+            container.style.display = 'block'; list.innerHTML = '';
+            news.slice(0, 2).forEach(n => {
+                list.innerHTML += `<div class="news-box"><div class="news-date">${n.date}</div><div class="news-title">${n.title}</div><div>${n.body.replace(/\n/g, '<br>')}</div></div>`;
+            });
+        }
+
+        // ==========================================
+        // ホーム機能（ランキング・一覧・暗記）
+        // ==========================================
+        function updateRanking() {
+            const stats = getDB('karuta_stats'); const users = getDB('karuta_users');
+            let list = [];
+            for(let id in stats) { if(users[id]) list.push({ name: users[id].name, win: stats[id].win }); }
+            list.sort((a,b) => b.win - a.win);
+            
+            const rl = document.getElementById('rankingList'); 
+            if(!rl) return;
+            rl.innerHTML = '';
+            list.slice(0, 3).forEach((item, index) => {
+                const colors = ['#FFD700', '#C0C0C0', '#CD7F32'];
+                rl.innerHTML += `
+                    <div style="display:flex; align-items:center; background:#fffdf5; border:1px solid #f1e5c4; border-left:4px solid ${colors[index]||'#ccc'}; border-radius:8px; padding:8px 12px; margin-bottom:8px;">
+                        <strong style="color:${colors[index]||'#ccc'}; font-size:1.2rem; width:25px; text-align:center;">${index+1}</strong>
+                        <span style="flex:1; margin-left:10px; font-weight:bold;">${item.name} さん</span>
+                        <span style="color:var(--primary); font-weight:bold;">${item.win} 勝</span>
+                    </div>`;
+            });
+            if(list.length === 0) rl.innerHTML = '<p style="text-align:center; font-size:0.8rem; color:#999;">まだデータがありません</p>';
+        }
+
+        function startLobbySync() {
+            updateRanking(); loadNews();
+            setInterval(() => {
+                if(document.getElementById('tab-home').classList.contains('active')) {
+                    updateRanking(); loadNews();
+                }
+            }, 5000);
+        }
+
+        function openListView() {
+            const container = document.getElementById('list-container');
+            container.innerHTML = '';
+            allCardsData.forEach(c => {
+                container.innerHTML += `
+                    <div class="list-item">
+                        <div class="list-num">${c.id}</div>
+                        <div class="list-text">
+                            <div class="list-kami">${c.kami}</div>
+                            <div class="list-shimo">${c.shimo}</div>
+                            <div class="list-author">${c.author}</div>
+                        </div>
+                    </div>`;
+            });
+            document.getElementById('list-screen').style.display = 'flex';
+        }
+
+        // --- 暗記モード ---
+        let studyCards = [], studyIndex = 0, studyHintState = 0;
+        
+        function startStudy() {
+            closeDialogEl('study-settings-modal');
+            const start = parseInt(document.getElementById('studyRangeStart').value) || 1;
+            const end = parseInt(document.getElementById('studyRangeEnd').value) || 100;
+            const isRandom = document.getElementById('studyRandom').checked;
+            
+            let filtered = allCardsData.filter(c => c.id >= start && c.id <= end);
+            if(filtered.length === 0) return customAlert("エラー", "範囲内にカードがありません");
+            
+            if(isRandom) filtered.sort(()=>Math.random()-0.5);
+            studyCards = filtered; studyIndex = 0;
+            
+            document.getElementById('study-screen').style.display = 'flex';
+            renderStudyCard();
+        }
+
+        function renderStudyCard() {
+            if(studyIndex >= studyCards.length) {
+                customAlert("終了", "最後まで終わりました！", () => closeFullOverlay('study-screen')); return;
+            }
+            const c = studyCards[studyIndex];
+            studyHintState = 0;
+            
+            document.getElementById('studyCard').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('studyKami').textContent = c.kami;
+                document.getElementById('studyAuthor').textContent = "";
+                document.getElementById('studyNum').textContent = "No." + c.id;
+                
+                const shimoCol = document.getElementById('studyShimoCol');
+                shimoCol.innerHTML = '<div class="study-mask" id="studyMask" onclick="showStudyAnswer()"></div>';
+                
+                document.getElementById('studyHintBtn').style.display = 'block';
+                document.getElementById('studyCard').style.opacity = '1';
+            }, 200);
+        }
+
+        function showStudyHint() {
+            if(studyHintState !== 0) return;
+            const c = studyCards[studyIndex];
+            const shimoCol = document.getElementById('studyShimoCol');
+            
+            // ヒントの改行バグを完全に修正 (flex-direction:row で横並びに)
+            shimoCol.innerHTML = `<div style="display:flex; flex-direction:row; align-items:center; height:100%; justify-content:center; gap:5px;">
+                <span>${c.shimo.charAt(0)}</span>
+                <div class="study-hint-inline" onclick="showStudyAnswer()"></div>
+            </div>`;
+            
+            document.getElementById('studyHintBtn').style.display = 'none';
+            studyHintState = 1;
+        }
+
+        function showStudyAnswer() {
+            if(studyHintState === 2) return;
+            const c = studyCards[studyIndex];
+            const shimoCol = document.getElementById('studyShimoCol');
+            
+            shimoCol.style.opacity = '0';
+            setTimeout(() => {
+                shimoCol.innerHTML = c.shimo;
+                document.getElementById('studyAuthor').textContent = c.author;
+                document.getElementById('studyHintBtn').style.display = 'none';
+                shimoCol.style.opacity = '1';
+            }, 150);
+            studyHintState = 2;
+        }
+
+        function nextStudyCard() {
+            if(studyHintState !== 2) { showStudyAnswer(); return; }
+            studyIndex++; renderStudyCard();
+        }
+        function prevStudyCard() {
+            if(studyIndex > 0) { studyIndex--; renderStudyCard(); }
+        }
+
+        // キーボードショートカット (右キー/左キーで操作、Zキーで強制終了)
+        document.addEventListener("keydown", e => { 
+            // 暗記モード
+            if(document.getElementById('study-screen').style.display === 'flex') {
+                if(e.key==="ArrowRight") nextStudyCard(); 
+                else if(e.key==="ArrowLeft") prevStudyCard(); 
+            }
+            // Zキーで強制終了 (秘密のコマンド)
+            if((e.key === "z" || e.key === "Z") && document.getElementById('game-screen').style.display === 'flex') {
+                finishGame();
+            }
+        });
+
+        // ==========================================
+        // 対戦通信処理 (PeerJS)・マッチング同期
+        // ==========================================
+        let peer = null, myConn = null;
+        let myRole = '', isAiMode = false;
+        let enemyName = "相手", myRoomCode = '';
+        let randomPollInterval = null;
+        let hostReady = false, guestReady = false;
+        
+        // ★修正点：異常カウント防止
+        let isGameFinished = false; 
+        let matchTimeoutTimer = null; // ランダムマッチ用タイマー
+
+        function safeSend(payload) { if(!isAiMode && myConn && myConn.open) { myConn.send(payload); } }
+
+        function showMatchSuccess(name) {
+            clearTimeout(matchTimeoutTimer); // タイムアウト解除
+            document.getElementById('loaderIcon').textContent = 'handshake';
+            document.getElementById('loaderTitle').textContent = `${name} さんとマッチングしました！`;
+            
+            hostReady = false; guestReady = false;
+            document.getElementById('matchReadyBtn').style.display = 'block';
+            document.getElementById('matchWaitText').style.display = 'none';
+            
+            document.getElementById('matchReadyBox').style.display = 'block';
+            document.getElementById('loaderCancelBtn').style.display = 'none';
+            document.getElementById('matchTimeoutBox').style.display = 'none';
+        }
+        
+        function showTipsLoading() {
+            document.getElementById('loaderIcon').textContent = 'hourglass_empty';
+            document.getElementById('loaderTitle').textContent = '対戦を準備しています...';
+            document.getElementById('matchReadyBox').style.display = 'none';
+            document.getElementById('loaderTips').style.display = 'block';
+            
+            clearInterval(tipsInterval);
+            document.getElementById('loaderTips').textContent = TIPS[Math.floor(Math.random() * TIPS.length)];
+            tipsInterval = setInterval(() => {
+                document.getElementById('loaderTips').textContent = TIPS[Math.floor(Math.random() * TIPS.length)];
+            }, 3000);
+        }
+
+        function proceedToGame() {
+            document.getElementById('matchReadyBtn').style.display = 'none';
+            document.getElementById('matchWaitText').style.display = 'block';
+            
+            if(isAiMode) guestReady = true;
+
+            if(myRole === 'host') {
+                hostReady = true; checkStart();
+            } else {
+                guestReady = true; safeSend({ type: 'ready' }); checkStart();
+            }
+        }
+
+        function checkStart() {
+            if(hostReady && guestReady) {
+                showTipsLoading();
+                if(myRole === 'host') { setTimeout(() => { hostStartGame(); }, 2000); }
+            }
+        }
+
+        function handleHostData(conn, data) {
+            if(data.type === 'hello') {
+                if(myConn && myConn !== conn) return conn.send({type: 'error', msg: '満室です'});
+                myConn = conn; enemyName = data.name;
+                
+                safeSend({ type: 'match_success', hName: currentUser.name });
+                document.getElementById('loaderRoomCode').style.display = 'none';
+                showMatchSuccess(enemyName);
+            } else if(data.type === 'ready') {
+                guestReady = true; checkStart();
+            } else if(data.type === 'take') {
+                judgeTake(data.id, 'guest');
+            } else if(data.type === 'force_finish') {
+                finishGame();
+            }
+        }
+
+        function getPlayCardsBattle() {
+            const start = parseInt(document.getElementById('rangeStart').value) || 1;
+            const end = parseInt(document.getElementById('rangeEnd').value) || 100;
+            if(start > end) return null;
+            const filtered = allCardsData.filter(c => c.id >= start && c.id <= end);
+            if(filtered.length < 36) return null; 
+            return filtered.sort(()=>Math.random()-0.5).slice(0, 36);
+        }
+
+        function createMyRoom() {
+            const cards = getPlayCardsBattle();
+            if(!cards) return customAlert("エラー", "出題範囲内に最低36首必要です");
+
+            isAiMode = false; myRole = 'host';
+            const code = Math.random().toString(36).substring(2,6).toUpperCase();
+            
+            if(peer) peer.destroy();
+            peer = new Peer('k-z99-' + code);
+            myConn = null;
+
+            peer.on('connection', (conn) => {
+                conn.on('data', (d) => handleHostData(conn, d));
+                conn.on('close', () => { customAlert("切断", "相手が切断しました", abortGame); });
+            });
+
+            document.getElementById('loaderIcon').textContent = 'sensor_door';
+            document.getElementById('loaderTitle').textContent = '友達の入室を待っています...';
+            document.getElementById('loaderRoomCode').style.display = 'block';
+            document.getElementById('loaderRoomCode').querySelector('div').textContent = code;
+            document.getElementById('matchReadyBox').style.display = 'none';
+            document.getElementById('loaderTips').style.display = 'none';
+            document.getElementById('loaderCancelBtn').style.display = 'block';
+            document.getElementById('matchTimeoutBox').style.display = 'none';
+            document.getElementById('matching-screen').style.display = 'flex';
+        }
+
+        function joinRoomByCode() {
+            const code = document.getElementById('targetId').value.toUpperCase().trim();
+            if(code.length !== 4) return customAlert("エラー", "合言葉は4桁です");
+            
+            isAiMode = false; myRole = 'guest';
+            if(peer) peer.destroy(); peer = new Peer(); 
+            
+            document.getElementById('loaderIcon').textContent = 'radar';
+            document.getElementById('loaderTitle').textContent = '部屋に接続しています...';
+            document.getElementById('loaderRoomCode').style.display = 'none';
+            document.getElementById('matchReadyBox').style.display = 'none';
+            document.getElementById('loaderTips').style.display = 'none';
+            document.getElementById('loaderCancelBtn').style.display = 'block';
+            document.getElementById('matchTimeoutBox').style.display = 'none';
+            document.getElementById('matching-screen').style.display = 'flex';
+
+            peer.on('open', () => {
+                myConn = peer.connect('k-z99-' + code);
+                myConn.on('open', () => {
+                    myConn.send({ type: 'hello', role: 'guest', name: currentUser.name });
+                });
+                myConn.on('data', handleGuestData);
+                myConn.on('close', () => { customAlert("切断", "ホストが切断しました", abortGame); });
+            });
+            peer.on('error', () => { customAlert("エラー", "部屋が見つかりません", abortGame); });
+        }
+
+        function startRandomMatch() {
+            clearTimeout(matchTimeoutTimer);
+            const cards = getPlayCardsBattle();
+            if(!cards) return customAlert("エラー", "出題範囲内に最低36首必要です");
+
+            isAiMode = false; myRole = 'host';
+            
+            document.getElementById('loaderIcon').textContent = 'radar';
+            document.getElementById('loaderTitle').textContent = 'ランダムな相手を探しています...';
+            document.getElementById('loaderRoomCode').style.display = 'none';
+            document.getElementById('matchReadyBox').style.display = 'none';
+            document.getElementById('loaderTips').style.display = 'none';
+            document.getElementById('loaderCancelBtn').style.display = 'block';
+            document.getElementById('matchTimeoutBox').style.display = 'none';
+            document.getElementById('matching-screen').style.display = 'flex';
+            
+            const myRandId = 'k-rand-z99-' + currentUser.id;
+            if(peer) peer.destroy();
+            peer = new Peer(myRandId); myConn = null;
+
+            peer.on('connection', (conn) => {
+                removeRandomQueue();
+                conn.on('data', d => handleHostData(conn, d));
+                conn.on('close', () => { abortGame(); });
+            });
+
+            peer.on('open', () => {
+                let q = getDB('k_rand_q_z99'); if(!Array.isArray(q)) q = [];
+                const now = Date.now();
+                q = q.filter(x => now - x.time < 20000 && x.id !== currentUser.id);
+                
+                if(q.length > 0) { 
+                    myRole = 'guest'; const target = q[0];
+                    myConn = peer.connect(target.peerId);
+                    myConn.on('open', () => {
+                        myConn.send({ type: 'hello', role: 'guest', name: currentUser.name });
+                    });
+                    myConn.on('data', handleGuestData);
+                    myConn.on('close', abortGame);
+                } else { 
+                    let myQ = getDB('k_rand_q_z99'); if(!Array.isArray(myQ)) myQ = [];
+                    myQ.push({ id: currentUser.id, peerId: myRandId, time: Date.now() });
+                    setDB('k_rand_q_z99', myQ);
+                    
+                    randomPollInterval = setInterval(() => {
+                        let mq = getDB('k_rand_q_z99'); if(!Array.isArray(mq)) mq = [];
+                        let me = mq.find(x => x.id === currentUser.id);
+                        if(me) { me.time = Date.now(); setDB('k_rand_q_z99', mq); }
+                    }, 5000);
+                }
+            });
+
+            // ★60秒タイムアウト
+            matchTimeoutTimer = setTimeout(() => {
+                removeRandomQueue();
+                if(peer) peer.destroy();
+                document.getElementById('loaderIcon').textContent = 'error_outline';
+                document.getElementById('loaderTitle').textContent = 'マッチングできませんでした';
+                document.getElementById('loaderCancelBtn').style.display = 'none';
+                document.getElementById('matchTimeoutBox').style.display = 'block';
+            }, 60000);
+        }
+        function cancelRandomMatch() { clearTimeout(matchTimeoutTimer); removeRandomQueue(); abortGame(); }
+        function removeRandomQueue() {
+            clearInterval(randomPollInterval);
+            let q = getDB('k_rand_q_z99');
+            if(Array.isArray(q)) { q = q.filter(x => x.id !== currentUser.id); setDB('k_rand_q_z99', q); }
+        }
+
+        function startAiMatch() {
+            const cards = getPlayCardsBattle();
+            if(!cards) return customAlert("エラー", "出題範囲内に最低36首必要です");
+
+            isAiMode = true; myRole = 'host'; 
+            
+            const aiLevel = document.getElementById('aiLevel').value;
+            if(aiLevel === 'easy') enemyName = "AI (初級)";
+            else if(aiLevel === 'normal') enemyName = "AI (中級)";
+            else enemyName = "AI (上級)";
+
+            if(peer) peer.destroy(); 
+            
+            document.getElementById('loaderRoomCode').style.display = 'none';
+            document.getElementById('matching-screen').style.display = 'flex';
+            
+            hostReady = true; guestReady = true; 
+            showMatchSuccess(enemyName); 
+        }
+
+        // ==========================================
+        // ゲーム進行・完全同期配置・勝敗エフェクト
+        // ==========================================
+        let myBoard=[], enemyBoard=[];
+        let yomiQueue=[], curYomiId=null, isInputLocked=false;
+        let myScore=0, enemyScore=0, typeInterval=null, aiTimer=null;
+        let readSpeed = 200;
+
+        function formatCardText(text) {
+            const cleanText = text.replace(/[\s　]/g, ''); 
+            let res = '';
+            for(let i=0; i<cleanText.length; i+=5) { 
+                res += `<span>${cleanText.substring(i, i+5)}</span>`; 
+            }
+            return `<div class="card-inner">${res}</div>`;
+        }
+
+        function hostStartGame() {
+            isGameFinished = false; // ★リセット
+            readSpeed = parseInt(document.getElementById('readSpeed').value) || 200;
+
+            const cards = getPlayCardsBattle();
+            // 横9×縦2 ＝ 18枚ずつ (配列AとB)
+            const arrA = cards.slice(0,18); 
+            const arrB = cards.slice(18,36); 
+            yomiQueue = cards.map(c=>c.id).sort(()=>Math.random()-0.5);
+            myScore=0; enemyScore=0; 
+
+            if(!isAiMode && myConn) {
+                const payload = { type: 'start', hName: currentUser.name, arrA: arrA, arrB: arrB, speed: readSpeed };
+                myConn.send(payload);
+                myConn.send({ type: 'countdown' });
+            }
+            
+            updateStat('play'); 
+            startGameView(currentUser.name, enemyName, arrA, arrB);
+            playCountdown(() => { nextYomi(); });
+        }
+
+        function handleGuestData(data) {
+            if(data.type === 'match_success') {
+                enemyName = data.hName;
+                document.getElementById('loaderRoomCode').style.display = 'none';
+                showMatchSuccess(enemyName);
+            }
+            else if(data.type === 'start') {
+                isGameFinished = false; // ★リセット
+                enemyName = data.hName; readSpeed = data.speed || 200;
+                myScore=0; enemyScore=0; 
+                updateStat('play');
+                showTipsLoading();
+                startGameView(data.hName, currentUser.name, data.arrA, data.arrB);
+            }
+            else if(data.type === 'countdown') playCountdown(()=>{});
+            else if(data.type === 'yomi') { curYomiId = data.id; document.getElementById('yomiText').innerHTML = data.html; }
+            else if(data.type === 'result') applyJudge(data);
+            else if(data.type === 'force_finish') finishGame();
+        }
+
+        function startGameView(hName, gName, arrA, arrB) {
+            document.getElementById('matching-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'flex';
+            
+            document.getElementById('sbHostName').textContent = hName;
+            document.getElementById('sbGuestName').textContent = gName;
+            document.getElementById('sbHostName').style.color = (myRole==='host') ? 'var(--accent)' : '#ccc';
+            document.getElementById('sbGuestName').style.color = (myRole==='guest') ? 'var(--accent)' : '#ccc';
+            
+            updateScoreUI();
+            
+            // 物理位置の完全同期
+            if(myRole === 'host') {
+                myBoard = arrA; enemyBoard = arrB;
+                renderBoard('myTerritory', arrA); 
+                renderBoard('enemyTerritory', arrB);
+            } else {
+                myBoard = arrB; enemyBoard = arrA;
+                renderBoard('myTerritory', arrB.slice().reverse()); 
+                renderBoard('enemyTerritory', arrA.slice().reverse());
+            }
+        }
+
+        function renderBoard(id, cards) {
+            const el = document.getElementById(id); el.innerHTML = '';
+            cards.forEach(c => {
+                const div = document.createElement('div'); 
+                div.className = 'karuta-card'; div.dataset.id = c.id; 
+                div.innerHTML = formatCardText(c.shimo); 
+                div.onclick = () => onCardTap(c.id); 
+                el.appendChild(div);
+            });
+        }
+
+        function playCountdown(callback) {
+            clearInterval(tipsInterval); 
+            const overlay = document.getElementById('countdownOverlay'); const txt = document.getElementById('countdownText');
+            overlay.style.display = 'flex'; let c = 3; txt.textContent = c;
+            const iv = setInterval(()=>{
+                c--; if(c>0) txt.textContent = c; else if(c===0) txt.textContent = "開始！";
+                else { clearInterval(iv); overlay.style.display = 'none'; callback(); }
+            }, 1000);
+        }
+
+        function nextYomi() {
+            if(yomiQueue.length === 0) {
+                clearInterval(typeInterval); // ★確実に止める
+                finishGame();
+                return;
+            }
+            const nextId = yomiQueue.shift(); const card = [...myBoard, ...enemyBoard].find(c=>c.id === nextId);
+            
+            const cleanKami = card.kami.replace(/[\s　]/g, '');
+            const cleanShimo = card.shimo.replace(/[\s　]/g, '');
+            curYomiId = nextId;
+            
+            if(isAiMode) {
+                clearTimeout(aiTimer);
+                const aiLevel = document.getElementById('aiLevel').value;
+                let delay = 0;
+                
+                if(aiLevel === 'easy') delay = 2000 + Math.random() * 2000; // 2〜4秒遅れ
+                else if(aiLevel === 'normal') delay = 1000 + Math.random() * 1000; // 1〜2秒遅れ
+                else delay = -500 + Math.random() * 1000; // -0.5〜0.5秒（神速）
+                
+                const reaction = (cleanKami.length * readSpeed) + delay; 
+                aiTimer = setTimeout(() => { if(curYomiId === nextId) judgeTake(nextId, 'guest'); }, Math.max(500, reaction));
+            }
+            
+            // アニメーション (上の句と下の句を同じ文字サイズで表示)
+            let charArray = Array.from(cleanKami);
+            charArray.push('　'); // スペース
+            charArray = charArray.concat(Array.from(cleanShimo));
+
+            let html = ""; let idx = 0;
+            typeInterval = setInterval(() => {
+                html += charArray[idx]; idx++;
+                const payload = { type:'yomi', id: nextId, html: html };
+                
+                document.getElementById('yomiText').innerHTML = html;
+                safeSend(payload);
+                
+                if(idx >= charArray.length) { clearInterval(typeInterval); }
+            }, readSpeed); 
+        }
+
+        function onCardTap(id) {
+            if(isInputLocked || !curYomiId) return;
+            if(myRole === 'host') judgeTake(id, 'host'); 
+            else safeSend({ type: 'take', id: id });
+        }
+
+        function judgeTake(id, role) {
+            if(!curYomiId) return;
+            let isCorrect = (id === curYomiId); if(isCorrect) curYomiId = null;
+            
+            const res = { type: 'result', correct: isCorrect, id: id, role: role };
+            applyJudge(res); safeSend(res);
+            
+            if(isCorrect && myRole === 'host') { clearInterval(typeInterval); setTimeout(nextYomi, 1500); }
+        }
+
+        function applyJudge(res) {
+            if(res.correct) {
+                const el = document.querySelector(`.karuta-card[data-id="${res.id}"]`); 
+                if(el) el.classList.add('taken');
+                
+                if(isAiMode) { res.role==='host' ? myScore++ : enemyScore++; }
+                else {
+                    if(res.role === 'host') { myRole==='host'?myScore++:enemyScore++; } else { myRole==='guest'?myScore++:enemyScore++; }
+                }
+                updateScoreUI(); document.getElementById('yomiText').textContent = "（取られました）";
+            } else {
+                if(res.role === myRole) { 
+                    updateStat('penalty');
+                    showToast("お手付き！ 2秒間取れません", "var(--error)"); 
+                    isInputLocked = true; setTimeout(()=>isInputLocked=false, 2000); 
+                }
+            }
+        }
+
+        function updateScoreUI() {
+            document.getElementById('sbHostScore').textContent = myScore;
+            document.getElementById('sbGuestScore').textContent = enemyScore;
+        }
+
+        // ==========================================
+        // 試合終了・結果エフェクト (★勝利数バグ防止)
+        // ==========================================
+        function finishGame() {
+            if(isGameFinished) return; // ★重複防止フラグ
+            isGameFinished = true;
+
+            clearInterval(typeInterval); clearTimeout(aiTimer);
+            safeSend({ type: 'force_finish' });
+            
+            let resultType = 'draw';
+            if(myScore > enemyScore) resultType = 'win';
+            else if(myScore < enemyScore) resultType = 'lose';
+            
+            if(resultType === 'win') updateStat('win');
+            else if(resultType === 'lose') updateStat('lose');
+
+            showResultScreen(resultType);
+        }
+
+        function showResultScreen(type) {
+            document.getElementById('result-screen').style.display = 'flex';
+            document.getElementById('rsMyScore').textContent = myScore;
+            document.getElementById('rsEnemyScore').textContent = enemyScore;
+            document.getElementById('rsEnemyName').textContent = enemyName;
+
+            const screen = document.getElementById('result-screen');
+            const icon = document.getElementById('resultIcon');
+            const title = document.getElementById('resultTitle');
+
+            screen.className = 'full-overlay'; // リセット
+            const effectLayer = document.getElementById('result-effect');
+            effectLayer.innerHTML = '';
+
+            if(type === 'win') {
+                screen.classList.add('bg-win');
+                icon.textContent = 'emoji_events';
+                title.textContent = 'あなたの勝ち！';
+                const colors = ['#f44336', '#e91e63', '#9c27b0', '#2196f3', '#00bcd4', '#4CAF50', '#FFEB3B', '#FF9800'];
+                for(let i=0; i<100; i++) {
+                    let conf = document.createElement('div');
+                    conf.className = 'confetti';
+                    conf.style.left = Math.random() * 100 + '%';
+                    conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    conf.style.animationDelay = Math.random() * 2 + 's';
+                    effectLayer.appendChild(conf);
+                }
+            } else if(type === 'lose') {
+                screen.classList.add('bg-lose');
+                icon.textContent = 'sentiment_dissatisfied';
+                title.textContent = 'あなたの負け...';
+                for(let i=0; i<60; i++) {
+                    let drop = document.createElement('div');
+                    drop.className = 'rain-drop';
+                    drop.style.left = Math.random() * 100 + '%';
+                    drop.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
+                    drop.style.animationDelay = Math.random() * 1 + 's';
+                    effectLayer.appendChild(drop);
+                }
+            } else {
+                screen.classList.add('bg-draw');
+                icon.textContent = 'handshake';
+                title.textContent = '引き分け！';
+            }
+        }
+
+        function closeResult() {
+            document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('result-effect').innerHTML = '';
+            abortGame();
+        }
+
+        function requestExitGame() { customConfirm("退出", "試合を退出しますか？（通信が切断されます）", abortGame); }
+
+        function abortGame() {
+            clearTimeout(matchTimeoutTimer); // タイムアウトもクリア
+            if(myConn) { myConn.close(); myConn = null; }
+            if(peer) peer.destroy();
+            clearInterval(typeInterval); clearTimeout(aiTimer); clearInterval(tipsInterval);
+            
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('matching-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'flex';
+            hostReady = false; guestReady = false;
+            isGameFinished = false; // フラグリセット
+            
+            removeRandomQueue();
+            updateProfileStats(); updateRanking();
         }
     </script>
 </body>
