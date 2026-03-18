@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -13,7 +14,7 @@
     <meta property="og:type" content="website">
     <title>百人一首</title>
     <link rel="manifest" href="manifest.json">
-    <!-- 和風フォントとGoogle Material Symbols -->
+    <!-- 和風フォントとGoogle Material Symbols (最新規格) -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
@@ -52,11 +53,12 @@
         .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); box-shadow: none;}
         .btn-danger { background: var(--error); color: white; }
 
-        .icon-btn { background: transparent; border: none; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 8px; border-radius: 50%; transition: background 0.2s;}
-        .icon-btn:active { background: rgba(255,255,255,0.2); }
+        .back-btn { background: transparent; border: none; color: white; display: flex; align-items: center; gap: 5px; font-size: 1rem; font-weight: bold; cursor: pointer; padding: 6px 12px; border-radius: 20px; transition: background 0.2s;}
+        .back-btn:active { background: rgba(255,255,255,0.2); }
 
         .tab-link { color: var(--primary); text-decoration: underline; text-align: center; font-size: 0.85rem; cursor: pointer; margin-top: 5px; }
 
+        /* スタイリッシュなトグルスイッチ */
         .toggle-switch { position: relative; display: inline-block; width: 50px; height: 28px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
@@ -75,7 +77,7 @@
         @keyframes slideUpFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* ボトムナビゲーション */
+        /* ボトムナビゲーション (対戦ボタンをバーの高さにピッタリ合わせる) */
         .bottom-nav { height: var(--nav-h); background: #fff; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); flex-shrink: 0; z-index: 100; align-items: center;}
         .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #aaa; cursor: pointer; transition: 0.2s; height: 100%; gap: 2px;}
         .nav-item.active { color: var(--primary); }
@@ -83,11 +85,10 @@
         .nav-item.active .material-symbols-outlined { transform: scale(1.15); }
         .nav-label { font-size: 0.7rem; font-weight: bold; }
 
-        .nav-item-center-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; cursor: pointer;}
-        .nav-item-center { width: 48px; height: 48px; background: var(--primary); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; transition: transform 0.2s; box-shadow: 0 0 10px rgba(47, 93, 80, 0.3);}
-        .nav-item-center .material-symbols-outlined { font-size: 1.3rem; margin-top: 2px;}
-        .nav-item-center span.text { font-size: 0.65rem; font-weight: bold; line-height: 1; margin-top: 1px;}
-        .nav-item-center-wrapper:active .nav-item-center { transform: scale(0.92); }
+        .nav-item-center-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; cursor: pointer; background: var(--primary); color: white; transition: background 0.2s;}
+        .nav-item-center-wrapper .material-symbols-outlined { font-size: 1.8rem; margin-bottom: 2px;}
+        .nav-item-center-wrapper span.text { font-size: 0.7rem; font-weight: bold; line-height: 1;}
+        .nav-item-center-wrapper:active { background: var(--primary-light); }
 
         .live-item { background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;}
         
@@ -117,7 +118,7 @@
         .custom-dialog-btns { display: flex; gap: 10px; justify-content: center; }
 
         /* ====================
-           ゲーム画面（完全同期 横9 × 縦2）
+           ゲーム画面（横9 × 縦2）完全同期レイアウト
            ==================== */
         #game-screen { position: fixed; inset: 0; background: var(--bg-color); z-index: 200; display: none; flex-direction: column; padding: 4px; box-sizing: border-box; }
         
@@ -161,7 +162,9 @@
         .status-on { color: #4CAF50; font-weight: bold; }
         .status-off { color: #9E9E9E; }
 
-        /* リザルト（勝敗）エフェクト */
+        /* ====================
+           リザルト（勝敗）エフェクト
+           ==================== */
         .result-box { background: var(--surface); padding: 30px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; z-index: 10; width: 90%; max-width: 400px; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin: auto;}
         @keyframes popIn { 0%{transform:scale(0.5); opacity:0;} 100%{transform:scale(1); opacity:1;} }
         .result-icon { font-size: 6rem; margin-bottom: 10px; }
@@ -188,7 +191,9 @@
         @keyframes fall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1;} 100% { transform: translateY(100vh) rotate(720deg); opacity: 0;} }
         @keyframes rainFall { 0% { transform: translateY(-30px); opacity: 1;} 100% { transform: translateY(100vh); opacity: 0;} }
 
-        /* フルオーバーレイ (一覧・暗記・チュートリアル) */
+        /* ====================
+           フルオーバーレイ (一覧・暗記)
+           ==================== */
         .full-overlay { position: fixed; inset: 0; background: var(--bg-color); z-index: 400; display: none; flex-direction: column; overflow: hidden;}
         .header-bar { height: var(--header-h); background: var(--primary); color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
         .header-bar h2 { margin: 0; font-size: 1.1rem; font-family: 'Shippori Mincho B1', serif;}
@@ -276,6 +281,7 @@
         <div id="admin-screen" class="auth-screen" style="height: 100%;">
             <div class="card">
                 <h2 class="card-title" style="color:var(--error);">お知らせ投稿</h2>
+                <!-- 手動日時入力 -->
                 <input type="text" id="newsDate" class="input-box" placeholder="例) 2026/03/16 21:00">
                 <input type="text" id="newsTitle" class="input-box" placeholder="タイトル">
                 <textarea id="newsBody" class="input-box" rows="2" placeholder="本文（1〜2行程度）" style="resize:none; font-family:inherit;"></textarea>
@@ -406,10 +412,8 @@
             </div>
             
             <div class="nav-item-center-wrapper" onclick="switchTab('battle')" id="nav-battle">
-                <div class="nav-item-center">
-                    <span class="material-symbols-outlined">swords</span>
-                    <span class="text">対戦</span>
-                </div>
+                <span class="material-symbols-outlined">swords</span>
+                <span class="text">対戦</span>
             </div>
             
             <div class="nav-item" onclick="switchTab('profile')" id="nav-profile">
@@ -421,9 +425,9 @@
     <!-- 百人一首 一覧 画面 -->
     <div id="list-screen" class="full-overlay">
         <div class="header-bar">
-            <button class="icon-btn" onclick="closeFullOverlay('list-screen')"><span class="material-symbols-outlined">arrow_back</span></button>
+            <button class="back-btn" onclick="closeFullOverlay('list-screen')"><span class="material-symbols-outlined">arrow_back_ios</span>戻る</button>
             <h2>百人一首 一覧</h2>
-            <div style="width:40px;"></div>
+            <div style="width:60px;"></div>
         </div>
         <div id="list-container"></div>
     </div>
@@ -431,9 +435,9 @@
     <!-- 暗記モード 画面 -->
     <div id="study-screen" class="full-overlay">
         <div class="header-bar">
-            <button class="icon-btn" onclick="closeFullOverlay('study-screen')"><span class="material-symbols-outlined">arrow_back</span></button>
+            <button class="back-btn" onclick="closeFullOverlay('study-screen')"><span class="material-symbols-outlined">arrow_back_ios</span>戻る</button>
             <h2>暗記モード</h2>
-            <div style="width:40px;"></div>
+            <div style="width:60px;"></div>
         </div>
         <div id="study-content">
             <div class="study-card-wrapper" id="studyCard">
@@ -573,6 +577,86 @@
 
     <script>
         // ==========================================
+        // P2P分散型クラウドデータベース (自動同期)
+        // ==========================================
+        const SYNC_KEYS = ['karuta_users', 'karuta_stats', 'karuta_news', 'karuta_online'];
+        let isDBMaster = false;
+        let dbPeer = null;
+        let dbConn = null;
+        let dbClients = [];
+
+        function getDB(key) { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : {}; } catch(e) { return {}; } }
+        function setDB(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+        // ローカルに保存しつつ、オンラインの他ブラウザへブロードキャスト
+        function broadcastDBUpdate(key, val) {
+            setDB(key, val);
+            if(!SYNC_KEYS.includes(key)) return;
+
+            if(isDBMaster) {
+                dbClients.forEach(c => { if(c.open) c.send({ type: 'sync_key', key: key, val: val }); });
+            } else if(dbConn && dbConn.open) {
+                dbConn.send({ type: 'update_db', key: key, val: val });
+            }
+            
+            // 即時UI反映
+            if(key === 'karuta_stats' || key === 'karuta_users') updateRanking();
+            if(key === 'karuta_news') loadNews();
+        }
+
+        function initP2PDatabase() {
+            dbPeer = new Peer('karuta-db-master-v1'); 
+            
+            dbPeer.on('open', (id) => {
+                isDBMaster = true;
+                dbPeer.on('connection', (conn) => {
+                    dbClients.push(conn);
+                    conn.on('open', () => {
+                        const fullDB = {
+                            karuta_users: getDB('karuta_users'),
+                            karuta_stats: getDB('karuta_stats'),
+                            karuta_news: getDB('karuta_news'),
+                            karuta_online: getDB('karuta_online')
+                        };
+                        conn.send({ type: 'sync_db', data: fullDB });
+                    });
+                    conn.on('data', (payload) => {
+                        if(payload.type === 'update_db') {
+                            setDB(payload.key, payload.val);
+                            dbClients.forEach(c => { if(c.open && c !== conn) c.send({ type: 'sync_key', key: payload.key, val: payload.val }); });
+                            if(payload.key === 'karuta_stats' || payload.key === 'karuta_users') updateRanking();
+                            if(payload.key === 'karuta_news') loadNews();
+                        }
+                    });
+                });
+            });
+
+            dbPeer.on('error', (err) => {
+                if(err.type === 'unavailable-id') {
+                    // すでにマスターがいるのでゲストとして繋いでデータをもらう
+                    const fallbackPeer = new Peer();
+                    fallbackPeer.on('open', () => {
+                        dbConn = fallbackPeer.connect('karuta-db-master-v1');
+                        dbConn.on('data', (payload) => {
+                            if(payload.type === 'sync_db') {
+                                setDB('karuta_users', payload.data.karuta_users);
+                                setDB('karuta_stats', payload.data.karuta_stats);
+                                setDB('karuta_news', payload.data.karuta_news);
+                                setDB('karuta_online', payload.data.karuta_online);
+                                updateRanking(); loadNews();
+                                if(currentUser && currentUser.id === 'symphony') loadAdminData();
+                            } else if (payload.type === 'sync_key') {
+                                setDB(payload.key, payload.val);
+                                updateRanking(); loadNews();
+                                if(currentUser && currentUser.id === 'symphony') loadAdminData();
+                            }
+                        });
+                    });
+                }
+            });
+        }
+
+        // ==========================================
         // UI・ダイアログ・入力制限
         // ==========================================
         function validateRange(el) {
@@ -613,11 +697,8 @@
         }
 
         // ==========================================
-        // ローカルDB・膨大なTips
+        // 膨大なTips
         // ==========================================
-        function getDB(key) { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : {}; } catch(e) { return {}; } }
-        function setDB(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
-
         const TIPS = [
             "【かるた】お手付きをすると、2秒間札が取れなくなるペナルティがあります。",
             "【かるた】「秋の田の〜」は天智天皇の作で、百人一首の1番です。",
@@ -644,7 +725,6 @@
             document.querySelectorAll('.auth-screen').forEach(s => s.classList.remove('active'));
             document.getElementById(type + '-screen').classList.add('active');
             
-            // 管理者画面の場合はヘッダーを隠す
             const header = document.getElementById('main-header');
             if(type === 'admin') header.classList.add('hide');
             else header.classList.remove('hide');
@@ -670,6 +750,7 @@
         // 認証・設定・管理者
         // ==========================================
         window.onload = async () => {
+            initP2PDatabase(); // P2P DB同期開始
             try {
                 const res = await fetch("https://symphony100.github.io/symphony/study/karuta/play/cards.json");
                 allCardsData = await res.json();
@@ -707,10 +788,12 @@
             let users = getDB('karuta_users');
             if(users[id]) return showToast("既に使用されています", "var(--error)");
 
-            users[id] = { pass, name }; setDB('karuta_users', users);
+            users[id] = { pass, name }; 
+            broadcastDBUpdate('karuta_users', users);
             
             let stats = getDB('karuta_stats');
-            stats[id] = { play: 0, win: 0, lose: 0, penalty: 0 }; setDB('karuta_stats', stats);
+            stats[id] = { play: 0, win: 0, lose: 0, penalty: 0 }; 
+            broadcastDBUpdate('karuta_stats', stats);
 
             loginSuccess(id, users[id]);
         }
@@ -726,7 +809,7 @@
             document.getElementById('auth-layer').style.display = 'none';
             document.getElementById('main-app').style.display = 'flex';
             
-            startLobbySync();
+            updateRanking(); loadNews();
             setInterval(updateOnlineStatus, 5000);
             checkTutorial();
         }
@@ -743,7 +826,8 @@
 
         function updateOnlineStatus() {
             if(!currentUser) return;
-            let online = getDB('karuta_online'); online[currentUser.id] = Date.now(); setDB('karuta_online', online);
+            let online = getDB('karuta_online'); online[currentUser.id] = Date.now(); 
+            broadcastDBUpdate('karuta_online', online);
         }
 
         function saveSettings() {
@@ -751,13 +835,13 @@
             const n = document.getElementById('setName').value.trim();
             if(!p||!n) return;
             let users = getDB('karuta_users');
-            users[currentUser.id] = { pass: p, name: n }; setDB('karuta_users', users);
+            users[currentUser.id] = { pass: p, name: n }; 
+            broadcastDBUpdate('karuta_users', users);
             currentUser.pass = p; currentUser.name = n;
             setDB('karuta_last_login', currentUser);
             document.getElementById('dispName').textContent = n;
             showToast("保存しました", "var(--primary)"); 
             document.getElementById('setPass').value = '';
-            updateRanking();
         }
 
         function updateProfileStats() {
@@ -776,9 +860,9 @@
             if(!currentUser) return;
             let db = getDB('karuta_stats');
             if(!db[currentUser.id]) db[currentUser.id] = { play: 0, win: 0, lose: 0, penalty: 0 };
-            db[currentUser.id][key]++; setDB('karuta_stats', db);
+            db[currentUser.id][key]++; 
+            broadcastDBUpdate('karuta_stats', db);
             updateProfileStats();
-            updateRanking();
         }
 
         // --- 管理者機能 ---
@@ -802,13 +886,13 @@
         }
         function deleteUser(id) { 
             customConfirm("ユーザー削除", `${id} を削除しますか？`, () => {
-                let u = getDB('karuta_users'); delete u[id]; setDB('karuta_users', u); loadAdminData();
+                let u = getDB('karuta_users'); delete u[id]; broadcastDBUpdate('karuta_users', u); loadAdminData();
             }); 
         }
         function resetRank(id) { 
             customConfirm("実績リセット", `${id} の戦績（ランキング）をリセットしますか？`, () => {
                 let s = getDB('karuta_stats'); 
-                if(s[id]) { s[id].play=0; s[id].win=0; s[id].lose=0; s[id].penalty=0; setDB('karuta_stats', s); loadAdminData(); showToast("リセットしました");}
+                if(s[id]) { s[id].play=0; s[id].win=0; s[id].lose=0; s[id].penalty=0; broadcastDBUpdate('karuta_stats', s); loadAdminData(); showToast("リセットしました");}
             }); 
         }
         
@@ -820,11 +904,10 @@
             
             let news = getDB('karuta_news'); if(!Array.isArray(news)) news = [];
             news.unshift({ date: dateStr, title: title, body: body });
-            setDB('karuta_news', news.slice(0, 5)); 
+            broadcastDBUpdate('karuta_news', news.slice(0, 5)); 
             
             showToast("投稿しました", "var(--primary)");
             document.getElementById('newsDate').value = ''; document.getElementById('newsTitle').value = ''; document.getElementById('newsBody').value = '';
-            loadNews();
         }
 
         function loadNews() {
@@ -861,15 +944,6 @@
                     </div>`;
             });
             if(list.length === 0) rl.innerHTML = '<p style="text-align:center; font-size:0.8rem; color:#999;">まだデータがありません</p>';
-        }
-
-        function startLobbySync() {
-            updateRanking(); loadNews();
-            setInterval(() => {
-                if(document.getElementById('tab-home').classList.contains('active')) {
-                    updateRanking(); loadNews();
-                }
-            }, 5000);
         }
 
         function openListView() {
@@ -989,14 +1063,13 @@
         let randomPollInterval = null;
         let hostReady = false, guestReady = false;
         
-        // ★修正点：異常カウント防止
         let isGameFinished = false; 
-        let matchTimeoutTimer = null; // ランダムマッチ用タイマー
+        let matchTimeoutTimer = null; 
 
         function safeSend(payload) { if(!isAiMode && myConn && myConn.open) { myConn.send(payload); } }
 
         function showMatchSuccess(name) {
-            clearTimeout(matchTimeoutTimer); // タイムアウト解除
+            clearTimeout(matchTimeoutTimer); 
             document.getElementById('loaderIcon').textContent = 'handshake';
             document.getElementById('loaderTitle').textContent = `${name} さんとマッチングしました！`;
             
@@ -1076,7 +1149,7 @@
             const code = Math.random().toString(36).substring(2,6).toUpperCase();
             
             if(peer) peer.destroy();
-            peer = new Peer('k-z99-' + code);
+            peer = new Peer('k-p2p-' + code);
             myConn = null;
 
             peer.on('connection', (conn) => {
@@ -1112,7 +1185,7 @@
             document.getElementById('matching-screen').style.display = 'flex';
 
             peer.on('open', () => {
-                myConn = peer.connect('k-z99-' + code);
+                myConn = peer.connect('k-p2p-' + code);
                 myConn.on('open', () => {
                     myConn.send({ type: 'hello', role: 'guest', name: currentUser.name });
                 });
@@ -1138,7 +1211,7 @@
             document.getElementById('matchTimeoutBox').style.display = 'none';
             document.getElementById('matching-screen').style.display = 'flex';
             
-            const myRandId = 'k-rand-z99-' + currentUser.id;
+            const myRandId = 'k-rand-p2p-' + currentUser.id;
             if(peer) peer.destroy();
             peer = new Peer(myRandId); myConn = null;
 
@@ -1149,7 +1222,7 @@
             });
 
             peer.on('open', () => {
-                let q = getDB('k_rand_q_z99'); if(!Array.isArray(q)) q = [];
+                let q = getDB('k_rand_q_p2p'); if(!Array.isArray(q)) q = [];
                 const now = Date.now();
                 q = q.filter(x => now - x.time < 20000 && x.id !== currentUser.id);
                 
@@ -1162,19 +1235,19 @@
                     myConn.on('data', handleGuestData);
                     myConn.on('close', abortGame);
                 } else { 
-                    let myQ = getDB('k_rand_q_z99'); if(!Array.isArray(myQ)) myQ = [];
+                    let myQ = getDB('k_rand_q_p2p'); if(!Array.isArray(myQ)) myQ = [];
                     myQ.push({ id: currentUser.id, peerId: myRandId, time: Date.now() });
-                    setDB('k_rand_q_z99', myQ);
+                    setDB('k_rand_q_p2p', myQ);
                     
                     randomPollInterval = setInterval(() => {
-                        let mq = getDB('k_rand_q_z99'); if(!Array.isArray(mq)) mq = [];
+                        let mq = getDB('k_rand_q_p2p'); if(!Array.isArray(mq)) mq = [];
                         let me = mq.find(x => x.id === currentUser.id);
-                        if(me) { me.time = Date.now(); setDB('k_rand_q_z99', mq); }
+                        if(me) { me.time = Date.now(); setDB('k_rand_q_p2p', mq); }
                     }, 5000);
                 }
             });
 
-            // ★60秒タイムアウト
+            // 60秒タイムアウト
             matchTimeoutTimer = setTimeout(() => {
                 removeRandomQueue();
                 if(peer) peer.destroy();
@@ -1187,8 +1260,8 @@
         function cancelRandomMatch() { clearTimeout(matchTimeoutTimer); removeRandomQueue(); abortGame(); }
         function removeRandomQueue() {
             clearInterval(randomPollInterval);
-            let q = getDB('k_rand_q_z99');
-            if(Array.isArray(q)) { q = q.filter(x => x.id !== currentUser.id); setDB('k_rand_q_z99', q); }
+            let q = getDB('k_rand_q_p2p');
+            if(Array.isArray(q)) { q = q.filter(x => x.id !== currentUser.id); setDB('k_rand_q_p2p', q); }
         }
 
         function startAiMatch() {
@@ -1229,7 +1302,7 @@
         }
 
         function hostStartGame() {
-            isGameFinished = false; // ★リセット
+            isGameFinished = false; 
             readSpeed = parseInt(document.getElementById('readSpeed').value) || 200;
 
             const cards = getPlayCardsBattle();
@@ -1257,7 +1330,7 @@
                 showMatchSuccess(enemyName);
             }
             else if(data.type === 'start') {
-                isGameFinished = false; // ★リセット
+                isGameFinished = false; 
                 enemyName = data.hName; readSpeed = data.speed || 200;
                 myScore=0; enemyScore=0; 
                 updateStat('play');
@@ -1317,7 +1390,7 @@
 
         function nextYomi() {
             if(yomiQueue.length === 0) {
-                clearInterval(typeInterval); // ★確実に止める
+                clearInterval(typeInterval); 
                 finishGame();
                 return;
             }
@@ -1332,15 +1405,15 @@
                 const aiLevel = document.getElementById('aiLevel').value;
                 let delay = 0;
                 
-                if(aiLevel === 'easy') delay = 2000 + Math.random() * 2000; // 2〜4秒遅れ
-                else if(aiLevel === 'normal') delay = 1000 + Math.random() * 1000; // 1〜2秒遅れ
-                else delay = -500 + Math.random() * 1000; // -0.5〜0.5秒（神速）
+                if(aiLevel === 'easy') delay = 2000 + Math.random() * 2000; 
+                else if(aiLevel === 'normal') delay = 1000 + Math.random() * 1000; 
+                else delay = -500 + Math.random() * 1000; 
                 
                 const reaction = (cleanKami.length * readSpeed) + delay; 
                 aiTimer = setTimeout(() => { if(curYomiId === nextId) judgeTake(nextId, 'guest'); }, Math.max(500, reaction));
             }
             
-            // アニメーション (上の句と下の句を同じ文字サイズで表示)
+            // アニメーション
             let charArray = Array.from(cleanKami);
             charArray.push('　'); // スペース
             charArray = charArray.concat(Array.from(cleanShimo));
@@ -1398,10 +1471,10 @@
         }
 
         // ==========================================
-        // 試合終了・結果エフェクト (★勝利数バグ防止)
+        // 試合終了・結果エフェクト
         // ==========================================
         function finishGame() {
-            if(isGameFinished) return; // ★重複防止フラグ
+            if(isGameFinished) return; 
             isGameFinished = true;
 
             clearInterval(typeInterval); clearTimeout(aiTimer);
@@ -1427,7 +1500,7 @@
             const icon = document.getElementById('resultIcon');
             const title = document.getElementById('resultTitle');
 
-            screen.className = 'full-overlay'; // リセット
+            screen.className = 'full-overlay'; 
             const effectLayer = document.getElementById('result-effect');
             effectLayer.innerHTML = '';
 
@@ -1473,7 +1546,7 @@
         function requestExitGame() { customConfirm("退出", "試合を退出しますか？（通信が切断されます）", abortGame); }
 
         function abortGame() {
-            clearTimeout(matchTimeoutTimer); // タイムアウトもクリア
+            clearTimeout(matchTimeoutTimer); 
             if(myConn) { myConn.close(); myConn = null; }
             if(peer) peer.destroy();
             clearInterval(typeInterval); clearTimeout(aiTimer); clearInterval(tipsInterval);
@@ -1482,7 +1555,7 @@
             document.getElementById('matching-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'flex';
             hostReady = false; guestReady = false;
-            isGameFinished = false; // フラグリセット
+            isGameFinished = false; 
             
             removeRandomQueue();
             updateProfileStats(); updateRanking();
