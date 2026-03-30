@@ -2,14 +2,17 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
-    <title>オンライン百人一首 - 究極Webアプリ版</title>
-    
-    <!-- PWA用設定 -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+   <link rel="icon" type="image/x-icon" href="https://symphony100.github.io/symphony/study/karuta/icon.png">
+    <meta name="keywords" content="かるた,百人一首,暗記,国語,対策">
+    <meta name="description" content="百人一首を覚えよう！">
+    <meta property="og:title" content="百人一首">
+    <meta property="og:description" content="百人一首を覚えよう！">
+    <meta property="og:image" content="https://symphony100.github.io/symphony/study/karuta/icon.png">
+    <meta property="og:url" content="https://symphony100.github.io/symphony/study/karuta/">
+    <meta property="og:type" content="website">
+    <title>百人一首</title>
+    <link rel="manifest" href="manifest.json">
     <!-- 和風フォントとGoogle Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
@@ -28,9 +31,8 @@
             --nav-h: 60px;
         }
 
-        /* ダブルタップ拡大禁止・横スクロール禁止 */
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; height: 100dvh; overflow: hidden; background-color: var(--bg-color); font-family: 'Noto Sans JP', sans-serif; color: var(--text-main); user-select: none; display: flex; flex-direction: column;overscroll-behavior: none;}
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent;}
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; height: 100dvh; overflow: hidden; background-color: var(--bg-color); font-family: 'Noto Sans JP', sans-serif; color: var(--text-main); user-select: none; display: flex; flex-direction: column; }
         
         header { height: var(--header-h); background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: height 0.3s, opacity 0.3s;}
         header.hide { height: 0; opacity: 0; overflow: hidden; padding: 0; margin: 0; box-shadow: none;}
@@ -38,7 +40,7 @@
 
         .main-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
         
-        .card { background: var(--surface); border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; margin-bottom: 12px; width: 100%; max-width: 500px; margin-left: auto; margin-right: auto;}
+        .card { background: var(--surface); border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; margin-bottom: 12px; }
         .card-title { font-size: 1.05rem; font-weight: bold; color: var(--primary); margin: 0; border-bottom: 2px solid #eee; padding-bottom: 6px; text-align: center; display:flex; align-items:center; justify-content:center; gap:5px;}
         
         .input-box { width: 100%; padding: 12px; font-size: 1rem; border: 2px solid #ddd; border-radius: 8px; background: #fafafa; outline: none; transition: 0.2s; text-align: center; font-family: inherit;}
@@ -56,7 +58,7 @@
 
         .tab-link { color: var(--primary); text-decoration: underline; text-align: center; font-size: 0.85rem; cursor: pointer; margin-top: 5px; }
 
-        /* トグルスイッチ */
+        /* スタイリッシュなトグルスイッチ */
         .toggle-switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
@@ -64,35 +66,39 @@
         input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(24px); }
 
-        /* PWAインストール案内画面 */
-        #pwa-install-screen { position: fixed; inset: 0; background: var(--surface); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
-        .pwa-icon { font-size: 4rem; color: var(--primary); margin-bottom: 20px; }
-        .pwa-title { font-size: 1.4rem; font-weight: bold; color: var(--primary); margin-bottom: 15px;}
-        .pwa-desc { font-size: 0.95rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 30px; text-align: left; background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #ddd;}
+        /* 美しいカスタムチェックボックス */
+        .custom-checkbox { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; color: #555; position: relative;}
+        .custom-checkbox input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+        .checkmark { height: 20px; width: 20px; background-color: #eee; border-radius: 4px; border: 2px solid #ccc; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .custom-checkbox input:checked ~ .checkmark { background-color: var(--primary); border-color: var(--primary); }
+        .checkmark:after { content: ""; display: none; width: 5px; height: 10px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); margin-bottom: 2px;}
+        .custom-checkbox input:checked ~ .checkmark:after { display: block; }
+        .custom-checkbox.disabled { opacity: 0.5; cursor: not-allowed; }
+        .custom-checkbox.disabled input { cursor: not-allowed; }
 
         #auth-layer { flex: 1; display: flex; flex-direction: column; padding: 16px; overflow-y: auto; justify-content: center;}
         .auth-screen { display: none; flex-direction: column; animation: fadeIn 0.3s ease; }
         .auth-screen.active { display: flex; }
 
         #main-app { display: none; flex: 1; flex-direction: column; overflow: hidden; }
-        #tab-container { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 12px; position: relative; }
+        #tab-container { flex: 1; overflow-y: auto; padding: 12px; position: relative; }
         .tab-page { display: none; flex-direction: column; animation: slideUpFade 0.3s ease forwards; }
         .tab-page.active { display: flex; }
         @keyframes slideUpFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* ボトムナビゲーション (デザイン崩れ修正) */
-        .bottom-nav { height: var(--nav-h); background: #fff; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); flex-shrink: 0; z-index: 100; align-items: center; justify-content: space-around;}
+        /* ボトムナビゲーション */
+        .bottom-nav { height: var(--nav-h); background: #fff; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); flex-shrink: 0; z-index: 100; align-items: center;}
         .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #aaa; cursor: pointer; transition: 0.2s; height: 100%; gap: 2px;}
         .nav-item.active { color: var(--primary); }
         .nav-item .material-symbols-outlined { font-size: 1.6rem; transition: transform 0.2s; }
         .nav-item.active .material-symbols-outlined { transform: scale(1.15); }
         .nav-label { font-size: 0.7rem; font-weight: bold; }
 
-        .nav-item-center-wrapper { position: relative; width: 60px; height: 100%; display: flex; align-items: flex-start; justify-content: center; cursor: pointer;}
-        .nav-item-center { position: absolute; top: -15px; width: 56px; height: 56px; background: var(--primary); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; transition: transform 0.2s; box-shadow: 0 4px 8px rgba(47, 93, 80, 0.4); border: 4px solid #fff;}
-        .nav-item-center .material-symbols-outlined { font-size: 1.6rem; margin-top: 2px;}
-        .nav-item-center span.text { font-size: 0.65rem; font-weight: bold; line-height: 1; margin-top: 1px;}
+        .nav-item-center-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; cursor: pointer; padding: 0; position: relative;}
+        .nav-item-center { width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; transition: transform 0.2s; box-shadow: 0 4px 8px rgba(47, 93, 80, 0.4);}
+        .nav-item-center .material-symbols-outlined { font-size: 1.5rem; margin-bottom: 2px;}
+        .nav-item-center span.text { font-size: 0.6rem; font-weight: bold; line-height: 1;}
         .nav-item-center-wrapper:active .nav-item-center { transform: scale(0.92); }
 
         .live-item { background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;}
@@ -100,6 +106,7 @@
         .stats-box { background: #f0f0f0; padding: 12px; border-radius: 8px; }
         .stats-num { font-size: 1.6rem; font-weight: bold; color: var(--primary); display: block; margin-top: 4px;}
 
+        /* マッチング＆ロード画面 */
         .overlay-screen { position: fixed; inset: 0; background: var(--bg-color); z-index: 300; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
         .loader-icon { font-size: 4rem; color: var(--primary); animation: bounce 1s infinite alternate; margin-bottom: 15px;}
         .loader-title { font-size: 1.3rem; font-weight: bold; color: var(--primary); margin-bottom: 10px; line-height: 1.4;}
@@ -110,6 +117,7 @@
         .news-date { color: #888; font-size: 0.75rem; margin-bottom: 2px;}
         .news-title { font-weight: bold; color: var(--primary); margin-bottom: 4px;}
 
+        /* オリジナルポップアップ */
         .custom-dialog-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 9999; opacity: 0; transition: opacity 0.2s; }
         .custom-dialog-overlay.show { display: flex; opacity: 1; }
         .custom-dialog { background: var(--surface); padding: 24px; border-radius: 12px; width: 85%; max-width: 320px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-align: center; transform: scale(0.9); transition: transform 0.2s; }
@@ -119,9 +127,9 @@
         .custom-dialog-btns { display: flex; gap: 10px; justify-content: center; }
 
         /* ====================
-           ゲーム画面（iPhoneで崩れない完璧な横9×縦2）
+           ゲーム画面（完全同期 横9 × 縦2）
            ==================== */
-        #game-screen { position: fixed; inset: 0; background: var(--bg-color); z-index: 200; display: none; flex-direction: column; padding: 4px; box-sizing: border-box; overflow: hidden;}
+        #game-screen { position: fixed; inset: 0; background: var(--bg-color); z-index: 200; display: none; flex-direction: column; padding: 4px; box-sizing: border-box; }
         
         .baseball-scoreboard { display: flex; justify-content: space-between; align-items: center; background: #222; color: #fff; padding: 6px 12px; border-radius: 6px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); margin-bottom: 2px; flex-shrink: 0; }
         .sb-team { display: flex; align-items: center; gap: 8px; font-size: 1rem; }
@@ -130,30 +138,28 @@
         .sb-center { font-size: 0.8rem; color: #aaa; display: flex; align-items: center; gap: 10px;}
         .exit-btn { background: var(--error); color: white; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer; display: flex; align-items: center; font-size: 0.8rem;}
 
-        .territory { flex: 1; display: grid; grid-template-columns: repeat(9, 1fr); grid-template-rows: repeat(2, 1fr); gap: 1px; background: rgba(0,0,0,0.03); border-radius: 4px; padding: 2px; align-items: center; justify-items: center; min-height: 0; overflow: hidden;}
+        .territory { flex: 1; display: grid; grid-template-columns: repeat(9, 1fr); grid-template-rows: repeat(2, 1fr); gap: 2px; background: rgba(0,0,0,0.03); border-radius: 4px; padding: 2px; align-items: center; justify-items: center; min-height: 0;}
         .enemy-territory { transform: rotate(180deg); }
 
-        .yomi-area { height: 45px; flex-shrink: 0; background: var(--primary); color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'Shippori Mincho B1', serif; font-size: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2); text-align: center; line-height: 1.3; z-index: 10; margin: 2px 0; padding: 0 10px;}
+        .yomi-area { height: 50px; flex-shrink: 0; background: var(--primary); color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'Shippori Mincho B1', serif; font-size: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2); text-align: center; line-height: 1.3; z-index: 10; margin: 2px 0; padding: 0 10px;}
 
-        /* かるたの札（どんな画面でも絶対に収まる設計） */
         .karuta-card { 
-            width: 100%; height: 100%; 
-            max-width: calc(100vw / 9 - 2px); /* 画面幅を9等分 */
+            width: 100%; height: 100%; max-width: calc((100vh - 120px) / 4 * (5/7));
             aspect-ratio: 5 / 7; 
-            background: #fff; border: 1px solid var(--primary);
+            background: #fff; border: 1.5px solid var(--primary);
             border-radius: 2px; box-sizing: border-box;
             display: flex; align-items: center; justify-content: center; 
             cursor: pointer; box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
             padding: 1px; overflow: hidden; margin: auto;
         }
-        .karuta-card:active { background: #e2e8f0; transform: scale(0.95); }
+        .karuta-card:active { background: #e2e8f0; }
         .karuta-card.taken { opacity: 0; pointer-events: none; }
         
         .card-inner {
             writing-mode: vertical-rl; text-orientation: upright; font-family: 'Shippori Mincho B1', serif;
-            font-size: clamp(8px, 1.5vh, 12px); /* 小さめに制限 */
+            font-size: clamp(8px, 1.8vh, 14px); 
             line-height: 1.1; display: flex; flex-wrap: wrap; align-content: center; justify-content: center;
-            height: 100%; width: 100%; gap: 1px; overflow: hidden;
+            height: 100%; gap: 1px;
         }
         .card-inner span { display: inline-block; height: 100%; }
 
@@ -193,14 +199,14 @@
         @keyframes fall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1;} 100% { transform: translateY(100vh) rotate(720deg); opacity: 0;} }
         @keyframes rainFall { 0% { transform: translateY(-30px); opacity: 1;} 100% { transform: translateY(100vh); opacity: 0;} }
 
-        /* フルオーバーレイ (一覧・暗記) 滑らかなスライドアニメーション */
-        .full-overlay { position: fixed; inset: 0; background: var(--bg-color); z-index: 400; display: none; flex-direction: column; overflow: hidden; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);}
-        .full-overlay.show { transform: translateY(0); }
-
+        /* フルオーバーレイ (一覧・暗記) ＆ 右スワイプアニメーション */
+        .full-overlay { position: fixed; inset: 0; background: var(--bg-color); z-index: 400; display: none; flex-direction: column; overflow: hidden; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);}
+        .full-overlay.slide-out { transform: translateX(100%); }
+        
         .header-bar { height: var(--header-h); background: var(--primary); color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
         .header-bar h2 { margin: 0; font-size: 1.1rem; font-family: 'Shippori Mincho B1', serif;}
 
-        #list-container { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; overflow-x: hidden;}
+        #list-container { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px;}
         .list-item { background: #fff; border-radius: 8px; padding: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); border-left: 4px solid var(--primary); display: flex; gap: 15px; align-items: center;}
         .list-num { font-size: 1.2rem; font-weight: bold; color: var(--accent); min-width: 30px; text-align: center;}
         .list-text { flex: 1; font-family: 'Shippori Mincho B1', serif; line-height: 1.5;}
@@ -230,27 +236,28 @@
         .study-btn { background: var(--primary); color: white; border: none; border-radius: 50%; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.2s;}
         .study-btn:active { transform: scale(0.9); }
         
-        /* チュートリアルスライド */
         .tutorial-content { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 15px; }
-        .tutorial-slide { display: none; flex-direction: column; align-items: center; animation: fadeIn 0.3s; width: 100%;}
-        .tutorial-slide.active { display: flex; }
         .tutorial-img { width: 100px; height: 100px; background: #e9ecef; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; color: var(--primary); }
 
         #toast { position: fixed; bottom: -60px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 24px; border-radius: 30px; font-weight: bold; z-index: 1000; transition: bottom 0.3s; white-space: nowrap; font-size: 0.85rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         #toast.show { bottom: 80px; }
+
+        /* スマホ横向き禁止オーバーレイ */
+        #landscape-warning { position: fixed; inset: 0; background: var(--primary); color: white; z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;}
+        #landscape-warning .material-symbols-outlined { font-size: 5rem; margin-bottom: 20px; animation: tilt 2s infinite ease-in-out;}
+        @keyframes tilt { 0% { transform: rotate(0deg); } 50% { transform: rotate(90deg); } 100% { transform: rotate(0deg); } }
+        @media screen and (orientation: landscape) and (max-height: 500px) {
+            #landscape-warning { display: flex; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- Webアプリ化（ホーム画面追加）の案内 -->
-    <div id="pwa-install-screen">
-        <span class="material-symbols-outlined pwa-icon">add_to_home_screen</span>
-        <div class="pwa-title">ホーム画面に追加してください</div>
-        <div class="pwa-desc">
-            このゲームはWebアプリ専用です。<br><br>
-            <strong>【iPhoneの方】</strong><br>画面下の <span class="material-symbols-outlined" style="font-size:1rem; vertical-align:middle;">ios_share</span> をタップし、「ホーム画面に追加」を選んでから、追加されたアイコンを起動してください。<br><br>
-            <strong>【Androidの方】</strong><br>右上の <span class="material-symbols-outlined" style="font-size:1rem; vertical-align:middle;">more_vert</span> をタップし、「ホーム画面に追加」を選んでください。
-        </div>
+    <!-- 横向き禁止警告 -->
+    <div id="landscape-warning">
+        <span class="material-symbols-outlined">screen_rotation</span>
+        <h2>画面を縦向きにしてください</h2>
+        <p>このアプリは縦画面専用です。</p>
     </div>
 
     <header id="main-header">
@@ -277,12 +284,14 @@
                 <input type="password" id="regPass" class="input-box" placeholder="パスワード">
                 <input type="text" id="regName" class="input-box" placeholder="表示されるニックネーム">
                 
-                <div style="font-size:0.8rem; background:#f9f9f9; padding:8px; border-radius:4px; border:1px solid #eee; margin-top:5px; height:60px; overflow-y:auto; text-align:left;">
-                    【利用規約】<br>1. 本アプリは楽しくご利用ください。<br>2. 迷惑行為・不正アクセスは禁止です。<br>3. アカウントデータはクラウドに保存・同期されます。
+                <div id="termsBox" style="font-size:0.8rem; background:#f9f9f9; padding:10px; border-radius:4px; border:1px solid #ccc; margin-top:5px; height:80px; overflow-y:auto; text-align:left;" onscroll="checkTermsScroll()">
+                    【利用規約】<br>1. 本アプリは楽しくご利用ください。<br>2. 迷惑行為・不正アクセスは禁止です。<br>3. ユーザー情報はクラウドAPIを通じて全端末で同期・共有されます。<br>4. 当サービスを利用したことによるいかなる損害も責任を負いません。<br>※最後までスクロールすると同意できます。
                 </div>
-                <label style="display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.85rem; cursor:pointer; margin-top:5px; margin-bottom:5px;">
-                    <input type="checkbox" id="termsCheck" style="width:16px; height:16px;">
-                    <span>利用規約に同意する</span>
+                
+                <label class="custom-checkbox disabled" id="termsLabel" style="margin: 10px auto;">
+                    <input type="checkbox" id="termsCheck" disabled>
+                    <span class="checkmark"></span>
+                    同意する
                 </label>
 
                 <button class="btn btn-primary" onclick="doRegister()">登録してはじめる</button>
@@ -290,7 +299,7 @@
             </div>
         </div>
 
-        <!-- 管理者画面 -->
+        <!-- 管理者画面 (ヘッダーなし) -->
         <div id="admin-screen" class="auth-screen" style="height: 100%; padding-top: 10px;">
             <div class="card">
                 <h2 class="card-title" style="color:var(--error);">お知らせ投稿</h2>
@@ -316,26 +325,23 @@
     <!-- メインアプリ -->
     <div id="main-app">
         <div id="tab-container">
-            
             <!-- ホーム -->
             <div id="tab-home" class="tab-page active">
                 <div class="card">
                     <p style="margin:0; font-size:0.9rem;">ようこそ、<strong id="dispName" style="color:var(--primary); font-size:1.1rem;"></strong> さん</p>
                 </div>
                 
-                <!-- お知らせ枠 -->
                 <div class="card" id="newsContainer" style="display:none; padding:12px;">
                     <h2 class="card-title" style="text-align:left; font-size:0.9rem;"><span class="material-symbols-outlined" style="vertical-align:middle; font-size:1.1rem;">campaign</span> 運営からのお知らせ</h2>
                     <div id="newsList"></div>
                 </div>
 
-                <!-- 覚える・見る -->
                 <div class="card">
                     <h2 class="card-title"><span class="material-symbols-outlined" style="vertical-align:middle;">menu_book</span> 覚える・見る</h2>
                     <button class="btn btn-primary" style="background:#4A7A6D;" onclick="openDialogEl('study-settings-modal')">
                         <span class="material-symbols-outlined">style</span> ひとりで覚える（暗記モード）
                     </button>
-                    <button class="btn btn-outline" onclick="openSlideOverlay('list-screen')">
+                    <button class="btn btn-outline" onclick="openListView()">
                         <span class="material-symbols-outlined">format_list_bulleted</span> 百人一首 一覧を見る
                     </button>
                 </div>
@@ -417,7 +423,7 @@
             </div>
         </div>
         
-        <!-- ボトムナビ (高さ内に収まる) -->
+        <!-- ボトムナビ -->
         <nav class="bottom-nav">
             <div class="nav-item active" onclick="switchTab('home')" id="nav-home">
                 <span class="material-symbols-outlined">home</span><span class="nav-label">ホーム</span>
@@ -426,8 +432,8 @@
             <div class="nav-item-center-wrapper" onclick="switchTab('battle')" id="nav-battle">
                 <div class="nav-item-center">
                     <span class="material-symbols-outlined">swords</span>
+                    <span class="text">対戦</span>
                 </div>
-                <span class="nav-label" style="color:#aaa; transition:0.2s;">対戦</span>
             </div>
             
             <div class="nav-item" onclick="switchTab('profile')" id="nav-profile">
@@ -493,39 +499,20 @@
         </div>
     </div>
 
-    <!-- チュートリアルモーダル (スライド式) -->
+    <!-- チュートリアルモーダル -->
     <div id="tutorial-modal" class="custom-dialog-overlay">
         <div class="custom-dialog" style="width:90%; max-width:400px; padding:30px 20px;">
             <div class="tutorial-content">
-                <!-- ページ1 -->
-                <div class="tutorial-slide active" id="tut-page1">
-                    <div class="tutorial-img"><span class="material-symbols-outlined">playing_cards</span></div>
-                    <h2 class="card-title" style="font-size:1.3rem; border:none; padding:0;">百人一首へようこそ！</h2>
-                    <p style="font-size:0.9rem; color:var(--text-sub); line-height:1.5;">
-                        このアプリは、オンラインで世界中のプレイヤーや友達と百人一首が楽しめるアプリです。
-                    </p>
-                    <button class="btn btn-primary" style="margin-top:10px;" onclick="nextTutPage(2)">次へ</button>
-                </div>
-                <!-- ページ2 -->
-                <div class="tutorial-slide" id="tut-page2">
-                    <div class="tutorial-img"><span class="material-symbols-outlined">swords</span></div>
-                    <h2 class="card-title" style="font-size:1.3rem; border:none; padding:0;">対戦のルール</h2>
-                    <p style="font-size:0.9rem; color:var(--text-sub); line-height:1.5;">
-                        上の句が詠まれたら、場にある下の句の札をタップして取りましょう。<br><br>
-                        お手付きをすると<strong>「2秒間」札が取れなくなるペナルティ</strong>があります。慎重に！
-                    </p>
-                    <button class="btn btn-primary" style="margin-top:10px;" onclick="nextTutPage(3)">次へ</button>
-                </div>
-                <!-- ページ3 -->
-                <div class="tutorial-slide" id="tut-page3">
-                    <div class="tutorial-img"><span class="material-symbols-outlined">menu_book</span></div>
-                    <h2 class="card-title" style="font-size:1.3rem; border:none; padding:0;">まずは覚えよう</h2>
-                    <p style="font-size:0.9rem; color:var(--text-sub); line-height:1.5;">
-                        自信がない時は、ホーム画面の<strong>「暗記モード」</strong>が便利です。<br>
-                        準備ができたら下の「対戦」タブから勝負に挑みましょう！
-                    </p>
-                    <button class="btn btn-primary" style="margin-top:10px; background:var(--accent);" onclick="closeTutorial()">はじめる</button>
-                </div>
+                <div class="tutorial-img"><span class="material-symbols-outlined" style="font-size: 4rem;">playing_cards</span></div>
+                <h2 class="card-title" style="font-size:1.3rem; border:none; padding:0;">百人一首へようこそ！</h2>
+                <p style="font-size:0.9rem; color:var(--text-sub); line-height:1.5;">
+                    上の句が詠まれたら、場にある下の句の札をタップして取りましょう。<br><br>
+                    <strong>【遊び方】</strong><br>
+                    下のメニューの<strong>「対戦」</strong>から、AIや友達と遊べます。<br>
+                    覚えるときは<strong>「ホーム」</strong>の暗記モードが便利です。<br><br>
+                    お手付きには2秒間のペナルティがあるので注意！
+                </p>
+                <button class="btn btn-primary" style="margin-top:10px; padding:14px;" onclick="closeTutorial()">はじめる</button>
             </div>
         </div>
     </div>
@@ -552,6 +539,7 @@
             <button id="matchReadyBtn" class="btn btn-primary" style="padding:16px; font-size:1.2rem;" onclick="proceedToGame()">対戦へ進む</button>
         </div>
 
+        <!-- タイムアウト時の再試行ボックス -->
         <div id="matchTimeoutBox" style="display:none; margin-top:15px; width:100%; text-align:center;">
             <button class="btn btn-primary" style="padding:14px; font-size:1.1rem; margin-bottom:10px;" onclick="startRandomMatch()">再試行する</button>
             <button class="btn btn-outline" style="padding:12px; font-size:1rem;" onclick="cancelRandomMatch()">ロビーに戻る</button>
@@ -609,25 +597,10 @@
 
     <script>
         // ==========================================
-        // PWA (Webアプリ化) 強制ブロック
-        // ==========================================
-        // スマホ(iOS/Android)ブラウザからアクセスした場合、ホーム画面追加を促す
-        function checkPWA() {
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-            
-            if (isMobile && !isStandalone) {
-                document.getElementById('pwa-install-screen').style.display = 'flex';
-                return false; // 以降の処理を止める
-            }
-            return true;
-        }
-
-        // ==========================================
-        // 真のクラウドAPI連携 (kvdb.io)
+        // 真のクラウドAPI連携 (kvdb.io互換) 
         // a.com と b.com のドメインの壁を越える！
         // ==========================================
-        const CLOUD_BUCKET = 'karuta-db-d2e603d4'; 
+        const CLOUD_BUCKET = 'karuta-db-2f488200'; 
         const API_URL = `https://kvdb.io/${CLOUD_BUCKET}`;
 
         async function fetchCloudData(key) {
@@ -638,12 +611,13 @@
                     return text ? JSON.parse(text) : {};
                 }
             } catch(e) {}
-            const local = localStorage.getItem(`karuta_master_${key}`);
+            // オフライン・失敗時はローカルから取得
+            const local = localStorage.getItem(`karuta_${key}`);
             return local ? JSON.parse(local) : {};
         }
 
         async function saveCloudData(key, data) {
-            localStorage.setItem(`karuta_master_${key}`, JSON.stringify(data)); 
+            localStorage.setItem(`karuta_${key}`, JSON.stringify(data)); 
             try {
                 await fetch(`${API_URL}/${key}`, {
                     method: 'POST',
@@ -663,17 +637,44 @@
             el.value = val;
         }
 
-        // スライドアニメーション表示
-        function openSlideOverlay(id) {
-            const el = document.getElementById(id);
-            el.style.display = 'flex';
-            setTimeout(() => { el.classList.add('show'); }, 10);
+        // 規約スクロールチェック
+        function checkTermsScroll() {
+            const box = document.getElementById('termsBox');
+            const label = document.getElementById('termsLabel');
+            const checkbox = document.getElementById('termsCheck');
+            
+            // スクロールが一番下に到達したらチェック可能にする
+            if(box.scrollHeight - box.scrollTop <= box.clientHeight + 2) {
+                label.classList.remove('disabled');
+                checkbox.disabled = false;
+            }
         }
+
+        // スワイプバック (iOS風 戻るアニメーション)
         function slideCloseFullOverlay(id) {
             const el = document.getElementById(id);
-            el.classList.remove('show');
-            setTimeout(() => { el.style.display = 'none'; }, 300);
+            el.classList.add('slide-out');
+            setTimeout(() => {
+                el.style.display = 'none';
+                el.classList.remove('slide-out');
+            }, 300);
         }
+        function openFullOverlay(id) {
+            const el = document.getElementById(id);
+            el.style.display = 'flex';
+            el.classList.remove('slide-out');
+        }
+
+        // 画面右スワイプで閉じる
+        let touchStartX = 0;
+        document.querySelectorAll('.full-overlay').forEach(el => {
+            el.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, {passive: true});
+            el.addEventListener('touchend', e => {
+                if(e.changedTouches[0].clientX - touchStartX > 100) { // 右へ100pxスワイプ
+                    slideCloseFullOverlay(el.id);
+                }
+            }, {passive: true});
+        });
 
         function customAlert(title, msg, onOk = null) {
             document.getElementById('cd-title').textContent = title;
@@ -709,6 +710,7 @@
         const TIPS = [
             "【かるた】お手付きをすると、2秒間札が取れなくなるペナルティがあります。",
             "【かるた】「秋の田の〜」は天智天皇の作で、百人一首の1番です。",
+            "【宇宙】太陽の光が地球に届くまで、約8分20秒かかります。",
             "【歴史】織田信長は日本で初めて「黒人奴隷（弥助）」を家来にしたと言われています。",
             "【科学】バナナは実は「ベリー（ベリー類）」の仲間です。",
             "【生き物】キリンは木に登れないのに、ライオンより高いところの葉っぱを食べられます。",
@@ -717,7 +719,10 @@
             "【人体】人間の血管をすべてつなぎ合わせると、地球を約2周半できます。",
             "【かるた】上の句は「五・七・五」、下の句は「七・七」の文字数で構成されています。",
             "【食べ物】ケチャップの容器を振ると、中のケチャップは一時的にサラサラの液体になります。",
-            "【宇宙】宇宙空間には、アルコールの成分が漂っている巨大な雲が存在します。"
+            "【歴史】ピラミッドが建設されていた頃、シベリアにはまだマンモスが生きていました。",
+            "【生き物】タコの舌は脳みそのすぐ隣にあります。",
+            "【宇宙】宇宙空間には、アルコールの成分が漂っている巨大な雲が存在します。",
+            "【かるた】「坊主めくり」は、札に描かれている人物の絵を使った日本の伝統的な遊びです。"
         ];
 
         let currentUser = null; 
@@ -742,29 +747,29 @@
             
             const centerNav = document.querySelector('.nav-item-center-wrapper');
             if(tab === 'battle') {
-                centerNav.querySelector('.nav-label').style.color = 'var(--primary)';
+                centerNav.style.background = 'var(--primary-light)';
             } else {
-                centerNav.querySelector('.nav-label').style.color = '#aaa';
+                centerNav.style.background = 'var(--primary)';
             }
         }
 
-        // チュートリアルのスライド制御
-        function nextTutPage(page) {
-            document.querySelectorAll('.tutorial-slide').forEach(s => s.classList.remove('active'));
-            document.getElementById('tut-page' + page).classList.add('active');
+        function checkTutorial() {
+            if(!localStorage.getItem('karuta_tutorial_done_cloud')) { openDialogEl('tutorial-modal'); }
+        }
+        function closeTutorial() {
+            localStorage.setItem('karuta_tutorial_done_cloud', 'true');
+            closeDialogEl('tutorial-modal');
         }
 
         // ==========================================
         // 認証・設定・管理者 (完全クラウド同期)
         // ==========================================
         window.onload = async () => {
-            if(!checkPWA()) return; // PWAチェックで弾かれたらここで終了
-
             try {
                 const res = await fetch("https://symphony100.github.io/symphony/study/karuta/play/cards.json");
                 allCardsData = await res.json();
                 
-                const savedStr = localStorage.getItem('karuta_master_account');
+                const savedStr = localStorage.getItem('karuta_local_account_cloud');
                 if(savedStr) {
                     const saved = JSON.parse(savedStr);
                     document.getElementById('logId').value = saved.id;
@@ -780,7 +785,7 @@
 
             if(id === 'symphony' && pass === 'symphony') { switchAuth('admin'); loadAdminData(); return; }
 
-            showToast("クラウド認証中...");
+            showToast("クラウドで認証中...");
             const users = await fetchCloudData('users');
             if(!users[id] || users[id].pass !== pass) return customAlert("エラー", "IDかパスワードが違います。初めての方は「新規登録」をお願いします。");
             
@@ -793,9 +798,10 @@
             const name = document.getElementById('regName').value.trim();
             if(!id || !pass || !name) return showToast("入力してください");
             
+            if(!document.getElementById('termsCheck').checked) return showToast("利用規約を最後まで読み、同意してください", "var(--error)");
             if(id === 'symphony') return showToast("そのIDは使えません");
             
-            showToast("クラウド登録中...");
+            showToast("クラウドに登録中...");
             let users = await fetchCloudData('users');
             if(users[id]) return customAlert("エラー", "そのIDは既に使用されています");
 
@@ -812,7 +818,7 @@
         function loginSuccess(id, data) {
             if(allCardsData.length === 0) return showToast("データ準備中...");
             currentUser = { id: id, pass: data.pass, name: data.name };
-            localStorage.setItem('karuta_master_account', JSON.stringify(currentUser));
+            localStorage.setItem('karuta_local_account_cloud', JSON.stringify(currentUser));
             
             document.getElementById('dispName').textContent = currentUser.name;
             updateProfileStats();
@@ -821,7 +827,7 @@
             document.getElementById('main-app').style.display = 'flex';
             
             updateRanking(); loadNews();
-            setInterval(updateOnlineStatus, 10000); // 10秒ごとにオンライン報告
+            setInterval(updateOnlineStatus, 10000);
             checkTutorial();
         }
 
@@ -839,7 +845,7 @@
             if(!currentUser) return;
             let online = await fetchCloudData('online'); 
             online[currentUser.id] = Date.now(); 
-            saveCloudData('online', online); // 待たない
+            saveCloudData('online', online);
         }
 
         async function saveSettings() {
@@ -850,10 +856,9 @@
             let users = await fetchCloudData('users');
             users[currentUser.id] = { pass: p, name: n }; 
             await saveCloudData('users', users);
-
-            // クラウド上のランキング名も更新するため、統計もそのまま上書き保存して反映させる
+            
             currentUser.pass = p; currentUser.name = n;
-            localStorage.setItem('karuta_master_account', JSON.stringify(currentUser));
+            localStorage.setItem('karuta_local_account_cloud', JSON.stringify(currentUser));
             document.getElementById('dispName').textContent = n;
             showToast("保存しました", "var(--primary)"); 
             document.getElementById('setPass').value = '';
@@ -892,7 +897,7 @@
             for(const [id, data] of Object.entries(users)) {
                 let statusHtml = `<span style="color:#9E9E9E;">○ オフライン</span><br><span style="font-size:0.65rem;color:#999;">-</span>`;
                 if(online[id]) {
-                    const isOnline = (Date.now() - online[id] < 15000); 
+                    const isOnline = (Date.now() - online[id] < 20000); 
                     const d = new Date(online[id]);
                     const timeStr = `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
                     statusHtml = isOnline ? `<span style="color:#4CAF50; font-weight:bold;">● オンライン</span>` : `<span style="color:#9E9E9E;">○ オフライン</span><br><span style="font-size:0.65rem;color:#999;">${timeStr}</span>`;
@@ -988,7 +993,7 @@
                         </div>
                     </div>`;
             });
-            openSlideOverlay('list-screen');
+            openFullOverlay('list-screen');
         }
 
         // --- 暗記モード ---
@@ -1006,7 +1011,7 @@
             if(isRandom) filtered.sort(()=>Math.random()-0.5);
             studyCards = filtered; studyIndex = 0;
             
-            openSlideOverlay('study-screen');
+            openFullOverlay('study-screen');
             renderStudyCard();
         }
 
@@ -1068,7 +1073,6 @@
             if(studyIndex > 0) { studyIndex--; renderStudyCard(); }
         }
 
-        // キーボードショートカット
         document.addEventListener("keydown", e => { 
             if(document.getElementById('study-screen').style.display === 'flex') {
                 if(e.key==="ArrowRight") nextStudyCard(); 
@@ -1166,7 +1170,7 @@
             return filtered.sort(()=>Math.random()-0.5).slice(0, 36);
         }
 
-        function createMyRoom() {
+        async function createMyRoom() {
             const cards = getPlayCardsBattle();
             if(!cards) return customAlert("エラー", "出題範囲内に最低36首必要です");
 
@@ -1174,7 +1178,7 @@
             const code = Math.random().toString(36).substring(2,6).toUpperCase();
             
             if(peer) peer.destroy();
-            peer = new Peer('k-mst-' + code);
+            peer = new Peer('k-cloud10-' + code);
             myConn = null;
 
             peer.on('connection', (conn) => {
@@ -1210,7 +1214,7 @@
             document.getElementById('matching-screen').style.display = 'flex';
 
             peer.on('open', () => {
-                myConn = peer.connect('k-mst-' + code);
+                myConn = peer.connect('k-cloud10-' + code);
                 myConn.on('open', () => {
                     myConn.send({ type: 'hello', role: 'guest', name: currentUser.name });
                 });
@@ -1236,7 +1240,7 @@
             document.getElementById('matchTimeoutBox').style.display = 'none';
             document.getElementById('matching-screen').style.display = 'flex';
             
-            const myRandId = 'k-rand-mst-' + currentUser.id;
+            const myRandId = 'k-rand-cl10-' + currentUser.id;
             if(peer) peer.destroy();
             peer = new Peer(myRandId); myConn = null;
 
@@ -1309,7 +1313,7 @@
         }
 
         // ==========================================
-        // ゲーム進行・完全同期配置
+        // ゲーム進行・完全同期配置・勝敗エフェクト
         // ==========================================
         let myBoard=[], enemyBoard=[];
         let yomiQueue=[], curYomiId=null, isInputLocked=false;
@@ -1379,7 +1383,7 @@
             
             updateScoreUI();
             
-            // 物理位置の完全同期
+            // 物理位置の完全同期 (ゲストは180度反転させる)
             if(myRole === 'host') {
                 myBoard = arrA; enemyBoard = arrB;
                 renderBoard('myTerritory', arrA); 
@@ -1424,20 +1428,20 @@
             const cleanShimo = card.shimo.replace(/[\s　]/g, '');
             curYomiId = nextId;
             
-            // AIの難易度設定 (緩和)
             if(isAiMode) {
                 clearTimeout(aiTimer);
                 const aiLevel = document.getElementById('aiLevel').value;
                 let delay = 0;
                 
-                if(aiLevel === 'easy') delay = 4000 + Math.random() * 2000; // 4〜6秒遅れ
-                else if(aiLevel === 'normal') delay = 2000 + Math.random() * 1000; // 2〜3秒遅れ
-                else delay = Math.random() * 500; // 0〜0.5秒遅れ (上級)
+                if(aiLevel === 'easy') delay = 2000 + Math.random() * 2000; 
+                else if(aiLevel === 'normal') delay = 1000 + Math.random() * 1000; 
+                else delay = -500 + Math.random() * 1000; 
                 
                 const reaction = (cleanKami.length * readSpeed) + delay; 
-                aiTimer = setTimeout(() => { if(curYomiId === nextId) judgeTake(nextId, 'guest'); }, Math.max(1500, reaction));
+                aiTimer = setTimeout(() => { if(curYomiId === nextId) judgeTake(nextId, 'guest'); }, Math.max(500, reaction));
             }
             
+            // アニメーション (上の句と下の句を同じ文字サイズで表示)
             let charArray = Array.from(cleanKami);
             charArray.push('　'); // スペース
             charArray = charArray.concat(Array.from(cleanShimo));
@@ -1524,7 +1528,7 @@
             const icon = document.getElementById('resultIcon');
             const title = document.getElementById('resultTitle');
 
-            screen.className = 'full-overlay show'; 
+            screen.className = 'full-overlay'; 
             const effectLayer = document.getElementById('result-effect');
             effectLayer.innerHTML = '';
 
