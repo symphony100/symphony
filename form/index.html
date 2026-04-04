@@ -1,19 +1,22 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Symphony Form - Stealth Security</title>
+    <title>Symphony Form</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/2.30.0/index.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; margin: 0; }
-        .error-glow { border-color: #ef4444 !important; box-shadow: 0 0 15px rgba(239, 68, 68, 0.2); }
+        body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; margin: 0; }
+        .animate-spin { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -22,7 +25,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc, Timestamp, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
         const firebaseConfig = {
             projectId: "gen-lang-client-0555138447",
             appId: "1:463943374302:web:d182a5793aef03028b794f",
@@ -33,25 +37,25 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
-        window.fb = { db, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc, Timestamp };
+        const auth = getAuth(app);
+
+        window.fb = { db, auth, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc, Timestamp };
         enableIndexedDbPersistence(db).catch(console.error);
         window.dispatchEvent(new Event('firebase-ready'));
     </script>
 
     <script type="text/babel">
-        const { useState, useEffect, useMemo } = React;
+        const { useState, useEffect, useRef } = React;
         const { motion, AnimatePresence } = window.Motion || { motion: (p) => <div {...p} />, AnimatePresence: (p) => <>{p.children}</> };
 
-        // (Base64)
-        const ENCODED_LIST = "5q6744GtLOasuuOBmizjgqvjgrks44OQ44KrLOOCqOODrCxzZXgs44Gh44KT44GTLOOBvuOCp+OCkyzjgYrjgbvjgY8s44GN44KC44GELOOCr+OCvSw44Ki44ObLOOBvuOBvOOBkeOAgSw044GL44GLLOW6g+OCig==";
-        
-        const DECODED_WORDS = (() => {
-            try {
-                const decoded = decodeURIComponent(escape(atob(ENCODED_LIST)));
-                return decoded.split(',');
-            } catch(e) { return []; }
-        })();
+        const SERVICE_NAME = "Symphony Form";
+        const ADMIN_PASSWORD = "symphony";
+        const NG_WORDS = ["バカ", "死ね", "殺す", "ゴミ", "カス", "アホ", "まぬけ", "きもい"];
 
+        // --- Utility ---
+        const cn = (...classes) => classes.filter(Boolean).join(' ');
+
+        // --- Components ---
         const Icon = ({ name, size = 20, className = "" }) => {
             useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, [name]);
             return <i data-lucide={name} className={className} style={{ width: size, height: size, display: 'inline-block' }}></i>;
@@ -60,9 +64,8 @@
         const CustomSelect = ({ value, onChange, options }) => {
             const [isOpen, setIsOpen] = useState(false);
             return (
-                <div className="relative w-full sm:w-48">
-                    <button type="button" onClick={() => setIsOpen(!isOpen)} 
-                        className="w-full flex items-center justify-between border border-gray-300 rounded-md sm:rounded-l-none sm:rounded-r-md px-4 py-2.5 bg-gray-50 hover:bg-gray-100 transition-all text-sm h-11 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600">
+                <div className="relative w-48">
+                    <button type="button" onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between border border-gray-300 rounded-r-md px-4 py-2.5 bg-gray-50 hover:bg-gray-100 transition-all text-sm h-11 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600">
                         <span>{value}</span>
                         <motion.div animate={{ rotate: isOpen ? 180 : 0 }}><Icon name="chevron-down" size={14} className="text-gray-400" /></motion.div>
                     </button>
@@ -70,11 +73,9 @@
                         {isOpen && (
                             <>
                                 <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-                                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} 
-                                    className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-20 overflow-hidden">
+                                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-20 overflow-hidden">
                                     {options.map((opt) => (
-                                        <button key={opt} type="button" onClick={() => { onChange(opt); setIsOpen(false); }} 
-                                            className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 transition-colors flex items-center justify-between">
+                                        <button key={opt} type="button" onClick={() => { onChange(opt); setIsOpen(false); }} className={cn("w-full text-left px-4 py-3 text-sm transition-colors flex items-center justify-between", value === opt ? "bg-blue-50 text-blue-600 font-medium" : "text-gray-700 hover:bg-gray-50")}>
                                             <span>{opt}</span>
                                             {value === opt && <Icon name="check-circle-2" size={14} className="text-blue-600" />}
                                         </button>
@@ -94,19 +95,12 @@
             const [submitted, setSubmitted] = useState(false);
             const [formError, setFormError] = useState(null);
             const [inquiries, setInquiries] = useState([]);
-            const [isModalOpen, setIsModalOpen] = useState(false);
 
             const [gender, setGender] = useState(localStorage.getItem('form_gender') || '');
             const [emailLocal, setEmailLocal] = useState(localStorage.getItem('form_emailLocal') || '');
             const [emailDomain, setEmailDomain] = useState(localStorage.getItem('form_emailDomain') || '@gmail.com');
             const [type, setType] = useState(localStorage.getItem('form_type') || '');
             const [content, setContent] = useState(localStorage.getItem('form_content') || '');
-
-            // リアルタイム・セキュリティチェック
-            const securityAlert = useMemo(() => {
-                const normalized = (emailLocal + content).replace(/[\s\.\_\-\?\!\@\#\%\^\&\*\/]/g, ""); // 記号除去
-                return DECODED_WORDS.some(word => normalized.includes(word));
-            }, [emailLocal, content]);
 
             useEffect(() => {
                 const handleReady = () => setReady(true);
@@ -140,8 +134,11 @@
 
             const handleSubmit = async (e) => {
                 e.preventDefault();
-                if (!ready || securityAlert) return;
-                
+                if (!ready) return;
+                if (NG_WORDS.some(w => content.includes(w))) {
+                    setFormError("不適切な表現が含まれています。");
+                    return;
+                }
                 setSubmitting(true);
                 setFormError(null);
                 try {
@@ -158,7 +155,7 @@
                 }
             };
 
-            if (!ready) return <div className="min-h-screen flex items-center justify-center">Loading Security...</div>;
+            if (!ready) return <div className="min-h-screen flex items-center justify-center">Firebase 接続中...</div>;
 
             return (
                 <div className="min-h-screen pb-20">
@@ -167,82 +164,67 @@
                             {view === 'form' ? (
                                 <motion.div key="form" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-4">
                                     {submitted ? (
-                                        <div className="bg-white rounded-2xl shadow-sm p-12 text-center border border-gray-100">
-                                            <div className="flex justify-center mb-6 text-blue-500"><Icon name="shield-check" size={64} /></div>
-                                            <h1 className="text-2xl font-bold mb-4">送信が完了しました</h1>
-                                            <button onClick={() => setSubmitted(false)} className="px-8 py-3 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-all">トップへ戻る</button>
+                                        <div className="bg-white rounded-xl shadow-sm p-12 text-center border border-gray-200">
+                                            <div className="flex justify-center mb-6 text-green-500"><Icon name="check-circle-2" size={64} /></div>
+                                            <h1 className="text-2xl font-medium mb-4">送信が完了しました</h1>
+                                            <button onClick={() => setSubmitted(false)} className="px-8 py-2.5 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 shadow-sm">別の回答を送信</button>
                                         </div>
                                     ) : (
                                         <>
-                                            <div className="bg-white rounded-2xl border-t-[10px] border-t-blue-600 shadow-sm p-8 border border-gray-100">
-                                                <h1 className="text-3xl font-black text-gray-900 mb-4 uppercase tracking-tight">{SERVICE_NAME}</h1>
-                                                <p className="text-gray-500 text-sm font-medium">セキュリティ保護されたお問い合わせフォームです。</p>
+                                            <div className="bg-white rounded-xl border-t-8 border-t-blue-600 shadow-sm p-8 border border-gray-200">
+                                                <h1 className="text-3xl font-medium mb-4">{SERVICE_NAME}</h1>
+                                                <p className="text-sm text-gray-600 leading-relaxed">お問い合わせフォームです。必要事項をご記入の上、送信してください。</p>
+                                                <div className="mt-6 text-xs text-red-500 font-medium border-t pt-4">* 必須</div>
                                             </div>
 
                                             <form onSubmit={handleSubmit} className="space-y-4">
-                                                {/* 問１ */}
-                                                <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
-                                                    <label className="block text-base font-bold text-gray-800 mb-6">問１ 性別を答えてください <span className="text-red-500">*</span></label>
-                                                    <div className="flex gap-4">
+                                                <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-200">
+                                                    <label className="block text-base font-medium mb-6">問１ 性別を答えてください <span className="text-red-500">*</span></label>
+                                                    <div className="space-y-4">
                                                         {['男性', '女性'].map(g => (
-                                                            <button key={g} type="button" onClick={() => setGender(g)} 
-                                                                className={`flex-1 py-3 px-6 rounded-xl border-2 transition-all font-bold text-sm ${gender === g ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200'}`}>
-                                                                {g === '男性' ? '👨 男性' : '👩 女性'}
-                                                            </button>
+                                                            <label key={g} className="flex items-center gap-3 cursor-pointer group">
+                                                                <div className="relative flex items-center justify-center">
+                                                                    <input type="radio" checked={gender === g} onChange={() => setGender(g)} className="appearance-none w-5 h-5 border-2 border-gray-300 rounded-full checked:border-blue-600 transition-all" />
+                                                                    {gender === g && <div className="absolute w-2.5 h-2.5 bg-blue-600 rounded-full" />}
+                                                                </div>
+                                                                <span className="text-sm text-gray-700">{g === '男性' ? 'ア、男性' : 'イ、女性'}</span>
+                                                            </label>
                                                         ))}
                                                     </div>
                                                 </div>
 
-                                                {/* 問２ */}
-                                                <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
-                                                    <div className="flex items-center justify-between mb-6">
-                                                        <label className="text-base font-bold text-gray-800">問２ メールアドレス <span className="text-red-500">*</span></label>
-                                                        <button type="button" onClick={() => setIsModalOpen(true)} className="flex items-center gap-1.5 text-[11px] font-black text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full hover:bg-blue-100 transition-all border border-blue-100">
-                                                            <Icon name="lock" size={12} />
-                                                            <span>なぜ必要？</span>
-                                                        </button>
-                                                    </div>
-                                                    <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-0 max-w-md">
-                                                        <input type="text" value={emailLocal} onChange={e => setEmailLocal(e.target.value)} 
-                                                            className={`w-full sm:flex-1 border rounded-md sm:rounded-r-none sm:rounded-l-md px-4 py-2.5 outline-none transition-all text-sm h-11 ${securityAlert ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600'}`} 
-                                                            placeholder="ユーザー名" />
-                                                        <CustomSelect value={emailDomain} onChange={setEmailDomain} options={['@gmail.com', '@yahoo.co.jp', '@icloud.com', '@outlook.com']} />
+                                                <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-200">
+                                                    <label className="block text-base font-medium mb-6">問２ メールアドレスを入力してください <span className="text-red-500">*</span></label>
+                                                    <div className="flex items-center gap-0 max-w-md">
+                                                        <input type="text" value={emailLocal} onChange={e => setEmailLocal(e.target.value)} className="flex-1 border border-gray-300 border-r-0 rounded-l-md px-4 py-2.5 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all text-sm h-11" placeholder="ユーザー名" />
+                                                        <CustomSelect value={emailDomain} onChange={setEmailDomain} options={['@gmail.com', '@hotmail.com', '@outlook.com', '@yahoo.co.jp', '@icloud.com']} />
                                                     </div>
                                                 </div>
 
-                                                {/* 問３ */}
-                                                <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
-                                                    <label className="block text-base font-bold text-gray-800 mb-6">問３ ご用件を選択してください <span className="text-red-500">*</span></label>
-                                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                                <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-200">
+                                                    <label className="block text-base font-medium mb-6">問３ ご用件を選択してください <span className="text-red-500">*</span></label>
+                                                    <div className="space-y-4">
                                                         {['不具合', '改善点', '質問'].map(t => (
-                                                            <button key={t} type="button" onClick={() => setType(t)}
-                                                                className={`py-3 rounded-xl border-2 transition-all font-bold text-sm ${type === t ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200'}`}>
-                                                                {t}
-                                                            </button>
+                                                            <label key={t} className="flex items-center gap-3 cursor-pointer">
+                                                                <div className="relative flex items-center justify-center">
+                                                                    <input type="radio" checked={type === t} onChange={() => setType(t)} className="appearance-none w-5 h-5 border-2 border-gray-300 rounded-full checked:border-blue-600 transition-all" />
+                                                                    {type === t && <div className="absolute w-2.5 h-2.5 bg-blue-600 rounded-full" />}
+                                                                </div>
+                                                                <span className="text-sm text-gray-700">{t}</span>
+                                                            </label>
                                                         ))}
                                                     </div>
                                                 </div>
 
-                                                {/* 問４ */}
-                                                <div className={`bg-white rounded-2xl shadow-sm p-8 border transition-all ${securityAlert ? 'error-glow bg-red-50/10' : 'border-gray-100'}`}>
-                                                    <label className="block text-base font-bold text-gray-800 mb-6">問４ お問い合わせ内容 <span className="text-red-500">*</span></label>
-                                                    <textarea value={content} onChange={e => setContent(e.target.value)} 
-                                                        className={`w-full border rounded-xl px-4 py-4 outline-none transition-all text-sm resize-none min-h-[180px] bg-gray-50/30 ${securityAlert ? 'border-red-500' : 'border-gray-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-600'}`} 
-                                                        placeholder="こちらに入力してください"></textarea>
-                                                    
-                                                    {securityAlert && (
-                                                        <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="mt-4 flex items-center gap-2 text-red-600 text-xs font-bold">
-                                                            <Icon name="shield-alert" size={16} />
-                                                            不適切な表現が含まれている可能性があるため、送信できません。
-                                                        </motion.div>
-                                                    )}
+                                                <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-200">
+                                                    <label className="block text-base font-medium mb-6">問４ お問い合わせ内容を書いてください <span className="text-red-500">*</span></label>
+                                                    <textarea value={content} onChange={e => setContent(e.target.value)} className="w-full border border-gray-300 rounded-md px-4 py-4 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all text-sm resize-none min-h-[160px]" placeholder="回答を入力"></textarea>
                                                 </div>
 
                                                 <div className="flex flex-col gap-4 pt-6">
-                                                    {formError && <div className="bg-red-50 text-red-600 p-4 rounded-lg text-sm font-bold flex items-center gap-2 border border-red-100">{formError}</div>}
-                                                    <button type="submit" disabled={submitting || !gender || !type || !content || !emailLocal || securityAlert} 
-                                                        className="px-10 py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 disabled:opacity-30 shadow-lg shadow-blue-200 transition-all uppercase tracking-widest text-xs">
-                                                        {submitting ? '送信中...' : 'Secure Send'}
+                                                    {formError && <div className="bg-red-50 text-red-600 p-4 rounded-md text-sm flex items-center gap-2"><Icon name="alert-circle" size={16} />{formError}</div>}
+                                                    <button type="submit" disabled={submitting || !gender || !type || !content || !emailLocal} className="px-10 py-2.5 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 disabled:opacity-50 shadow-md transition-all">
+                                                        {submitting ? '送信中...' : '送信'}
                                                     </button>
                                                 </div>
                                             </form>
@@ -251,24 +233,25 @@
                                 </motion.div>
                             ) : (
                                 <motion.div key="admin" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto space-y-4">
-                                    <div className="flex items-center justify-between bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                                    <div className="flex items-center justify-between bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                                         <div className="flex items-center gap-4">
                                             <button onClick={() => setView('form')} className="p-2 hover:bg-gray-100 rounded-full"><Icon name="arrow-left" size={24} /></button>
-                                            <h1 className="text-2xl font-bold">Admin Panel</h1>
+                                            <h1 className="text-2xl font-semibold">管理者ダッシュボード</h1>
                                         </div>
+                                        <div className="text-gray-500 font-medium">{inquiries.length} 件の回答</div>
                                     </div>
                                     <div className="space-y-4">
                                         {inquiries.map(item => (
-                                            <div key={item.id} className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm relative group">
+                                            <div key={item.id} className="bg-white p-8 rounded-xl border border-gray-200 shadow-sm relative group">
                                                 <button onClick={() => window.fb.deleteDoc(window.fb.doc(window.fb.db, 'inquiries', item.id))} className="absolute top-6 right-6 text-gray-300 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-all"><Icon name="trash-2" size={20} /></button>
-                                                <div className="flex gap-3 mb-6 items-center">
-                                                    <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-[10px] font-black uppercase tracking-wider">{item.type}</span>
-                                                    <span className="text-[10px] text-gray-400 font-bold uppercase">{item.createdAt ? new Date(item.createdAt.seconds * 1000).toLocaleString() : ''}</span>
+                                                <div className="flex gap-3 mb-6">
+                                                    <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold uppercase">{item.type}</span>
+                                                    <span className="text-xs text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded">{item.createdAt ? new Date(item.createdAt.seconds * 1000).toLocaleString() : ''}</span>
                                                 </div>
-                                                <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-y-4 text-sm">
-                                                    <div className="text-gray-400 font-bold uppercase tracking-tighter text-[11px]">Gender</div><div>{item.gender}</div>
-                                                    <div className="text-gray-400 font-bold uppercase tracking-tighter text-[11px]">Email</div><div className="text-blue-600 font-bold">{item.email}</div>
-                                                    <div className="text-gray-400 font-bold uppercase tracking-tighter text-[11px]">Message</div><div className="bg-gray-50 p-6 rounded-xl border border-gray-100 whitespace-pre-wrap leading-relaxed text-gray-700">{item.content}</div>
+                                                <div className="grid grid-cols-[140px_1fr] gap-y-4 text-sm">
+                                                    <div className="text-gray-500 font-medium">性別</div><div>{item.gender}</div>
+                                                    <div className="text-gray-500 font-medium">メール</div><div className="text-blue-600 font-medium">{item.email}</div>
+                                                    <div className="text-gray-500 font-medium">内容</div><div className="bg-gray-50 p-4 rounded-lg border border-gray-100 whitespace-pre-wrap">{item.content}</div>
                                                 </div>
                                             </div>
                                         ))}
@@ -276,26 +259,9 @@
                                 </motion.div>
                             )}
                         </AnimatePresence>
-
-                        {/* なぜ必要？モーダル */}
-                        <AnimatePresence>
-                            {isModalOpen && (
-                                <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsModalOpen(false)} className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" />
-                                    <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="relative bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full">
-                                        <div className="text-center">
-                                            <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icon name="shield-check" size={32} /></div>
-                                            <h3 className="text-xl font-bold mb-3 text-gray-900">プライバシーへの配慮</h3>
-                                            <p className="text-sm text-gray-500 leading-relaxed mb-8 font-medium">メールアドレスは回答の返信にのみ使用し、第三者に公開することはありません。安心してご利用ください。</p>
-                                            <button onClick={() => setIsModalOpen(false)} className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100">確認しました</button>
-                                        </div>
-                                    </motion.div>
-                                </div>
-                            )}
-                        </AnimatePresence>
                     </main>
-                    <footer className="py-12 border-t border-gray-100 bg-white text-center text-gray-300 text-[9px] font-black uppercase tracking-[0.3em]">
-                        &copy; 2024 {SERVICE_NAME} &bull; CRYPT-SECURE SYSTEM
+                    <footer className="py-12 border-t border-gray-200 bg-white text-center text-gray-400 text-[10px] font-bold uppercase tracking-[0.2em]">
+                        &copy; 2024 {SERVICE_NAME} &bull; POWERED BY SYMPHONY
                     </footer>
                 </div>
             );
