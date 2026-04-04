@@ -42,8 +42,7 @@
         const { useState, useEffect, useMemo } = React;
         const { motion, AnimatePresence } = window.Motion || { motion: (p) => <div {...p} />, AnimatePresence: (p) => <>{p.children}</> };
 
-        // 難読化されたNGワードリスト (Base64)
-        // 中身は「死ね,殺す,カス,バカ,エロ,sex...」など、広範囲なNGワードを含んでるで
+        // (Base64)
         const ENCODED_LIST = "5q6744GtLOasuuOBmizjgqvjgrks44OQ44KrLOOCqOODrCxzZXgs44Gh44KT44GTLOOBvuOCp+OCkyzjgYrjgbvjgY8s44GN44KC44GELOOCr+OCvSw44Ki44ObLOOBvuOBvOOBkeOAgSw044GL44GLLOW6g+OCig==";
         
         const DECODED_WORDS = (() => {
