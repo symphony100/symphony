@@ -1,0 +1,680 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="symphony.png">
+  <meta name="description" content="Symphony公式サイトです。">
+  <title>Symphony</title>
+  <link rel="manifest" href="manifest.json">
+  <script src="theme.js"></script>
+  <style>
+    :root {
+      --header-bg-color: #008DBD; /* デフォルトテーマカラー */
+    }
+
+   html, body {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+
+  * {
+    box-sizing: inherit;
+  }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f4f4f9;
+      text-align: center;
+      padding-top: 80px; /* ヘッダーの高さ分余白追加 */
+    }
+
+    header {
+      background-color: var(--header-bg-color);
+      color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      font-size: 1.5rem;
+      transition: background-color 0.3s;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .header-left {
+      margin-left: 1rem;
+    }
+
+    .header-right {
+      margin-right: 1rem;
+      font-size: 1rem;
+    }
+
+    .header-right a {
+      color: #ffffff;
+      text-decoration: none;
+      margin-left: 1rem;
+    }
+
+    .greeting-container {
+      margin-top: 20px;
+      font-size: 1.2rem;
+    }
+
+    .date-container {
+      margin-top: 10px;
+      font-size: inherit;
+    }
+    
+	/* （iframe）のスタイル調整 */
+#news {
+    text-align: center;
+    padding: 30px;
+    background-color: #f8f8f8;
+    margin: 20px auto;
+    width: 60%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* iframe のラップ要素 */
+#news-wrapper {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+/* iframe のスタイル */
+#news-frame {
+    width: 100%;
+    height: 200px;
+    border: none;
+    scrollbar-width: none; /* Firefox 用 */
+    -ms-overflow-style: none; /* IE, Edge 用 */
+}
+
+#news-frame::-webkit-scrollbar {
+    display: none; /* Chrome, Safari 用 */
+}
+
+/* スマートフォン版の調整 */
+@media (max-width: 768px) {
+    #news {
+        width: 90%;
+        padding: 20px;
+    }
+}
+
+/* ボタンの基礎デザイン */
+#refresh-button {
+    transition: transform 0.3s ease-in-out;
+}
+
+/* 回転アニメーション */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+.menu-title {
+  text-align: center;
+  font-size: 24px;
+  color: var(--header-bg-color); /* テーマカラーの色 */
+  margin-top: 40px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.mouse-particle {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.8;
+  transform: translate(-50%, -50%);
+  animation: fadeOut 0.5s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+}
+
+/* ポップアップメッセージ */
+	  
+  #popup-message {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    padding: 20px 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    font-size: 16px;
+    z-index: 10000;
+    display: none;
+    border-left: 6px solid #008DBD;
+    min-width: 250px;
+    max-width: 300px;
+    position: fixed;
+  }
+
+  #popup-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #888;
+  }
+
+  #popup-close:hover {
+    color: #f33;
+  }
+
+  canvas#cursor-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+/* トップボタン */
+#top-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 999;
+  background-color : var(--header-bg-color);
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#top-button.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+#top-button:hover {
+  background-color: #006a91;
+  transform: scale(1.1);
+}
+
+
+/* メニュー */
+    .menu-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .menu-card {
+      position: relative;
+      width: 180px;
+      height: 160px;
+      background: #fff
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 16px;
+      text-align: center;
+      transition: transform 0.2s ease;
+      touch-action: none;
+      cursor: pointer;
+    }
+
+    .menu-card img {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 10px;
+    }
+
+    .menu-card-title {
+      font-weight: bold;
+      color: var(--header-bg-color);
+    }
+
+    .options-button {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .options-menu {
+      position: absolute;
+      top: 35px;
+      right: 10px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      display: none;
+      z-index: 999;
+    }
+
+    .options-menu button {
+      background: none;
+      border: none;
+      padding: 8px 12px;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .options-menu button:hover {
+      background: #f0f0f0;
+    }
+
+    .menu-card.dragging {
+      opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+      .menu-card {
+        width: 140px;
+        height: 140px;
+      }
+
+      .menu-card img {
+        width: 50px;
+        height: 50px;
+      }
+    }
+
+    /* スプラッシュ */
+    #splashScreen {
+      position: fixed;
+      inset: 0;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      pointer-events: all;
+      touch-action: none;
+      transition: opacity 0.5s ease;
+    }
+
+    #splashScreen img {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 20px;
+    }
+
+    #splashScreen p {
+      font-size: 22px;
+      color: #008DBD;
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      #splashScreen img {
+        width: 80px;
+        height: 80px;
+      }
+
+      #splashScreen p {
+        font-size: 18px;
+      }
+    }
+
+
+/* フッター */
+.footer {
+  width: 100%;
+  background: #abbaba;
+  color: black;
+  text-align: center;
+  padding: 50px 0;
+  font-size: 14px;
+  margin-top: 100px;
+  box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+}
+
+.footer-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+</style>
+</head>
+<body>
+  <header id="header">
+    <div class="header-left">Symphony</div>
+    <div class="header-right">
+      <a href="setting/">設定</a>
+    </div>
+  </header>
+
+
+<!-- スプラッシュ画面 -->
+<div id="splashScreen">
+  <img src="symphony.png" alt="ロゴ">
+  <p><b>Symphony System Group</b></p>
+</div>
+
+<!-- トップへ戻るボタン -->
+<button id="top-button" title="トップへ戻る">▲</button>
+  <div class="greeting-container" id="greeting"></div>
+  <div class="date-container" id="date"></div>
+<div id="popup-message">
+  <span id="popup-close">&times;</span>
+  <span id="popup-text"></span>
+</div>
+<canvas id="cursor-canvas"></canvas>
+
+<!-- ニュースセクション -->
+<section id="news">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 id="news-title" style="color: #00AAFF; font-size: 22px; margin-bottom: 15px; text-align: center; flex-grow: 1;">新着情報</h2>
+        <div id="refresh-button" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 2px solid #00AAFF; border-radius: 50%; cursor: pointer;">
+            <!-- リフレッシュアイコン -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#00AAFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <path d="M20.49 15a9 9 0 1 1-5.38-9.94"></path>
+            </svg>
+        </div>
+    </div>
+    <div id="news-wrapper">
+        <iframe id="news-frame" src="news/"></iframe>
+    </div>
+</section>
+
+<!-- メニュー -->
+<h2 class="menu-title">メニュー</h2>
+<div class="menu-wrapper" id="menuWrapper"></div>
+<script src="menu.js"></script>
+
+
+
+<footer class="footer">
+  <div class="footer-inner">
+    <p>© 2025 Symphony System Group. All rights reserved.</p>
+  </div>
+</footer>
+
+
+	
+  <script>
+
+// スプラッシュ画面
+  window.addEventListener("DOMContentLoaded", () => {
+    const splash = document.getElementById("splashScreen");
+
+    splash.style.display = "flex";
+    setTimeout(() => {
+      splash.style.opacity = 0;
+      setTimeout(() => {
+        splash.style.display = "none";
+      }, 500);
+    }, 1000); // ここで、時間を設定。
+  });
+
+function reloadIframe() {
+  document.getElementById("news-frame").src += "";
+}
+
+function askUserName() {
+  const savedUserName = localStorage.getItem("userName");
+  const greetingElement = document.getElementById("greeting");
+  const timeBasedGreeting = getTimeBasedGreeting();
+
+  if (savedUserName) {
+    greetingElement.innerText = `${savedUserName}さん、${timeBasedGreeting}`;
+    return;
+  }
+
+  const userName = prompt("あなたのお名前を教えてください:");
+  if (userName) {
+    greetingElement.innerText = `${userName}さん、${timeBasedGreeting}`;
+    localStorage.setItem("userName", userName);
+  } else {
+    greetingElement.innerText = `ゲストさん、${timeBasedGreeting}`;
+  }
+}
+
+function getTimeBasedGreeting() {
+  const now = new Date();
+  const hour = now.getHours();
+
+  if (hour < 12) {
+    return "おはようございます！"; // 朝の挨拶
+  } else if (hour < 18) {
+    return "こんにちは！"; // 昼の挨拶
+  } else {
+    return "こんばんは！"; // 夜の挨拶
+  }
+}
+
+function getFormattedDate() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = ('0' + (now.getMonth() + 1)).slice(-2);
+  const date = ('0' + now.getDate()).slice(-2);
+  const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+  const day = dayNames[now.getDay()];
+  return `${year}年${month}月${date}日（${day}）`;
+}
+
+window.onload = () => {
+  askUserName();
+  document.getElementById("date").innerText = getFormattedDate();
+};
+
+// リフレッシュボタンのクリック動作
+document.getElementById("refresh-button").addEventListener("click", function () {
+    const iframe = document.getElementById("news-frame");
+
+    // iframeをリロード
+    iframe.src = iframe.src;
+
+    // 回転アニメーションを適用
+    const refreshButton = document.getElementById("refresh-button");
+    refreshButton.style.animation = "spin 1s linear"; // 1秒間回転
+
+    // アニメーション終了後にリセット
+    setTimeout(() => {
+        refreshButton.style.animation = ""; // アニメーションを停止
+    }, 1000); // 1秒後にリセット
+});
+	  
+(function() {
+  // デフォルトテーマカラー
+  const defaultColor = "#00AAFF"; 
+
+  // 保存されたテーマカラーを取得し、適用
+  const savedThemeColor = localStorage.getItem("themeColor");
+  const themeColor = savedThemeColor || defaultColor; // 保存されてるカラーがない場合、デフォルトカラーを使用
+
+  // ヘッダーと「新着情報」部分にカラーを適用
+  document.documentElement.style.setProperty("--header-bg-color", themeColor);
+  document.getElementById("news-title").style.color = themeColor;
+
+  // テーマカラーを保存する関数
+  window.setThemeColor = function(themeColor) {
+    localStorage.setItem("themeColor", themeColor);
+    document.documentElement.style.setProperty("--header-bg-color", themeColor);
+    document.getElementById("news-title").style.color = themeColor;
+  };
+})();
+
+	  
+  const specialDays = {
+    "1/1": { color: "#FFA500", message: "明けましておめでとうございます！" },
+    "2/14": { color: "#FF69B4", message: "ハッピーバレンタイン！" },
+    "9/2": { color: "#008DBD", message: "今日は、「symphony」の記念日です！" },
+    "12/24": { color: "#ADFF2F", message: "クリスマスまで、あと1日！" },
+    "12/25": { color: "#00FF00", message: "メリークリスマス！" },
+    "12/31": { color: "#0000FF", message: "よいお年を！" },
+  };
+
+  function showPopupIfSpecialDay() {
+    const now = new Date();
+    const key = `${now.getMonth() + 1}/${now.getDate()}`;
+    const special = specialDays[key];
+    if (special) {
+      const popup = document.getElementById("popup-message");
+      const popupText = document.getElementById("popup-text");
+      popupText.textContent = special.message;
+      popup.style.borderLeft = `6px solid ${special.color}`;
+      popup.style.display = "block";
+
+      // ✕ボタンで閉じる
+      document.getElementById("popup-close").onclick = () => {
+        popup.style.display = "none";
+      };
+
+      // パーティクル起動
+      startParticles(special.color);
+    }
+  }
+
+  // パーティクル（canvas）
+  function startParticles(color) {
+    const canvas = document.getElementById("cursor-canvas");
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    document.addEventListener("mousemove", function (e) {
+      for (let i = 0; i < 4; i++) {
+        particles.push({
+          x: e.clientX,
+          y: e.clientY,
+          size: Math.random() * 3 + 2,
+          speedX: (Math.random() - 0.5) * 2,
+          speedY: (Math.random() - 0.5) * 2,
+          alpha: 1,
+        });
+      }
+    });
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = color + Math.floor(p.alpha * 255).toString(16).padStart(2, "0");
+        ctx.fill();
+        p.x += p.speedX;
+        p.y += p.speedY;
+        p.alpha -= 0.02;
+        if (p.alpha <= 0) {
+          particles.splice(i, 1);
+          i--;
+        }
+      }
+      requestAnimationFrame(animateParticles);
+    }
+
+    animateParticles();
+  }
+
+  // 起動
+  window.addEventListener("DOMContentLoaded", showPopupIfSpecialDay);
+
+
+	  
+const particleColorsByDate = {
+  "1/1": "orange",
+  "2/14": "pink",
+  "4/12": "#008DBD",
+  "12/24": "lightgreen",
+  "12/25": "green",
+  "12/31": "blue"
+};
+
+const today = new Date();
+const formattedDate = `${today.getMonth() + 1}/${today.getDate()}`;
+const particleColor = particleColorsByDate[formattedDate] || null;
+
+if (particleColor) {
+  document.addEventListener("mousemove", function(e) {
+    const particle = document.createElement("div");
+    particle.className = "mouse-particle";
+    particle.style.left = e.clientX + "px";
+    particle.style.top = e.clientY + "px";
+    particle.style.background = particleColor;
+    document.body.appendChild(particle);
+
+    setTimeout(() => {
+      particle.remove();
+    }, 1000);
+  });
+}
+
+	  
+const topButton = document.getElementById("top-button");
+
+// スクロール監視
+window.addEventListener("scroll", () => {
+  if (window.scrollY > 300) {
+    topButton.classList.add("show");
+  } else {
+    topButton.classList.remove("show");
+  }
+});
+
+// クリックで上へ
+topButton.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+// service-worker.js
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('Service Worker 登録成功:', reg))
+        .catch(err => console.log('Service Worker 登録失敗:', err));
+    });
+  }
+
+
+	  
+  </script>
+
+</body>
+</html>
