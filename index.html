@@ -2,678 +2,469 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="symphony.png">
-  <meta name="description" content="Symphony公式サイトです。">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/x-icon" href="https://symphony100.github.io/symphony/symphony.png">
   <title>Symphony</title>
-  <link rel="manifest" href="manifest.json">
-  <script src="theme.js"></script>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
   <style>
     :root {
-      --header-bg-color: #008DBD; /* デフォルトテーマカラー */
+      --primary: #008DBD;
+      --on-primary: #ffffff;
+      --surface: #fdfcff;
+      --on-surface: #1a1c1e;
+      --surface-variant: #e0e2ec;
+      --outline: #74777f;
+      --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --soft: cubic-bezier(0.4, 0, 0.2, 1);
+      --glass: rgba(255, 255, 255, 0.8);
     }
 
-   html, body {
-    margin: 0;
-    padding: 0;
-    max-width: 100%;
-    overflow-x: hidden;
-    box-sizing: border-box;
-  }
-
-  * {
-    box-sizing: inherit;
-  }
-
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background-color: #f4f4f9;
-      text-align: center;
-      padding-top: 80px; /* ヘッダーの高さ分余白追加 */
-    }
-
-    header {
-      background-color: var(--header-bg-color);
-      color: #ffffff;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem;
-      font-size: 1.5rem;
-      transition: background-color 0.3s;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000;
-    }
-
-    .header-left {
-      margin-left: 1rem;
-    }
-
-    .header-right {
-      margin-right: 1rem;
-      font-size: 1rem;
-    }
-
-    .header-right a {
-      color: #ffffff;
-      text-decoration: none;
-      margin-left: 1rem;
-    }
-
-    .greeting-container {
-      margin-top: 20px;
-      font-size: 1.2rem;
-    }
-
-    .date-container {
-      margin-top: 10px;
-      font-size: inherit;
-    }
+    * { box-sizing: border-box; font-family: Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
     
-	/* （iframe）のスタイル調整 */
-#news {
-    text-align: center;
-    padding: 30px;
-    background-color: #f8f8f8;
-    margin: 20px auto;
-    width: 60%;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* iframe のラップ要素 */
-#news-wrapper {
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
-    overflow: hidden;
-}
-
-/* iframe のスタイル */
-#news-frame {
-    width: 100%;
-    height: 200px;
-    border: none;
-    scrollbar-width: none; /* Firefox 用 */
-    -ms-overflow-style: none; /* IE, Edge 用 */
-}
-
-#news-frame::-webkit-scrollbar {
-    display: none; /* Chrome, Safari 用 */
-}
-
-/* スマートフォン版の調整 */
-@media (max-width: 768px) {
-    #news {
-        width: 90%;
-        padding: 20px;
-    }
-}
-
-/* ボタンの基礎デザイン */
-#refresh-button {
-    transition: transform 0.3s ease-in-out;
-}
-
-/* 回転アニメーション */
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-.menu-title {
-  text-align: center;
-  font-size: 24px;
-  color: var(--header-bg-color); /* テーマカラーの色 */
-  margin-top: 40px;
-  margin-bottom: 20px;
-  font-weight: 600;
-}
-
-.mouse-particle {
-  position: fixed;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.8;
-  transform: translate(-50%, -50%);
-  animation: fadeOut 0.5s ease-out forwards;
-}
-
-@keyframes fadeOut {
-  0% {
-    opacity: 0.8;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1.5);
-  }
-}
-
-/* ポップアップメッセージ */
-	  
-  #popup-message {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.95);
-    color: #333;
-    padding: 20px 25px;
-    border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-    font-size: 16px;
-    z-index: 10000;
-    display: none;
-    border-left: 6px solid #008DBD;
-    min-width: 250px;
-    max-width: 300px;
-    position: fixed;
-  }
-
-  #popup-close {
-    position: absolute;
-    top: 8px;
-    right: 12px;
-    font-size: 20px;
-    cursor: pointer;
-    color: #888;
-  }
-
-  #popup-close:hover {
-    color: #f33;
-  }
-
-  canvas#cursor-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 9999;
-  }
-
-/* トップボタン */
-#top-button {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  z-index: 999;
-  background-color : var(--header-bg-color);
-  color: white;
-  border: none;
-  padding: 12px 16px;
-  border-radius: 50%;
-  font-size: 20px;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  opacity: 0;
-  pointer-events: none;
-}
-
-#top-button.show {
-  opacity: 1;
-  pointer-events: auto;
-  transform: scale(1);
-}
-
-#top-button:hover {
-  background-color: #006a91;
-  transform: scale(1.1);
-}
-
-
-/* メニュー */
-    .menu-wrapper {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      max-width: 1000px;
-      margin: 0 auto;
+    body { 
+      margin: 0; background: var(--surface); color: var(--on-surface); 
+      min-height: 100vh; overflow-x: hidden; transition: background 1.2s ease; 
     }
 
-    .menu-card {
-      position: relative;
-      width: 180px;
-      height: 160px;
-      background: #fff
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      padding: 16px;
-      text-align: center;
-      transition: transform 0.2s ease;
-      touch-action: none;
-      cursor: pointer;
+    /* --- 起動画面 (チラつき防止のため初期はJS側で制御) --- */
+    #splash {
+      position: fixed; inset: 0; background: var(--surface); z-index: 9999;
+      display: none; flex-direction: column; align-items: center; justify-content: center;
     }
+    #splash img { width: 60px; height: 60px; margin-bottom: 24px; }
+    #splash h1 { font-size: 18px; font-weight: 900; color: var(--primary); margin: 0; }
 
-    .menu-card img {
-      width: 60px;
-      height: 60px;
-      margin-bottom: 10px;
+    /* --- ヘッダー --- */
+    header {
+      height: 64px; display: flex; align-items: center; padding: 0 24px;
+      background: var(--glass); backdrop-filter: blur(20px);
+      position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid var(--primary);
     }
+    .brand { display: flex; align-items: center; gap: 12px; color: var(--primary); font-weight: 900; font-size: 22px; text-decoration: none; }
+    .brand img { width: 28px; height: 28px; }
 
-    .menu-card-title {
-      font-weight: bold;
-      color: var(--header-bg-color);
+    /* --- メイン領域 --- */
+    main { max-width: 850px; margin: 0 auto; padding: 40px 24px 100px; opacity: 0; transform: translateY(15px); transition: 0.8s var(--spring); }
+    body.ready main { opacity: 1; transform: translateY(0); }
+
+    /* 挨拶・雑学エリア (グラスモフィズムで視認性確保) */
+    .hero { 
+      margin-bottom: 48px; padding: 32px; border-radius: 40px;
+      background: var(--glass); backdrop-filter: blur(25px);
+      border: 1px solid rgba(255,255,255,0.4);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
     }
+    #greet { font-size: 56px; font-weight: 900; margin-bottom: 12px; letter-spacing: -3px; color: var(--on-surface); }
+    #trivia { font-size: 16px; color: var(--outline); line-height: 1.6; max-width: 600px; font-weight: bold; }
 
-    .options-button {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-      font-size: 20px;
-      cursor: pointer;
+    .section-title { font-size: 14px; font-weight: 900; color: var(--primary); margin: 40px 0 16px 4px; text-transform: uppercase; letter-spacing: 2px; }
+
+    /* ニュース */
+    .news-card { background: var(--glass); border-radius: 32px; padding: 12px; border: 1px solid var(--surface-variant); backdrop-filter: blur(10px); }
+    #news-frame { width: 100%; height: 200px; border: none; border-radius: 24px; background: rgba(0,0,0,0.05); }
+
+    /* サービスグリッド */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
+    .card {
+      aspect-ratio: 1/1; background: var(--glass); border-radius: 32px; backdrop-filter: blur(10px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-decoration: none; color: inherit; border: 1px solid var(--surface-variant);
+      transition: all 0.4s var(--spring);
     }
+    .card:hover { transform: translateY(-10px); border-color: var(--primary); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+    .card .material-symbols-rounded { font-size: 56px; color: var(--primary); margin-bottom: 12px; font-variation-settings: 'FILL' 1; } /* アイコン56px */
+    .card span { font-size: 15px; font-weight: 900; }
 
-    .options-menu {
-      position: absolute;
-      top: 35px;
-      right: 10px;
-      background: white;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      display: none;
-      z-index: 999;
+    /* --- 設定ダイアログ --- */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+      display: none; align-items: center; justify-content: center; z-index: 2000;
+      backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.3s var(--soft);
     }
-
-    .options-menu button {
-      background: none;
-      border: none;
-      padding: 8px 12px;
-      width: 100%;
-      text-align: left;
-      cursor: pointer;
+    .overlay.open { display: flex; opacity: 1; }
+    .dialog {
+      background: white; width: 95%; max-width: 440px; padding: 32px; border-radius: 40px;
+      box-shadow: 0 30px 70px rgba(0,0,0,0.25);
+      transform: scale(0.9) translateY(20px); opacity: 0; transition: 0.5s var(--spring);
+      max-height: 90vh; overflow-y: auto;
     }
+    .overlay.open .dialog { transform: scale(1) translateY(0); opacity: 1; }
 
-    .options-menu button:hover {
-      background: #f0f0f0;
+    /* 3スロット・テーマ */
+    .theme-ui { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 24px 0; }
+    .slot { width: 56px; height: 56px; border-radius: 20px; cursor: pointer; transition: 0.4s var(--spring); }
+    .slot.active { transform: scale(1.15); border: 4px solid #1a1c1e; }
+    #theme-label { font-size: 16px; font-weight: 900; color: var(--primary); text-align: center; margin-bottom: 24px; }
+
+    /* 並び替えUI (右寄せ固定) */
+    .reorder-list { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+    .reorder-item {
+      display: flex; align-items: center; padding: 14px 20px; background: #f0f3f6;
+      border-radius: 20px; font-size: 15px; font-weight: 900; color: #1a1c1e;
+      transition: transform 0.4s var(--spring);
     }
-
-    .menu-card.dragging {
-      opacity: 0.5;
+    .reorder-item span { flex-grow: 1; } /* テキストを広げてボタンを右に寄せる */
+    .move-btn-group { display: flex; gap: 6px; }
+    .move-btn { 
+      border: none; background: white; width: 38px; height: 38px; border-radius: 12px; 
+      cursor: pointer; color: var(--primary); display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s;
     }
+    .move-btn:active { transform: scale(0.9); }
 
-    @media (max-width: 768px) {
-      .menu-card {
-        width: 140px;
-        height: 140px;
-      }
+    /* 天候トグル */
+    .switch-row { display: flex; justify-content: space-between; align-items: center; margin: 24px 0; color: #1a1c1e; }
+    .switch { position: relative; display: inline-block; width: 52px; height: 32px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: .4s; border-radius: 32px; }
+    input:checked + .slider { background-color: var(--primary); }
+    .slider:before { position: absolute; content: ""; height: 24px; width: 24px; left: 4px; bottom: 4px; background-color: white; transition: .4s var(--spring); border-radius: 50%; }
+    input:checked + .slider:before { transform: translateX(20px); }
 
-      .menu-card img {
-        width: 50px;
-        height: 50px;
-      }
+    /* 重厚なフッター */
+    footer { background: #1a1c1e; color: white; padding: 80px 24px; text-align: center; border-top: 10px solid var(--primary); }
+    footer .f-logo { font-size: 26px; font-weight: 900; margin-bottom: 20px; color: var(--primary); letter-spacing: 1px; }
+    footer .f-links { display: flex; justify-content: center; gap: 40px; margin-bottom: 30px; }
+    footer .f-links a { color: #888; text-decoration: none; font-size: 14px; font-weight: 900; transition: 0.3s; }
+    footer .f-links a:hover { color: var(--primary); }
+    footer .copy { font-size: 12px; color: #555; }
+
+    /* 背景演出用 */
+    #celebrate-canvas, #weather-canvas { position: fixed; inset: 0; pointer-events: none; }
+    #weather-canvas { z-index: 1; }
+    #celebrate-canvas { z-index: 3000; }
+    #anniversary-banner { position: fixed; top: 100px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 16px 40px; border-radius: 100px; z-index: 3001; font-weight: 900; display: none; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+
+    @media (max-width: 500px) {
+      #greet { font-size: 44px; }
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .dialog { padding: 24px; }
+      footer .f-links { gap: 20px; }
     }
-
-    /* スプラッシュ */
-    #splashScreen {
-      position: fixed;
-      inset: 0;
-      background: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      pointer-events: all;
-      touch-action: none;
-      transition: opacity 0.5s ease;
-    }
-
-    #splashScreen img {
-      width: 100px;
-      height: 100px;
-      margin-bottom: 20px;
-    }
-
-    #splashScreen p {
-      font-size: 22px;
-      color: #008DBD;
-      margin: 0;
-    }
-
-    @media (max-width: 768px) {
-      #splashScreen img {
-        width: 80px;
-        height: 80px;
-      }
-
-      #splashScreen p {
-        font-size: 18px;
-      }
-    }
-
-
-/* フッター */
-.footer {
-  width: 100%;
-  background: #abbaba;
-  color: black;
-  text-align: center;
-  padding: 50px 0;
-  font-size: 14px;
-  margin-top: 100px;
-  box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
-}
-
-.footer-inner {
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-</style>
+  </style>
 </head>
-<body>
-  <header id="header">
-    <div class="header-left">Symphony</div>
-    <div class="header-right">
-      <a href="setting/">設定</a>
-    </div>
-  </header>
-
+<body id="app-body">
 
 <!-- スプラッシュ画面 -->
-<div id="splashScreen">
-  <img src="symphony.png" alt="ロゴ">
-  <p><b>Symphony System Group</b></p>
+<div id="splash">
+  <img src="https://symphony100.github.io/symphony/symphony.png" alt="logo">
+  <h1>Symphony System Group</h1>
 </div>
 
-<!-- トップへ戻るボタン -->
-<button id="top-button" title="トップへ戻る">▲</button>
-  <div class="greeting-container" id="greeting"></div>
-  <div class="date-container" id="date"></div>
-<div id="popup-message">
-  <span id="popup-close">&times;</span>
-  <span id="popup-text"></span>
-</div>
-<canvas id="cursor-canvas"></canvas>
+<canvas id="weather-canvas"></canvas>
+<canvas id="celebrate-canvas"></canvas>
+<div id="anniversary-banner"></div>
 
-<!-- ニュースセクション -->
-<section id="news">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 id="news-title" style="color: #00AAFF; font-size: 22px; margin-bottom: 15px; text-align: center; flex-grow: 1;">新着情報</h2>
-        <div id="refresh-button" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 2px solid #00AAFF; border-radius: 50%; cursor: pointer;">
-            <!-- リフレッシュアイコン -->
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#00AAFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
-                <polyline points="23 4 23 10 17 10"></polyline>
-                <path d="M20.49 15a9 9 0 1 1-5.38-9.94"></path>
-            </svg>
-        </div>
-    </div>
-    <div id="news-wrapper">
-        <iframe id="news-frame" src="news/"></iframe>
-    </div>
-</section>
+<header>
+  <a href="#" class="brand">
+    <img src="https://symphony100.github.io/symphony/symphony.png" alt="logo">
+    <span>Symphony</span>
+  </a>
+  <div style="flex:1"></div>
+  <button onclick="openSettings()" style="border:none; background:none; cursor:pointer; color:var(--primary); width:48px; height:48px; display:flex; align-items:center; justify-content:center;">
+    <span class="material-symbols-rounded" style="font-size:32px;">settings</span>
+  </button>
+</header>
 
-<!-- メニュー -->
-<h2 class="menu-title">メニュー</h2>
-<div class="menu-wrapper" id="menuWrapper"></div>
-<script src="menu.js"></script>
-
-
-
-<footer class="footer">
-  <div class="footer-inner">
-    <p>© 2025 Symphony System Group. All rights reserved.</p>
+<main>
+  <div class="hero">
+    <div id="greet">...</div>
+    <div id="trivia">...</div>
   </div>
+
+  <div class="section-title">最新情報</div>
+  <div class="news-card">
+    <iframe id="news-frame" src="news/"></iframe>
+  </div>
+
+  <div class="section-title">主要サービス</div>
+  <div class="grid" id="serviceGrid"></div>
+</main>
+
+<footer>
+  <div class="f-logo">SYMPHONY SYSTEM GROUP</div>
+  <div class="f-links">
+    <a href="#">利用規約</a>
+    <a href="#">プライバシーポリシー</a>
+    <a href="#">お問い合わせ</a>
+  </div>
+  <div class="copy">© 2024-2026 Symphony System Group. All Rights Reserved.</div>
 </footer>
 
+<!-- 設定ダイアログ -->
+<div id="modal-settings" class="overlay" onclick="closeSettings()">
+  <div class="dialog" onclick="event.stopPropagation()">
+    <h2 style="margin:0; font-weight:900; font-size:24px; color:#1a1c1e;">設定</h2>
+    
+    <div class="theme-ui">
+      <button onclick="stepTheme(-1)" class="move-btn" style="margin:0"><span class="material-symbols-rounded">chevron_left</span></button>
+      <div id="s-prev" class="slot" style="opacity: 0.3; transform: scale(0.7);"></div>
+      <div id="s-active" class="slot active"></div>
+      <div id="s-next" class="slot" style="opacity: 0.3; transform: scale(0.7);"></div>
+      <button onclick="stepTheme(1)" class="move-btn" style="margin:0"><span class="material-symbols-rounded">chevron_right</span></button>
+    </div>
+    <div id="theme-label" style="text-align: center; font-weight: 900; color: var(--primary); margin-bottom: 24px;">標準</div>
 
-	
-  <script>
+    <div class="switch-row">
+      <div style="font-weight: 900; font-size: 15px;">東京の天候・時間連動背景</div>
+      <label class="switch">
+        <input type="checkbox" id="weather-toggle" onchange="toggleWeather(this.checked)">
+        <span class="slider"></span>
+      </label>
+    </div>
 
-// スプラッシュ画面
-  window.addEventListener("DOMContentLoaded", () => {
-    const splash = document.getElementById("splashScreen");
+    <div class="reorder-list" id="reorderList"></div>
+    <button onclick="closeSettings()" style="width:100%; padding:18px; border-radius:100px; border:none; background:var(--primary); color:white; font-weight:900; cursor:pointer; margin-top:20px; font-size:16px;">完了</button>
+  </div>
+</div>
 
-    splash.style.display = "flex";
-    setTimeout(() => {
-      splash.style.opacity = 0;
+<script>
+  // --- データと状態 ---
+  const THEMES = [
+    { c: '#008DBD', n: '標準' }, { c: '#6750A4', n: 'パープル' }, { c: '#006A6A', n: 'ティール' },
+    { c: '#386A20', n: 'グリーン' }, { c: '#A44B00', n: 'オレンジ' }, { c: '#202124', n: 'ブラック' },
+    { c: '#7D5260', n: 'ローズ' }, { c: '#005AC1', n: 'ブルー' }
+  ];
+
+  let currentThemeIdx = THEMES.findIndex(t => t.c === localStorage.getItem('symphony-color')) || 0;
+  if(currentThemeIdx === -1) currentThemeIdx = 0;
+
+  const SERVICES = [
+    { id: 'game', name: 'ゲーム', icon: 'sports_esports', url: 'game/' },
+    { id: 'archive', name: 'アーカイブ', icon: 'inventory_2', url: 'archive/' },
+    { id: 'origin', name: 'ロゴの由来', icon: 'auto_awesome', url: 'origin/' },
+    { id: 'contact', name: 'お問い合わせ', icon: 'mail', url: 'contact/' },
+    { id: 'profile', name: '製作者', icon: 'person', url: 'profile/' }
+  ];
+  let userOrder = JSON.parse(localStorage.getItem('symphony-order')) || SERVICES;
+
+  // --- スプラッシュ制御 (5分スキップ・2秒表示) ---
+  function initSplash() {
+    const splash = document.getElementById('splash');
+    const now = Date.now();
+    const last = localStorage.getItem('symphony-splash-time');
+    
+    document.documentElement.style.setProperty('--primary', THEMES[currentThemeIdx].c);
+
+    if (!last || (now - last) > 300000) {
+      splash.style.display = 'flex';
+      localStorage.setItem('symphony-splash-time', now);
       setTimeout(() => {
-        splash.style.display = "none";
-      }, 500);
-    }, 1000); // ここで、時間を設定。
-  });
-
-function reloadIframe() {
-  document.getElementById("news-frame").src += "";
-}
-
-function askUserName() {
-  const savedUserName = localStorage.getItem("userName");
-  const greetingElement = document.getElementById("greeting");
-  const timeBasedGreeting = getTimeBasedGreeting();
-
-  if (savedUserName) {
-    greetingElement.innerText = `${savedUserName}さん、${timeBasedGreeting}`;
-    return;
-  }
-
-  const userName = prompt("あなたのお名前を教えてください:");
-  if (userName) {
-    greetingElement.innerText = `${userName}さん、${timeBasedGreeting}`;
-    localStorage.setItem("userName", userName);
-  } else {
-    greetingElement.innerText = `ゲストさん、${timeBasedGreeting}`;
-  }
-}
-
-function getTimeBasedGreeting() {
-  const now = new Date();
-  const hour = now.getHours();
-
-  if (hour < 12) {
-    return "おはようございます！"; // 朝の挨拶
-  } else if (hour < 18) {
-    return "こんにちは！"; // 昼の挨拶
-  } else {
-    return "こんばんは！"; // 夜の挨拶
-  }
-}
-
-function getFormattedDate() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = ('0' + (now.getMonth() + 1)).slice(-2);
-  const date = ('0' + now.getDate()).slice(-2);
-  const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
-  const day = dayNames[now.getDay()];
-  return `${year}年${month}月${date}日（${day}）`;
-}
-
-window.onload = () => {
-  askUserName();
-  document.getElementById("date").innerText = getFormattedDate();
-};
-
-// リフレッシュボタンのクリック動作
-document.getElementById("refresh-button").addEventListener("click", function () {
-    const iframe = document.getElementById("news-frame");
-
-    // iframeをリロード
-    iframe.src = iframe.src;
-
-    // 回転アニメーションを適用
-    const refreshButton = document.getElementById("refresh-button");
-    refreshButton.style.animation = "spin 1s linear"; // 1秒間回転
-
-    // アニメーション終了後にリセット
-    setTimeout(() => {
-        refreshButton.style.animation = ""; // アニメーションを停止
-    }, 1000); // 1秒後にリセット
-});
-	  
-(function() {
-  // デフォルトテーマカラー
-  const defaultColor = "#00AAFF"; 
-
-  // 保存されたテーマカラーを取得し、適用
-  const savedThemeColor = localStorage.getItem("themeColor");
-  const themeColor = savedThemeColor || defaultColor; // 保存されてるカラーがない場合、デフォルトカラーを使用
-
-  // ヘッダーと「新着情報」部分にカラーを適用
-  document.documentElement.style.setProperty("--header-bg-color", themeColor);
-  document.getElementById("news-title").style.color = themeColor;
-
-  // テーマカラーを保存する関数
-  window.setThemeColor = function(themeColor) {
-    localStorage.setItem("themeColor", themeColor);
-    document.documentElement.style.setProperty("--header-bg-color", themeColor);
-    document.getElementById("news-title").style.color = themeColor;
-  };
-})();
-
-	  
-  const specialDays = {
-    "1/1": { color: "#FFA500", message: "明けましておめでとうございます！" },
-    "2/14": { color: "#FF69B4", message: "ハッピーバレンタイン！" },
-    "9/2": { color: "#008DBD", message: "今日は、「symphony」の記念日です！" },
-    "12/24": { color: "#ADFF2F", message: "クリスマスまで、あと1日！" },
-    "12/25": { color: "#00FF00", message: "メリークリスマス！" },
-    "12/31": { color: "#0000FF", message: "よいお年を！" },
-  };
-
-  function showPopupIfSpecialDay() {
-    const now = new Date();
-    const key = `${now.getMonth() + 1}/${now.getDate()}`;
-    const special = specialDays[key];
-    if (special) {
-      const popup = document.getElementById("popup-message");
-      const popupText = document.getElementById("popup-text");
-      popupText.textContent = special.message;
-      popup.style.borderLeft = `6px solid ${special.color}`;
-      popup.style.display = "block";
-
-      // ✕ボタンで閉じる
-      document.getElementById("popup-close").onclick = () => {
-        popup.style.display = "none";
-      };
-
-      // パーティクル起動
-      startParticles(special.color);
+        splash.style.opacity = '0';
+        setTimeout(() => {
+          splash.style.display = 'none';
+          document.body.classList.add('ready');
+        }, 600);
+      }, 2000);
+    } else {
+      document.body.classList.add('ready');
     }
   }
 
-  // パーティクル（canvas）
-  function startParticles(color) {
-    const canvas = document.getElementById("cursor-canvas");
-    const ctx = canvas.getContext("2d");
-    let particles = [];
+  // --- 雑学 ---
+  async function initTrivia() {
+    const hr = new Date().getHours();
+    document.getElementById('greet').innerText = (hr < 12) ? "おはよう。" : (hr < 18) ? "こんにちは。" : "こんばんは。";
+    try {
+      const res = await fetch('https://symphony100.github.io/symphony/trivia.json');
+      const data = await res.json();
+      let seen = JSON.parse(localStorage.getItem('s-v') || '[]');
+      if(seen.length >= data.length) seen = [];
+      const pool = data.map((_, i) => i).filter(i => !seen.includes(i));
+      const idx = pool[Math.floor(Math.random() * pool.length)];
+      document.getElementById('trivia').innerText = data[idx];
+      seen.push(idx);
+      localStorage.setItem('s-v', JSON.stringify(seen));
+    } catch (e) { document.getElementById('trivia').innerText = "今日も素晴らしい一日を！"; }
+  }
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+  // --- 天候・時間システム (東京固定) ---
+  let wInt;
+  function initWeather() {
+    const enabled = localStorage.getItem('symphony-weather-bg') === 'true';
+    document.getElementById('weather-toggle').checked = enabled;
+    const canvas = document.getElementById('weather-canvas');
+    const root = document.documentElement;
+
+    if (!enabled) {
+      document.body.style.background = "var(--surface)";
+      root.style.setProperty('--glass', 'rgba(255,255,255,0.8)');
+      canvas.style.display = 'none';
+      return;
     }
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
 
-    document.addEventListener("mousemove", function (e) {
-      for (let i = 0; i < 4; i++) {
-        particles.push({
-          x: e.clientX,
-          y: e.clientY,
-          size: Math.random() * 3 + 2,
-          speedX: (Math.random() - 0.5) * 2,
-          speedY: (Math.random() - 0.5) * 2,
-          alpha: 1,
+    canvas.style.display = 'block';
+    const hr = new Date().getHours();
+
+    // 背景グラデーション
+    if (hr >= 19 || hr < 5) {
+      document.body.style.background = "linear-gradient(to bottom, #050b18, #162a4d)";
+      root.style.setProperty('--glass', 'rgba(0,0,0,0.5)');
+    } else if (hr >= 5 && hr < 10) {
+      document.body.style.background = "linear-gradient(to bottom, #ff9e7d, #94b9ff)";
+    } else if (hr >= 17 && hr < 19) {
+      document.body.style.background = "linear-gradient(to bottom, #f15b2a, #4a235a)";
+      root.style.setProperty('--glass', 'rgba(255,255,255,0.3)');
+    } else {
+      document.body.style.background = "linear-gradient(to bottom, #7ec6ff, #e0f4ff)";
+    }
+
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current_weather=true`)
+      .then(r => r.json()).then(d => {
+        const code = d.current_weather.weathercode;
+        const raining = [51,53,55,61,63,65,80,81,82].includes(code);
+        const clear = [0, 1].includes(code);
+        renderWeather(canvas, hr, raining, clear);
+      });
+  }
+
+  function renderWeather(canvas, hr, raining, clear) {
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    let items = [];
+
+    if (raining) {
+      for(let i=0; i<120; i++) items.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, l: Math.random()*20+10, s: Math.random()*12+10});
+    } else if (clear && (hr >= 19 || hr < 5)) {
+      for(let i=0; i<100; i++) items.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*1.5, o: Math.random(), s: Math.random()*0.02});
+    }
+
+    function anim() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      if (raining) {
+        ctx.strokeStyle = "rgba(255,255,255,0.3)"; ctx.lineWidth = 1;
+        items.forEach(p => {
+          ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x+1, p.y+p.l); ctx.stroke();
+          p.y += p.s; if(p.y > canvas.height) p.y = -20;
+        });
+      } else if (clear && (hr >= 19 || hr < 5)) {
+        // 月
+        ctx.fillStyle = "rgba(255,255,230,0.8)";
+        ctx.beginPath(); ctx.arc(canvas.width-100, 100, 25, 0, Math.PI*2); ctx.fill();
+        // 星
+        items.forEach(p => {
+          ctx.fillStyle = `rgba(255,255,255,${p.o})`;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+          p.o += p.s; if(p.o > 1 || p.o < 0) p.s *= -1;
         });
       }
-    });
-
-    function animateParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = color + Math.floor(p.alpha * 255).toString(16).padStart(2, "0");
-        ctx.fill();
-        p.x += p.speedX;
-        p.y += p.speedY;
-        p.alpha -= 0.02;
-        if (p.alpha <= 0) {
-          particles.splice(i, 1);
-          i--;
-        }
-      }
-      requestAnimationFrame(animateParticles);
+      wInt = requestAnimationFrame(anim);
     }
-
-    animateParticles();
+    cancelAnimationFrame(wInt);
+    if(items.length > 0) anim();
   }
 
-  // 起動
-  window.addEventListener("DOMContentLoaded", showPopupIfSpecialDay);
+  function toggleWeather(c) { localStorage.setItem('symphony-weather-bg', c); initWeather(); }
 
+  // --- テーマ & 並び替え (FLIPアニメーション) ---
+  function updateThemeUI() {
+    const prev = (currentThemeIdx - 1 + THEMES.length) % THEMES.length;
+    const next = (currentThemeIdx + 1) % THEMES.length;
+    document.getElementById('s-prev').style.background = THEMES[prev].c;
+    document.getElementById('s-active').style.background = THEMES[currentThemeIdx].c;
+    document.getElementById('s-next').style.background = THEMES[next].c;
+    document.getElementById('theme-label').innerText = THEMES[currentThemeIdx].n;
+    document.documentElement.style.setProperty('--primary', THEMES[currentThemeIdx].c);
+    localStorage.setItem('symphony-color', THEMES[currentThemeIdx].c);
+  }
+  function stepTheme(s) { currentThemeIdx = (currentThemeIdx + s + THEMES.length) % THEMES.length; updateThemeUI(); }
 
-	  
-const particleColorsByDate = {
-  "1/1": "orange",
-  "2/14": "pink",
-  "4/12": "#008DBD",
-  "12/24": "lightgreen",
-  "12/25": "green",
-  "12/31": "blue"
-};
+  function renderServices() {
+    const grid = document.getElementById('serviceGrid');
+    const list = document.getElementById('reorderList');
+    grid.innerHTML = ''; list.innerHTML = '';
+    
+    userOrder.forEach((s, i) => {
+      grid.innerHTML += `<a class="card" href="${s.url}"><span class="material-symbols-rounded">${s.icon}</span><span>${s.name}</span></a>`;
+      const div = document.createElement('div');
+      div.className = 'reorder-item';
+      div.innerHTML = `<span>${s.name}</span><div class="move-btn-group"><button class="move-btn" onclick="swap(${i},${i-1})">▲</button><button class="move-btn" onclick="swap(${i},${i+1})">▼</button></div>`;
+      list.appendChild(div);
+    });
+  }
 
-const today = new Date();
-const formattedDate = `${today.getMonth() + 1}/${today.getDate()}`;
-const particleColor = particleColorsByDate[formattedDate] || null;
+  function swap(f, t) {
+    if(t < 0 || t >= userOrder.length) return;
+    const items = document.querySelectorAll('.reorder-item');
+    const itemF = items[f], itemT = items[t];
+    const rectF = itemF.getBoundingClientRect(), rectT = itemT.getBoundingClientRect();
 
-if (particleColor) {
-  document.addEventListener("mousemove", function(e) {
-    const particle = document.createElement("div");
-    particle.className = "mouse-particle";
-    particle.style.left = e.clientX + "px";
-    particle.style.top = e.clientY + "px";
-    particle.style.background = particleColor;
-    document.body.appendChild(particle);
+    itemF.style.transition = 'none'; itemT.style.transition = 'none';
+    itemF.style.transform = `translateY(${rectT.top - rectF.top}px)`;
+    itemT.style.transform = `translateY(${rectF.top - rectT.top}px)`;
+
+    itemF.offsetHeight; // リフロー
 
     setTimeout(() => {
-      particle.remove();
-    }, 1000);
-  });
-}
+      itemF.style.transition = 'transform 0.4s var(--spring)';
+      itemT.style.transition = 'transform 0.4s var(--spring)';
+      itemF.style.transform = 'translateY(0)';
+      itemT.style.transform = 'translateY(0)';
 
-	  
-const topButton = document.getElementById("top-button");
-
-// スクロール監視
-window.addEventListener("scroll", () => {
-  if (window.scrollY > 300) {
-    topButton.classList.add("show");
-  } else {
-    topButton.classList.remove("show");
-  }
-});
-
-// クリックで上へ
-topButton.addEventListener("click", () => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-// service-worker.js
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function () {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(reg => console.log('Service Worker 登録成功:', reg))
-        .catch(err => console.log('Service Worker 登録失敗:', err));
-    });
+      setTimeout(() => {
+        [userOrder[f], userOrder[t]] = [userOrder[t], userOrder[f]];
+        localStorage.setItem('symphony-order', JSON.stringify(userOrder));
+        renderServices();
+      }, 400);
+    }, 20);
   }
 
+  function openSettings() { 
+    const m = document.getElementById('modal-settings');
+    m.style.display = 'flex';
+    requestAnimationFrame(() => m.classList.add('open'));
+  }
+  function closeSettings() { 
+    const m = document.getElementById('modal-settings');
+    m.classList.remove('open'); 
+    setTimeout(() => m.style.display = 'none', 300); 
+  }
 
-	  
-  </script>
+  // --- アニバーサリー (絵文字なし) ---
+  function checkAnniversary() {
+    const now = new Date();
+    const m = now.getMonth()+1, d = now.getDate();
+    let t = "";
+    if(m===1 && d===1) t="謹賀新年"; else if(m===7 && d===7) t="七夕"; else if(m===9 && d===2) t="Symphony 記念日"; else if(m===12 && d===24) t="クリスマスイブ"; else if(m===12 && d===25) t="クリスマス";
+    if(t) {
+      const b = document.getElementById('anniversary-banner');
+      b.innerText = t; b.style.display = 'block';
+      setTimeout(launchCracker, 500);
+    }
+  }
+
+  function launchCracker() {
+    const c = document.getElementById('celebrate-canvas');
+    const ctx = c.getContext('2d');
+    c.width = window.innerWidth; c.height = window.innerHeight;
+    let ps = [];
+    const colors = [getComputedStyle(document.documentElement).getPropertyValue('--primary'), '#FFD700', '#FF6B6B', '#4ECDC4', '#FFFFFF'];
+    function burst(x, side) {
+      for(let i=0; i<85; i++) ps.push({ x: x, y: c.height, vx: (side==='L'?1:-1)*(Math.random()*16+4), vy: -(Math.random()*26+10), sz: Math.random()*10+4, c: colors[Math.floor(Math.random()*colors.length)], g: 0.5, op: 1 });
+    }
+    burst(0, 'L'); burst(c.width, 'R');
+    function anim() {
+      ctx.clearRect(0,0,c.width,c.height);
+      ps.forEach((p, i) => {
+        p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.op-=0.007;
+        ctx.globalAlpha = Math.max(0, p.op); ctx.fillStyle=p.c; ctx.fillRect(p.x, p.y, p.sz, p.sz);
+        if(p.op<=0) ps.splice(i,1);
+      });
+      if(ps.length>0) requestAnimationFrame(anim);
+    }
+    anim();
+  }
+
+  // 実行
+  initSplash();
+  updateThemeUI();
+  renderServices();
+  initTrivia();
+  initWeather();
+  checkAnniversary();
+</script>
 
 </body>
 </html>
