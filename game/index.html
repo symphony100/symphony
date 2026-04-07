@@ -2,154 +2,217 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="/symphony/symphony.png">
-  <meta name="description" content="Symphony公式サイトです。">
-  <title>Symphony</title>
-  <link rel="manifest" href="manifest.json">
-  <script src="theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/x-icon" href="https://symphony100.github.io/symphony/symphony.png">
+  <title>Symphony | Games</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
   <style>
     :root {
-      --header-bg-color: #008DBD; /* デフォルトテーマカラー */
+      --primary: #008DBD;
+      --surface: #fdfcff;
+      --on-surface: #1a1c1e;
+      --surface-variant: #e0e2ec;
+      --outline: #74777f;
+      --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --soft: cubic-bezier(0.4, 0, 0.2, 1);
+      --glass: rgba(255, 255, 255, 0.85);
     }
 
-   html, body {
-    margin: 0;
-    padding: 0;
-    max-width: 100%;
-    overflow-x: hidden;
-    box-sizing: border-box;
-  }
-
-  * {
-    box-sizing: inherit;
-  }
-
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background-color: #f4f4f9;
-      text-align: center;
+    * { box-sizing: border-box; font-family: Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+    
+    body { 
+      margin: 0; background: var(--surface); color: var(--on-surface); 
+      min-height: 100vh; overflow-x: hidden; transition: background 1s ease;
     }
 
+    /* --- ヘッダー --- */
     header {
-      background-color: var(--header-bg-color);
-      color: #ffffff;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem;
-      font-size: 1.5rem;
-      transition: background-color 0.3s;
+      height: 64px; display: flex; align-items: center; padding: 0 24px;
+      background: var(--glass); backdrop-filter: blur(40px);
+      position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid var(--primary);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; color: var(--primary); font-weight: 900; font-size: 22px; text-decoration: none; }
+    .brand img { width: 28px; height: 28px; }
+
+    /* --- メイン領域 --- */
+    main { max-width: 1000px; margin: 0 auto; padding: 40px 24px 100px; opacity: 0; transform: translateY(15px); transition: 0.8s var(--spring); }
+    body.ready main { opacity: 1; transform: translateY(0); }
+
+    /* ヒーローセクション */
+    .hero { margin-bottom: 48px; }
+    h1 { font-size: 48px; font-weight: 900; margin: 0 0 16px 0; letter-spacing: -2px; }
+
+    /* 検索・フィルタエリア */
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 40px;
+      background: var(--glass); padding: 16px; border-radius: 24px; backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+    .search-box {
+      flex: 1; min-width: 250px; position: relative;
+    }
+    .search-box input {
+      width: 100%; padding: 14px 20px 14px 48px; border-radius: 16px;
+      border: 1px solid var(--surface-variant); background: white;
+      font-size: 16px; font-weight: 700; outline: none; transition: 0.3s;
+    }
+    .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(0, 141, 189, 0.1); }
+    .search-box .material-symbols-rounded { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--outline); }
+
+    .filter-btn {
+      padding: 0 20px; height: 48px; border-radius: 16px; border: 1px solid var(--surface-variant);
+      background: white; color: var(--on-surface); font-weight: 900; font-size: 14px;
+      cursor: pointer; transition: 0.3s var(--soft);
+    }
+    .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    /* ゲームグリッド */
+    .game-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 24px;
+    }
+    .game-card {
+      background: var(--glass); border-radius: 32px; padding: 24px; border: 3px solid transparent;
+      backdrop-filter: blur(30px); text-decoration: none; color: inherit;
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      transition: all 0.3s var(--soft);
+    }
+    .game-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+      transform: translateY(-5px);
+    }
+    .game-icon-wrapper {
+      width: 80px; height: 80px; background: var(--surface-container);
+      border-radius: 24px; display: flex; align-items: center; justify-content: center;
+      margin-bottom: 16px; transition: 0.3s var(--spring);
+    }
+    .game-card:hover .game-icon-wrapper { transform: scale(1.1) rotate(5deg); background: white; }
+    .game-card .material-symbols-rounded { font-size: 48px; color: var(--primary); font-variation-settings: 'FILL' 1; }
+    
+    .game-title { font-size: 18px; font-weight: 900; margin-bottom: 8px; display: block; }
+    .game-tag {
+      font-size: 12px; font-weight: 900; padding: 4px 12px; border-radius: 100px;
+      background: var(--surface-variant); color: var(--outline); text-transform: uppercase;
     }
 
-    .header-left {
-      margin-left: 1rem;
+    footer { background: #111; color: white; padding: 60px 24px; text-align: center; border-top: 10px solid var(--primary); margin-top: 100px; }
+
+    @media (max-width: 500px) {
+      h1 { font-size: 36px; }
+      .game-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .game-card { padding: 16px; border-radius: 24px; }
+      .game-title { font-size: 15px; }
     }
-
-    .header-right {
-      margin-right: 1rem;
-      font-size: 1rem;
-    }
-
-    .header-right a {
-      color: #ffffff;
-      text-decoration: none;
-      margin-left: 1rem;
-    }
-
-.link {
-  text-decoration: none;
-  color: white;
-}
-
-
-    .greeting-container {
-      margin-top: 20px;
-      font-size: 1.2rem;
-    }
-
-.button-container {
-  display: flex;
-  flex-wrap: wrap; /* 折り返す */
-  justify-content: center; /* 中央揃え */
-  gap: 20px;
-  padding: 40px;
-}
-
-.cool-btn {
-  flex: 1 1 200px; /* 最小幅200px、画面に応じて伸縮 */
-  max-width: 250px;
-  padding: 20px 0;
-  background-color: #1e90ff;
-  color: white;
-  text-align: center;
-  text-decoration: none;
-  font-size: 18px;
-  font-weight: bold;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.cool-btn:hover {
-  background-color: #0d6efd;
-  transform: translateY(-3px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
-}
-
-.menu-title {
-  text-align: center;
-  font-size: 24px;
-  color: #333;
-  margin-top: 40px;
-  margin-bottom: 20px;
-  font-weight: 600;
-}
-
-
   </style>
 </head>
 <body>
-  <header id="header">
-    <div class="header-left">
-      <a href="/symphony/" class="link">Symphony</a>
+
+<header>
+  <a href="../" class="brand">
+    <img src="https://symphony100.github.io/symphony/symphony.png" alt="logo">
+    <span>Symphony</span>
+  </a>
+  <div style="flex:1"></div>
+  <a href="../" style="text-decoration: none; color: var(--primary); display: flex; align-items: center; gap: 8px; font-weight: 900;">
+    <span class="material-symbols-rounded">home</span>
+    <span class="desktop-only">ホームに戻る</span>
+  </a>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>Game Center</h1>
+    <p style="font-weight: 900; color: var(--outline); margin: 0;">Symphonyオリジナルのミニゲーム集</p>
+  </div>
+
+  <div class="controls">
+    <div class="search-box">
+      <span class="material-symbols-rounded">search</span>
+      <input type="text" id="gameSearch" placeholder="ゲームを検索..." oninput="filterGames()">
     </div>
-    <div class="header-right">
-      <a href="/symphony/setting/">設定</a>
-    </div>
-  </header>
-<h1>Symphony-Game</h1>
-<div class="button-container">
-  <a href="number-quiz/" class="cool-btn">数当てゲーム</a>
-  <a href="tetris/" class="cool-btn">テトリスゲーム</a>
-  <a href="#" class="cool-btn">ギャラリー</a>
-  <a href="#" class="cool-btn">お問い合わせ</a>
-</div>
+    <button class="filter-btn active" onclick="setCategory('all', this)">すべて</button>
+    <button class="filter-btn" onclick="setCategory('action', this)">アクション</button>
+    <button class="filter-btn" onclick="setCategory('puzzle', this)">パズル</button>
+    <button class="filter-btn" onclick="setCategory('rpg', this)">RPG</button>
+  </div>
 
+  <div class="game-grid" id="gameGrid">
+    <!-- ゲームリストはJSで描画 -->
+  </div>
+</main>
 
-  <script>
-	  
-(function() {
-  // デフォルトテーマカラー
-  const defaultColor = "#00AAFF"; 
+<footer>
+  <div style="font-size: 20px; font-weight: 900; color: var(--primary); margin-bottom: 10px;">SYMPHONY GAMES</div>
+  <div style="font-size: 12px; color: #555; font-weight: 900;">© 2024-2026 Symphony System Group.</div>
+</footer>
 
-  // 保存されたテーマカラーを取得し、適用
-  const savedThemeColor = localStorage.getItem("themeColor");
-  const themeColor = savedThemeColor || defaultColor; // 保存されてるカラーがない場合、デフォルトカラーを使用
+<script>
+  // ゲームデータ
+  const GALE_LIST = [
+    { title: "Symphony Run", icon: "directions_run", category: "action", url: "run/" },
+    { title: "Color Puzzle", icon: "extension", category: "puzzle", url: "puzzle/" },
+    { title: "Star Clicker", icon: "ads_click", category: "action", url: "clicker/" },
+    { title: "Quest of Symphony", icon: "fort", category: "rpg", url: "quest/" },
+    { title: "Memory Match", icon: "style", category: "puzzle", url: "memory/" },
+    { title: "Brick Breaker", icon: "grid_view", category: "action", url: "brick/" }
+  ];
 
-  // ヘッダーと「新着情報」部分にカラーを適用
-  document.documentElement.style.setProperty("--header-bg-color", themeColor);
-  document.getElementById("news-title").style.color = themeColor;
+  let currentCategory = 'all';
 
-  // テーマカラーを保存する関数
-  window.setThemeColor = function(themeColor) {
-    localStorage.setItem("themeColor", themeColor);
-    document.documentElement.style.setProperty("--header-bg-color", themeColor);
-    document.getElementById("news-title").style.color = themeColor;
+  // --- テーマ同期 ---
+  function syncTheme() {
+    const color = localStorage.getItem('symphony-color') || '#008DBD';
+    document.documentElement.style.setProperty('--primary', color);
+  }
+
+  // --- ゲーム描画 ---
+  function renderGames(filterText = '') {
+    const grid = document.getElementById('gameGrid');
+    grid.innerHTML = '';
+
+    const filtered = GALE_LIST.filter(game => {
+      const matchCategory = currentCategory === 'all' || game.category === currentCategory;
+      const matchSearch = game.title.toLowerCase().includes(filterText.toLowerCase());
+      return matchCategory && matchSearch;
+    });
+
+    filtered.forEach(game => {
+      grid.innerHTML += `
+        <a href="${game.url}" class="game-card">
+          <div class="game-icon-wrapper">
+            <span class="material-symbols-rounded">${game.icon}</span>
+          </div>
+          <span class="game-title">${game.title}</span>
+          <span class="game-tag">${game.category}</span>
+        </a>
+      `;
+    });
+  }
+
+  function setCategory(cat, btn) {
+    currentCategory = cat;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderGames(document.getElementById('gameSearch').value);
+  }
+
+  function filterGames() {
+    renderGames(document.getElementById('gameSearch').value);
+  }
+
+  window.onload = () => {
+    syncTheme();
+    renderGames();
+    document.body.classList.add('ready');
   };
-})();
 
-  </script>
+  // ストレージ変更監視（別タブで色を変えても即座に反映）
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'symphony-color') syncTheme();
+  });
+</script>
+
 </body>
 </html>
