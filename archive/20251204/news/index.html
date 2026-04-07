@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="/symphony/symphony.png">
+    <title>symphony</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        #news {
+            text-align: center;
+            padding: 30px;
+            background-color: #f8f8f8;
+            margin: 20px auto;
+            width: 80%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        article {
+            margin-bottom: 30px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 20px;
+            color: var(--news-title-color, #00AAFF); /* 変更部分 */
+            margin-bottom: 10px;
+        }
+
+        .date {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            color: #333;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+<script src="/symphony/theme.js"></script>
+<section id="news">
+    <article>
+        <h3>リフレッシュボタンを追加しました。</h3>
+        <p class="date">2025年04月15日</p>
+        <p class="content">「新着情報」の埋め込みページを、更新することができる要素を追加いたしました。</p>
+    </article>
+    <article>
+        <h3>「symphony」が、アプリケーション化しました。</h3>
+        <p class="date">2025年03月30日</p>
+        <p class="content">当サービスサイト「symphony」は、パーソナルコンピューターや、スマートフォンなどで、ブックマークに追加すると、アプリケーションになるようになりました。</p>
+    </article>
+    
+    <article>
+        <h3>テーマカラーの変更が可能になりました。</h3>
+        <p class="date">2025年03月21日</p>
+        <p class="content">本日より、旧式の当ウェブサイトは、テーマカラーの変更を行うことができませんでしたが、<br>
+            現在のウェブサイトは、ヘッダー、文字などのカラーの変更が行えることが可能になりました。</p>
+    </article>
+
+    <article>
+        <h3>ユーザー機能が実装されました。</h3>
+        <p class="date">2025年03月20日</p>
+        <p class="content">まず初めにアクセスしたときは名前を尋ね、次回以降維持できるようなものを追加いたしました。<br>
+        また、「設定」というウェブページでユーザー名を変更が可能です。</p>
+    </article>
+
+    <article>
+        <h3>当ホームページが公開されました。</h3>
+        <p class="date">2025年03月15日</p>
+        <p class="content">2025年03月15日に、当ホームページが公開しました。<br>
+        これから長いお付き合いをどうぞよろしくお願いいたします。</p>
+    </article>
+</section>
+    <script>
+    // テーマカラー適用用の関数
+    function applyThemeColor() {
+        const savedThemeColor = localStorage.getItem("themeColor") || "#00AAFF"; // デフォルトカラー
+        document.documentElement.style.setProperty("--header-bg-color", savedThemeColor);
+        const headings = document.querySelectorAll("h3"); // 記事タイトルのh3タグ
+        headings.forEach(heading => {
+            heading.style.color = savedThemeColor; // h3タグの色をテーマカラーに設定
+        });
+    }
+
+    // ページ読み込み後にapplyThemeColorを実行
+    document.addEventListener("DOMContentLoaded", function() {
+        applyThemeColor(); // ページ読み込み後にテーマカラーを適用
+    });
+</script>
+</body>
+</html>
