@@ -2,98 +2,147 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/x-icon" href="/symphony/symphony.png">
-    <title>symphony</title>
+    <title>Symphony</title>
     <style>
-        body {
-            font-family: sans-serif;
+        /* --- デザイン・アイデンティティ (親サイトと完全同期) --- */
+        :root {
+            --primary: #008DBD;
+            --on-surface: #1a1c1e;
+            --outline: #74777f;
         }
 
-        #news {
-            text-align: center;
-            padding: 30px;
-            background-color: #f8f8f8;
-            margin: 20px auto;
-            width: 80%;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        * { 
+            box-sizing: border-box; 
+            font-family: Arial, sans-serif; /* Arial指定 */
+        }
+
+        body {
+            margin: 0;
+            padding: 16px;
+            background-color: transparent; /* 背景透過 */
+            color: var(--on-surface);
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        /* カスタムスクロールバー */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+
+        #news-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
         }
 
         article {
-            margin-bottom: 30px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 15px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        article:last-child {
+            border-bottom: none;
         }
 
         h3 {
-            font-size: 20px;
-            color: var(--news-title-color, #00AAFF); /* 変更部分 */
-            margin-bottom: 10px;
+            font-size: 17px;
+            font-weight: 900;
+            color: var(--primary);
+            margin: 0 0 6px 0;
+            letter-spacing: -0.2px;
         }
 
         .date {
-            color: #777;
-            font-size: 14px;
-            margin-bottom: 10px;
+            color: var(--outline);
+            font-size: 12px;
+            font-weight: 900;
+            margin: 0 0 10px 0;
         }
 
         .content {
-            color: #333;
-            font-size: 16px;
+            color: #444;
+            font-size: 14px;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        /* 夜空モードなどの暗い背景への配慮 */
+        @media (prefers-color-scheme: dark) {
+            .content { color: #444; } /* グラスモフィズム上なので基本はそのままでも読めます */
         }
     </style>
 </head>
 <body>
-<script src="/symphony/theme.js"></script>
-<section id="news">
+
+<section id="news-container">
+    <!-- 新しく追加した項目 -->
+    <article>
+        <h3>時間・天候連動システムを導入しました。</h3>
+        <p class="date">2026年04月07日</p>
+        <p class="content">東京のリアルタイムな天候や時間帯に合わせて、背景が変化する高度な演出機能を追加しました。設定画面のトグルスイッチから有効化できます。</p>
+    </article>
+
+    <article>
+        <h3>各種記念日のサプライズ演出を追加しました。</h3>
+        <p class="date">2026年04月06日</p>
+        <p class="content">お正月やSymphony創設記念日（9/2）など、特定の日にアクセスすると特別なクラッカー演出が表示されるようになりました。</p>
+    </article>
+
+    <article>
+        <h3>UIデザインを大幅に刷新しました。</h3>
+        <p class="date">2026年04月03日</p>
+        <p class="content">Material Design 3のガイドラインに基づき、より洗練されたアイコンサイズとArialフォントを採用。視認性と操作性が格段に向上しました。</p>
+    </article>
+
     <article>
         <h3>リフレッシュボタンを追加しました。</h3>
         <p class="date">2025年04月15日</p>
-        <p class="content">「新着情報」の埋め込みページを、更新することができる要素を追加いたしました。</p>
+        <p class="content">新着情報の埋め込みエリアを最新状態に更新できる機能を追加いたしました。親サイトのアイコンから操作可能です。</p>
     </article>
+
     <article>
-        <h3>「symphony」が、アプリケーション化しました。</h3>
+        <h3>「Symphony」が、アプリケーション化しました。</h3>
         <p class="date">2025年03月30日</p>
-        <p class="content">当サービスサイト「symphony」は、パーソナルコンピューターや、スマートフォンなどで、ブックマークに追加すると、アプリケーションになるようになりました。</p>
+        <p class="content">PCやスマートフォンで「ホーム画面に追加」を行うことで、独立したアプリケーションとして利用可能になりました。</p>
     </article>
     
     <article>
         <h3>テーマカラーの変更が可能になりました。</h3>
         <p class="date">2025年03月21日</p>
-        <p class="content">本日より、旧式の当ウェブサイトは、テーマカラーの変更を行うことができませんでしたが、<br>
-            現在のウェブサイトは、ヘッダー、文字などのカラーの変更が行えることが可能になりました。</p>
+        <p class="content">システム全体の配色を自由にカスタマイズできるようになりました。設定画面からお好みのカラーを選択してください。</p>
     </article>
 
     <article>
         <h3>ユーザー機能が実装されました。</h3>
         <p class="date">2025年03月20日</p>
-        <p class="content">まず初めにアクセスしたときは名前を尋ね、次回以降維持できるようなものを追加いたしました。<br>
-        また、「設定」というウェブページでユーザー名を変更が可能です。</p>
+        <p class="content">初回アクセス時の情報を保持し、個別に最適化された体験を提供します。登録情報は設定より変更可能です。</p>
     </article>
 
     <article>
         <h3>当ホームページが公開されました。</h3>
         <p class="date">2025年03月15日</p>
-        <p class="content">2025年03月15日に、当ホームページが公開しました。<br>
-        これから長いお付き合いをどうぞよろしくお願いいたします。</p>
+        <p class="content">Symphony公式サイトへようこそ。これから多くのサービスを展開してまいります。末永いお付き合いをよろしくお願いいたします。</p>
     </article>
 </section>
-    <script>
-    // テーマカラー適用用の関数
-    function applyThemeColor() {
-        const savedThemeColor = localStorage.getItem("themeColor") || "#00AAFF"; // デフォルトカラー
-        document.documentElement.style.setProperty("--header-bg-color", savedThemeColor);
-        const headings = document.querySelectorAll("h3"); // 記事タイトルのh3タグ
-        headings.forEach(heading => {
-            heading.style.color = savedThemeColor; // h3タグの色をテーマカラーに設定
-        });
+
+<script>
+    // --- テーマカラー同期システム ---
+    function syncTheme() {
+        const savedColor = localStorage.getItem("symphony-color") || "#008DBD";
+        document.documentElement.style.setProperty("--primary", savedColor);
     }
 
-    // ページ読み込み後にapplyThemeColorを実行
-    document.addEventListener("DOMContentLoaded", function() {
-        applyThemeColor(); // ページ読み込み後にテーマカラーを適用
+    window.addEventListener("DOMContentLoaded", syncTheme);
+
+    // 親サイトの設定変更を検知して即座に色を変える
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'symphony-color') {
+            syncTheme();
+        }
     });
 </script>
+
 </body>
 </html>
