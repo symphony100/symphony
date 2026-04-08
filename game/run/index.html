@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/x-icon" href="https://symphony100.github.io/symphony/symphony.png">
+  <title>Symphony | Dash</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: #008DBD;
+      --surface: #0a0c10;
+      --on-surface: #ffffff;
+      --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --glass: rgba(255, 255, 255, 0.1);
+    }
+
+    * { box-sizing: border-box; font-family: Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+    
+    body { 
+      margin: 0; background: var(--surface); color: var(--on-surface); 
+      height: 100vh; width: 100vw; overflow: hidden; 
+      display: flex; flex-direction: column;
+      position: fixed; touch-action: none;
+    }
+
+    #game-container {
+      flex: 1; position: relative; background: #0a0c10; overflow: hidden;
+      touch-action: none;
+    }
+
+    canvas { display: block; width: 100%; height: 100%; }
+
+    .home-btn {
+      position: absolute; top: 20px; left: 20px; z-index: 1001;
+      width: 48px; height: 48px; border-radius: 16px;
+      background: var(--glass); backdrop-filter: blur(10px);
+      border: 2px solid var(--primary); color: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: 0.3s var(--spring);
+      text-decoration: none;
+    }
+
+    .score-box {
+      position: absolute; top: 20px; right: 24px; font-size: 32px; font-weight: 900;
+      color: white; z-index: 50; pointer-events: none; letter-spacing: -1px;
+    }
+
+    #countdown {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-size: 120px; font-weight: 900; color: var(--primary);
+      z-index: 80; pointer-events: none; opacity: 0;
+      transition: transform 0.2s var(--spring), opacity 0.2s;
+    }
+    #countdown.active { opacity: 1; transform: scale(1.1); }
+
+    .overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(20px); display: flex; align-items: center;
+      justify-content: center; z-index: 100; transition: opacity 0.5s;
+    }
+
+    .card {
+      background: #1a1c1e; padding: 40px; border-radius: 40px;
+      border: 3px solid var(--primary); text-align: center; width: 90%; max-width: 340px;
+    }
+    .card h2 { font-size: 32px; font-weight: 900; margin: 0 0 10px; letter-spacing: -1px; }
+    .card p { font-weight: 900; color: #888; margin-bottom: 30px; line-height: 1.4;}
+
+    .btn {
+      background: var(--primary); color: white; border: none;
+      padding: 18px 48px; border-radius: 100px; font-size: 20px;
+      font-weight: 900; cursor: pointer; transition: 0.3s var(--spring);
+      width: 100%;
+    }
+
+    .hidden { opacity: 0; pointer-events: none; visibility: hidden; }
+
+    @keyframes shake {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(8px, -8px); }
+      40% { transform: translate(-8px, 8px); }
+      60% { transform: translate(8px, 8px); }
+      80% { transform: translate(-8px, -8px); }
+    }
+    .shake { animation: shake 0.3s ease-in-out; }
+  </style>
+</head>
+<body id="app-body">
+
+<div id="game-container">
+  <a href="../" class="home-btn"><span class="material-symbols-rounded">arrow_back</span></a>
+  <div class="score-box" id="scoreDisplay">0m</div>
+  <div id="countdown"></div>
+
+  <div id="startScreen" class="overlay">
+    <div class="card">
+      <span class="material-symbols-rounded" style="font-size: 64px; color: var(--primary); margin-bottom: 20px;">speed</span>
+      <h2>DASH</h2>
+      <p>操作はゆっくり「ふわふわ」に。<br>タップで上昇、離して下降。<br>準備はいい？</p>
+      <button class="btn" onclick="game.startCountdown()">START</button>
+    </div>
+  </div>
+
+  <div id="overScreen" class="overlay hidden">
+    <div class="card">
+      <h2 style="color: #ff4b4b;">CRASHED</h2>
+      <p>今回の記録</p>
+      <div id="finalScore" style="font-size: 64px; font-weight: 900; margin-bottom: 20px;">0m</div>
+      <button class="btn" onclick="game.startCountdown()">RETRY</button>
+    </div>
+  </div>
+
+  <canvas id="canvas"></canvas>
+</div>
+
+<script>
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const container = document.getElementById('game-container');
+  const countdownEl = document.getElementById('countdown');
+
+  const themeColor = localStorage.getItem('symphony-color') || '#008DBD';
+  document.documentElement.style.setProperty('--primary', themeColor);
+
+  const game = {
+    active: false,
+    playing: false,
+    distance: 0,
+    speed: 6,
+    obstacles: [],
+    particles: [],
+    player: null,
+    width: 0,
+    height: 0,
+    isPressing: false,
+    reqId: null,
+
+    startCountdown() {
+      this.resize();
+      this.distance = 0;
+      this.speed = 6.5;
+      this.obstacles = [];
+      this.particles = [];
+      this.player = new Player(this.height);
+      this.active = true;
+      this.playing = false; // カウントダウン開始
+      this.isPressing = false;
+
+      document.getElementById('startScreen').classList.add('hidden');
+      document.getElementById('overScreen').classList.add('hidden');
+      
+      let count = 3;
+      countdownEl.innerText = count;
+      countdownEl.classList.add('active');
+
+      const cdTimer = setInterval(() => {
+        count--;
+        if (count > 0) {
+          countdownEl.innerText = count;
+        } else if (count === 0) {
+          countdownEl.innerText = "GO!";
+        } else {
+          clearInterval(cdTimer);
+          countdownEl.classList.remove('active');
+          this.playing = true; // ここで物理演算解禁
+        }
+      }, 800);
+
+      if (this.reqId) cancelAnimationFrame(this.reqId);
+      this.loop();
+    },
+
+    resize() {
+      this.width = canvas.width = container.clientWidth;
+      this.height = canvas.height = container.clientHeight;
+    },
+
+    spawnObstacle() {
+      const minGap = 170;
+      const h = 50 + Math.random() * (this.height - minGap - 100);
+      const gap = Math.max(minGap, 220 - (this.distance / 100));
+      this.obstacles.push({ x: this.width + 150, y: h, w: 60, gap: gap });
+    },
+
+    loop() {
+      if (!this.active) return;
+      ctx.fillStyle = '#0a0c10';
+      ctx.fillRect(0, 0, this.width, this.height);
+
+      // 背景グリッド
+      ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+      const step = 60;
+      const offset = (this.distance * 15) % step;
+      for (let x = -offset; x < this.width; x += step) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, this.height); ctx.stroke();
+      }
+
+      // プレイ中のみ更新される処理
+      if (this.playing) {
+        this.speed += 0.0008;
+        this.distance += this.speed / 15;
+        document.getElementById('scoreDisplay').innerText = Math.floor(this.distance) + "m";
+
+        if (this.obstacles.length === 0 || this.obstacles[this.obstacles.length-1].x < this.width - 380) {
+          this.spawnObstacle();
+        }
+
+        for (let i = this.obstacles.length - 1; i >= 0; i--) {
+          let o = this.obstacles[i];
+          o.x -= this.speed;
+          
+          ctx.fillStyle = 'rgba(255,255,255,0.1)';
+          ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+          ctx.lineWidth = 2;
+          
+          ctx.beginPath();
+          ctx.roundRect(o.x, -10, o.w, o.y + 10, [0, 0, 16, 16]);
+          ctx.fill(); ctx.stroke();
+          ctx.beginPath();
+          ctx.roundRect(o.x, o.y + o.gap, o.w, this.height - (o.y + o.gap) + 10, [16, 16, 0, 0]);
+          ctx.fill(); ctx.stroke();
+
+          if (this.player && this.player.x + 18 > o.x && this.player.x - 18 < o.x + o.w) {
+            if (this.player.y - 12 < o.y || this.player.y + 12 > o.y + o.gap) {
+              this.gameOver();
+            }
+          }
+          if (o.x < -100) this.obstacles.splice(i, 1);
+        }
+
+        this.player.update(this.isPressing, this.height);
+      }
+
+      // パーティクル
+      this.particles.forEach((p, i) => {
+        p.x -= (this.playing ? this.speed : 2) * 0.6;
+        p.y += p.vy;
+        p.a -= 0.02;
+        ctx.globalAlpha = Math.max(0, p.a);
+        ctx.fillStyle = themeColor;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill();
+        if (p.a <= 0) this.particles.splice(i, 1);
+      });
+      ctx.globalAlpha = 1;
+
+      // 描画は常に
+      if(this.player) this.player.draw();
+
+      this.reqId = requestAnimationFrame(() => this.loop());
+    },
+
+    gameOver() {
+      if (!this.active) return;
+      this.active = false;
+      this.playing = false;
+      container.classList.add('shake');
+      setTimeout(() => container.classList.remove('shake'), 300);
+      document.getElementById('finalScore').innerText = Math.floor(this.distance) + "m";
+      document.getElementById('overScreen').classList.remove('hidden');
+    }
+  };
+
+  class Player {
+    constructor(screenH) {
+      this.x = 100;
+      this.y = screenH / 2; // 中央から開始
+      this.vy = 0;
+      this.angle = 0;
+    }
+    update(isPressing, screenH) {
+      if (isPressing) {
+        this.vy -= 0.45;
+        if (Math.random() > 0.4) {
+          game.particles.push({
+            x: this.x - 15, y: this.y,
+            vy: Math.random() * 3 - 1.5,
+            s: Math.random() * 5 + 2, a: 1
+          });
+        }
+      } else {
+        this.vy += 0.35;
+      }
+      this.vy *= 0.98;
+      this.y += this.vy;
+      this.angle = Math.max(-0.5, Math.min(0.5, this.vy * 0.06));
+
+      if (this.y < 0 || this.y > screenH) game.gameOver();
+    }
+    draw() {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.angle);
+      ctx.fillStyle = themeColor;
+      ctx.shadowBlur = 20;
+      ctx.shadowColor = themeColor;
+      ctx.beginPath();
+      ctx.moveTo(25, 0);
+      ctx.lineTo(-15, -16);
+      ctx.lineTo(-6, 0);
+      ctx.lineTo(-15, 16);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  const handleDown = (e) => {
+    if (!game.active || !game.playing) return;
+    if (e.target.closest('.home-btn') || e.target.closest('.btn')) return;
+    game.isPressing = true;
+  };
+  const handleUp = () => { game.isPressing = false; };
+
+  container.addEventListener('pointerdown', handleDown);
+  window.addEventListener('pointerup', handleUp);
+  window.addEventListener('pointercancel', handleUp);
+  window.addEventListener('resize', () => game.resize());
+</script>
+</body>
+</html>
