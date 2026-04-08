@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/x-icon" href="https://symphony100.github.io/symphony/symphony.png">
+  <title>Symphony</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: #008DBD;
+      --surface: #121212;
+      --on-surface: #ffffff;
+      --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --glass: rgba(255, 255, 255, 0.1);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      font-family: Arial, sans-serif; /* Arial指定 */
+      -webkit-tap-highlight-color: transparent; 
+    }
+    
+    body { 
+      margin: 0; background: var(--surface); color: var(--on-surface); 
+      height: 100vh; width: 100vw; overflow: hidden; 
+      display: flex; flex-direction: column;
+    }
+
+    /* --- ゲームコンテナ --- */
+    #game-container {
+      flex: 1; position: relative; background: #121212; overflow: hidden;
+      width: 100%; height: 100%;
+    }
+
+    canvas { display: block; width: 100%; height: 100%; }
+
+    /* --- ホームへ戻るボタン (MD3 Glass) --- */
+    .home-btn {
+      position: absolute; top: 20px; left: 20px; z-index: 1001;
+      width: 48px; height: 48px; border-radius: 16px;
+      background: var(--glass); backdrop-filter: blur(10px);
+      border: 2px solid var(--primary); color: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: 0.3s var(--spring);
+      text-decoration: none;
+    }
+    .home-btn:hover { background: var(--primary); color: white; transform: scale(1.1); }
+    .home-btn:active { transform: scale(0.9); }
+
+    /* --- UIレイヤー --- */
+    .score-box {
+      position: absolute; top: 20px; right: 24px; font-size: 42px; font-weight: 900;
+      color: white; text-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 50;
+      pointer-events: none;
+    }
+
+    .combo-text {
+      position: absolute; top: 80px; right: 24px; font-size: 20px; font-weight: 900;
+      color: var(--primary); opacity: 0; transition: transform 0.2s; z-index: 50;
+      pointer-events: none;
+    }
+
+    .overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(20px); display: flex; align-items: center;
+      justify-content: center; pointer-events: auto; transition: opacity 0.5s; z-index: 100;
+    }
+
+    .card {
+      background: #1e1e1e; padding: 40px; border-radius: 40px;
+      border: 3px solid var(--primary); text-align: center; width: 90%; max-width: 340px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    .card h2 { font-size: 36px; font-weight: 900; margin: 0 0 10px; letter-spacing: -2px; }
+    .card p { font-weight: 900; color: #888; line-height: 1.6; margin-bottom: 30px; }
+
+    .btn {
+      background: var(--primary); color: white; border: none;
+      padding: 18px 48px; border-radius: 100px; font-size: 20px;
+      font-weight: 900; cursor: pointer; transition: 0.3s var(--spring);
+      width: 100%;
+    }
+    .btn:hover { transform: scale(1.05); filter: brightness(1.1); }
+
+    .hidden { opacity: 0; pointer-events: none; }
+
+    @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+    .active-combo { animation: bounce 0.3s ease; opacity: 1 !important; }
+  </style>
+</head>
+<body>
+
+<div id="game-container">
+  <!-- ホームへ戻る -->
+  <a href="https://symphony100.github.io/symphony/game/" class="home-btn" title="ホームに戻る">
+    <span class="material-symbols-rounded">arrow_back</span>
+  </a>
+
+  <div class="score-box" id="scoreDisplay">0</div>
+  <div class="combo-text" id="comboDisplay">COMBO x0</div>
+
+  <!-- スタート画面 -->
+  <div id="startScreen" class="overlay">
+    <div class="card">
+      <span class="material-symbols-rounded" style="font-size: 64px; color: var(--primary); margin-bottom: 20px;">keyboard_double_arrow_up</span>
+      <h2>RISE</h2>
+      <p>左右に移動して高く登れ！<br>壁に触れずに連続ジャンプで<br>高得点コンボを狙え。</p>
+      <button class="btn" onclick="game.init()">START</button>
+    </div>
+  </div>
+
+  <!-- ゲームオーバー画面 -->
+  <div id="overScreen" class="overlay hidden">
+    <div class="card">
+      <h2 style="color: #ff4b4b;">FALLEN</h2>
+      <p>最高到達点</p>
+      <div id="finalScore" style="font-size: 64px; font-weight: 900; margin-bottom: 20px; color: white;">0</div>
+      <button class="btn" onclick="game.init()">RETRY</button>
+    </div>
+  </div>
+
+  <canvas id="canvas"></canvas>
+</div>
+
+<script>
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const container = document.getElementById('game-container');
+
+  // --- テーマ同期 ---
+  const themeColor = localStorage.getItem('symphony-color') || '#008DBD';
+  document.documentElement.style.setProperty('--primary', themeColor);
+
+  const game = {
+    active: false,
+    score: 0,
+    combo: 0,
+    cameraY: 0,
+    platforms: [],
+    particles: [],
+    player: null,
+    width: 0,
+    height: 0,
+
+    init() {
+      this.width = canvas.width = container.clientWidth;
+      this.height = canvas.height = container.clientHeight;
+      this.score = 0;
+      this.combo = 0;
+      this.cameraY = 0;
+      this.platforms = [];
+      this.particles = [];
+      this.player = new Player();
+      
+      // 初期足場の配置
+      for(let i=0; i<12; i++) {
+        this.addPlatform(this.height - i * 110);
+      }
+      
+      this.active = true;
+      document.getElementById('scoreDisplay').innerText = "0";
+      document.getElementById('startScreen').classList.add('hidden');
+      document.getElementById('overScreen').classList.add('hidden');
+      this.loop();
+    },
+
+    addPlatform(y) {
+      const w = 80;
+      this.platforms.push({
+        x: Math.random() * (this.width - w),
+        y: y,
+        w: w,
+        h: 12,
+        type: Math.random() > 0.92 ? 'boost' : 'normal'
+      });
+    },
+
+    loop() {
+      if (!this.active) return;
+      ctx.fillStyle = '#121212';
+      ctx.fillRect(0, 0, this.width, this.height);
+
+      // カメラ追従 (プレイヤーが画面中央より上にいったらスクロール)
+      if (this.player.y < this.cameraY + this.height * 0.4) {
+        this.cameraY = this.player.y - this.height * 0.4;
+      }
+
+      ctx.save();
+      ctx.translate(0, -this.cameraY);
+
+      // プラットフォームの描画
+      this.platforms.forEach((p, i) => {
+        ctx.fillStyle = p.type === 'boost' ? '#FFD700' : 'white';
+        ctx.beginPath();
+        ctx.roundRect(p.x, p.y, p.w, p.h, 6);
+        ctx.fill();
+
+        // 衝突判定 (プレイヤーが落下中のみ)
+        if (this.player.vy > 0 && 
+            this.player.x + 12 > p.x && 
+            this.player.x - 12 < p.x + p.w &&
+            this.player.y + 15 > p.y &&
+            this.player.y + 15 < p.y + p.h + 10) {
+          
+          this.player.jump(p.type === 'boost' ? -22 : -14);
+          if (p.type === 'boost') this.spawnParticles(p.x + p.w/2, p.y, '#FFD700');
+        }
+
+        // 足場のリサイクル
+        if (p.y > this.cameraY + this.height) {
+          this.platforms.splice(i, 1);
+          this.addPlatform(this.cameraY - 20);
+          
+          // スコア更新 (高さに基づく)
+          const currentH = Math.floor(Math.abs(this.cameraY / 10));
+          if (currentH > this.score) {
+            this.score = currentH;
+            document.getElementById('scoreDisplay').innerText = this.score;
+          }
+        }
+      });
+
+      // パーティクルの更新
+      this.particles.forEach((p, i) => {
+        p.y += p.vy; p.x += p.vx; p.a -= 0.02;
+        ctx.globalAlpha = Math.max(0, p.a);
+        ctx.fillStyle = p.c;
+        ctx.fillRect(p.x, p.y, 4, 4);
+        if (p.a <= 0) this.particles.splice(i, 1);
+      });
+      ctx.globalAlpha = 1;
+
+      this.player.update();
+      this.player.draw();
+      ctx.restore();
+
+      // ゲームオーバー判定
+      if (this.player.y > this.cameraY + this.height + 100) {
+        this.gameOver();
+      }
+
+      requestAnimationFrame(() => this.loop());
+    },
+
+    spawnParticles(x, y, color) {
+      for(let i=0; i<10; i++) {
+        this.particles.push({
+          x, y, 
+          vx: (Math.random()-0.5)*10, 
+          vy: (Math.random()-0.5)*10, 
+          a: 1, 
+          c: color
+        });
+      }
+    },
+
+    updateCombo(reset) {
+      const el = document.getElementById('comboDisplay');
+      if (reset) {
+        this.combo = 0;
+        el.classList.remove('active-combo');
+      } else {
+        this.combo++;
+        el.innerText = `COMBO x${this.combo}`;
+        el.classList.add('active-combo');
+        // コンボ継続中は色を少し変える演出なども可能
+      }
+    },
+
+    gameOver() {
+      this.active = false;
+      document.getElementById('finalScore').innerText = this.score;
+      document.getElementById('overScreen').classList.remove('hidden');
+    }
+  };
+
+  class Player {
+    constructor() {
+      this.x = game.width / 2;
+      this.y = game.height - 150;
+      this.vx = 0;
+      this.vy = 0;
+      this.r = 14;
+    }
+    update() {
+      this.vy += 0.45; // 重力
+      this.x += this.vx;
+      this.y += this.vy;
+
+      // 画面端の壁判定
+      if (this.x < this.r || this.x > game.width - this.r) {
+        this.vx *= -0.5; // 跳ね返り
+        this.x = this.x < this.r ? this.r : game.width - this.r;
+        game.updateCombo(true); // 壁に当たるとコンボリセット
+      }
+    }
+    jump(power) {
+      this.vy = power;
+      game.updateCombo(false);
+      game.spawnParticles(this.x, this.y + 15, themeColor);
+    }
+    draw() {
+      ctx.save();
+      ctx.fillStyle = themeColor;
+      ctx.shadowBlur = 20;
+      ctx.shadowColor = themeColor;
+      
+      // キャラクターの伸縮アニメーション
+      const stretch = Math.min(Math.abs(this.vy) * 0.5, 8);
+      ctx.beginPath();
+      ctx.ellipse(this.x, this.y, this.r - stretch/2, this.r + stretch, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  // --- 入力制御 ---
+  const handleInput = (clientX) => {
+    if (!game.active) return;
+    const rect = canvas.getBoundingClientRect();
+    const targetX = clientX - rect.left;
+    // 慣性をつけた移動
+    game.player.vx = (targetX - game.player.x) * 0.15;
+  };
+
+  window.addEventListener('mousemove', (e) => handleInput(e.clientX));
+  window.addEventListener('touchmove', (e) => {
+    handleInput(e.touches[0].clientX);
+    e.preventDefault();
+  }, { passive: false });
+
+  window.addEventListener('resize', () => {
+    game.width = canvas.width = container.clientWidth;
+    game.height = canvas.height = container.clientHeight;
+  });
+
+</script>
+</body>
+</html>
