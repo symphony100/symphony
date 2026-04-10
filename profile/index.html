@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/x-icon" href="https://symphony100.github.io/symphony/symphony.png">
+  <title>Symphony</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: #008DBD;
+      --on-primary: #ffffff;
+      --surface: #ffffff; /* 純白背景 */
+      --on-surface: #1a1c1e;
+      --surface-variant: #f1f3f4;
+      --outline: #eeeeee;
+      --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * { box-sizing: border-box; font-family: Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+    
+    body { 
+      margin: 0; background: var(--surface); color: var(--on-surface); 
+      min-height: 100vh; overflow-x: hidden; 
+    }
+
+    /* ページ読み込みフェードイン */
+    @keyframes fadeInPage {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    main { animation: fadeInPage 0.8s var(--spring) forwards; opacity: 0; }
+
+    /* --- ヘッダー (Googleスタイル) --- */
+    header {
+      height: 64px; display: flex; align-items: center; padding: 0 24px;
+      background: #ffffff; border-bottom: 1px solid var(--outline);
+      position: sticky; top: 0; z-index: 1000;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; color: var(--primary); font-weight: 900; font-size: 20px; text-decoration: none; }
+    .brand img { width: 26px; height: 26px; }
+
+    /* --- メイン領域 --- */
+    main { max-width: 800px; margin: 0 auto; padding: 60px 24px 100px; }
+
+    /* --- ヒーローセクション (中央アバター) --- */
+    .hero {
+      display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 80px;
+    }
+    .avatar-container {
+      width: 140px; height: 140px; border-radius: 48px;
+      background: var(--surface-variant);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 24px; border: 4px solid var(--primary);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.05);
+    }
+    .avatar-container .material-symbols-rounded {
+      font-size: 80px; color: var(--primary);
+      font-variation-settings: 'FILL' 1, 'wght' 300;
+    }
+    .name-badge { font-size: 48px; font-weight: 900; margin: 0; letter-spacing: -2px; }
+    .role-text { font-size: 14px; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-top: 8px; }
+
+    /* --- 見出しデザイン (四角ボックス型・Arial 900) --- */
+    .section-header { margin: 64px 0 24px 0; display: flex; }
+    .section-title-box { 
+      background: var(--primary); color: var(--on-primary);
+      padding: 10px 24px; border-radius: 12px;
+      font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;
+    }
+
+    /* --- コンテンツグリッド --- */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    
+    .card {
+      background: #ffffff; border-radius: 32px; padding: 32px;
+      border: 3px solid var(--outline); transition: border-color 0.3s var(--spring), box-shadow 0.3s var(--spring);
+      display: flex; flex-direction: column; align-items: flex-start;
+    }
+    /* ホバー：枠だけ光る */
+    .card:hover { 
+      border-color: var(--primary); 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    }
+
+    /* 56px 特大アイコン */
+    .card .material-symbols-rounded { 
+      font-size: 56px; color: var(--primary); margin-bottom: 16px; 
+      font-variation-settings: 'FILL' 1; 
+    }
+
+    .card h3 { font-size: 22px; font-weight: 900; margin: 0 0 12px 0; letter-spacing: -0.5px; }
+    .card p { font-size: 16px; color: #5f6368; font-weight: 700; line-height: 1.7; margin: 0; }
+
+    /* メッセージカード (全幅) */
+    .message-card { grid-column: 1 / -1; }
+    .message-card p { font-size: 18px; color: var(--on-surface); }
+
+    /* --- フッター (重厚感) --- */
+    footer { 
+      background: #111111; color: white; padding: 80px 24px; text-align: center; border-top: 8px solid var(--primary); 
+    }
+    .f-logo { font-size: 24px; font-weight: 900; margin-bottom: 16px; color: var(--primary); }
+    .f-copy { font-size: 12px; color: #555; font-weight: 900; }
+
+    @media (max-width: 500px) {
+      .name-badge { font-size: 38px; }
+      .grid { grid-template-columns: 1fr; }
+      .card { padding: 24px; border-radius: 24px; }
+      main { padding: 40px 16px 80px; }
+    }
+  </style>
+</head>
+<body id="app-body">
+
+<header>
+  <a href="../" class="brand">
+    <img src="https://symphony100.github.io/symphony/symphony.png" alt="logo">
+    <span>Symphony</span>
+  </a>
+</header>
+
+<main>
+  <!-- ヒーロー -->
+  <div class="hero">
+    <div class="avatar-container">
+      <span class="material-symbols-rounded">person</span>
+    </div>
+    <h1 class="name-badge">岡本　英大</h1>
+    <div class="role-text">Lead Developer & Designer</div>
+  </div>
+
+  <!-- 個人データ -->
+  <div class="section-header">
+    <div class="section-title-box">Personal Data</div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <span class="material-symbols-rounded">movie_edit</span>
+      <h3>趣味</h3>
+      <p>プログラミング、旅行、作曲、ランニングなど</p>
+    </div>
+
+    <div class="card">
+      <span class="material-symbols-rounded">restaurant</span>
+      <h3>その他</h3>
+      <p>
+    血液型：A型
+    出身地：東京都新宿区
+    住居：神奈川県横浜市
+    </p>
+    </div>
+  </div>
+
+  <!-- メッセージ -->
+  <div class="section-header">
+    <div class="section-title-box">Message</div>
+  </div>
+
+  <div class="grid">
+    <div class="card message-card">
+      <span class="material-symbols-rounded">chat_bubble</span>
+      <h3>ひとこと</h3>
+      <p>
+        Symphony公式サイトで、日常をより便利に、楽しくするツールを開発しています。<br>
+        これからも皆様の役に立つ、美しく使いやすいウェブサイトを目指して進化を続けていきます。<br>
+        どうぞよろしくお願いします。
+      </p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="f-logo">SYMPHONY SYSTEM GROUP</div>
+  <div class="f-copy">© 2024-2026 Symphony System Group. All Rights Reserved.</div>
+</footer>
+
+<script>
+  // --- テーマカラー同期システム ---
+  function syncTheme() {
+    const savedColor = localStorage.getItem('symphony-color') || '#008DBD';
+    document.documentElement.style.setProperty('--primary', savedColor);
+  }
+
+  window.onload = () => {
+    syncTheme();
+    // フェードイン開始
+    document.querySelector('main').style.opacity = '1';
+  };
+
+  // メインサイト側の設定変更をリアルタイム検知
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'symphony-color') syncTheme();
+  });
+</script>
+
+</body>
+</html>
