@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>街レポ | MachiRepo Elite Azabu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root { --brand: #1e293b; --accent: #4f46e5; --bg: #f8fafc; }
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #0f172a; margin: 0; overflow: hidden; height: 100vh; }
+
+        .app-shell { 
+            max-width: 500px; margin: 0 auto; height: 100vh; 
+            background-color: var(--bg); position: relative; 
+            box-shadow: 0 0 100px rgba(0,0,0,0.8); overflow: hidden;
+        }
+
+        /* 画面遷移アニメーション */
+        .screen {
+            position: absolute; inset: 0; background: var(--bg); 
+            display: none; flex-direction: column; z-index: 10;
+            opacity: 0; transform: translateY(30px); 
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .screen.active { display: flex; opacity: 1; transform: translateY(0); z-index: 50; }
+
+        /* 言語切り替え時のヌルッとアニメーション */
+        .lang-fade { transition: opacity 0.3s ease, filter 0.3s ease; }
+        .lang-updating { opacity: 0; filter: blur(4px); }
+
+        /* 波紋アニメーション（維持） */
+        .pulse-wave {
+            position: absolute; width: 140px; height: 140px; border: 4px solid var(--accent); border-radius: 50%;
+            animation: wave-out 2s infinite;
+        }
+        @keyframes wave-out { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(2.5); opacity: 0; } }
+
+        /* 解決演出 */
+        #success-overlay {
+            position: absolute; inset: 0; background: rgba(255,255,255,0.95); z-index: 1000;
+            display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px);
+        }
+
+        .m-card { background: white; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.02); }
+        .m-card:active { transform: scale(0.96); background: #f1f5f9; }
+        
+        #map { height: 100%; width: 100%; z-index: 1; }
+        .nav-active { color: var(--accent) !important; font-variation-settings: 'FILL' 1; }
+        .font-black { font-weight: 900; }
+    </style>
+</head>
+<body>
+
+    <div class="app-shell lang-fade" id="main-content">
+        <!-- 言語切替（最上部） -->
+        <div class="absolute top-0 left-0 right-0 bg-white/90 backdrop-blur z-[100] flex justify-center gap-6 py-4 border-b border-slate-100">
+            <button onclick="changeLang('ja')" class="text-xs font-black text-slate-400 hover:text-indigo-600 transition">日本語</button>
+            <button onclick="changeLang('en')" class="text-xs font-black text-slate-400 hover:text-indigo-600 transition">EN</button>
+            <button onclick="changeLang('zh')" class="text-xs font-black text-slate-400 hover:text-indigo-600 transition">中文</button>
+            <button onclick="changeLang('ko')" class="text-xs font-black text-slate-400 hover:text-indigo-600 transition">한국어</button>
+        </div>
+
+        <!-- 解決演出用 -->
+        <div id="success-overlay">
+            <div class="text-7xl font-black text-amber-500 mb-4 animate-bounce">+50 PTS</div>
+            <p id="t-solved-msg" class="text-2xl font-black text-slate-800 tracking-tight">解決しました！</p>
+        </div>
+
+        <!-- 1. ゲート画面 -->
+        <div id="screen-gate" class="screen active justify-center items-center px-10 text-center">
+            <div class="mb-16 mt-8">
+                <div class="w-20 h-20 bg-slate-800 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-2xl">
+                    <span class="material-symbols-rounded text-white !text-5xl">handshake</span>
+                </div>
+                <h1 class="text-5xl font-black text-slate-800 mb-1 tracking-tighter">街レポ</h1>
+                <p class="text-slate-400 font-bold text-[10px] tracking-[0.4em] uppercase">Street Repo Network</p>
+            </div>
+            <div class="w-full space-y-6">
+                <button onclick="showScreen('senior')" class="w-full m-card p-8 flex flex-col items-center">
+                    <span class="material-symbols-rounded !text-5xl mb-3 text-slate-700">accessibility_new</span>
+                    <span id="t-ask" class="text-xl font-black text-slate-800">おねがいする</span>
+                </button>
+                <button onclick="openYouth()" class="w-full m-card p-8 flex flex-col items-center">
+                    <span class="material-symbols-rounded !text-5xl mb-3 text-indigo-600">volunteer_activism</span>
+                    <span id="t-find" class="text-xl font-black text-slate-800">クエストを探す</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. シニア：依頼 -->
+        <div id="screen-senior" class="screen">
+            <header class="p-6 pt-20 flex items-center border-b border-slate-100 bg-white">
+                <button onclick="showScreen('gate')" class="p-2 text-slate-400"><span class="material-symbols-rounded">arrow_back</span></button>
+                <h2 id="t-wrong" class="ml-4 text-xl font-black text-slate-800">どうしましたか？</h2>
+            </header>
+            <div class="p-6 space-y-4">
+                <div class="text-indigo-600 bg-indigo-50 p-4 rounded-xl font-bold text-xs flex items-center mb-2">
+                    <span class="material-symbols-rounded mr-2 text-lg">location_on</span>
+                    <span id="t-current-loc">麻布十番駅 付近</span>
+                </div>
+                <button onclick="seniorCall('op_reg','#334155','point_of_sale')" class="w-full p-8 bg-slate-700 text-white rounded-[28px] flex items-center shadow-lg active:scale-95 transition">
+                    <span class="material-symbols-rounded !text-4xl">point_of_sale</span><span id="t-op-reg" class="text-2xl font-black ml-6">レジの操作</span>
+                </button>
+                <button onclick="seniorCall('op_bag','#e11d48','shopping_bag')" class="w-full p-8 bg-rose-600 text-white rounded-[28px] flex items-center shadow-lg active:scale-95 transition">
+                    <span class="material-symbols-rounded !text-4xl">shopping_bag</span><span id="t-op-bag" class="text-2xl font-black ml-6">重い荷物</span>
+                </button>
+                <button onclick="seniorCall('op_step','#059669','blind')" class="w-full p-8 bg-emerald-600 text-white rounded-[28px] flex items-center shadow-lg active:scale-95 transition">
+                    <span class="material-symbols-rounded !text-4xl">blind</span><span id="t-op-step" class="text-2xl font-black ml-6">段差・移動</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 3. シニア：待機画面 -->
+        <div id="screen-waiting" class="screen items-center justify-center bg-white text-center px-12">
+            <div class="relative flex items-center justify-center mb-32">
+                <div class="pulse-wave"></div>
+                <div id="wait-circle" class="w-32 h-32 bg-slate-800 rounded-full flex items-center justify-center text-white z-10 shadow-2xl">
+                    <span id="wait-icon" class="material-symbols-rounded !text-6xl">campaign</span>
+                </div>
+            </div>
+            <h2 id="wait-label" class="text-3xl font-black text-slate-800 mb-4 uppercase">Calling...</h2>
+            <p id="t-wait-msg" class="text-slate-500 font-bold mb-10 leading-relaxed px-4 text-center">近くのサポーターへ通知を送信しました。そのままお待ちください。</p>
+            <button onclick="showScreen('senior')" id="t-cancel" class="px-12 py-4 bg-slate-100 text-slate-400 rounded-full font-black text-lg">やめる</button>
+        </div>
+
+        <!-- 4. 若者：リスト -->
+        <div id="screen-youth-list" class="screen bg-slate-50">
+            <header class="p-5 pt-20 bg-white border-b flex justify-between items-center sticky top-0 z-50">
+                <button onclick="showScreen('gate')" class="p-1 text-slate-400"><span class="material-symbols-rounded">arrow_back</span></button>
+                <span id="t-nearby" class="font-black text-slate-800 tracking-tight">近くのクエスト</span>
+                <div class="bg-amber-400 text-white px-3 py-1 rounded-full font-black text-xs shadow-sm"><span class="header-pts-val">7,000</span> PTS</div>
+            </header>
+            <div class="p-4 space-y-4 overflow-y-auto pb-24">
+                <div onclick="youthAccept('op_reg', '麻布十番 ピーコック')" class="m-card p-6 flex justify-between items-center border-l-8 border-slate-600">
+                    <div><p class="text-[10px] font-black text-slate-400 mb-1">AZABU JUBAN</p><h3 class="t-op-reg-val text-lg font-black text-slate-800">レジの操作</h3></div>
+                    <span class="bg-indigo-50 text-indigo-600 text-[10px] font-black px-4 py-2 rounded-full uppercase">Mission</span>
+                </div>
+                <div onclick="youthAccept('op_bag', '六本木ヒルズ 入口')" class="m-card p-6 flex justify-between items-center border-l-8 border-rose-600">
+                    <div><p class="text-[10px] font-black text-slate-400 mb-1">ROPPONGI HILLS</p><h3 class="t-op-bag-val text-lg font-black text-slate-800">重い荷物</h3></div>
+                    <span class="bg-indigo-50 text-indigo-600 text-[10px] font-black px-4 py-2 rounded-full uppercase">Mission</span>
+                </div>
+            </div>
+            <nav class="mt-auto bg-white/95 backdrop-blur-md border-t flex justify-around py-4 z-50 shadow-2xl">
+                <button onclick="changeTab('list')" class="nav-active"><span class="material-symbols-rounded">explore</span></button>
+                <button onclick="changeTab('map')" class="text-slate-300"><span class="material-symbols-rounded">map</span></button>
+                <button onclick="changeTab('mypage')" class="text-slate-300"><span class="material-symbols-rounded">person</span></button>
+            </nav>
+        </div>
+
+        <!-- 5. 若者：マップ -->
+        <div id="screen-youth-map" class="screen">
+            <header class="p-4 pt-20 bg-white border-b flex items-center z-50">
+                <button onclick="showScreen('gate')" class="p-2 text-slate-400"><span class="material-symbols-rounded">arrow_back</span></button>
+                <span id="t-map-title" class="ml-4 font-black text-slate-800">周辺マップ</span>
+            </header>
+            <div class="flex-grow"><div id="map"></div></div>
+            <nav class="bg-white/95 border-t flex justify-around py-4 z-50 shadow-2xl">
+                <button onclick="changeTab('list')" class="text-slate-300"><span class="material-symbols-rounded">explore</span></button>
+                <button onclick="changeTab('map')" class="nav-active"><span class="material-symbols-rounded">map</span></button>
+                <button onclick="changeTab('mypage')" class="text-slate-300"><span class="material-symbols-rounded">person</span></button>
+            </nav>
+        </div>
+
+        <!-- 6. 若者：マイページ -->
+        <div id="screen-youth-mypage" class="screen bg-slate-50">
+            <header class="p-4 pt-20 bg-white border-b flex items-center z-50">
+                <button onclick="showScreen('gate')" class="p-2 text-slate-400"><span class="material-symbols-rounded">arrow_back</span></button>
+                <span id="t-profile" class="ml-4 font-black text-slate-800">マイページ</span>
+            </header>
+            <div class="p-8 flex-grow overflow-y-auto">
+                <div class="bg-white rounded-[40px] p-8 text-center shadow-sm border border-slate-100 mb-8">
+                    <div class="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4 text-indigo-600">
+                        <span class="material-symbols-rounded !text-4xl">verified_user</span>
+                    </div>
+                    <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Supporter Level: Legend</p>
+                    <p id="u-pts" class="text-6xl font-black text-slate-900 tracking-tighter header-pts-val">7,000</p>
+                    <p id="t-pts-label" class="text-[10px] font-bold text-slate-400 uppercase">Total Points</p>
+                </div>
+                <h4 id="t-history" class="font-black text-slate-400 text-[10px] uppercase mb-4 px-2 tracking-widest">History</h4>
+                <div class="space-y-2">
+                    <div class="bg-white p-4 rounded-2xl flex justify-between shadow-sm border border-slate-50"><span class="font-black text-slate-800">Mission Clear</span><span class="text-xs font-bold text-indigo-400">2024.04.11</span></div>
+                </div>
+            </div>
+            <nav class="bg-white/95 border-t flex justify-around py-4 z-50 shadow-2xl">
+                <button onclick="changeTab('list')" class="text-slate-300"><span class="material-symbols-rounded">explore</span></button>
+                <button onclick="changeTab('map')" class="text-slate-300"><span class="material-symbols-rounded">map</span></button>
+                <button onclick="changeTab('mypage')" class="nav-active"><span class="material-symbols-rounded">person</span></button>
+            </nav>
+        </div>
+
+        <!-- 7. 若者：受注画面 -->
+        <div id="screen-youth-active" class="screen bg-white">
+            <header class="p-6 pt-20 border-b text-center"><h2 id="t-in-progress" class="text-lg font-black text-slate-800">ミッション進行中</h2></header>
+            <div class="flex-grow p-8 flex flex-col justify-between">
+                <div class="bg-indigo-50 p-10 rounded-[40px] text-center border border-indigo-100">
+                    <h3 id="active-task-type" class="text-4xl font-black text-slate-800 mb-8 tracking-tighter">---</h3>
+                    <p id="active-task-loc" class="text-lg font-bold text-slate-700 tracking-tight">---</p>
+                </div>
+                <div class="space-y-4">
+                    <button onclick="solveMission()" id="t-solve-btn" class="w-full p-8 bg-indigo-600 text-white rounded-[32px] shadow-xl text-xl font-black active:scale-95 transition">解決しました！</button>
+                    <button onclick="showScreen('youth-list')" id="t-stop" class="w-full py-4 text-slate-400 font-bold text-center">中止する</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 翻訳辞書
+        const LANGS = {
+            ja: { ask:"おねがいする", find:"クエストを探す", wrong:"どうしましたか？", op_reg:"レジの操作", op_bag:"重い荷物", op_step:"段差・移動", wait_msg:"近くのサポーターへ通知を送信しました。<br>そのままお待ちください。", calling:"呼び出し中", cancel:"やめる", nearby:"近くのクエスト", in_progress:"ミッション進行中", solve:"解決しました！", stop:"中止する", solved_msg:"解決しました！", map_title:"周辺マップ", profile:"マイページ", history:"活動履歴", pts_label:"獲得ポイント", cur_loc:"麻布十番駅 付近" },
+            en: { ask:"Request Help", find:"Find Quests", wrong:"How can we help?", op_reg:"Checkout Help", op_bag:"Heavy Baggage", op_step:"Steps / Mobility", wait_msg:"Notified nearby supporters.<br>Please wait a moment.", calling:"Calling...", cancel:"Cancel", nearby:"Nearby Quests", in_progress:"Mission in Progress", solve:"Solved It!", stop:"Stop", solved_msg:"Well Done!", map_title:"Nearby Map", profile:"Profile", history:"History", pts_label:"Total Points", cur_loc:"Azabu-Juban Station" },
+            zh: { ask:"请求帮助", find:"寻找任务", wrong:"有什么可以帮您？", op_reg:"收银机操作", op_bag:"重型行李", op_step:"台阶/移动", wait_msg:"已通知附近的志愿者。<br>请在原地等候。", calling:"正在呼叫...", cancel:"取消", nearby:"附近任务", in_progress:"任务执行中", solve:"已解决！", stop:"取消", solved_msg:"太棒了！", map_title:"周边地图", profile:"个人主页", history:"历史记录", pts_label:"累计积分", cur_loc:"麻布十番站 附近" },
+            ko: { ask:"부탁하기", find:"퀘스트 찾기", wrong:"무슨 도움이 필요하세요?", op_reg:"계산대 조작", op_bag:"무거운 짐", op_step:"단차 / 이동 보조", wait_msg:"근처 서포터에게 알렸습니다.<br>잠시만 기다려주세요.", calling:"호출 중...", cancel:"취소", nearby:"근처 퀘スト", in_progress:"미션 진행 중", solve:"해결했습니다!", stop:"중단", solved_msg:"해결 완료!", map_title:"주변 지도", profile:"마이페이지", history:"활동 내역", pts_label:"누적 포인트", cur_loc:"아자부주반역 근처" }
+        };
+
+        let currentLang = 'ja';
+        let map = null;
+
+        // 言語変更（ヌルッとアニメーション付）
+        function changeLang(l) {
+            const shell = document.getElementById('main-content');
+            shell.classList.add('lang-updating');
+            
+            setTimeout(() => {
+                currentLang = l;
+                const t = LANGS[l];
+                document.getElementById('t-ask').innerText = t.ask;
+                document.getElementById('t-find').innerText = t.find;
+                document.getElementById('t-wrong').innerText = t.wrong;
+                document.getElementById('t-op-reg').innerText = t.op_reg;
+                document.getElementById('t-op-bag').innerText = t.op_bag;
+                document.getElementById('t-op-step').innerText = t.op_step;
+                document.getElementById('t-wait-msg').innerHTML = t.wait_msg;
+                document.getElementById('wait-label').innerText = t.calling.toUpperCase();
+                document.getElementById('t-cancel').innerText = t.cancel;
+                document.getElementById('t-nearby').innerText = t.nearby;
+                document.getElementById('t-in-progress').innerText = t.in_progress;
+                document.getElementById('t-solve-btn').innerText = t.solve;
+                document.getElementById('t-stop').innerText = t.stop;
+                document.getElementById('t-solved-msg').innerText = t.solved_msg;
+                document.getElementById('t-map-title').innerText = t.map_title;
+                document.getElementById('t-profile').innerText = t.profile;
+                document.getElementById('t-history').innerText = t.history;
+                document.getElementById('t-pts-label').innerText = t.pts_label;
+                document.getElementById('t-current-loc').innerText = t.cur_loc;
+
+                // 共通クラスの値を更新
+                document.querySelectorAll('.t-op-reg-val').forEach(el => el.innerText = t.op_reg);
+                document.querySelectorAll('.t-op-bag-val').forEach(el => el.innerText = t.op_bag);
+
+                shell.classList.remove('lang-updating');
+            }, 300);
+        }
+
+        // 画面切り替え
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => {
+                s.style.display = 'none';
+                s.classList.remove('active');
+            });
+            const target = document.getElementById('screen-' + id);
+            target.style.display = 'flex';
+            setTimeout(() => target.classList.add('active'), 10);
+        }
+
+        // 若者モードの初期化（地図含む）
+        function openYouth() {
+            showScreen('youth-list');
+            initMap();
+        }
+
+        function changeTab(tab) {
+            showScreen('youth-' + tab);
+            if(tab === 'map') {
+                setTimeout(() => map.invalidateSize(), 400);
+            }
+        }
+
+        // 地図の初期化（麻布十番駅）
+        function initMap() {
+            if (map) return;
+            const azabu = [35.6548, 139.7348];
+            map = L.map('map', { zoomControl: false }).setView(azabu, 16);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
+            
+            // 自分（麻布十番駅）
+            L.circleMarker(azabu, { radius: 10, fillColor: "#4f46e5", color: "#fff", weight: 3, fillOpacity: 1 }).addTo(map);
+            
+            // ダミークエスト位置
+            L.circle([35.6560, 139.7360], { color: '#334155', radius: 40 }).addTo(map).bindPopup("レジの操作");
+            L.circle([35.6535, 139.7350], { color: '#e11d48', radius: 40 }).addTo(map).bindPopup("重い荷物");
+        }
+
+        // シニア呼び出し
+        function seniorCall(typeKey, color, icon) {
+            document.getElementById('wait-label').innerText = LANGS[currentLang][typeKey].toUpperCase();
+            document.getElementById('wait-icon').innerText = icon;
+            document.getElementById('wait-circle').style.backgroundColor = color;
+            showScreen('waiting');
+        }
+
+        // 若者受注
+        function youthAccept(typeKey, loc) {
+            document.getElementById('active-task-type').innerText = LANGS[currentLang][typeKey];
+            document.getElementById('active-task-loc').innerText = loc;
+            showScreen('youth-active');
+        }
+
+        // 解決（クラッカー！）
+        function solveMission() {
+            const overlay = document.getElementById('success-overlay');
+            overlay.style.display = 'flex';
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 2000 });
+
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                changeTab('mypage');
+            }, 2200);
+        }
+
+        // 初期設定
+        changeLang('ja');
+    </script>
+</body>
+</html>
