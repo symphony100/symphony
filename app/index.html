@@ -20,7 +20,7 @@
             box-shadow: 0 0 100px rgba(0,0,0,0.8); overflow: hidden;
         }
 
-        /* 画面遷移アニメーション */
+        /* 画面切り替えアニメーション */
         .screen {
             position: absolute; inset: 0; background: var(--bg); 
             display: none; flex-direction: column; z-index: 10;
@@ -29,11 +29,11 @@
         }
         .screen.active { display: flex; opacity: 1; transform: translateY(0); z-index: 50; }
 
-        /* 言語切り替え時のヌルッとアニメーション */
+        /* 言語切り替え時のアニメーション */
         .lang-fade { transition: opacity 0.3s ease, filter 0.3s ease; }
         .lang-updating { opacity: 0; filter: blur(4px); }
 
-        /* 波紋アニメーション（維持） */
+        /* 波紋アニメーション */
         .pulse-wave {
             position: absolute; width: 140px; height: 140px; border: 4px solid var(--accent); border-radius: 50%;
             animation: wave-out 2s infinite;
@@ -92,7 +92,7 @@
             </div>
         </div>
 
-        <!-- 2. シニア：依頼 -->
+        <!-- 依頼 -->
         <div id="screen-senior" class="screen">
             <header class="p-6 pt-20 flex items-center border-b border-slate-100 bg-white">
                 <button onclick="showScreen('gate')" class="p-2 text-slate-400"><span class="material-symbols-rounded">arrow_back</span></button>
@@ -115,7 +115,7 @@
             </div>
         </div>
 
-        <!-- 3. シニア：待機画面 -->
+        <!-- 待機画面 -->
         <div id="screen-waiting" class="screen items-center justify-center bg-white text-center px-12">
             <div class="relative flex items-center justify-center mb-32">
                 <div class="pulse-wave"></div>
@@ -128,7 +128,7 @@
             <button onclick="showScreen('senior')" id="t-cancel" class="px-12 py-4 bg-slate-100 text-slate-400 rounded-full font-black text-lg">やめる</button>
         </div>
 
-        <!-- 4. 若者：リスト -->
+        <!-- リスト -->
         <div id="screen-youth-list" class="screen bg-slate-50">
             <header class="p-5 pt-20 bg-white border-b flex justify-between items-center sticky top-0 z-50">
                 <button onclick="showScreen('gate')" class="p-1 text-slate-400"><span class="material-symbols-rounded">arrow_back</span></button>
@@ -152,7 +152,7 @@
             </nav>
         </div>
 
-        <!-- 5. 若者：マップ -->
+        <!-- マップ -->
         <div id="screen-youth-map" class="screen">
             <header class="p-4 pt-20 bg-white border-b flex items-center z-50">
                 <button onclick="showScreen('gate')" class="p-2 text-slate-400"><span class="material-symbols-rounded">arrow_back</span></button>
@@ -166,7 +166,7 @@
             </nav>
         </div>
 
-        <!-- 6. 若者：マイページ -->
+        <!-- マイページ -->
         <div id="screen-youth-mypage" class="screen bg-slate-50">
             <header class="p-4 pt-20 bg-white border-b flex items-center z-50">
                 <button onclick="showScreen('gate')" class="p-2 text-slate-400"><span class="material-symbols-rounded">arrow_back</span></button>
@@ -193,7 +193,7 @@
             </nav>
         </div>
 
-        <!-- 7. 若者：受注画面 -->
+        <!-- 受注画面 -->
         <div id="screen-youth-active" class="screen bg-white">
             <header class="p-6 pt-20 border-b text-center"><h2 id="t-in-progress" class="text-lg font-black text-slate-800">ミッション進行中</h2></header>
             <div class="flex-grow p-8 flex flex-col justify-between">
@@ -210,7 +210,7 @@
     </div>
 
     <script>
-        // 翻訳辞書
+        // 翻訳
         const LANGS = {
             ja: { ask:"おねがいする", find:"クエストを探す", wrong:"どうしましたか？", op_reg:"レジの操作", op_bag:"重い荷物", op_step:"段差・移動", wait_msg:"近くのサポーターへ通知を送信しました。<br>そのままお待ちください。", calling:"呼び出し中", cancel:"やめる", nearby:"近くのクエスト", in_progress:"ミッション進行中", solve:"解決しました！", stop:"中止する", solved_msg:"解決しました！", map_title:"周辺マップ", profile:"マイページ", history:"活動履歴", pts_label:"獲得ポイント", cur_loc:"麻布十番駅 付近" },
             en: { ask:"Request Help", find:"Find Quests", wrong:"How can we help?", op_reg:"Checkout Help", op_bag:"Heavy Baggage", op_step:"Steps / Mobility", wait_msg:"Notified nearby supporters.<br>Please wait a moment.", calling:"Calling...", cancel:"Cancel", nearby:"Nearby Quests", in_progress:"Mission in Progress", solve:"Solved It!", stop:"Stop", solved_msg:"Well Done!", map_title:"Nearby Map", profile:"Profile", history:"History", pts_label:"Total Points", cur_loc:"Azabu-Juban Station" },
@@ -221,7 +221,7 @@
         let currentLang = 'ja';
         let map = null;
 
-        // 言語変更（ヌルッとアニメーション付）
+        // 言語変更
         function changeLang(l) {
             const shell = document.getElementById('main-content');
             shell.classList.add('lang-updating');
@@ -268,7 +268,7 @@
             setTimeout(() => target.classList.add('active'), 10);
         }
 
-        // 若者モードの初期化（地図含む）
+        // モードの初期化
         function openYouth() {
             showScreen('youth-list');
             initMap();
@@ -291,12 +291,12 @@
             // 自分（麻布十番駅）
             L.circleMarker(azabu, { radius: 10, fillColor: "#4f46e5", color: "#fff", weight: 3, fillOpacity: 1 }).addTo(map);
             
-            // ダミークエスト位置
+            // クエスト位置
             L.circle([35.6560, 139.7360], { color: '#334155', radius: 40 }).addTo(map).bindPopup("レジの操作");
             L.circle([35.6535, 139.7350], { color: '#e11d48', radius: 40 }).addTo(map).bindPopup("重い荷物");
         }
 
-        // シニア呼び出し
+        // 呼び出し
         function seniorCall(typeKey, color, icon) {
             document.getElementById('wait-label').innerText = LANGS[currentLang][typeKey].toUpperCase();
             document.getElementById('wait-icon').innerText = icon;
@@ -304,7 +304,7 @@
             showScreen('waiting');
         }
 
-        // 若者受注
+        // 受注
         function youthAccept(typeKey, loc) {
             document.getElementById('active-task-type').innerText = LANGS[currentLang][typeKey];
             document.getElementById('active-task-loc').innerText = loc;
