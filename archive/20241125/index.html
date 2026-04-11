@@ -1,0 +1,479 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<link rel="icon" type="image/x-icon" href="https://static.wixstatic.com/media/669165_89484848ada942a39a0db93ecdd66446~mv2.png/v1/fill/w_280,h_280,al_c,lg_1,q_85,enc_auto/669165_89484848ada942a39a0db93ecdd66446~mv2.png">　
+　<meta charset="UTF-8">
+　<meta name="viewport" content="width=device-width, initial-scale=1.0">
+　<title>symphony</title>
+<style>
+
+ul {
+  display: flex;
+  text-align: center;
+}
+body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* ヘッダー全体のスタイル */
+body{
+margin: 20px; 
+padding: 50px 10px 50px 10px; 
+}
+.Header {
+position: fixed; 
+top: 0; 
+left: 0; 
+width: 100%; 
+height: 40px; 
+padding: 10px; 
+background-color: #008DBD;
+color: #FFFFFF; 
+}
+.Contents {
+width: 100%; 
+overflow: auto; 
+}
+
+
+
+        /* 左側のロゴやタイトル */
+.logo {
+            font-size: 1.5em;
+            font-weight: auto;
+        }
+
+        /* リンクボタンのコンテナ */
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        /* ボタンのスタイル */
+        .nav-buttons a {
+            text-decoration: none;
+            color: white;
+            background-color: #9ACD32;
+            padding: 8px 16px;
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-buttons a:hover {
+            background-color: #008000;
+	}
+	
+/* アイコン */
+
+    /* グリッドコンテナ設定 */
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr); /* 6列に設定 */
+      gap: 15px;
+      padding: 20px;
+    }
+
+    /* アイコンのリンクと画像のスタイル */
+    .icon-link {
+      text-decoration: none;
+      color: black; /* テキストの色 */
+    }
+
+    .icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 70px;
+      height: 80px;
+      background-color: #e0e0e0;
+      border-radius: 8px;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+
+    /* 画像のサイズ制限 */
+    .icon img {
+      max-width: 40px;
+      max-height: 40px;
+    }
+
+    /* ラベルのスタイル */
+    .icon span {
+      margin-top: 5px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .icon:hover {
+      background-color: #c0c0c0;
+      transform: scale(1.1);
+    }
+
+
+/* ボタンの装飾 */
+
+.btn,
+a.btn,
+button.btn {
+  text-decoration: none;
+  color: #212529;
+}
+
+
+a.btn-border {
+  border: 2px solid #000;
+  border-radius: 0;
+  background: #fff;
+}
+
+a.btn-border:hover {
+  color: #fff;
+  background: #000;
+}
+
+a.btn-flat {
+  overflow: hidden;
+  padding: 1.5rem 6rem;
+  color: #fff;
+  border-radius: 0;
+  background: #000;
+}
+
+a.btn-flat span {
+  position: relative;
+}
+
+a.btn-flat:before {
+  position: absolute;
+  top: 0;
+  left: 30px;
+  width: 150%;
+  height: 500%;
+  content: '';
+  -webkit-transition: all .5s ease-in-out;
+  transition: all .5s ease-in-out;
+  -webkit-transform: translateX(-98%) translateY(-70%) rotate(135deg);
+  transform: translateX(-98%) translateY(-70%) rotate(135deg);
+  background: #fff100;
+}
+
+a.btn-flat:hover:before {
+  -webkit-transform: translateX(-9%) translateY(-25%) rotate(135deg);
+  transform: translateX(-9%) translateY(-25%) rotate(135deg);
+}
+
+/* スクロールエフェクト */
+
+html{
+  scroll-behavior: smooth;
+}
+#topButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 15px;
+  background-color: #333;
+  color: #fff;
+  text-decoration: none;
+}
+
+#topButton:hover {
+  background-color: #555;
+}
+
+/* フッター */
+
+        /* 基本スタイル */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        /* フッターのスタイル */
+        footer {
+            background-color: #abbaba;
+            color: #000000;
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+
+        footer a {
+            color: #050505;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* スマートフォン対応 */
+        @media (max-width: 600px) {
+            footer {
+                padding: 15px;
+                font-size: 14px;
+            }
+            footer a {
+                margin: 0 5px;
+            }
+        }
+
+        /* タブレット対応 */
+        @media (min-width: 601px) and (max-width: 1024px) {
+            footer {
+                padding: 20px;
+                font-size: 16px;
+            }
+            footer a {
+                margin: 0 8px;
+            }
+        }
+	
+/* フェードインするテキストのスタイル */
+  .fade-in-text {
+    font-size: 2em;
+    opacity: 0;
+    animation: fadeIn 4s ease-in-out forwards;
+  }
+
+  /* フェードインアニメーション */
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+	
+</style>
+</head>
+<body>
+    <header>
+        <div class="Header">symphony</div>
+        <div class="nav-buttons">
+        </div>
+    </header>
+
+
+<br><br><br>
+  <h1>symphony公式サイトへようこそ</h1>
+
+  <h3>今日は、<span id="text"></span>です。</h3>
+
+  <script type="text/javascript">
+    document.getElementById("text").innerHTML = showDay();
+  function showDay() {
+    var weeks = [ "日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日" ];
+    var now = new Date();
+    var weekdays = now.getDay();
+    return weeks[weekdays];
+  }
+  </script>
+
+<br>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+h = (new Date()).getHours();
+
+if((h >= 0) && (h < 3)){ document.write("こんばんは。"); }
+if((h >= 3) && (h < 6)){ document.write("おはようございます。"); }
+if((h >= 6) && (h < 9)){ document.write("おはようございます。"); }
+if((h >= 9) && (h < 12)){ document.write("こんにちは。"); }
+if((h >= 12) && (h < 15)){ document.write("こんにちは。"); }
+if((h >= 15) && (h < 18)){ document.write("こんにちは。"); }
+if((h >= 18) && (h < 21)){ document.write("こんばんは。"); }
+if((h >= 21) && (h < 24)){ document.write("こんばんは。"); }
+//-->
+</SCRIPT>
+
+<br>
+<br>
+<span id="view_clock"></span>
+
+<script type="text/javascript">
+timerID = setInterval('clock()',500); 
+
+function clock() {
+	document.getElementById("view_clock").innerHTML = getNow();
+}
+
+function getNow() {
+	var now = new Date();
+	var year = now.getFullYear();
+	var mon = now.getMonth()+1; 
+	var day = now.getDate();
+	var hour = now.getHours();
+	var min = now.getMinutes();
+	var sec = now.getSeconds();
+
+	
+	var s = year + "年" + mon + "月" + day + "日" + hour + "時" + min + "分" + sec + "秒"; 
+	return s;
+}
+</script>
+
+<br>
+
+</body>
+</div>
+
+<br>
+<h3><a name="3">今日の曜日を選択してください。（通常授業の時間割です。）</a></h3>
+<br>
+	<a href="" class="btn btn-border"><span>月曜日</span></a>
+	<a href="" class="btn btn-border"><span>火曜日</span></a>
+	<a href="" class="btn btn-border"><span>水曜日</span></a>
+	<a href="" class="btn btn-border"><span>木曜日</span></a>
+	<a href="" class="btn btn-border"><span>金曜日</span></a>
+	<a href="" class="btn btn-border"><span>土曜日</span></a>
+	<a href="" class="btn btn-border"><span>日曜日</span></a>
+	<br><br><br>
+
+<h4>中等部卒業まであと、
+<SCRIPT LANGUAGE = "JavaScript">
+<!---
+  today = new Date();
+  NectC = new Date(2027,02,09);
+  NC = (NectC.getTime() - today.getTime())/(24*60*60*1000)
+  document.write("<font color=red><b>" + Math.ceil(NC) + "</b></font>日です。")
+//--->
+</SCRIPT></h4>
+<br>
+<label><a name="1">＜お知らせ＞</a><br>
+<p><font color="red">新着メッセージがあります。</front><font color="black"></p>
+<p>2024/09/02 試験用ウェブサイトを公開しました。</p>
+<br>
+<a href=""><p>もっと詳しく</p></a>
+<br><br>
+<p>＜サイト紹介＞<br>
+このサイトは、htmlや、CSS、JavaScriptなどでつくりました。<br><br>
+＜機能紹介＞<br>
+今の曜日などを見れたり、次の授業の科目を観覧することができます。</p><br><br>
+
+
+  <div class="icon-grid">
+    <a href="" class="icon-link" aria-label="game">
+      <div class="icon">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSNTyAVgVHOKrNHVZMYB5sbVKMCNd5SSna0A&s" alt="smphonygame">
+        <span>ゲーム</span>
+      </div>
+    </a>
+    <a href="" class="icon-link" aria-label="電卓">
+      <div class="icon">
+        <img src="https://i.pinimg.com/originals/61/e8/c3/61e8c31e436cb783465fcac907c2519a.png" alt="電卓">
+        <span>電卓</span>
+      </div>
+    </a>
+    <a href="" class="icon-link" aria-label="メモ帳">
+      <div class="icon">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQe0skY7Re55wogRBQ1qx9Gb1eICAwmiyIxtg&s" alt="メモ帳">
+        <span>メモ帳</span>
+      </div>
+    </a>
+    <a href="" class="icon-link" aria-label="ログイン">
+      <div class="icon">
+        <img src="https://i.pinimg.com/474x/91/5c/7a/915c7a17ea7ad9410e243ee5a9e45640.jpg" alt="login">
+        <span>ログイン</span>
+      </div>
+    </a>
+    <a href="" class="icon-link" aria-label="symphony">
+      <div class="icon">
+        <img src="https://www.silhouette-illust.com/wp-content/uploads/2016/07/5390-300x300.jpg" alt="gakusyu">
+        <span>クイズ</span>
+      </div>
+    </a>
+    <a href="" class="icon-link" aria-label="占い">
+      <div class="icon">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcKlOGCHA10sSJ0DGrI60_dXxA82hiGPXnyA&s" alt="占い">
+        <span>今日の占い</span>
+      </div>
+    </a>
+    <a href="" class="icon-link" aria-label="コマンド">
+      <div class="icon">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGZKdhiYbpfN_PiuMJ1CBIohjNl3klvX2Yig&s" alt="コマンド">
+        <span>コマンド</span>
+      </div>
+    </a>
+    <a href="" class="icon-link" aria-label="ロゴマーク">
+      <div class="icon">
+        <img src="https://everydayicons.jp/wp/wp-content/themes/everydayicons/icons/thumbs/ei-picture.png" alt="ロゴマーク">
+        <span>ロゴマーク</span>
+      </div>
+    </a>
+    <a href="" class="icon-link" aria-label="ヘルプ">
+      <div class="icon">
+        <img src="https://cdn.icon-icons.com/icons2/1863/PNG/512/help-outline_119052.png" alt="ヘルプ">
+        <span>ヘルプ</span>
+      </div>
+    </a>
+    <a href="" class="icon-link" aria-label="詐欺サイト体験ページ">
+      <div class="icon">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUy9U2lXT8ieW-x0Ix6ILEfsb50TlrQjZ-uA&s" alt="詐欺サイト体験ページ">
+        <span>詐欺体験</span>
+      </div>
+    </a>
+    <a href="" class="icon-link" aria-label="プロフィール">
+      <div class="icon">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAPFBMVEXk5ueutLepsLPo6uursbXJzc/p6+zj5ea2u76orrKvtbi0ubzZ3N3O0dPAxcfg4uPMz9HU19i8wcPDx8qKXtGiAAAFTElEQVR4nO2d3XqzIAyAhUD916L3f6+f1m7tVvtNINFg8x5tZ32fQAIoMcsEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQTghAJD1jWtnXJPP/54IgNzZQulSmxvTH6oYXX4WS+ivhTbqBa1r26cvCdCu6i0YXbdZ0o4A1rzV+5IcE3YE+z58T45lqo7g1Aa/JY5tgoqQF3qb382x7lNzBLcxft+O17QUYfQI4IIeklKsPSN4i6LKj/7Zm8n99RbHJpEw9gEBXNBpKIYLJqKYRwjOikf//r+J8ZsVuacbqCMNleI9TqGLGqMzhnVdBOdd6F/RlrFijiCoVMk320CBIahUxTWI0KKEcJqKbMdpdJb5QvdHq6wCI5qhKlgGMS/RBHkubWDAE+QZxB4xhCyDiDkLZxgGEVdQldzSKbTIhmZkFkSEPcVvmBn2SMuZB9od7fQDsMiDdKJjFUSCQarM5WirZ3C2TT/htYnyPcPfgrFHWz0BI74gr6J/IZiGUxAZGQLqmvQLTrtE/Go4YxhVRIpEw+sww1IIcqr5NKmUUzLF3d4/qPkYIp2T/obPuemlojFUR4t9Q2Vojhb7BmgElWHzLPH8hucfpefPNFTVgs9h1AdU/Pin96vwWbWdf+X9Absn3OdO34aMdsDnP8WgKYisTqI6CkNGqZQo1XA6Ef6AU32SJzOcBukHPF07/xNSgmHKa5BOhtezv6mA/rYJpwXNAnbRZ1XuF3BzDcO3vpA3+ny2909gbqE4hhD3LIPhLLyBNhPZvbZ3B+3tPYa18A7auSlXQayKwTPNLKDcuOB0xPYKDPFTkWsevQPRZ1J8Hji9I1KQ34r7hZhrwNwOZ97QxNx0drwn4QI0wQk1DcEsfKCWKdxVvxPSNUIp/knmAXT+nT+Ko3+0H96rcNb3m1fx7MBTJdeBJ7uFcWsc0wvgAsC4pROW0l2inbAmIBv/7GZmuhQH6API2rr8T0e6yuZJ+80A9LZeG62T3tik31XwxtwZcizKuTHkMjB1WdZde4Kmic/A5ZI3rr1ae21d08PlVHYfAaxw9G9CYRbJ+8ZdbTcMRV1XM3VdF0M32vtoTdZ0+u29s0OttJ5bz64UwinjaFMVY9vkqc3KKSxN21Xl+0L4Q3Vuv1tYl0pqnX6ms4XetFz7gdZVAgUEoJntfOUe4ZwsHd9FzqQ3Vv6xe41l0XJcqcKl6TZvlv7ClAW3BsqQW4X7ypApB8dmTgK4IX5wvqIVj33HtD2qSG4BqznxdIefL27Y4sahi0MdIdvUsDva8agGGbCtITmCY31MHD2O0uIdh/0rJDQ1VX5Zdxz3rR2QDbv6qXl9vudzqQtGm1Jv9LDXOsfvvB7VcZ8PDKD0mQ1VHPYQ9O+Yj4hR1IUD8rBnn3ho2m8oQMxbCFiKlL2ioSW5heeJqegED52CzxCtcGD3Kv8Wms9EYLyUhwaFIhSMBClevWEmiK/Iaogu4H7sg6ppQhQG8RUqivuTGOAJOg6FfgW0q0M0PQMRMEgXaeNf3SYDZ8PIMI0+wHgr/MgN7wYwpiLjCCqM6ydUDZLQiB6nDdNC8SDyig3jPPpFXGcC9O8BUBDVmgBY59E7Md/35Loe/UVEECEJwYggJjELZ4J71SaQSBeC02n4Da29CayJNA28SAhd2CQyC1Xw6pSmGSINQVuMhAZp4DClan9MgmkDDNmezqwS8sgtlXK/EPBhoaSmYVC/F7IO1jQEdHOlabpKh3+jzLQSTUiq4X2I+Ip/zU8rlaqAvkS21ElR+gqu3zbjjL+hIAiCIAiCIAiCIAiCsCf/AKrfVhSbvA+DAAAAAElFTkSuQmCC" alt="プロフィール">
+        <span>自己紹介</span>
+      </div>
+    </a>
+    <a href="" class="icon-link" aria-label="読書ランキング">
+      <div class="icon">
+        <img src="https://icon-pit.com/wp-content/uploads/2019/02/book_note_icon_4691.png" alt="読書ランキング">
+        <span>ランキング</span>
+      </div>
+    </a>
+    <a href="" class="icon-link" aria-label="お問い合わせ">
+      <div class="icon">
+        <img src="https://www.silhouette-illust.com/wp-content/uploads/2017/04/contact-us_29255-600x600.jpg" alt="お問い合わせ">
+        <span>サポート</span>
+  </div>
+</a>
+</div>
+
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<br>
+<br>
+<br>
+<br>
+<h2>広告</h2>
+<a href=""><img src="https://static.wixstatic.com/media/669165_8d3b7de5b3d64b2a9a0a3f9f08c2f19f~mv2.png/v1/fill/w_900,h_636,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/669165_8d3b7de5b3d64b2a9a0a3f9f08c2f19f~mv2.png" alt="リクエスト募集" width="300" height="250"></a>
+<a href=""><img src="https://static.wixstatic.com/media/669165_d899a97e4ed647508d12f4896f0d4d99~mv2.png/v1/fill/w_420,h_234,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/669165_d899a97e4ed647508d12f4896f0d4d99~mv2.png" alt="焼き鳥" width="300" height="250"></a>
+<br>
+<br>
+<br>
+
+    <footer>
+        <p>このサイトは、2024/09/02に作成されました。</p>
+        <p>
+            <a href="">利用規約</a> |
+            <a href="">お問い合わせ</a>
+        </p>
+    </footer>
+
+<a href="#top" id="topButton">⇧</a>
+</font>
+</body>
+</html>
