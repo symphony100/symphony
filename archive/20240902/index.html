@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<link rel="icon" type="image/x-icon" href="https://static.wixstatic.com/media/669165_89484848ada942a39a0db93ecdd66446~mv2.png/v1/fill/w_280,h_280,al_c,lg_1,q_85,enc_auto/669165_89484848ada942a39a0db93ecdd66446~mv2.png">　
+　<meta charset="UTF-8">
+　<meta name="viewport" content="width=device-width, initial-scale=1.0">
+　<title>試験用ウェブサイト</title>
+
+<div id="humberger">
+</div>
+
+<style>
+        .button-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+body{
+margin: 20px; 
+padding: 50px 10px 50px 10px; 
+}
+.Header {
+position: fixed; 
+top: 0; 
+left: 0; 
+width: 100%; 
+height: 40px; 
+padding: 10px; 
+background-color: #008DBD;
+color: #FFFFFF; 
+}
+.Contents {
+width: 100%; 
+overflow: auto; 
+}
+
+</style>
+</head>
+<body>
+  <font face="sans-serif">
+<div class="Header">試験用ウェブサイト</div>
+<div class="Contents">
+
+</head>
+
+ <h1>試験用ウェブサイトへようこそ</h1>
+
+  <h3>今日は、<span id="text"></span>です。</h3>
+
+  <script type="text/javascript">
+    document.getElementById("text").innerHTML = showDay();
+  function showDay() {
+    var weeks = [ "日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日" ];
+    var now = new Date();
+    var weekdays = now.getDay();
+    return weeks[weekdays];
+  }
+  </script>
+
+<br>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+h = (new Date()).getHours();
+
+if((h >= 0) && (h < 3)){ document.write("こんばんは。"); }
+if((h >= 3) && (h < 6)){ document.write("おはようございます。"); }
+if((h >= 6) && (h < 9)){ document.write("おはようございます。"); }
+if((h >= 9) && (h < 12)){ document.write("こんにちは。"); }
+if((h >= 12) && (h < 15)){ document.write("こんにちは。"); }
+if((h >= 15) && (h < 18)){ document.write("こんにちは。"); }
+if((h >= 18) && (h < 21)){ document.write("こんばんは。"); }
+if((h >= 21) && (h < 24)){ document.write("こんばんは。"); }
+//-->
+</SCRIPT>
+
+<br>
+<br>
+<br>
+<br>
+<form method="post" action="">
+<label for="">何か書いてみてください。</label>
+<input type="text">
+<button type="subit">送信またはEnter</button>
+
+</form>
+<br><br><br>
+<h3>今日の曜日を選択してください。</h3>
+  <button onclick="location.href=''">月曜日</button>
+  <button onclick="location.href=''">火曜日</button>
+  <button onclick="location.href=''">水曜日</button>
+  <button onclick="location.href=''">木曜日</button>
+  <button onclick="location.href=''">金曜日</button>
+  <button onclick="location.href=''">土曜日</button>
+  <button onclick="location.href=''">日曜日</button>
+    <br><br>
+   <div class="button-container">
+        <a href="https://symphony100.github.io/shikenyou/archive/index.html" class="button">元のサイトに戻る</a>
+    </div>
+    </font>
+</body>
+</html>
