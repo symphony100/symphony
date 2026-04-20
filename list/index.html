@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symphony</title>
+    <style>
+        :root {
+            --primary: #007bff;
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --text: #333;
+            --danger: #ff3b30;
+            --success: #28a745;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0; padding: 20px;
+        }
+
+        .container {
+            max-width: 480px; margin: 0 auto;
+            background: var(--card); padding: 25px;
+            border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        /* 目標エリア */
+        .goal-box {
+            background: #e7f1ff; padding: 15px;
+            border-radius: 15px; margin-bottom: 20px; text-align: center;
+        }
+        #goal-label { font-weight: bold; cursor: pointer; color: var(--primary); font-size: 14px; }
+        .progress-bg { width: 100%; background: #ddd; border-radius: 10px; height: 8px; margin-top: 10px; overflow: hidden;}
+        #p-fill { width: 0%; background: var(--primary); height: 100%; transition: 0.8s ease; }
+        #goal-edit-ui { display: none; margin-top: 10px; }
+        .inline-input { border: none; border-bottom: 2px solid var(--primary); outline: none; text-align: center; font-size: 16px; width: 80%; background: transparent; }
+
+        #balance-num { text-align:center; font-size:40px; font-weight:900; margin-bottom:10px; letter-spacing: -1px;}
+
+        /* グラフ描画エリア */
+        .chart-wrap { 
+            position: relative; 
+            height: 180px; 
+            width: 100%; 
+            margin: 10px 0 20px 0;
+            background: #fafafa;
+            border-radius: 12px;
+            border: 1px solid #eee;
+        }
+        #graphSVG { width: 100%; height: 100%; display: block; }
+
+        /* セレクター */
+        .date-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 10px; background: #eee; padding: 10px; border-radius: 12px; margin-bottom: 15px;
+        }
+        .unit-box { display: flex; flex-direction: column; align-items: center; }
+        .spin-btn { background: white; border: none; width: 100%; padding: 6px; cursor: pointer; font-weight: bold; border-radius: 6px; }
+
+        /* カテゴリ・入力 */
+        .custom-dropdown {
+            background: white; border: 2px solid #ddd; border-radius: 12px;
+            padding: 14px; margin-bottom: 15px; cursor: pointer; position: relative; font-weight: bold;
+        }
+        .dropdown-items {
+            position: absolute; top: 105%; left: 0; width: 100%;
+            background: white; border: 1px solid var(--primary); border-radius: 10px;
+            display: none; z-index: 100; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .option { padding: 12px; } .option:hover { background: #e7f1ff; }
+
+        .input-ui {
+            width: 100%; padding: 14px; border: 2px solid #ddd;
+            border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; outline: none; font-size: 16px;
+        }
+        .btn-row { display: flex; gap: 10px; }
+        .btn-act { flex: 1; padding: 16px; border-radius: 12px; border: none; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
+
+        /* 履歴・ゴミ箱 */
+        .history-area { max-height: 200px; overflow-y: auto; margin-top: 25px; border-top: 1px solid #eee; }
+        .history-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 0; border-bottom: 1px solid #eee; font-size: 14px;
+        }
+        .trash-btn {
+            background: #fff0f0; border: none; cursor: pointer; padding: 8px;
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+        }
+        .trash-btn svg { fill: var(--danger); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="goal-box">
+        <div id="goal-label" onclick="toggleGoal()">GOAL / ¥0</div>
+        <div id="goal-edit-ui">
+            <input type="number" id="goal-val" class="inline-input" placeholder="目標金額" onblur="applyGoal()" onkeydown="if(event.key==='Enter')applyGoal()">
+        </div>
+        <div class="progress-bg"><div id="p-fill"></div></div>
+    </div>
+
+    <div id="balance-num">¥0</div>
+
+    <div class="chart-wrap">
+        <svg id="graphSVG"></svg>
+    </div>
+
+    <div class="date-grid">
+        <div class="unit-box"><button class="spin-btn" onclick="adj('y',1)">▲</button><span id="v-y">2024</span><button class="spin-btn" onclick="adj('y',-1)">▼</button></div>
+        <div class="unit-box"><button class="spin-btn" onclick="adj('m',1)">▲</button><span id="v-m">01</span><button class="spin-btn" onclick="adj('m',-1)">▼</button></div>
+        <div class="unit-box"><button class="spin-btn" onclick="adj('d',1)">▲</button><span id="v-d">01</span><button class="spin-btn" onclick="adj('d',-1)">▼</button></div>
+    </div>
+
+    <div class="custom-dropdown" onclick="toggleDrop()">
+        <span id="cat-label">ポイ活</span>
+        <div class="dropdown-items" id="drop-items"></div>
+    </div>
+
+    <input type="number" id="amt" class="input-ui" placeholder="¥ 金額を入力">
+    <input type="text" id="memo" class="input-ui" placeholder="メモ（任意）">
+
+    <div class="btn-row">
+        <button class="btn-act" onclick="add('in')" style="background:var(--success);">収入 (+)</button>
+        <button class="btn-act" onclick="add('out')" style="background:var(--danger);">支出 (-)</button>
+    </div>
+
+    <div class="history-area" id="list"></div>
+</div>
+
+<script>
+    // 初期設定：今日の日付
+    const now = new Date();
+    let Y = now.getFullYear(), M = now.getMonth() + 1, D = now.getDate();
+    let selectedCat = 'ポイ活';
+    const cats = ['ポイ活', 'お小遣い', '交通費', '飲食代', 'ゲーム', '趣味', 'その他'];
+    let db = JSON.parse(localStorage.getItem('k_manager_v21')) || { log: [], goal: 0 };
+
+    function toggleGoal() {
+        const ui = document.getElementById('goal-edit-ui');
+        ui.style.display = (ui.style.display === 'block') ? 'none' : 'block';
+        if(ui.style.display === 'block') document.getElementById('goal-val').focus();
+    }
+
+    function applyGoal() {
+        db.goal = parseInt(document.getElementById('goal-val').value) || 0;
+        document.getElementById('goal-edit-ui').style.display = 'none';
+        save();
+    }
+
+    function adj(t, v) {
+        if(t==='y') Y += v;
+        if(t==='m') { M += v; if(M>12)M=1; if(M<1)M=12; }
+        if(t==='d') { D += v; if(D>31)D=1; if(D<1)D=31; }
+        updateDateDisplay();
+    }
+
+    function updateDateDisplay() {
+        document.getElementById('v-y').textContent = Y;
+        document.getElementById('v-m').textContent = String(M).padStart(2,'0');
+        document.getElementById('v-d').textContent = String(D).padStart(2,'0');
+    }
+
+    function toggleDrop() {
+        const d = document.getElementById('drop-items');
+        d.style.display = (d.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function initDrop() {
+        const area = document.getElementById('drop-items');
+        area.innerHTML = '';
+        cats.forEach(c => {
+            const div = document.createElement('div'); div.className = 'option'; div.textContent = c;
+            div.onclick = (e) => { e.stopPropagation(); selectedCat = c; document.getElementById('cat-label').textContent = c; toggleDrop(); };
+            area.appendChild(div);
+        });
+    }
+
+    function add(type) {
+        const a = parseInt(document.getElementById('amt').value);
+        if(!a) return;
+        db.log.push({ 
+            id: Date.now(), 
+            date: `${Y}-${String(M).padStart(2,'0')}-${String(D).padStart(2,'0')}`, 
+            type, 
+            amt: a, 
+            cat: selectedCat, 
+            memo: document.getElementById('memo').value || '' 
+        });
+        document.getElementById('amt').value = ''; 
+        document.getElementById('memo').value = '';
+        save();
+    }
+
+    function del(id) {
+        db.log = db.log.filter(x => x.id !== id);
+        save();
+    }
+
+    function save() {
+        localStorage.setItem('k_manager_v21', JSON.stringify(db));
+        render();
+    }
+
+    function render() {
+        const total = db.log.reduce((s, x) => s + (x.type==='in'?x.amt:-x.amt), 0);
+        document.getElementById('balance-num').textContent = `¥${total.toLocaleString()}`;
+        document.getElementById('goal-label').textContent = `GOAL / ¥${db.goal.toLocaleString()}`;
+        document.getElementById('p-fill').style.width = db.goal > 0 ? Math.min(100, (total/db.goal)*100) + "%" : "0%";
+
+        const area = document.getElementById('list');
+        area.innerHTML = '';
+        [...db.log].reverse().forEach(x => {
+            const div = document.createElement('div'); div.className = 'history-item';
+            div.innerHTML = `<div><small>${x.date} | ${x.cat}</small><br><b>${x.memo || '...'}</b></div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span style="font-weight:bold; color:${x.type==='in'?'#28a745':'#ff3b30'}">${x.type==='in'?'+':'-'}¥${x.amt.toLocaleString()}</span>
+                    <button class="trash-btn" onclick="del(${x.id})">
+                        <svg width="18" height="18" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                    </button>
+                </div>`;
+            area.appendChild(div);
+        });
+        drawGraph();
+    }
+
+    function drawGraph() {
+        const svg = document.getElementById('graphSVG');
+        const w = svg.clientWidth;
+        const h = svg.clientHeight;
+        svg.innerHTML = ''; // 以前の描画をクリア
+
+        // ログを日付順にソートし、累積残高を計算
+        const sorted = [...db.log].sort((a,b) => new Date(a.date) - new Date(b.date));
+        
+        // グラフ用データ作成（最初は0円からスタート）
+        let currentTotal = 0;
+        let pts = [0]; 
+        sorted.forEach(x => {
+            currentTotal += (x.type === 'in' ? x.amt : -x.amt);
+            pts.push(currentTotal);
+        });
+
+        // データが0または1つの場合
+        if (pts.length < 2) {
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", "50%"); text.setAttribute("y", "50%");
+            text.setAttribute("text-anchor", "middle"); text.setAttribute("fill", "#ccc");
+            text.textContent = "データがありません";
+            svg.appendChild(text);
+            return;
+        }
+
+        const max = Math.max(...pts);
+        const min = Math.min(...pts);
+        const range = (max - min) || 1000;
+        const pad = 25;
+
+        const getX = (i) => (i / (pts.length - 1)) * w;
+        const getY = (v) => h - ((v - min) / range * (h - pad * 2) + pad);
+
+        // グラデーション定義
+        const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+        defs.innerHTML = `<linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.2"/>
+            <stop offset="100%" stop-color="var(--primary)" stop-opacity="0"/>
+        </linearGradient>`;
+        svg.appendChild(defs);
+
+        // 塗りつぶしエリア
+        let dArea = `M ${getX(0)} ${h}`;
+        pts.forEach((v, i) => dArea += ` L ${getX(i)} ${getY(v)}`);
+        dArea += ` L ${getX(pts.length-1)} ${h} Z`;
+        const areaPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        areaPath.setAttribute("d", dArea); areaPath.setAttribute("fill", "url(#g)");
+        svg.appendChild(areaPath);
+
+        // 推移線
+        let dLine = `M ${getX(0)} ${getY(pts[0])}`;
+        for(let i=1; i<pts.length; i++) dLine += ` L ${getX(i)} ${getY(pts[i])}`;
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        line.setAttribute("d", dLine); line.setAttribute("fill", "none");
+        line.setAttribute("stroke", "var(--primary)"); line.setAttribute("stroke-width", "3");
+        line.setAttribute("stroke-linejoin", "round");
+        svg.appendChild(line);
+
+        // 各点にドットを表示
+        pts.forEach((v, i) => {
+            const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            c.setAttribute("cx", getX(i)); c.setAttribute("cy", getY(v)); c.setAttribute("r", "4");
+            c.setAttribute("fill", "white"); c.setAttribute("stroke", "var(--primary)");
+            c.setAttribute("stroke-width", "2");
+            svg.appendChild(c);
+        });
+    }
+
+    window.onload = () => {
+        updateDateDisplay();
+        initDrop();
+        render();
+    };
+    window.onresize = drawGraph;
+</script>
+
+</body>
+</html>
