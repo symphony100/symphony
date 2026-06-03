@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Symphony Words</title>
-      <link rel="icon" type="image/x-icon" href="app-icon.png">
+    <link rel="icon" type="image/x-icon" href="app-icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     
@@ -88,7 +88,6 @@
         .btn-error { background-color: var(--error); }
         .btn-outline { background-color: transparent; border: 2px solid var(--border-color); color: var(--text-main); }
 
-        /* スピーカーボタンなど */
         .icon-btn { background: transparent; border: none; color: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 10px; border-radius: 50%; transition: 0.2s; appearance: none; -webkit-appearance: none; outline: none; }
         .icon-btn:hover { background-color: var(--hover-overlay); }
 
@@ -118,7 +117,7 @@
         .word-list { list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; overflow-x: hidden; }
         .swipe-container { position: relative; margin-bottom: 12px; border-radius: 16px; overflow: hidden; background-color: var(--border-color); flex-shrink: 0; }
         
-        /* スワイプ背景（削除ボタンのみに修正） */
+        /* スワイプ背景（削除ボタンのみ） */
         .swipe-background { position: absolute; top: 0; right: 0; height: 100%; width: 80px; display: flex; }
         .swipe-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: bold; cursor: pointer; border: none; outline: none; appearance: none; -webkit-appearance: none; }
         .swipe-btn-del { background-color: var(--error); width: 100%; }
@@ -194,7 +193,10 @@
         .print-col { flex: 1; }
         .print-row { display: flex; align-items: flex-end; margin-bottom: 25px; font-size: 14pt; }
         .print-num { width: 35px; font-weight: bold; text-align: right; margin-right: 10px; }
-        .print-ja { width: 100px; font-weight: bold; }
+        /* 1行で省略表示するように */
+        .print-ja { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; font-weight: bold; margin-right: 10px; }
+        /* 解答欄を下線で右端まで伸ばす */
+        .print-ans { flex: 1; border-bottom: 1px solid #000; height: 25px; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -284,6 +286,23 @@
             <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
                 <button class="btn" onclick="submitOcrWords()">一括翻訳＆追加</button>
                 <button class="btn btn-outline" onclick="closeOcrModal()">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDFダウンロード名前指定モーダル -->
+    <div id="modal-pdf" class="modal-overlay" style="z-index: 2500;">
+        <div class="modal-content">
+            <span class="material-icons-round" style="font-size:48px; color:var(--primary); margin-bottom:10px;">download</span>
+            <h3 style="margin-top:0;">テストをダウンロード</h3>
+            <p style="font-size:14px; color:var(--text-muted);">保存するファイル名を入力してください。</p>
+            <div class="input-group" style="margin-top:20px;">
+                <input type="text" id="pdf-name-input" placeholder=" " value="単語テスト">
+                <label class="input-label">ファイル名</label>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:24px;">
+                <button class="btn" onclick="submitPdfModal()">ダウンロード</button>
+                <button class="btn btn-outline" onclick="cancelPdfModal()">キャンセル</button>
             </div>
         </div>
     </div>
@@ -386,7 +405,6 @@
             <button class="btn" onclick="addWordByAI()" style="width:auto; padding:0 20px;"><span class="material-icons-round">add</span></button>
         </div>
 
-        <!-- AI画像読み取り復活 -->
         <div style="text-align:center; margin-bottom:16px; flex-shrink:0;">
             <input type="file" id="file-upload" accept="image/*" style="display:none;">
             <button class="btn btn-outline" onclick="document.getElementById('file-upload').click()" style="border-style:dashed; padding:10px;">
@@ -416,19 +434,19 @@
                 <div style="display:flex; align-items:center; gap:10px;">
                     <div style="display:flex; align-items:center; background:var(--surface); border-radius:8px; padding:0 8px; border:1px solid var(--border-color); flex:1;">
                         <span style="font-size:12px; color:var(--text-muted); font-weight:bold;">No.</span>
-                        <input type="number" id="print-range-start" min="1" value="1" style="width:100%; padding:12px 5px; border:none; font-size:16px; text-align:center; outline:none; background:transparent; color:var(--text-main);">
+                        <input type="number" id="print-range-start" min="1" value="1" onchange="updatePrintPreview()" style="width:100%; padding:12px 5px; border:none; font-size:16px; text-align:center; outline:none; background:transparent; color:var(--text-main);">
                     </div>
                     <span style="font-weight:bold;">〜</span>
                     <div style="display:flex; align-items:center; background:var(--surface); border-radius:8px; padding:0 8px; border:1px solid var(--border-color); flex:1;">
                         <span style="font-size:12px; color:var(--text-muted); font-weight:bold;">No.</span>
-                        <input type="number" id="print-range-end" min="1" value="1" style="width:100%; padding:12px 5px; border:none; font-size:16px; text-align:center; outline:none; background:transparent; color:var(--text-main);">
+                        <input type="number" id="print-range-end" min="1" value="1" onchange="updatePrintPreview()" style="width:100%; padding:12px 5px; border:none; font-size:16px; text-align:center; outline:none; background:transparent; color:var(--text-main);">
                     </div>
                 </div>
             </div>
 
             <div style="margin-bottom:16px;">
                 <label style="font-weight:bold; font-size:14px; display:block; margin-bottom:8px; color:var(--on-primary-container);">対象タグ</label>
-                <select id="print-tag-select">
+                <select id="print-tag-select" onchange="updatePrintPreview()">
                     <option value="all">指定範囲のすべてから</option>
                     <option value="weak">「苦手な単語」からのみ</option>
                     <option value="review">「見直し単語」からのみ</option>
@@ -438,11 +456,8 @@
             
             <div>
                 <label style="font-weight:bold; font-size:14px; display:block; margin-bottom:8px; color:var(--on-primary-container);">問題数 (ランダム抽出)</label>
-                <select id="print-count-select">
-                    <option value="10">10問</option>
-                    <option value="20">20問</option>
-                    <option value="30">30問</option>
-                    <option value="all" selected>すべて</option>
+                <select id="print-count-select" onchange="updatePrintPreview()">
+                    <!-- JSで動的に追加されます -->
                 </select>
             </div>
         </div>
@@ -481,10 +496,6 @@
         <div class="question-box">
             <div class="question-label" id="quiz-status-label">この単語を英語で書いてください</div>
             <div class="question-word" id="question-ja"></div>
-            <!-- 発音ボタン復活 -->
-            <button class="icon-btn" style="color:var(--primary); margin: 10px auto 0; display:none;" id="quiz-speak-btn" onclick="speakCurrentWord()">
-                <span class="material-icons-round" style="font-size:32px;">volume_up</span>
-            </button>
         </div>
         <div class="input-group">
             <input type="text" id="answer-input" placeholder=" " autocomplete="off" inputmode="latin" spellcheck="false" style="ime-mode: disabled;">
@@ -655,6 +666,7 @@
         }
         if (viewName === 'home') updateHomeUI();
         if (viewName === 'manage') renderWordList();
+        if (viewName === 'print') updatePrintPreview(); // セレクトボックスの動的更新
     }
 
     function switchWordTab(tab) { currentWordTab = tab; document.getElementById('tab-weak').classList.remove('active'); document.getElementById('tab-review').classList.remove('active'); document.getElementById('tab-test').classList.remove('active'); document.getElementById(`tab-${tab}`).classList.add('active'); renderWordList(); }
@@ -824,6 +836,7 @@
                         </div>
                         <span class="word-ja">${word.ja}</span>
                     </div>
+                    <button class="icon-btn ripple-target" style="color:var(--primary); margin-left:10px;" onclick="event.stopPropagation(); speak('${word.en.replace(/'/g, "\\'")}')"><span class="material-icons-round">volume_up</span></button>
                 </div>`;
             container.appendChild(li);
         });
@@ -965,7 +978,6 @@
         const checkBtn = document.getElementById('check-btn'); const feedback = document.getElementById('feedback-area'); const answerInput = document.getElementById('answer-input');
 
         answerInput.disabled = false; answerInput.value = ""; 
-        document.getElementById('quiz-speak-btn').style.display = 'none';
 
         if (quizQueue.length === 0) {
             const today = new Date().toDateString();
@@ -990,7 +1002,6 @@
     }
 
     function handleEnter(e) { if (e.key === 'Enter') { if (isAnswered) nextQuestion(); else checkAnswer(); } }
-    function speakCurrentWord() { if(quizQueue.length > 0) speak(quizQueue[0].en); }
 
     function checkAnswer() {
         const answerInputElem = document.getElementById('answer-input'); const userInput = answerInputElem.value.trim().toLowerCase();
@@ -999,8 +1010,6 @@
 
         if (userInput === "" && !isAnswered) return;
         isAnswered = true; stats.totalAnswers++;
-        speak(correctAnswer);
-        document.getElementById('quiz-speak-btn').style.display = 'inline-block';
         feedback.style.display = 'flex';
 
         let actualWord = vocabulary.find(v => v.id === currentWord.id);
@@ -1040,6 +1049,28 @@
     function nextQuestion() { updateQuizUI(); }
 
     // === プリント生成（問題のみ・解答なし） ===
+    function updatePrintPreview() {
+        const startNum = parseInt(document.getElementById('print-range-start').value) || 1;
+        const endNum = parseInt(document.getElementById('print-range-end').value) || vocabulary.length;
+        const tagFilter = document.getElementById('print-tag-select').value;
+        const countSelect = document.getElementById('print-count-select');
+        const currentCountVal = countSelect.value;
+
+        let targetWords = vocabulary.filter(v => v.num >= startNum && v.num <= endNum);
+        if(tagFilter !== 'all') targetWords = targetWords.filter(v => v.tags.includes(tagFilter));
+
+        countSelect.innerHTML = '';
+        if (targetWords.length >= 10) countSelect.innerHTML += `<option value="10">10問</option>`;
+        if (targetWords.length >= 20) countSelect.innerHTML += `<option value="20">20問</option>`;
+        if (targetWords.length >= 30) countSelect.innerHTML += `<option value="30">30問</option>`;
+        
+        const allCount = Math.min(targetWords.length, 30);
+        if (targetWords.length > 0) countSelect.innerHTML += `<option value="all">すべて (${allCount}問)</option>`;
+
+        if (Array.from(countSelect.options).some(o => o.value === currentCountVal)) countSelect.value = currentCountVal;
+        else countSelect.value = "all";
+    }
+
     function generatePrintData() {
         const startNum = parseInt(document.getElementById('print-range-start').value) || 1;
         const endNum = parseInt(document.getElementById('print-range-end').value) || vocabulary.length;
@@ -1053,11 +1084,12 @@
             showToast("指定された範囲に単語がありません", "error"); return false;
         }
 
-        // シャッフル
+        // ランダムシャッフル
         targetWords = targetWords.sort(() => 0.5 - Math.random());
 
         // 問題数制限
         let limit = countVal === 'all' ? targetWords.length : parseInt(countVal);
+        if (limit > 30) limit = 30; // 安全のため最大30問まで拡張
         if (targetWords.length < limit) limit = targetWords.length;
         targetWords = targetWords.slice(0, limit);
 
@@ -1074,9 +1106,7 @@
                 <div class="print-row">
                     <div class="print-num">${i + startIdx}.</div>
                     <div class="print-ja">${w.ja}</div>
-                    <div style="flex:1; display:flex; align-items:flex-end;">
-                        <div style="flex:1; width:100%; border-bottom:1px solid #000; height:20px;"></div>
-                    </div>
+                    <div class="print-ans"></div>
                 </div>`;
             }); return h;
         };
@@ -1089,21 +1119,32 @@
         if(!generatePrintData()) return;
         document.title = "単語テスト"; 
         window.print();
-        setTimeout(() => document.title = "English Master", 500); 
+        setTimeout(() => document.title = "Symphony Words", 500); 
     }
     
     function doDownloadPDF() {
         if(!generatePrintData()) return;
-        const defaultName = "単語テスト";
-        const fileName = prompt("保存するファイル名を入力してください", defaultName);
-        if (fileName === null) return; 
-        const finalName = fileName.trim() === "" ? defaultName : fileName.trim();
+        
+        // ファイル名指定のモーダルを開く
+        document.getElementById('pdf-name-input').value = "単語テスト";
+        document.getElementById('modal-pdf').classList.add('active');
+        setTimeout(() => document.getElementById('pdf-name-input').focus(), 100);
+    }
+
+    function cancelPdfModal() {
+        document.getElementById('modal-pdf').classList.remove('active');
+    }
+
+    function submitPdfModal() {
+        let fileName = document.getElementById('pdf-name-input').value.trim();
+        if (!fileName) fileName = "単語テスト";
+        document.getElementById('modal-pdf').classList.remove('active');
 
         const element = document.getElementById('pdf-content');
         document.getElementById('print-area').style.display = 'block'; 
         
         const opt = {
-            margin: 0, filename: finalName + '.pdf',
+            margin: 0, filename: fileName + '.pdf',
             image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
