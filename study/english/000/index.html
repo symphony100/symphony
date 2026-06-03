@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>待機中</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --bg: #ffffff;
+            --text: #202124;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .box {
+            width: 80px;
+            height: 80px;
+            border: 4px solid var(--primary);
+            margin: 0 auto 30px;
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        h1 { font-size: 1.2rem; font-weight: 400; letter-spacing: 0.1em; }
+        .sub { color: #5f6368; font-size: 0.9rem; margin-top: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="box"></div>
+        <h1 id="msg">接続を待機しています</h1>
+        <p class="sub" onclick="change()">不明なプロセス: _e^_c C6=62D6</p>
+    </div>
+
+</body>
+</html>
