@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>English Master</title>
+    <title>Symphony Words</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     
+    <!-- 外部ライブラリ (紙吹雪, PDF生成, 画像から文字読み取りAI) -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
     <style>
         :root {
@@ -50,7 +52,8 @@
             height: 100vh; overflow: hidden; overscroll-behavior: none;
             user-select: none; -webkit-user-select: none; touch-action: pan-y;
         }
-        input, select { user-select: text; -webkit-user-select: text; }
+        input, select, textarea { user-select: text; -webkit-user-select: text; }
+        button { user-select: none; -webkit-user-select: none; }
         * { box-sizing: border-box; font-family: 'Noto Sans JP', sans-serif; -webkit-tap-highlight-color: transparent; }
 
         .app-container { width: 100%; max-width: 800px; margin: 0 auto; background-color: var(--surface); display: flex; flex-direction: column; height: 100%; position: relative; }
@@ -67,7 +70,7 @@
         @keyframes slideInLeft { from { transform: translateX(-30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
         .header { background-color: var(--surface); color: var(--text-main); padding: 16px; text-align: center; font-weight: 700; font-size: 20px; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
-        .header-btn { background: none; border: none; color: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 10px; border-radius: 50%; transition: 0.2s; position: absolute; }
+        .header-btn { background: transparent; border: none; color: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 10px; border-radius: 50%; transition: 0.2s; position: absolute; appearance: none; -webkit-appearance: none; outline: none; }
         .header-btn:active { background-color: var(--border-color); }
         .close-btn { left: 10px; display: none; }
         .help-btn { right: 10px; }
@@ -78,15 +81,19 @@
         .nav-item.active { color: var(--text-main); }
         .nav-item.active .nav-icon-wrapper { background-color: var(--primary-container); color: var(--on-primary-container); }
 
-        .btn { width: 100%; padding: 16px; font-size: 16px; font-weight: 700; color: white; background-color: var(--primary); border: none; border-radius: 100px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; flex-shrink: 0; }
+        .btn { width: 100%; padding: 16px; font-size: 16px; font-weight: 700; color: white; background-color: var(--primary); border: none; border-radius: 100px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; flex-shrink: 0; appearance: none; -webkit-appearance: none; outline: none; }
         .btn:active:not(:disabled) { transform: translateY(2px); opacity: 0.9; }
         .btn:disabled { background-color: var(--border-color); color: var(--text-muted); cursor: not-allowed; }
         .btn-error { background-color: var(--error); }
         .btn-outline { background-color: transparent; border: 2px solid var(--border-color); color: var(--text-main); }
 
+        /* スピーカーボタンなど */
+        .icon-btn { background: transparent; border: none; color: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 10px; border-radius: 50%; transition: 0.2s; appearance: none; -webkit-appearance: none; outline: none; }
+        .icon-btn:hover { background-color: var(--hover-overlay); }
+
         .input-group { position: relative; margin-bottom: 16px; flex-shrink: 0; }
-        input[type="text"], select { width: 100%; padding: 20px 16px 10px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 16px; outline: none; background-color: var(--surface); color: var(--text-main); transition: 0.2s; }
-        input[type="text"]:focus, select:focus { border-color: var(--primary); background-color: var(--primary-light); }
+        input[type="text"], select, textarea { width: 100%; padding: 20px 16px 10px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 16px; outline: none; background-color: var(--surface); color: var(--text-main); transition: 0.2s; }
+        input[type="text"]:focus, select:focus, textarea:focus { border-color: var(--primary); background-color: var(--primary-light); }
         input[type="text"]:disabled { background-color: var(--border-color); color: var(--text-muted); cursor: not-allowed; }
         .input-label { position: absolute; left: 16px; top: 18px; color: var(--text-muted); font-size: 16px; pointer-events: none; transition: 0.2s; }
         input[type="text"]:focus ~ .input-label, input[type="text"]:not(:placeholder-shown) ~ .input-label { top: 6px; font-size: 11px; color: var(--primary); font-weight: bold; }
@@ -109,10 +116,12 @@
 
         .word-list { list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; overflow-x: hidden; }
         .swipe-container { position: relative; margin-bottom: 12px; border-radius: 16px; overflow: hidden; background-color: var(--border-color); flex-shrink: 0; }
-        .swipe-background { position: absolute; top: 0; right: 0; height: 100%; width: 140px; display: flex; }
-        .swipe-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: bold; cursor: pointer; border: none; outline: none; border-radius: 0; }
-        .swipe-btn-pen { background-color: #607D8B; } 
-        .swipe-btn-del { background-color: var(--error); }
+        
+        /* スワイプ背景（削除ボタンのみに修正） */
+        .swipe-background { position: absolute; top: 0; right: 0; height: 100%; width: 80px; display: flex; }
+        .swipe-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: bold; cursor: pointer; border: none; outline: none; appearance: none; -webkit-appearance: none; }
+        .swipe-btn-del { background-color: var(--error); width: 100%; }
+        
         .swipe-content { position: relative; background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; display: flex; justify-content: space-between; align-items: center; z-index: 1; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); cursor: pointer; }
         
         .word-en { font-weight: 700; font-size: 18px; color: var(--text-main); }
@@ -123,7 +132,7 @@
         .question-box { text-align: center; margin: 20px 0 40px; flex-shrink: 0; }
         .question-word { font-size: 40px; font-weight: 700; color: var(--text-main); letter-spacing: 1px; }
         
-        .feedback { padding: 16px; border-radius: 16px; margin-bottom: 16px; font-weight: bold; display: none; align-items: center; gap: 12px; }
+        .feedback { padding: 16px; border-radius: 16px; margin-bottom: 16px; font-weight: bold; display: none; align-items: center; flex-direction: column; gap: 8px; }
         .feedback.correct { display: flex; background-color: rgba(76, 175, 80, 0.1); color: var(--success); border: 2px solid var(--success); }
         .feedback.incorrect { display: flex; background-color: rgba(244, 67, 54, 0.1); color: var(--error); border: 2px solid var(--error); }
 
@@ -145,8 +154,8 @@
         /* 巨大〇×マーク */
         #big-mark { position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 200px; font-weight: bold; z-index: 9999; pointer-events: none; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #big-mark.show { transform: translate(-50%, -50%) scale(1); }
-        .mark-correct { color: #F44336; } /* 日本基準の赤丸 */
-        .mark-wrong { color: #2196F3; }   /* 日本基準の青バツ */
+        .mark-correct { color: #F44336; } 
+        .mark-wrong { color: #2196F3; }   
 
         /* チュートリアル用アニメーションとUI */
         .tut-slides { position: relative; width: 100%; height: 200px; overflow: hidden; margin-bottom: 20px; }
@@ -166,7 +175,7 @@
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         @keyframes printMove { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        /* 印刷スタイル (プレビューなし・問題のみ) */
+        /* 印刷スタイル (問題のみ) */
         #print-area { display: none; }
         @media print {
             @page { size: A4 portrait; margin: 10mm; }
@@ -175,7 +184,6 @@
             #print-area { display: block !important; width: 100%; }
         }
         
-        /* 印刷時のレイアウト (下線が確実に伸びるようにFlex調整) */
         .print-layout { background: white; color: black; font-family: "MS Mincho", "Noto Serif JP", serif; width: 100%; padding: 5mm; box-sizing: border-box; }
         .print-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
         .print-score-box { border: 2px solid #000; width: 90px; height: 70px; display: flex; flex-direction: column; position: relative; }
@@ -190,6 +198,7 @@
 </head>
 <body oncontextmenu="return false;">
 
+<!-- 巨大〇× -->
 <div id="big-mark"></div>
 
 <div class="app-container">
@@ -211,12 +220,12 @@
                 <div class="tut-slide active" id="tut-slide-0">
                     <span class="material-icons-round anim-bounce" style="font-size:60px; color:var(--primary); margin-bottom:10px;">translate</span>
                     <h3 style="margin:5px 0;">1. 単語を追加しよう！</h3>
-                    <p style="font-size:14px; color:var(--text-muted);">英語を入力すると、AIが自動で意味を取得します。「定期テスト」などのタグも付けられます。</p>
+                    <p style="font-size:14px; color:var(--text-muted);">英語を入力するか、<b>画像を読み取って</b>AIに自動翻訳させましょう。「定期テスト」などのタグも付けられます。</p>
                 </div>
                 <div class="tut-slide" id="tut-slide-1">
                     <span class="material-icons-round anim-swipe" style="font-size:60px; color:var(--review); margin-bottom:10px;">swipe_left</span>
                     <h3 style="margin:5px 0;">2. スワイプで管理！</h3>
-                    <p style="font-size:14px; color:var(--text-muted);">単語を<b>右から左へスワイプ</b>すると「重要マーク」や「削除」ができます。タップで編集も可能！</p>
+                    <p style="font-size:14px; color:var(--text-muted);">単語を<b>右から左へスワイプ</b>すると「削除」ができます。タップで編集も可能！</p>
                 </div>
                 <div class="tut-slide" id="tut-slide-2">
                     <span class="material-icons-round anim-pulse" style="font-size:60px; color:var(--success); margin-bottom:10px;">psychology</span>
@@ -265,6 +274,19 @@
         </div>
     </div>
 
+    <!-- OCR確認モーダル -->
+    <div id="modal-ocr" class="modal-overlay" style="z-index: 2500;">
+        <div class="modal-content">
+            <h3 style="margin-top:0;">抽出された単語</h3>
+            <p style="font-size:12px; color:var(--text-muted);">不要なものは消してください（1行に1単語）</p>
+            <textarea id="ocr-textarea" style="width:100%; height:200px; padding:10px; border:2px solid var(--border-color); border-radius:12px; resize:none; font-family:monospace; font-size:14px; outline:none; background:var(--surface); color:var(--text-main);"></textarea>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
+                <button class="btn" onclick="submitOcrWords()">一括翻訳＆追加</button>
+                <button class="btn btn-outline" onclick="closeOcrModal()">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 単語編集モーダル -->
     <div id="modal-edit" class="modal-overlay">
         <div class="modal-content">
@@ -278,7 +300,7 @@
                 <input type="text" id="edit-ja" placeholder=" ">
                 <label class="input-label">日本語の意味</label>
             </div>
-            <div class="tag-toggle-group">
+            <div class="tag-toggle-group" style="justify-content:center; margin-bottom:20px;">
                 <label class="tag-toggle"><input type="checkbox" id="edit-tag-weak"> 苦手</label>
                 <label class="tag-toggle"><input type="checkbox" id="edit-tag-review"> 見直し</label>
                 <label class="tag-toggle tag-test"><input type="checkbox" id="edit-tag-test"> 定期テスト</label>
@@ -312,7 +334,7 @@
         <button id="close-btn" class="header-btn close-btn" onclick="askQuitQuiz()">
             <span class="material-icons-round">arrow_back</span>
         </button>
-        <span id="header-title">English Master</span>
+        <span id="header-title">Symphony Words</span>
         <button id="help-btn" class="header-btn help-btn" onclick="openTutorial()">
             <span class="material-icons-round">help_outline</span>
         </button>
@@ -362,6 +384,14 @@
             </div>
             <button class="btn" onclick="addWordByAI()" style="width:auto; padding:0 20px;"><span class="material-icons-round">add</span></button>
         </div>
+
+        <!-- AI画像読み取り復活 -->
+        <div style="text-align:center; margin-bottom:16px; flex-shrink:0;">
+            <input type="file" id="file-upload" accept="image/*" style="display:none;">
+            <button class="btn btn-outline" onclick="document.getElementById('file-upload').click()" style="border-style:dashed; padding:10px;">
+                <span class="material-icons-round">document_scanner</span> 写真から自動読み取り
+            </button>
+        </div>
         
         <div class="tag-toggle-group" style="justify-content:center;">
             <label class="tag-toggle"><input type="checkbox" id="add-tag-weak" checked> 苦手</label>
@@ -404,6 +434,16 @@
                     <option value="test">「定期テスト」からのみ</option>
                 </select>
             </div>
+            
+            <div>
+                <label style="font-weight:bold; font-size:14px; display:block; margin-bottom:8px; color:var(--on-primary-container);">問題数 (ランダム抽出)</label>
+                <select id="print-count-select">
+                    <option value="10">10問</option>
+                    <option value="20">20問</option>
+                    <option value="30">30問</option>
+                    <option value="all" selected>すべて</option>
+                </select>
+            </div>
         </div>
 
         <div style="display:flex; flex-direction:column; gap:10px; flex-shrink:0;">
@@ -440,6 +480,10 @@
         <div class="question-box">
             <div class="question-label" id="quiz-status-label">この単語を英語で書いてください</div>
             <div class="question-word" id="question-ja"></div>
+            <!-- 発音ボタン復活 -->
+            <button class="icon-btn" style="color:var(--primary); margin: 10px auto 0; display:none;" id="quiz-speak-btn" onclick="speakCurrentWord()">
+                <span class="material-icons-round" style="font-size:32px;">volume_up</span>
+            </button>
         </div>
         <div class="input-group">
             <input type="text" id="answer-input" placeholder=" " autocomplete="off" inputmode="latin" spellcheck="false" style="ime-mode: disabled;">
@@ -447,7 +491,7 @@
         </div>
         <div class="quiz-footer">
             <div id="feedback-area" class="feedback">
-                <div id="feedback-text" style="font-size:18px; width: 100%;"></div>
+                <div id="feedback-text" style="font-size:18px; width: 100%; text-align:center;"></div>
             </div>
             <button class="btn" id="check-btn" onclick="checkAnswer()">チェック</button>
         </div>
@@ -471,16 +515,17 @@
     <div id="pdf-content" style="background:white; color:black;">
         <div class="print-layout">
             <div class="print-header">
+                <!-- タイトルと名前を1行に横並び -->
                 <div style="display:flex; align-items:baseline; gap:30px;">
                     <h1 class="print-title">英単語 小テスト</h1>
-                    <div style="font-size:14pt;">氏名：＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿</div>
+                    <div style="font-size:14pt;">氏名：＿＿＿＿＿＿＿＿＿＿＿</div>
                 </div>
                 <div class="print-score-box">
                     <div class="print-score-label">得点</div>
                     <div class="print-score-val">/ <span id="print-total-score"></span></div>
                 </div>
             </div>
-            <div style="font-size:12pt; margin-bottom:20px; font-weight:bold;">問題：次の日本語の意味に合う英単語を書きなさい。</div>
+            <div style="font-size:12pt; margin-bottom:20px; font-weight:bold;">次の日本語の意味に合う英単語を書きなさい。</div>
             <div id="print-area-content-q"></div>
         </div>
     </div>
@@ -509,13 +554,17 @@
         } catch(e) {}
     }
 
+    // TTS 音声読み上げ
+    function speak(text) {
+        try { if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; window.speechSynthesis.speak(u); } } catch(e) {}
+    }
+
     let vocabulary = JSON.parse(localStorage.getItem('em_vocab')) || [];
-    // Migration
     vocabulary = vocabulary.map((v, i) => {
         let tags = v.tags || [];
         if (v.status && tags.length === 0) tags.push(v.status);
         if (tags.length === 0) tags.push('weak');
-        return { ...v, num: i + 1, tags, isImportant: v.isImportant || false, correctCount: v.correctCount || 0, interval: v.interval || 0, easeFactor: v.easeFactor || 2.5, nextReviewDate: v.nextReviewDate || 0 };
+        return { ...v, num: i + 1, tags, correctCount: v.correctCount || 0, interval: v.interval || 0, easeFactor: v.easeFactor || 2.5, nextReviewDate: v.nextReviewDate || 0 };
     });
     let stats = JSON.parse(localStorage.getItem('em_stats')) || { lastStudyDate: null, streak: 0, totalAnswers: 0, correctAnswers: 0 };
     let currentWordTab = 'weak';
@@ -542,7 +591,7 @@
         document.getElementById('home-range-end').value = len; document.getElementById('print-range-end').value = len;
     }
 
-    // スワイプを閉じる制御 (画面のどこかを触ったら閉じる)
+    // スワイプを閉じる制御
     document.addEventListener('touchstart', closeOpenedSwipe, {passive: true});
     document.addEventListener('mousedown', closeOpenedSwipe);
 
@@ -629,7 +678,80 @@
         closeResetModal(); openTutorial(); showToast("リセットしました"); switchView('home', 'fade'); 
     }
 
-    // 単語追加
+    // OCR画像読み取り
+    document.getElementById('file-upload').addEventListener('change', async (e) => {
+        const file = e.target.files[0]; if(!file) return;
+        document.getElementById('full-loading-msg').innerText = "AIが画像を解析中...";
+        document.getElementById('full-loading').classList.add('active');
+        
+        try {
+            const worker = await Tesseract.createWorker('eng');
+            const ret = await worker.recognize(file);
+            await worker.terminate();
+            const text = ret.data.text;
+
+            const wordsMatch = text.match(/[a-zA-Z]+/g) || [];
+            const uniqueWords = [...new Set(wordsMatch.map(w => w.toLowerCase()))].filter(w => w.length > 1);
+
+            document.getElementById('full-loading').classList.remove('active');
+            if(uniqueWords.length === 0) { showToast("英単語が見つかりませんでした", "error"); return; }
+            
+            document.getElementById('ocr-textarea').value = uniqueWords.join("\n");
+            document.getElementById('modal-ocr').classList.add('active');
+        } catch(err) {
+            document.getElementById('full-loading').classList.remove('active'); showToast("読み取りに失敗しました", "error");
+        }
+        e.target.value = ""; 
+    });
+
+    function closeOcrModal() { document.getElementById('modal-ocr').classList.remove('active'); }
+
+    async function submitOcrWords() {
+        const text = document.getElementById('ocr-textarea').value;
+        const words = [...new Set(text.split('\n').map(w => w.trim().toLowerCase()).filter(w => w !== ""))];
+        if(words.length === 0) { closeOcrModal(); return; }
+        
+        closeOcrModal(); 
+        document.getElementById('full-loading-msg').innerText = "まとめて翻訳中...";
+        document.getElementById('full-loading').classList.add('active');
+        
+        const newWords = words.filter(w => !vocabulary.some(v => v.en.toLowerCase() === w));
+        if(newWords.length === 0) { document.getElementById('full-loading').classList.remove('active'); showToast("すべて登録済みでした"); return; }
+
+        let tags = [];
+        if(document.getElementById('add-tag-weak').checked) tags.push('weak');
+        if(document.getElementById('add-tag-review').checked) tags.push('review');
+        if(document.getElementById('add-tag-test').checked) tags.push('test');
+        if(tags.length === 0) tags.push('weak');
+
+        try {
+            const results = [];
+            for(let i=0; i<newWords.length; i+=5) {
+                const chunk = newWords.slice(i, i+5);
+                const promises = chunk.map(async (word) => {
+                    try {
+                        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ja&dt=t&q=${encodeURIComponent(word)}`;
+                        const res = await fetch(url); const data = await res.json();
+                        return { en: word, ja: data[0][0][0].replace(/[\r\n]+/g, '').trim() };
+                    } catch(e) { return null; }
+                });
+                const chunkRes = await Promise.all(promises);
+                results.push(...chunkRes.filter(r => r && r.ja && r.ja.toLowerCase() !== r.en));
+            }
+            
+            const prevLen = vocabulary.length;
+            results.forEach((res, idx) => vocabulary.push({ id: Date.now() + Math.random(), en: res.en, ja: res.ja, tags: [...tags], correctCount: 0, num: prevLen + idx + 1, interval: 0, easeFactor: 2.5, nextReviewDate: 0 }));
+            
+            if (parseInt(document.getElementById('home-range-end').value) === prevLen || prevLen === 0) document.getElementById('home-range-end').value = vocabulary.length;
+            if (parseInt(document.getElementById('print-range-end').value) === prevLen || prevLen === 0) document.getElementById('print-range-end').value = vocabulary.length;
+
+            saveData(); updateRangeLimits(); renderWordList(); switchWordTab(tags[0]);
+            showToast(`${results.length}個を追加しました`);
+        } catch(e) { showToast("一部の翻訳に失敗しました", "error"); } 
+        finally { document.getElementById('full-loading').classList.remove('active'); }
+    }
+
+    // 単語追加 (手動)
     async function addWordByAI() {
         const inputElem = document.getElementById('new-word-input'); const wordEn = inputElem.value.trim().toLowerCase();
         if (!wordEn) return;
@@ -653,7 +775,7 @@
             }
 
             const prevLen = vocabulary.length;
-            vocabulary.push({ id: Date.now(), en: wordEn, ja: translatedText, isImportant: false, tags: tags, correctCount: 0, num: prevLen + 1, interval: 0, easeFactor: 2.5, nextReviewDate: 0 });
+            vocabulary.push({ id: Date.now(), en: wordEn, ja: translatedText, tags: tags, correctCount: 0, num: prevLen + 1, interval: 0, easeFactor: 2.5, nextReviewDate: 0 });
             
             if (parseInt(document.getElementById('home-range-end').value) === prevLen || prevLen === 0) document.getElementById('home-range-end').value = vocabulary.length;
             if (parseInt(document.getElementById('print-range-end').value) === prevLen || prevLen === 0) document.getElementById('print-range-end').value = vocabulary.length;
@@ -682,7 +804,6 @@
         
         list.forEach(word => {
             const li = document.createElement('li'); li.className = 'swipe-container'; li.dataset.id = word.id;
-            const penIcon = word.isImportant ? `<span style="color:var(--pen); font-size:14px; margin-right:4px;" class="material-icons-round">edit</span>` : '';
             
             let badges = '';
             if(word.tags.includes('weak')) badges += `<span class="badge badge-weak">苦手</span>`;
@@ -691,14 +812,14 @@
 
             li.innerHTML = `
                 <div class="swipe-background">
-                    <button class="swipe-btn swipe-btn-pen" onclick="togglePen(${word.id})"><span class="material-icons-round" style="margin-bottom:4px;">edit</span>重要</button>
                     <button class="swipe-btn swipe-btn-del" onclick="deleteWord(${word.id})"><span class="material-icons-round" style="margin-bottom:4px;">delete</span>削除</button>
                 </div>
-                <div class="swipe-content" data-id="${word.id}">
+                <!-- タップしたら編集モーダル -->
+                <div class="swipe-content" data-id="${word.id}" onclick="openEditModal(${word.id})">
                     <div style="flex:1;">
                         <div style="display:flex; align-items:center; margin-bottom:4px;">
                             <span style="font-size:12px; font-weight:bold; color:var(--primary); margin-right:8px; background:var(--primary-light); padding:2px 6px; border-radius:6px;">No.${word.num}</span>
-                            ${penIcon}<span class="word-en">${word.en}</span> ${badges}
+                            <span class="word-en">${word.en}</span> ${badges}
                         </div>
                         <span class="word-ja">${word.ja}</span>
                     </div>
@@ -708,7 +829,6 @@
         document.querySelectorAll('.swipe-content').forEach(el => attachSwipeMenu(el, el.dataset.id));
     }
 
-    function togglePen(id) { const w = vocabulary.find(v => v.id == id); if(w){ w.isImportant = !w.isImportant; saveData(); renderWordList(); } }
     function deleteWord(id) { vocabulary = vocabulary.filter(v => v.id != id); vocabulary.forEach((v,i)=>v.num=i+1); saveData(); updateRangeLimits(); renderWordList(); }
 
     function attachSwipeMenu(element, id) {
@@ -729,8 +849,8 @@
             if (Math.abs(diff) > 10) isDragging = true;
             if (!isDragging) return;
             
-            if (isOpen) diff -= 140; 
-            if (diff > 0) diff = 0; if (diff < -160) diff = -160;
+            if (isOpen) diff -= 80; 
+            if (diff > 0) diff = 0; if (diff < -100) diff = -100;
             element.style.transform = `translateX(${diff}px)`;
         };
         const onEnd = () => {
@@ -740,8 +860,8 @@
                 return;
             }
             element.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
-            let diff = currentX - startX; if (isOpen) diff -= 140;
-            if (diff < -40) { element.style.transform = `translateX(-140px)`; isOpen = true; openedSwipeId = id; }
+            let diff = currentX - startX; if (isOpen) diff -= 80;
+            if (diff < -40) { element.style.transform = `translateX(-80px)`; isOpen = true; openedSwipeId = id; }
             else { element.style.transform = `translateX(0)`; isOpen = false; if(openedSwipeId == id) openedSwipeId = null; }
         };
         element.addEventListener('touchstart', onStart, {passive: true}); element.addEventListener('touchmove', onMove, {passive: true}); element.addEventListener('touchend', onEnd);
@@ -783,6 +903,7 @@
         this.value = this.value.replace(/[^a-zA-Z0-9\s\'\-]/g, '');
     });
 
+    // 巨大〇×
     function showBigMark(isCorrect) {
         const mark = document.getElementById('big-mark');
         mark.innerText = isCorrect ? '〇' : '×';
@@ -791,11 +912,11 @@
         setTimeout(() => mark.classList.remove('show'), 600);
     }
 
-    // 忘却曲線に基づく出題ロジック
+    // 忘却曲線
     function getAiQuizQueue(words) {
         const now = Date.now();
         words.forEach(w => {
-            if (!w.nextReviewDate) { w.aiScore = 100; } // 新規は最優先
+            if (!w.nextReviewDate) { w.aiScore = 100; } 
             else {
                 const overdue = now - w.nextReviewDate;
                 w.aiScore = overdue > 0 ? 50 + (overdue / (24*60*60*1000)) : Math.random() * 10;
@@ -815,7 +936,6 @@
         word.nextReviewDate = Date.now() + word.interval * 24 * 60 * 60 * 1000;
     }
 
-    // デジタルクイズ
     let quizQueue = [], currentIndex = 0, isAnswered = false;
     
     function startQuiz() {
@@ -844,6 +964,7 @@
         const checkBtn = document.getElementById('check-btn'); const feedback = document.getElementById('feedback-area'); const answerInput = document.getElementById('answer-input');
 
         answerInput.disabled = false; answerInput.value = ""; 
+        document.getElementById('quiz-speak-btn').style.display = 'none';
 
         if (quizQueue.length === 0) {
             const today = new Date().toDateString();
@@ -861,23 +982,26 @@
 
         const currentWord = quizQueue[0];
         document.getElementById('question-ja').innerText = currentWord.ja;
-        const penHtml = currentWord.isImportant ? `<span style="color:var(--pen); font-size:16px;" class="material-icons-round">edit</span>` : '';
-        document.getElementById('quiz-status-label').innerHTML = `No.${currentWord.num} を英語で書いてください ${penHtml}`;
+        document.getElementById('quiz-status-label').innerHTML = `No.${currentWord.num} を英語で書いてください`;
         
         answerInput.parentElement.style.display = 'block'; setTimeout(() => answerInput.focus(), 100);
         checkBtn.innerText = "チェック"; checkBtn.className = "btn"; checkBtn.onclick = checkAnswer; feedback.style.display = 'none'; isAnswered = false;
     }
 
     function handleEnter(e) { if (e.key === 'Enter') { if (isAnswered) nextQuestion(); else checkAnswer(); } }
+    function speakCurrentWord() { if(quizQueue.length > 0) speak(quizQueue[0].en); }
 
     function checkAnswer() {
         const answerInputElem = document.getElementById('answer-input'); const userInput = answerInputElem.value.trim().toLowerCase();
         const currentWord = quizQueue[0]; const correctAnswer = currentWord.en.toLowerCase();
-        const feedback = document.getElementById('feedback-area');
-        const feedbackText = document.getElementById('feedback-text'); const checkBtn = document.getElementById('check-btn');
+        const feedback = document.getElementById('feedback-area'); const feedbackText = document.getElementById('feedback-text'); const checkBtn = document.getElementById('check-btn');
 
         if (userInput === "" && !isAnswered) return;
         isAnswered = true; stats.totalAnswers++;
+        speak(correctAnswer);
+        document.getElementById('quiz-speak-btn').style.display = 'inline-block';
+        feedback.style.display = 'flex';
+
         let actualWord = vocabulary.find(v => v.id === currentWord.id);
 
         if (userInput === correctAnswer) {
@@ -891,7 +1015,7 @@
                     if(!actualWord.tags.includes('review')) actualWord.tags.push('review');
                 }
             }
-            feedbackText.innerText = "正解！";
+            feedbackText.innerHTML = `<div style="font-size:18px; font-weight:bold; color:var(--success); text-align:center;">正解！</div>`;
             feedback.className = "feedback correct"; checkBtn.innerText = "次へ"; checkBtn.className = "btn btn-success";
         } else {
             playSound('wrong'); showBigMark(false);
@@ -904,7 +1028,9 @@
             
             feedbackText.innerHTML = `
                 <div style="font-size:18px; font-weight:bold; color:var(--error); margin-bottom:8px;">不正解！</div>
-                <div>正解: <span style="font-size:24px; display:block; margin-top:4px; color:var(--text-main);">${correctAnswer}</span></div>
+                <div style="font-size:14px; color:var(--text-muted); margin-bottom:4px;">正解は…</div>
+                <div style="font-size:32px; font-weight:bold; color:var(--text-main); letter-spacing:1px;">${correctAnswer}</div>
+                ${userInput ? `<div style="font-size:14px; margin-top:8px; color:var(--text-muted);">あなたの回答: <span style="text-decoration:line-through; color:var(--error);">${userInput}</span></div>` : ''}
             `;
             feedback.className = "feedback incorrect"; checkBtn.innerText = "分かった"; checkBtn.className = "btn btn-error";
         }
@@ -917,6 +1043,7 @@
         const startNum = parseInt(document.getElementById('print-range-start').value) || 1;
         const endNum = parseInt(document.getElementById('print-range-end').value) || vocabulary.length;
         const tagFilter = document.getElementById('print-tag-select').value;
+        const countVal = document.getElementById('print-count-select').value;
 
         let targetWords = vocabulary.filter(v => v.num >= startNum && v.num <= endNum);
         if(tagFilter !== 'all') targetWords = targetWords.filter(v => v.tags.includes(tagFilter));
@@ -924,6 +1051,14 @@
         if(targetWords.length === 0) {
             showToast("指定された範囲に単語がありません", "error"); return false;
         }
+
+        // シャッフル
+        targetWords = targetWords.sort(() => 0.5 - Math.random());
+
+        // 問題数制限
+        let limit = countVal === 'all' ? targetWords.length : parseInt(countVal);
+        if (targetWords.length < limit) limit = targetWords.length;
+        targetWords = targetWords.slice(0, limit);
 
         let totalQ = targetWords.length;
         document.getElementById('print-total-score').innerText = totalQ;
@@ -934,10 +1069,9 @@
         const buildRowsQ = (col, startIdx) => {
             let h = '';
             col.forEach((w, i) => {
-                const pen = w.isImportant ? `<span class="material-icons-round print-pen-icon">edit</span>` : '';
                 h += `
                 <div class="print-row">
-                    <div class="print-num">${pen}${i + startIdx}.</div>
+                    <div class="print-num">${i + startIdx}.</div>
                     <div class="print-ja">${w.ja}</div>
                     <div style="flex:1; display:flex; align-items:flex-end;">
                         <div style="flex:1; width:100%; border-bottom:1px solid #000; height:20px;"></div>
@@ -959,11 +1093,16 @@
     
     function doDownloadPDF() {
         if(!generatePrintData()) return;
+        const defaultName = "単語テスト";
+        const fileName = prompt("保存するファイル名を入力してください", defaultName);
+        if (fileName === null) return; 
+        const finalName = fileName.trim() === "" ? defaultName : fileName.trim();
+
         const element = document.getElementById('pdf-content');
         document.getElementById('print-area').style.display = 'block'; 
         
         const opt = {
-            margin: 0, filename: '単語テスト.pdf',
+            margin: 0, filename: finalName + '.pdf',
             image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
