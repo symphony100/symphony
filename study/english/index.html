@@ -90,6 +90,9 @@
 
         .icon-btn { background: transparent; border: none; color: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 10px; border-radius: 50%; transition: 0.2s; appearance: none; -webkit-appearance: none; outline: none; }
         .icon-btn:hover { background-color: var(--hover-overlay); }
+        
+        /* 読み上げボタンのタッチ領域拡大用 */
+        .touch-target-large { padding: 20px !important; margin: -15px -15px -15px 10px !important; }
 
         .input-group { position: relative; margin-bottom: 16px; flex-shrink: 0; }
         input[type="text"], select, textarea { width: 100%; padding: 20px 16px 10px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 16px; outline: none; background-color: var(--surface); color: var(--text-main); transition: 0.2s; }
@@ -117,7 +120,6 @@
         .word-list { list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; overflow-x: hidden; }
         .swipe-container { position: relative; margin-bottom: 12px; border-radius: 16px; overflow: hidden; background-color: var(--border-color); flex-shrink: 0; }
         
-        /* スワイプ背景（削除ボタンのみ） */
         .swipe-background { position: absolute; top: 0; right: 0; height: 100%; width: 80px; display: flex; }
         .swipe-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: bold; cursor: pointer; border: none; outline: none; appearance: none; -webkit-appearance: none; }
         .swipe-btn-del { background-color: var(--error); width: 100%; }
@@ -190,13 +192,11 @@
         .print-score-label { padding: 2px; text-align: center; font-size: 10pt; border-bottom: 1px dotted #000; }
         .print-score-val { position: absolute; bottom: 5px; right: 5px; font-size: 16pt; font-weight: bold; }
         .print-table-wrapper { display: flex; gap: 15px; width: 100%; }
-        .print-col { flex: 1; }
-        .print-row { display: flex; align-items: flex-end; margin-bottom: 25px; font-size: 14pt; }
-        .print-num { width: 35px; font-weight: bold; text-align: right; margin-right: 10px; }
-        /* 1行で省略表示するように */
-        .print-ja { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; font-weight: bold; margin-right: 10px; }
-        /* 解答欄を下線で右端まで伸ばす */
-        .print-ans { flex: 1; border-bottom: 1px solid #000; height: 25px; }
+        .print-col { flex: 1; min-width: 0; }
+        .print-row { display: flex; align-items: flex-end; margin-bottom: 25px; font-size: 14pt; width: 100%; }
+        .print-num { width: 35px; font-weight: bold; text-align: right; margin-right: 10px; flex-shrink: 0; }
+        .print-ja { width: 100px; font-weight: bold; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .print-ans { flex: 1; border-bottom: 1px solid #000; height: 25px; min-width: 50px; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -527,7 +527,6 @@
     <div id="pdf-content" style="background:white; color:black;">
         <div class="print-layout">
             <div class="print-header">
-                <!-- タイトルと名前を1行に横並び -->
                 <div style="display:flex; align-items:baseline; gap:30px;">
                     <h1 class="print-title">英単語 小テスト</h1>
                     <div style="font-size:14pt;">氏名：＿＿＿＿＿＿＿＿＿＿＿</div>
@@ -548,6 +547,9 @@
     const correctAudio = new Audio("正解.mp3");
     const wrongAudio = new Audio("不正解.mp3");
     const finishAudio = new Audio("完了.mp3");
+    const clickAudio = new Audio("クリック.mp3");
+    const decideAudio = new Audio("決定.mp3");
+    const switchAudio = new Audio("スイッチ.mp3");
 
     let isSoundEnabled = localStorage.getItem('em_sound') !== 'false';
     document.getElementById('sound-toggle').checked = isSoundEnabled;
@@ -555,6 +557,7 @@
     function toggleSound() {
         isSoundEnabled = document.getElementById('sound-toggle').checked;
         localStorage.setItem('em_sound', isSoundEnabled);
+        playSound('switch');
     }
 
     function playSound(type) {
@@ -563,6 +566,9 @@
             if(type === 'correct') { correctAudio.currentTime = 0; correctAudio.play(); }
             else if (type === 'wrong') { wrongAudio.currentTime = 0; wrongAudio.play(); }
             else if (type === 'finish') { finishAudio.currentTime = 0; finishAudio.play(); }
+            else if (type === 'click') { clickAudio.currentTime = 0; clickAudio.play(); }
+            else if (type === 'decide') { decideAudio.currentTime = 0; decideAudio.play(); }
+            else if (type === 'switch') { switchAudio.currentTime = 0; switchAudio.play(); }
         } catch(e) {}
     }
 
@@ -570,6 +576,38 @@
     function speak(text) {
         try { if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; window.speechSynthesis.speak(u); } } catch(e) {}
     }
+
+    // Enterキーのグローバルショートカット
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            if (document.getElementById('modal-manual').classList.contains('active')) {
+                e.preventDefault(); submitManualModal(); return;
+            }
+            if (document.getElementById('modal-pdf').classList.contains('active')) {
+                e.preventDefault(); submitPdfModal(); return;
+            }
+            if (document.getElementById('modal-edit').classList.contains('active')) {
+                e.preventDefault(); saveEditModal(); return;
+            }
+            if (document.getElementById('modal-quit').classList.contains('active')) {
+                return;
+            }
+            if (document.getElementById('modal-ocr').classList.contains('active')) {
+                return; 
+            }
+
+            const activeView = document.querySelector('.view.active');
+            if (activeView && activeView.id === 'view-quiz') {
+                e.preventDefault();
+                const checkBtn = document.getElementById('check-btn');
+                if (checkBtn) checkBtn.click();
+            } else if (activeView && activeView.id === 'view-manage') {
+                if (document.activeElement.id === 'new-word-input') {
+                    e.preventDefault(); addWordByAI();
+                }
+            }
+        }
+    });
 
     let vocabulary = JSON.parse(localStorage.getItem('em_vocab')) || [];
     vocabulary = vocabulary.map((v, i) => {
@@ -624,16 +662,19 @@
     // === チュートリアル制御 ===
     let tutorialStep = 0;
     function openTutorial() {
+        playSound('click');
         tutorialStep = 0; updateTutorialUI();
         document.getElementById('modal-tutorial').classList.add('active');
         localStorage.setItem('em_tutorial_done', 'true');
     }
-    function closeTutorial() { document.getElementById('modal-tutorial').classList.remove('active'); }
+    function closeTutorial() { playSound('click'); document.getElementById('modal-tutorial').classList.remove('active'); }
     function nextTutorial() {
+        playSound('click');
         if (tutorialStep < 3) { tutorialStep++; updateTutorialUI(); }
         else { closeTutorial(); }
     }
     function prevTutorial() {
+        playSound('click');
         if (tutorialStep > 0) { tutorialStep--; updateTutorialUI(); }
     }
     function updateTutorialUI() {
@@ -644,6 +685,7 @@
     }
 
     function switchView(viewName, animType = 'fade') {
+        playSound('click');
         document.querySelectorAll('.view').forEach(v => { v.classList.remove('active', 'fade-enter', 'slide-enter-right', 'slide-enter-left'); });
         
         setTimeout(() => {
@@ -666,10 +708,10 @@
         }
         if (viewName === 'home') updateHomeUI();
         if (viewName === 'manage') renderWordList();
-        if (viewName === 'print') updatePrintPreview(); // セレクトボックスの動的更新
+        if (viewName === 'print') updatePrintPreview(); 
     }
 
-    function switchWordTab(tab) { currentWordTab = tab; document.getElementById('tab-weak').classList.remove('active'); document.getElementById('tab-review').classList.remove('active'); document.getElementById('tab-test').classList.remove('active'); document.getElementById(`tab-${tab}`).classList.add('active'); renderWordList(); }
+    function switchWordTab(tab) { playSound('click'); currentWordTab = tab; document.getElementById('tab-weak').classList.remove('active'); document.getElementById('tab-review').classList.remove('active'); document.getElementById('tab-test').classList.remove('active'); document.getElementById(`tab-${tab}`).classList.add('active'); renderWordList(); }
     
     function updateHomeUI() {
         updateRangeLimits();
@@ -678,14 +720,16 @@
     }
 
     function toggleTheme() {
+        playSound('switch');
         if (document.getElementById('theme-toggle').checked) { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('em_theme', 'dark'); }
         else { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('em_theme', 'light'); }
     }
 
     // リセットポップアップ
-    function openResetModal() { document.getElementById('modal-reset').classList.add('active'); }
-    function closeResetModal() { document.getElementById('modal-reset').classList.remove('active'); }
+    function openResetModal() { playSound('click'); document.getElementById('modal-reset').classList.add('active'); }
+    function closeResetModal() { playSound('click'); document.getElementById('modal-reset').classList.remove('active'); }
     function confirmReset() {
+        playSound('decide');
         vocabulary = []; stats = { lastStudyDate: null, streak: 0, totalAnswers: 0, correctAnswers: 0 }; 
         saveData(); initRanges(); updateRangeLimits(); 
         closeResetModal(); openTutorial(); showToast("リセットしました"); switchView('home', 'fade'); 
@@ -717,9 +761,10 @@
         e.target.value = ""; 
     });
 
-    function closeOcrModal() { document.getElementById('modal-ocr').classList.remove('active'); }
+    function closeOcrModal() { playSound('click'); document.getElementById('modal-ocr').classList.remove('active'); }
 
     async function submitOcrWords() {
+        playSound('decide');
         const text = document.getElementById('ocr-textarea').value;
         const words = [...new Set(text.split('\n').map(w => w.trim().toLowerCase()).filter(w => w !== ""))];
         if(words.length === 0) { closeOcrModal(); return; }
@@ -766,6 +811,7 @@
 
     // 単語追加 (手動)
     async function addWordByAI() {
+        playSound('decide');
         const inputElem = document.getElementById('new-word-input'); const wordEn = inputElem.value.trim().toLowerCase();
         if (!wordEn) return;
         if (vocabulary.some(v => v.en.toLowerCase() === wordEn)) { showToast("登録済みの単語です", "error"); return; }
@@ -806,8 +852,8 @@
             modalResolve = resolve;
         });
     }
-    function submitManualModal() { const val = document.getElementById('modal-input').value.trim(); if (val) { document.getElementById('modal-manual').classList.remove('active'); if (modalResolve) modalResolve(val); } else { showToast("入力してください", "error"); } }
-    function cancelManualModal() { document.getElementById('modal-manual').classList.remove('active'); if (modalResolve) modalResolve(null); }
+    function submitManualModal() { playSound('decide'); const val = document.getElementById('modal-input').value.trim(); if (val) { document.getElementById('modal-manual').classList.remove('active'); if (modalResolve) modalResolve(val); } else { showToast("入力してください", "error"); } }
+    function cancelManualModal() { playSound('click'); document.getElementById('modal-manual').classList.remove('active'); if (modalResolve) modalResolve(null); }
 
     function renderWordList() {
         const container = document.getElementById('word-list-container'); container.innerHTML = "";
@@ -836,7 +882,7 @@
                         </div>
                         <span class="word-ja">${word.ja}</span>
                     </div>
-                    <button class="icon-btn ripple-target" style="color:var(--primary); margin-left:10px;" onclick="event.stopPropagation(); speak('${word.en.replace(/'/g, "\\'")}')"><span class="material-icons-round">volume_up</span></button>
+                    <button class="icon-btn ripple-target touch-target-large" style="color:var(--primary);" onclick="event.stopPropagation(); speak('${word.en.replace(/'/g, "\\'")}')"><span class="material-icons-round">volume_up</span></button>
                 </div>`;
             container.appendChild(li);
         });
@@ -884,6 +930,7 @@
 
     let editId = null;
     function openEditModal(id) {
+        playSound('click');
         const el = document.querySelector(`.swipe-content[data-id="${id}"]`);
         if (el && el.style.transform !== '' && el.style.transform !== 'translateX(0px)') return;
         
@@ -894,8 +941,9 @@
         document.getElementById('edit-tag-test').checked = word.tags.includes('test');
         document.getElementById('modal-edit').classList.add('active');
     }
-    function closeEditModal() { document.getElementById('modal-edit').classList.remove('active'); }
+    function closeEditModal() { playSound('click'); document.getElementById('modal-edit').classList.remove('active'); }
     function saveEditModal() {
+        playSound('decide');
         const word = vocabulary.find(v => v.id == editId); if(!word) return;
         const en = document.getElementById('edit-en').value.trim(); const ja = document.getElementById('edit-ja').value.trim();
         if(!en || !ja) return; 
@@ -953,6 +1001,7 @@
     let quizQueue = [], currentIndex = 0, isAnswered = false;
     
     function startQuiz() {
+        playSound('decide');
         if (vocabulary.length === 0) return;
         const startNum = parseInt(document.getElementById('home-range-start').value) || 1;
         const endNum = parseInt(document.getElementById('home-range-end').value) || vocabulary.length;
@@ -967,10 +1016,10 @@
         currentIndex = 0; switchView('quiz', 'slide-left'); updateQuizUI();
     }
 
-    function askQuitQuiz() { document.getElementById('modal-quit').classList.add('active'); }
-    function closeQuitModal() { document.getElementById('modal-quit').classList.remove('active'); }
-    function forceEndQuiz() { closeQuitModal(); switchView('home', 'slide-right'); }
-    function endQuiz() { switchView('home', 'slide-right'); }
+    function askQuitQuiz() { playSound('click'); document.getElementById('modal-quit').classList.add('active'); }
+    function closeQuitModal() { playSound('click'); document.getElementById('modal-quit').classList.remove('active'); }
+    function forceEndQuiz() { playSound('click'); closeQuitModal(); switchView('home', 'slide-right'); }
+    function endQuiz() { playSound('click'); switchView('home', 'slide-right'); }
     
     function updateQuizUI() {
         const total = currentIndex + quizQueue.length;
@@ -1000,8 +1049,6 @@
         answerInput.parentElement.style.display = 'block'; setTimeout(() => answerInput.focus(), 100);
         checkBtn.innerText = "チェック"; checkBtn.className = "btn"; checkBtn.onclick = checkAnswer; feedback.style.display = 'none'; isAnswered = false;
     }
-
-    function handleEnter(e) { if (e.key === 'Enter') { if (isAnswered) nextQuestion(); else checkAnswer(); } }
 
     function checkAnswer() {
         const answerInputElem = document.getElementById('answer-input'); const userInput = answerInputElem.value.trim().toLowerCase();
@@ -1089,7 +1136,7 @@
 
         // 問題数制限
         let limit = countVal === 'all' ? targetWords.length : parseInt(countVal);
-        if (limit > 30) limit = 30; // 安全のため最大30問まで拡張
+        if (limit > 30) limit = 30; // 最大30問
         if (targetWords.length < limit) limit = targetWords.length;
         targetWords = targetWords.slice(0, limit);
 
@@ -1116,6 +1163,7 @@
     }
 
     function doPrint() {
+        playSound('decide');
         if(!generatePrintData()) return;
         document.title = "単語テスト"; 
         window.print();
@@ -1123,6 +1171,7 @@
     }
     
     function doDownloadPDF() {
+        playSound('click');
         if(!generatePrintData()) return;
         
         // ファイル名指定のモーダルを開く
@@ -1131,11 +1180,10 @@
         setTimeout(() => document.getElementById('pdf-name-input').focus(), 100);
     }
 
-    function cancelPdfModal() {
-        document.getElementById('modal-pdf').classList.remove('active');
-    }
+    function cancelPdfModal() { playSound('click'); document.getElementById('modal-pdf').classList.remove('active'); }
 
     function submitPdfModal() {
+        playSound('decide');
         let fileName = document.getElementById('pdf-name-input').value.trim();
         if (!fileName) fileName = "単語テスト";
         document.getElementById('modal-pdf').classList.remove('active');
