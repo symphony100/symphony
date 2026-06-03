@@ -88,11 +88,9 @@
         .btn-error { background-color: var(--error); }
         .btn-outline { background-color: transparent; border: 2px solid var(--border-color); color: var(--text-main); }
 
-        .icon-btn { background: transparent; border: none; color: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 10px; border-radius: 50%; transition: 0.2s; appearance: none; -webkit-appearance: none; outline: none; }
+        /* スピーカーボタンの当たり判定拡大 */
+        .icon-btn { background: transparent; border: none; color: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 20px; border-radius: 50%; transition: 0.2s; appearance: none; -webkit-appearance: none; outline: none; margin: -15px -15px -15px 10px; }
         .icon-btn:hover { background-color: var(--hover-overlay); }
-        
-        /* 読み上げボタンのタッチ領域拡大用 */
-        .touch-target-large { padding: 20px !important; margin: -15px -15px -15px 10px !important; }
 
         .input-group { position: relative; margin-bottom: 16px; flex-shrink: 0; }
         input[type="text"], select, textarea { width: 100%; padding: 20px 16px 10px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 16px; outline: none; background-color: var(--surface); color: var(--text-main); transition: 0.2s; }
@@ -407,7 +405,7 @@
 
         <div style="text-align:center; margin-bottom:16px; flex-shrink:0;">
             <input type="file" id="file-upload" accept="image/*" style="display:none;">
-            <button class="btn btn-outline" onclick="document.getElementById('file-upload').click()" style="border-style:dashed; padding:10px;">
+            <button class="btn btn-outline" onclick="playSound('click'); document.getElementById('file-upload').click()" style="border-style:dashed; padding:10px;">
                 <span class="material-icons-round">document_scanner</span> 写真から自動読み取り
             </button>
         </div>
@@ -415,7 +413,7 @@
         <div class="tag-toggle-group" style="justify-content:center;">
             <label class="tag-toggle"><input type="checkbox" id="add-tag-weak" checked> 苦手</label>
             <label class="tag-toggle"><input type="checkbox" id="add-tag-review"> 見直し</label>
-            <label class="tag-toggle tag-test"><input type="checkbox" id="add-tag-test"> 定期テスト</label>
+            <label class="tag-toggle"><input type="checkbox" id="add-tag-test"> 定期テスト</label>
         </div>
 
         <div class="sub-tabs">
@@ -482,7 +480,7 @@
         <div style="padding:20px 0; border-bottom:1px solid var(--border-color); flex-shrink: 0;">
             <span style="font-weight:bold; display:flex; align-items:center; gap:8px; margin-bottom:10px;"><span class="material-icons-round">print</span> プリント作成</span>
             <p style="font-size:12px; color:var(--text-muted); margin:0 0 16px;">範囲を指定して、問題のみの小テスト（A4）を自動生成します。</p>
-            <button class="btn btn-outline" onclick="switchView('print', 'slide-left')">プリント作成へ</button>
+            <button class="btn btn-outline" onclick="switchView('print', 'slide-left', 'click')">プリント作成へ</button>
         </div>
         <div style="padding:20px 0; flex-shrink: 0;">
             <span style="font-weight:bold; color:var(--error); display:flex; align-items:center; gap:8px; margin-bottom:10px;"><span class="material-icons-round">delete_forever</span> データの初期化</span>
@@ -496,6 +494,9 @@
         <div class="question-box">
             <div class="question-label" id="quiz-status-label">この単語を英語で書いてください</div>
             <div class="question-word" id="question-ja"></div>
+            <button class="icon-btn" style="color:var(--primary); margin: 10px auto 0; display:none;" id="quiz-speak-btn" onclick="speakCurrentWord()">
+                <span class="material-icons-round" style="font-size:32px;">volume_up</span>
+            </button>
         </div>
         <div class="input-group">
             <input type="text" id="answer-input" placeholder=" " autocomplete="off" inputmode="latin" spellcheck="false" style="ime-mode: disabled;">
@@ -510,13 +511,13 @@
     </div>
 
     <div class="bottom-nav" id="bottom-nav">
-        <div class="nav-item active" id="nav-home" onclick="switchView('home', 'fade')">
+        <div class="nav-item active" id="nav-home" onclick="switchView('home', 'fade', 'nav')">
             <div class="nav-icon-wrapper"><span class="material-icons-round">home</span></div>ホーム
         </div>
-        <div class="nav-item" id="nav-manage" onclick="switchView('manage', 'fade')">
+        <div class="nav-item" id="nav-manage" onclick="switchView('manage', 'fade', 'nav')">
             <div class="nav-icon-wrapper"><span class="material-icons-round">list_alt</span></div>単語帳
         </div>
-        <div class="nav-item" id="nav-settings" onclick="switchView('settings', 'fade')">
+        <div class="nav-item" id="nav-settings" onclick="switchView('settings', 'fade', 'nav')">
             <div class="nav-icon-wrapper"><span class="material-icons-round">settings</span></div>設定
         </div>
     </div>
@@ -550,6 +551,9 @@
     const clickAudio = new Audio("クリック.mp3");
     const decideAudio = new Audio("決定.mp3");
     const switchAudio = new Audio("スイッチ.mp3");
+    const navAudio = new Audio("メニュー.mp3");
+    const backAudio = new Audio("戻る.mp3");
+    const slideAudio = new Audio("スライド.mp3");
 
     let isSoundEnabled = localStorage.getItem('em_sound') !== 'false';
     document.getElementById('sound-toggle').checked = isSoundEnabled;
@@ -569,6 +573,9 @@
             else if (type === 'click') { clickAudio.currentTime = 0; clickAudio.play(); }
             else if (type === 'decide') { decideAudio.currentTime = 0; decideAudio.play(); }
             else if (type === 'switch') { switchAudio.currentTime = 0; switchAudio.play(); }
+            else if (type === 'nav') { navAudio.currentTime = 0; navAudio.play(); }
+            else if (type === 'back') { backAudio.currentTime = 0; backAudio.play(); }
+            else if (type === 'slide') { slideAudio.currentTime = 0; slideAudio.play(); }
         } catch(e) {}
     }
 
@@ -662,19 +669,19 @@
     // === チュートリアル制御 ===
     let tutorialStep = 0;
     function openTutorial() {
-        playSound('click');
+        playSound('slide');
         tutorialStep = 0; updateTutorialUI();
         document.getElementById('modal-tutorial').classList.add('active');
         localStorage.setItem('em_tutorial_done', 'true');
     }
-    function closeTutorial() { playSound('click'); document.getElementById('modal-tutorial').classList.remove('active'); }
+    function closeTutorial() { playSound('back'); document.getElementById('modal-tutorial').classList.remove('active'); }
     function nextTutorial() {
-        playSound('click');
+        playSound('slide');
         if (tutorialStep < 3) { tutorialStep++; updateTutorialUI(); }
         else { closeTutorial(); }
     }
     function prevTutorial() {
-        playSound('click');
+        playSound('slide');
         if (tutorialStep > 0) { tutorialStep--; updateTutorialUI(); }
     }
     function updateTutorialUI() {
@@ -684,8 +691,8 @@
         document.getElementById('tut-next-btn').innerText = (tutorialStep === 3) ? '完了' : '次へ';
     }
 
-    function switchView(viewName, animType = 'fade') {
-        playSound('click');
+    function switchView(viewName, animType = 'fade', soundType = null) {
+        if(soundType) playSound(soundType);
         document.querySelectorAll('.view').forEach(v => { v.classList.remove('active', 'fade-enter', 'slide-enter-right', 'slide-enter-left'); });
         
         setTimeout(() => {
@@ -700,7 +707,7 @@
         const closeBtn = document.getElementById('close-btn'); const helpBtn = document.getElementById('help-btn');
         if (viewName === 'quiz' || viewName === 'print') {
             nav.style.display = 'none'; headerTitle.innerText = viewName === 'quiz' ? "テスト中" : "プリント作成";
-            closeBtn.style.display = 'flex'; closeBtn.onclick = viewName === 'quiz' ? askQuitQuiz : () => switchView('settings', 'slide-right');
+            closeBtn.style.display = 'flex'; closeBtn.onclick = viewName === 'quiz' ? askQuitQuiz : () => switchView('settings', 'slide-right', 'back');
             helpBtn.style.display = 'none';
         } else {
             nav.style.display = 'flex'; headerTitle.innerText = "Symphony Words"; closeBtn.style.display = 'none'; helpBtn.style.display = 'flex';
@@ -727,7 +734,7 @@
 
     // リセットポップアップ
     function openResetModal() { playSound('click'); document.getElementById('modal-reset').classList.add('active'); }
-    function closeResetModal() { playSound('click'); document.getElementById('modal-reset').classList.remove('active'); }
+    function closeResetModal() { playSound('back'); document.getElementById('modal-reset').classList.remove('active'); }
     function confirmReset() {
         playSound('decide');
         vocabulary = []; stats = { lastStudyDate: null, streak: 0, totalAnswers: 0, correctAnswers: 0 }; 
@@ -761,7 +768,7 @@
         e.target.value = ""; 
     });
 
-    function closeOcrModal() { playSound('click'); document.getElementById('modal-ocr').classList.remove('active'); }
+    function closeOcrModal() { playSound('back'); document.getElementById('modal-ocr').classList.remove('active'); }
 
     async function submitOcrWords() {
         playSound('decide');
@@ -853,7 +860,7 @@
         });
     }
     function submitManualModal() { playSound('decide'); const val = document.getElementById('modal-input').value.trim(); if (val) { document.getElementById('modal-manual').classList.remove('active'); if (modalResolve) modalResolve(val); } else { showToast("入力してください", "error"); } }
-    function cancelManualModal() { playSound('click'); document.getElementById('modal-manual').classList.remove('active'); if (modalResolve) modalResolve(null); }
+    function cancelManualModal() { playSound('back'); document.getElementById('modal-manual').classList.remove('active'); if (modalResolve) modalResolve(null); }
 
     function renderWordList() {
         const container = document.getElementById('word-list-container'); container.innerHTML = "";
@@ -882,14 +889,15 @@
                         </div>
                         <span class="word-ja">${word.ja}</span>
                     </div>
-                    <button class="icon-btn ripple-target touch-target-large" style="color:var(--primary);" onclick="event.stopPropagation(); speak('${word.en.replace(/'/g, "\\'")}')"><span class="material-icons-round">volume_up</span></button>
+                    <!-- 読み上げボタン（当たり判定拡大） -->
+                    <button class="icon-btn" style="color:var(--primary); padding:20px; margin:-15px -15px -15px 10px;" onclick="event.stopPropagation(); speak('${word.en.replace(/'/g, "\\'")}')"><span class="material-icons-round">volume_up</span></button>
                 </div>`;
             container.appendChild(li);
         });
         document.querySelectorAll('.swipe-content').forEach(el => attachSwipeMenu(el, el.dataset.id));
     }
 
-    function deleteWord(id) { vocabulary = vocabulary.filter(v => v.id != id); vocabulary.forEach((v,i)=>v.num=i+1); saveData(); updateRangeLimits(); renderWordList(); }
+    function deleteWord(id) { playSound('decide'); vocabulary = vocabulary.filter(v => v.id != id); vocabulary.forEach((v,i)=>v.num=i+1); saveData(); updateRangeLimits(); renderWordList(); }
 
     function attachSwipeMenu(element, id) {
         let startX = 0, currentX = 0, isDragging = false, isOpen = false;
@@ -905,6 +913,7 @@
             }
         };
         const onMove = (e) => {
+            if (e.target.closest('button')) return; 
             currentX = e.type.includes('mouse') ? e.pageX : e.touches[0].clientX; let diff = currentX - startX;
             if (Math.abs(diff) > 10) isDragging = true;
             if (!isDragging) return;
@@ -913,7 +922,8 @@
             if (diff > 0) diff = 0; if (diff < -100) diff = -100;
             element.style.transform = `translateX(${diff}px)`;
         };
-        const onEnd = () => {
+        const onEnd = (e) => {
+            if (e && e.target && e.target.closest('button')) return; 
             if (!isDragging) {
                 if (isOpen) { element.style.transform = `translateX(0px)`; isOpen = false; openedSwipeId = null; }
                 else { openEditModal(id); } // タップ判定
@@ -941,7 +951,7 @@
         document.getElementById('edit-tag-test').checked = word.tags.includes('test');
         document.getElementById('modal-edit').classList.add('active');
     }
-    function closeEditModal() { playSound('click'); document.getElementById('modal-edit').classList.remove('active'); }
+    function closeEditModal() { playSound('back'); document.getElementById('modal-edit').classList.remove('active'); }
     function saveEditModal() {
         playSound('decide');
         const word = vocabulary.find(v => v.id == editId); if(!word) return;
@@ -1016,10 +1026,10 @@
         currentIndex = 0; switchView('quiz', 'slide-left'); updateQuizUI();
     }
 
-    function askQuitQuiz() { playSound('click'); document.getElementById('modal-quit').classList.add('active'); }
-    function closeQuitModal() { playSound('click'); document.getElementById('modal-quit').classList.remove('active'); }
-    function forceEndQuiz() { playSound('click'); closeQuitModal(); switchView('home', 'slide-right'); }
-    function endQuiz() { playSound('click'); switchView('home', 'slide-right'); }
+    function askQuitQuiz() { playSound('back'); document.getElementById('modal-quit').classList.add('active'); }
+    function closeQuitModal() { playSound('back'); document.getElementById('modal-quit').classList.remove('active'); }
+    function forceEndQuiz() { playSound('back'); closeQuitModal(); switchView('home', 'slide-right'); }
+    function endQuiz() { playSound('back'); switchView('home', 'slide-right'); }
     
     function updateQuizUI() {
         const total = currentIndex + quizQueue.length;
@@ -1056,42 +1066,48 @@
         const feedback = document.getElementById('feedback-area'); const feedbackText = document.getElementById('feedback-text'); const checkBtn = document.getElementById('check-btn');
 
         if (userInput === "" && !isAnswered) return;
-        isAnswered = true; stats.totalAnswers++;
-        feedback.style.display = 'flex';
+        
+        if (!isAnswered) {
+            isAnswered = true; stats.totalAnswers++;
+            feedback.style.display = 'flex';
 
-        let actualWord = vocabulary.find(v => v.id === currentWord.id);
+            let actualWord = vocabulary.find(v => v.id === currentWord.id);
 
-        if (userInput === correctAnswer) {
-            playSound('correct'); showBigMark(true);
-            stats.correctAnswers++; quizQueue.shift(); currentIndex++;
-            if(actualWord) {
-                actualWord.correctCount++;
-                updateWordMemory(actualWord, true);
-                if(actualWord.correctCount >= 2 && actualWord.tags.includes('weak')) { 
-                    actualWord.tags = actualWord.tags.filter(t=>t!=='weak'); 
-                    if(!actualWord.tags.includes('review')) actualWord.tags.push('review');
+            if (userInput === correctAnswer) {
+                playSound('correct'); showBigMark(true);
+                stats.correctAnswers++; quizQueue.shift(); currentIndex++;
+                if(actualWord) {
+                    actualWord.correctCount++;
+                    updateWordMemory(actualWord, true);
+                    if(actualWord.correctCount >= 2 && actualWord.tags.includes('weak')) { 
+                        actualWord.tags = actualWord.tags.filter(t=>t!=='weak'); 
+                        if(!actualWord.tags.includes('review')) actualWord.tags.push('review');
+                    }
                 }
+                feedbackText.innerHTML = `<div style="font-size:18px; font-weight:bold; color:var(--success); text-align:center;">正解！</div>`;
+                feedback.className = "feedback correct"; checkBtn.innerText = "次へ"; checkBtn.className = "btn btn-success";
+            } else {
+                playSound('wrong'); showBigMark(false);
+                answerInputElem.disabled = true;
+                const wrongWord = quizQueue.shift(); quizQueue.push(wrongWord);
+                if(actualWord) {
+                    actualWord.correctCount = 0;
+                    updateWordMemory(actualWord, false);
+                }
+                
+                feedbackText.innerHTML = `
+                    <div style="font-size:18px; font-weight:bold; color:var(--error); margin-bottom:8px;">不正解！</div>
+                    <div style="font-size:14px; color:var(--text-muted); margin-bottom:4px;">正解は…</div>
+                    <div style="font-size:32px; font-weight:bold; color:var(--text-main); letter-spacing:1px;">${correctAnswer}</div>
+                    ${userInput ? `<div style="font-size:14px; margin-top:8px; color:var(--text-muted);">あなたの回答: <span style="text-decoration:line-through; color:var(--error);">${userInput}</span></div>` : ''}
+                `;
+                feedback.className = "feedback incorrect"; checkBtn.innerText = "分かった"; checkBtn.className = "btn btn-error";
             }
-            feedbackText.innerHTML = `<div style="font-size:18px; font-weight:bold; color:var(--success); text-align:center;">正解！</div>`;
-            feedback.className = "feedback correct"; checkBtn.innerText = "次へ"; checkBtn.className = "btn btn-success";
+            saveData();
         } else {
-            playSound('wrong'); showBigMark(false);
-            answerInputElem.disabled = true;
-            const wrongWord = quizQueue.shift(); quizQueue.push(wrongWord);
-            if(actualWord) {
-                actualWord.correctCount = 0;
-                updateWordMemory(actualWord, false);
-            }
-            
-            feedbackText.innerHTML = `
-                <div style="font-size:18px; font-weight:bold; color:var(--error); margin-bottom:8px;">不正解！</div>
-                <div style="font-size:14px; color:var(--text-muted); margin-bottom:4px;">正解は…</div>
-                <div style="font-size:32px; font-weight:bold; color:var(--text-main); letter-spacing:1px;">${correctAnswer}</div>
-                ${userInput ? `<div style="font-size:14px; margin-top:8px; color:var(--text-muted);">あなたの回答: <span style="text-decoration:line-through; color:var(--error);">${userInput}</span></div>` : ''}
-            `;
-            feedback.className = "feedback incorrect"; checkBtn.innerText = "分かった"; checkBtn.className = "btn btn-error";
+            playSound('click');
+            nextQuestion();
         }
-        saveData(); checkBtn.onclick = nextQuestion;
     }
     function nextQuestion() { updateQuizUI(); }
 
@@ -1180,7 +1196,7 @@
         setTimeout(() => document.getElementById('pdf-name-input').focus(), 100);
     }
 
-    function cancelPdfModal() { playSound('click'); document.getElementById('modal-pdf').classList.remove('active'); }
+    function cancelPdfModal() { playSound('back'); document.getElementById('modal-pdf').classList.remove('active'); }
 
     function submitPdfModal() {
         playSound('decide');
