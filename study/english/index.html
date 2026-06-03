@@ -1,1 +1,983 @@
-<a href="https://monitor.macromill.com/lp/sukimajikan.html?entry_kbn=240&amp;int_id=Z56856857A" target="_blank" title="アンケートモニター登録"><img src="https://monitor.macromill.com/int/banner/sukima_336_280.jpg" border="0" width="336" height="280" alt="アンケートモニター登録" title="アンケートモニター登録"></a>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>English Master</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #2196F3;
+            --primary-dark: #1976D2;
+            --primary-light: #E3F2FD;
+            --primary-container: #D3E3FD;
+            --on-primary-container: #041E49;
+            --success: #4CAF50;
+            --error: #F44336;
+            --review: #FF9800;
+            --test: #9C27B0;
+            --surface: #FFFFFF;
+            --text-main: #202124;
+            --text-muted: #5F6368;
+            --border-color: #E0E0E0;
+            --hover-overlay: rgba(33, 150, 243, 0.08);
+        }
+
+        [data-theme="dark"] {
+            --primary: #8AB4F8;
+            --primary-dark: #669DF6;
+            --primary-light: #1E1E1E;
+            --primary-container: #004A77;
+            --on-primary-container: #C2E7FF;
+            --success: #81C784;
+            --error: #E57373;
+            --review: #FFB74D;
+            --test: #CE93D8;
+            --surface: #121212;
+            --text-main: #E8EAED;
+            --text-muted: #9AA0A6;
+            --border-color: #3C4043;
+        }
+
+        /* ブラウザ動作の無効化 */
+        html, body {
+            background-color: var(--surface); margin: 0; padding: 0; color: var(--text-main);
+            height: 100vh; overflow: hidden; overscroll-behavior: none;
+            user-select: none; -webkit-user-select: none; touch-action: pan-y;
+        }
+        input, select { user-select: text; -webkit-user-select: text; }
+        * { box-sizing: border-box; font-family: 'Noto Sans JP', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        .app-container { width: 100%; max-width: 800px; margin: 0 auto; background-color: var(--surface); display: flex; flex-direction: column; height: 100%; position: relative; }
+        
+        .view { display: none; flex: 1; flex-direction: column; padding: 20px; overflow-y: auto; overflow-x: hidden; }
+        .view.active { display: flex; }
+
+        /* 画面切り替えアニメーション */
+        .fade-enter { animation: fadeIn 0.3s forwards; }
+        .slide-enter-right { animation: slideInRight 0.3s forwards; }
+        .slide-enter-left { animation: slideInLeft 0.3s forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInRight { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideInLeft { from { transform: translateX(-30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        .header { background-color: var(--surface); color: var(--text-main); padding: 16px; text-align: center; font-weight: 700; font-size: 20px; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+        .header-btn { background: none; border: none; color: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 10px; border-radius: 50%; transition: 0.2s; position: absolute; }
+        .header-btn:active { background-color: var(--border-color); }
+        .close-btn { left: 10px; display: none; }
+        .help-btn { right: 10px; }
+
+        .bottom-nav { display: flex; background-color: var(--surface); border-top: 1px solid var(--border-color); padding-bottom: env(safe-area-inset-bottom); flex-shrink: 0; }
+        .nav-item { flex: 1; text-align: center; padding: 10px 0 6px; color: var(--text-muted); font-size: 12px; font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: 0.2s; }
+        .nav-icon-wrapper { padding: 4px 20px; border-radius: 16px; transition: 0.2s; display: flex; align-items: center; justify-content: center; margin-bottom: 2px; }
+        .nav-item.active { color: var(--text-main); }
+        .nav-item.active .nav-icon-wrapper { background-color: var(--primary-container); color: var(--on-primary-container); }
+
+        .btn { width: 100%; padding: 16px; font-size: 16px; font-weight: 700; color: white; background-color: var(--primary); border: none; border-radius: 100px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; flex-shrink: 0; }
+        .btn:active:not(:disabled) { transform: translateY(2px); opacity: 0.9; }
+        .btn:disabled { background-color: var(--border-color); color: var(--text-muted); cursor: not-allowed; }
+        .btn-error { background-color: var(--error); }
+        .btn-outline { background-color: transparent; border: 2px solid var(--border-color); color: var(--text-main); }
+
+        .input-group { position: relative; margin-bottom: 16px; flex-shrink: 0; }
+        input[type="text"], select { width: 100%; padding: 20px 16px 10px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 16px; outline: none; background-color: var(--surface); color: var(--text-main); transition: 0.2s; }
+        input[type="text"]:focus, select:focus { border-color: var(--primary); background-color: var(--primary-light); }
+        input[type="text"]:disabled { background-color: var(--border-color); color: var(--text-muted); cursor: not-allowed; }
+        .input-label { position: absolute; left: 16px; top: 18px; color: var(--text-muted); font-size: 16px; pointer-events: none; transition: 0.2s; }
+        input[type="text"]:focus ~ .input-label, input[type="text"]:not(:placeholder-shown) ~ .input-label { top: 6px; font-size: 11px; color: var(--primary); font-weight: bold; }
+
+        .tag-toggle-group { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; justify-content: center; }
+        .tag-toggle { display: inline-flex; align-items: center; padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border-color); font-size: 14px; font-weight: bold; color: var(--text-muted); cursor: pointer; transition: 0.2s; background: var(--surface); }
+        .tag-toggle input { display: none; }
+        .tag-toggle:has(input:checked) { background: var(--primary-light); border-color: var(--primary); color: var(--primary-dark); }
+        .tag-toggle.tag-test:has(input:checked) { background: #F3E5F5; border-color: var(--test); color: var(--test); }
+
+        .badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-left: 6px; font-weight: bold; vertical-align: middle; display: inline-flex; align-items: center; gap: 2px; }
+        .badge-weak { background: rgba(244,67,54,0.1); color: var(--error); }
+        .badge-review { background: rgba(255,152,0,0.1); color: var(--review); }
+        .badge-test { background: rgba(156,39,176,0.1); color: var(--test); }
+
+        .sub-tabs { display: flex; margin-bottom: 16px; border-bottom: 2px solid var(--border-color); flex-shrink: 0; }
+        .sub-tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; font-weight: bold; color: var(--text-muted); transition: 0.3s; position: relative; }
+        .sub-tab.active { color: var(--primary); }
+        .sub-tab.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background-color: var(--primary); border-radius: 3px 3px 0 0; }
+
+        .word-list { list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; overflow-x: hidden; }
+        .swipe-container { position: relative; margin-bottom: 12px; border-radius: 16px; overflow: hidden; background-color: var(--border-color); flex-shrink: 0; }
+        .swipe-background { position: absolute; top: 0; right: 0; height: 100%; width: 140px; display: flex; }
+        .swipe-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: bold; cursor: pointer; border: none; outline: none; border-radius: 0; }
+        .swipe-btn-pen { background-color: #607D8B; } 
+        .swipe-btn-del { background-color: var(--error); }
+        .swipe-content { position: relative; background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; display: flex; justify-content: space-between; align-items: center; z-index: 1; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); cursor: pointer; }
+        
+        .word-en { font-weight: 700; font-size: 18px; color: var(--text-main); }
+        .word-ja { color: var(--text-muted); font-size: 14px; margin-top: 4px; display: block; }
+
+        .progress-container { width: 100%; background-color: var(--border-color); border-radius: 10px; height: 12px; margin-bottom: 24px; flex-shrink: 0; }
+        .progress-bar { height: 100%; background-color: var(--primary); width: 0%; transition: 0.4s; }
+        .question-box { text-align: center; margin: 20px 0 40px; flex-shrink: 0; }
+        .question-word { font-size: 40px; font-weight: 700; color: var(--text-main); letter-spacing: 1px; }
+        
+        .feedback { padding: 16px; border-radius: 16px; margin-bottom: 16px; font-weight: bold; display: none; align-items: center; gap: 12px; }
+        .feedback.correct { display: flex; background-color: rgba(76, 175, 80, 0.1); color: var(--success); border: 2px solid var(--success); }
+        .feedback.incorrect { display: flex; background-color: rgba(244, 67, 54, 0.1); color: var(--error); border: 2px solid var(--error); }
+
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background-color: #323232; color: white; padding: 14px 24px; border-radius: 100px; font-weight: bold; z-index: 5000; transition: 0.4s; pointer-events: none; display: flex; align-items: center; gap: 8px; }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 2000; opacity: 0; transition: 0.3s; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content { background: var(--surface); padding: 32px 24px; border-radius: 28px; width: 90%; max-width: 400px; text-align: center; transform: scale(0.9); transition: 0.3s; max-height: 85vh; overflow-y: auto; position: relative; box-sizing: border-box; }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border-color); transition: .3s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* 巨大〇×マーク */
+        #big-mark { position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 200px; font-weight: bold; z-index: 9999; pointer-events: none; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #big-mark.show { transform: translate(-50%, -50%) scale(1); }
+        .mark-correct { color: #F44336; } /* 日本基準の赤丸 */
+        .mark-wrong { color: #2196F3; }   /* 日本基準の青バツ */
+
+        /* チュートリアル用アニメーションとUI */
+        .tut-slides { position: relative; width: 100%; height: 200px; overflow: hidden; margin-bottom: 20px; }
+        .tut-slide { position: absolute; top:0; left:0; width:100%; height:100%; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; animation: fadeIn 0.3s; }
+        .tut-slide.active { display:flex; }
+        .tut-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+        .tut-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border-color); transition: 0.3s; }
+        .tut-dot.active { background: var(--primary); transform: scale(1.2); }
+        
+        .anim-bounce { animation: bounce 2s infinite; }
+        .anim-swipe { animation: swipe 2s infinite; }
+        .anim-pulse { animation: pulse 2s infinite; }
+        .anim-print { animation: printMove 2s infinite; }
+
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes swipe { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-15px); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        @keyframes printMove { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        /* 印刷スタイル (プレビューなし・問題のみ) */
+        #print-area { display: none; }
+        @media print {
+            @page { size: A4 portrait; margin: 10mm; }
+            body { background: white; color: black; font-family: "MS Mincho", "Noto Serif JP", serif; }
+            .app-container, #toast, .modal-overlay, #big-mark { display: none !important; }
+            #print-area { display: block !important; width: 100%; }
+        }
+        
+        /* 印刷時のレイアウト (下線が確実に伸びるようにFlex調整) */
+        .print-layout { background: white; color: black; font-family: "MS Mincho", "Noto Serif JP", serif; width: 100%; padding: 5mm; box-sizing: border-box; }
+        .print-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+        .print-score-box { border: 2px solid #000; width: 90px; height: 70px; display: flex; flex-direction: column; position: relative; }
+        .print-score-label { padding: 2px; text-align: center; font-size: 10pt; border-bottom: 1px dotted #000; }
+        .print-score-val { position: absolute; bottom: 5px; right: 5px; font-size: 16pt; font-weight: bold; }
+        .print-table-wrapper { display: flex; gap: 15px; width: 100%; }
+        .print-col { flex: 1; }
+        .print-row { display: flex; align-items: flex-end; margin-bottom: 25px; font-size: 14pt; }
+        .print-num { width: 35px; font-weight: bold; text-align: right; margin-right: 10px; }
+        .print-ja { width: 100px; font-weight: bold; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+<div id="big-mark"></div>
+
+<div class="app-container">
+    <div id="toast" class="toast"><span class="material-icons-round" id="toast-icon">info</span><span id="toast-msg"></span></div>
+
+    <!-- ローディング -->
+    <div id="full-loading" class="modal-overlay" style="z-index: 3000;">
+        <div style="background:var(--surface); padding:30px; border-radius:20px; text-align:center;">
+            <span class="material-icons-round" style="font-size:48px; color:var(--primary); animation: spin 1.5s linear infinite;">autorenew</span>
+            <div id="full-loading-msg" style="margin-top:15px; font-weight:bold; font-size:16px;">処理中...</div>
+        </div>
+    </div>
+
+    <!-- チュートリアルモーダル -->
+    <div id="modal-tutorial" class="modal-overlay" style="z-index: 4000;">
+        <div class="modal-content">
+            <h2 style="margin-top:0; color:var(--primary);">使い方ガイド</h2>
+            <div class="tut-slides">
+                <div class="tut-slide active" id="tut-slide-0">
+                    <span class="material-icons-round anim-bounce" style="font-size:60px; color:var(--primary); margin-bottom:10px;">translate</span>
+                    <h3 style="margin:5px 0;">1. 単語を追加しよう！</h3>
+                    <p style="font-size:14px; color:var(--text-muted);">英語を入力すると、AIが自動で意味を取得します。「定期テスト」などのタグも付けられます。</p>
+                </div>
+                <div class="tut-slide" id="tut-slide-1">
+                    <span class="material-icons-round anim-swipe" style="font-size:60px; color:var(--review); margin-bottom:10px;">swipe_left</span>
+                    <h3 style="margin:5px 0;">2. スワイプで管理！</h3>
+                    <p style="font-size:14px; color:var(--text-muted);">単語を<b>右から左へスワイプ</b>すると「重要マーク」や「削除」ができます。タップで編集も可能！</p>
+                </div>
+                <div class="tut-slide" id="tut-slide-2">
+                    <span class="material-icons-round anim-pulse" style="font-size:60px; color:var(--success); margin-bottom:10px;">psychology</span>
+                    <h3 style="margin:5px 0;">3. AI出題テスト！</h3>
+                    <p style="font-size:14px; color:var(--text-muted);">忘却曲線に基づき、AIが「今復習すべき単語」を優先して出題。効率よく覚えられます。</p>
+                </div>
+                <div class="tut-slide" id="tut-slide-3">
+                    <span class="material-icons-round anim-print" style="font-size:60px; color:var(--test); margin-bottom:10px;">print</span>
+                    <h3 style="margin:5px 0;">4. プリントを自動生成！</h3>
+                    <p style="font-size:14px; color:var(--text-muted);">指定した範囲からA4サイズの小テストを自動作成。そのままPDF保存や印刷ができます。</p>
+                </div>
+            </div>
+            <div class="tut-dots">
+                <div class="tut-dot active" id="tut-dot-0"></div><div class="tut-dot" id="tut-dot-1"></div><div class="tut-dot" id="tut-dot-2"></div><div class="tut-dot" id="tut-dot-3"></div>
+            </div>
+            <div style="display:flex; gap:10px; width:100%;">
+                <button class="btn btn-outline" id="tut-prev-btn" onclick="prevTutorial()" style="flex:1; padding:12px;" disabled>前へ</button>
+                <button class="btn" id="tut-next-btn" onclick="nextTutorial()" style="flex:1; padding:12px;">次へ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- リセット確認モーダル -->
+    <div id="modal-reset" class="modal-overlay" style="z-index: 2500;">
+        <div class="modal-content">
+            <span class="material-icons-round" style="font-size:48px; color:var(--error); margin-bottom:10px;">delete_forever</span>
+            <h3 style="margin-top:0;">本当に初期化しますか？</h3>
+            <p style="font-size:14px; color:var(--text-muted);">すべての単語と学習データが消去されます。<br>この操作は元に戻せません。</p>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:24px;">
+                <button class="btn btn-error" onclick="confirmReset()">すべて削除する</button>
+                <button class="btn btn-outline" onclick="closeResetModal()">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 終了確認モーダル -->
+    <div id="modal-quit" class="modal-overlay" style="z-index: 2500;">
+        <div class="modal-content">
+            <span class="material-icons-round" style="font-size:48px; color:var(--error); margin-bottom:10px;">warning</span>
+            <h3 style="margin-top:0;">テストを終了しますか？</h3>
+            <p style="font-size:14px; color:var(--text-muted);">ここまでの進捗は保存されません。</p>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:24px;">
+                <button class="btn btn-error" onclick="forceEndQuiz()">終了する</button>
+                <button class="btn btn-outline" onclick="closeQuitModal()">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 単語編集モーダル -->
+    <div id="modal-edit" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin-top:0;">単語の編集</h3>
+            <p style="font-size:12px; color:var(--error); margin-top:-10px; margin-bottom:15px;">※すべてのタグを外すと単語が削除されます。</p>
+            <div class="input-group">
+                <input type="text" id="edit-en" placeholder=" ">
+                <label class="input-label">英語</label>
+            </div>
+            <div class="input-group">
+                <input type="text" id="edit-ja" placeholder=" ">
+                <label class="input-label">日本語の意味</label>
+            </div>
+            <div class="tag-toggle-group">
+                <label class="tag-toggle"><input type="checkbox" id="edit-tag-weak"> 苦手</label>
+                <label class="tag-toggle"><input type="checkbox" id="edit-tag-review"> 見直し</label>
+                <label class="tag-toggle tag-test"><input type="checkbox" id="edit-tag-test"> 定期テスト</label>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <button class="btn" onclick="saveEditModal()">保存する</button>
+                <button class="btn btn-outline" onclick="closeEditModal()">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 手動入力モーダル -->
+    <div id="modal-manual" class="modal-overlay">
+        <div class="modal-content">
+            <span class="material-icons-round" style="font-size:48px; color:var(--error); margin-bottom:10px;">error_outline</span>
+            <h3 style="margin-top:0;">意味を取得できません</h3>
+            <p>「<span id="modal-word" style="font-weight:bold; color:var(--primary);"></span>」の日本語の意味を教えてください。</p>
+            <div class="input-group" style="margin-top:20px;">
+                <input type="text" id="modal-input" placeholder=" ">
+                <label class="input-label">日本語の意味</label>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:24px;">
+                <button class="btn" onclick="submitManualModal()">登録</button>
+                <button class="btn btn-outline" onclick="cancelManualModal()">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ヘッダー -->
+    <div class="header">
+        <button id="close-btn" class="header-btn close-btn" onclick="askQuitQuiz()">
+            <span class="material-icons-round">arrow_back</span>
+        </button>
+        <span id="header-title">English Master</span>
+        <button id="help-btn" class="header-btn help-btn" onclick="openTutorial()">
+            <span class="material-icons-round">help_outline</span>
+        </button>
+    </div>
+
+    <!-- ==================== ホーム ==================== -->
+    <div id="view-home" class="view active">
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center; text-align:center;">
+            <span class="material-icons-round" style="font-size: 80px; color: var(--primary); margin-bottom: 16px;">school</span>
+            <h2 style="margin:0 0 24px;">ダッシュボード</h2>
+
+            <div style="background:var(--primary-light); padding:20px; border-radius:16px; margin-bottom:24px; width:100%; text-align:left;">
+                <label style="font-weight:bold; font-size:14px; display:block; margin-bottom:12px; color:var(--on-primary-container);">テスト出題範囲</label>
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                    <div style="display:flex; align-items:center; background:var(--surface); border-radius:8px; padding:0 8px; border:1px solid var(--border-color); flex:1;">
+                        <span style="font-size:12px; color:var(--text-muted); font-weight:bold;">No.</span>
+                        <input type="number" id="home-range-start" min="1" value="1" style="width:100%; padding:10px 5px; border:none; font-size:16px; text-align:center; outline:none; background:transparent; color:var(--text-main);">
+                    </div>
+                    <span style="font-weight:bold;">〜</span>
+                    <div style="display:flex; align-items:center; background:var(--surface); border-radius:8px; padding:0 8px; border:1px solid var(--border-color); flex:1;">
+                        <span style="font-size:12px; color:var(--text-muted); font-weight:bold;">No.</span>
+                        <input type="number" id="home-range-end" min="1" value="1" style="width:100%; padding:10px 5px; border:none; font-size:16px; text-align:center; outline:none; background:transparent; color:var(--text-main);">
+                    </div>
+                </div>
+                
+                <select id="home-tag-select" style="width:100%; padding:12px; border-radius:8px; border:1px solid var(--border-color); font-size:14px; background:var(--surface); color:var(--text-main);">
+                    <option value="all">指定範囲のすべて</option>
+                    <option value="weak">「苦手な単語」のみ</option>
+                    <option value="review">「見直し単語」のみ</option>
+                    <option value="test">「定期テスト」のみ</option>
+                </select>
+            </div>
+
+            <button id="btn-start" class="btn" onclick="startQuiz()">
+                <span class="material-icons-round">play_arrow</span> ➤ AI 10問テストを開始
+            </button>
+            <p id="home-warning" style="color:var(--error); font-size:12px; font-weight:bold; margin-top:12px; display:none;">※指定範囲に単語がありません</p>
+        </div>
+    </div>
+
+    <!-- ==================== 単語帳 ==================== -->
+    <div id="view-manage" class="view">
+        <div style="display:flex; gap:10px; margin-bottom:10px; flex-shrink: 0;">
+            <div class="input-group" style="flex:1; margin-bottom:0;">
+                <input type="text" id="new-word-input" placeholder=" " autocomplete="off">
+                <label class="input-label">英語を入力して追加</label>
+            </div>
+            <button class="btn" onclick="addWordByAI()" style="width:auto; padding:0 20px;"><span class="material-icons-round">add</span></button>
+        </div>
+        
+        <div class="tag-toggle-group" style="justify-content:center;">
+            <label class="tag-toggle"><input type="checkbox" id="add-tag-weak" checked> 苦手</label>
+            <label class="tag-toggle"><input type="checkbox" id="add-tag-review"> 見直し</label>
+            <label class="tag-toggle tag-test"><input type="checkbox" id="add-tag-test"> 定期テスト</label>
+        </div>
+
+        <div class="sub-tabs">
+            <div class="sub-tab active" id="tab-weak" onclick="switchWordTab('weak')">苦手な単語</div>
+            <div class="sub-tab" id="tab-review" onclick="switchWordTab('review')">見直し単語</div>
+            <div class="sub-tab" id="tab-test" onclick="switchWordTab('test')">定期テスト</div>
+        </div>
+        <ul class="word-list" id="word-list-container"></ul>
+    </div>
+
+    <!-- ==================== プリント作成画面 ==================== -->
+    <div id="view-print" class="view">
+        <div style="background:var(--primary-light); padding:20px; border-radius:16px; margin-bottom:20px; flex-shrink:0;">
+            <div style="margin-bottom:16px;">
+                <label style="font-weight:bold; font-size:14px; display:block; margin-bottom:8px; color:var(--on-primary-container);">出題範囲 (番号で指定)</label>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="display:flex; align-items:center; background:var(--surface); border-radius:8px; padding:0 8px; border:1px solid var(--border-color); flex:1;">
+                        <span style="font-size:12px; color:var(--text-muted); font-weight:bold;">No.</span>
+                        <input type="number" id="print-range-start" min="1" value="1" style="width:100%; padding:12px 5px; border:none; font-size:16px; text-align:center; outline:none; background:transparent; color:var(--text-main);">
+                    </div>
+                    <span style="font-weight:bold;">〜</span>
+                    <div style="display:flex; align-items:center; background:var(--surface); border-radius:8px; padding:0 8px; border:1px solid var(--border-color); flex:1;">
+                        <span style="font-size:12px; color:var(--text-muted); font-weight:bold;">No.</span>
+                        <input type="number" id="print-range-end" min="1" value="1" style="width:100%; padding:12px 5px; border:none; font-size:16px; text-align:center; outline:none; background:transparent; color:var(--text-main);">
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom:16px;">
+                <label style="font-weight:bold; font-size:14px; display:block; margin-bottom:8px; color:var(--on-primary-container);">対象タグ</label>
+                <select id="print-tag-select">
+                    <option value="all">指定範囲のすべてから</option>
+                    <option value="weak">「苦手な単語」からのみ</option>
+                    <option value="review">「見直し単語」からのみ</option>
+                    <option value="test">「定期テスト」からのみ</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:10px; flex-shrink:0;">
+            <button class="btn" onclick="doPrint()"><span class="material-icons-round">print</span> テストを印刷</button>
+            <button class="btn btn-outline" onclick="doDownloadPDF()"><span class="material-icons-round">download</span> テストをダウンロード</button>
+        </div>
+    </div>
+
+    <!-- ==================== 設定 ==================== -->
+    <div id="view-settings" class="view">
+        <h3 style="margin-top:0; flex-shrink: 0;">設定・その他</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-bottom:1px solid var(--border-color); flex-shrink: 0;">
+            <span style="font-weight:bold; display:flex; align-items:center; gap:8px;"><span class="material-icons-round">dark_mode</span> ダークモード</span>
+            <label class="switch"><input type="checkbox" id="theme-toggle" onchange="toggleTheme()"><span class="slider"></span></label>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-bottom:1px solid var(--border-color); flex-shrink: 0;">
+            <span style="font-weight:bold; display:flex; align-items:center; gap:8px;"><span class="material-icons-round">volume_up</span> 効果音</span>
+            <label class="switch"><input type="checkbox" id="sound-toggle" onchange="toggleSound()"><span class="slider"></span></label>
+        </div>
+        <div style="padding:20px 0; border-bottom:1px solid var(--border-color); flex-shrink: 0;">
+            <span style="font-weight:bold; display:flex; align-items:center; gap:8px; margin-bottom:10px;"><span class="material-icons-round">print</span> プリント作成</span>
+            <p style="font-size:12px; color:var(--text-muted); margin:0 0 16px;">範囲を指定して、問題のみの小テスト（A4）を自動生成します。</p>
+            <button class="btn btn-outline" onclick="switchView('print', 'slide-left')">プリント作成へ</button>
+        </div>
+        <div style="padding:20px 0; flex-shrink: 0;">
+            <span style="font-weight:bold; color:var(--error); display:flex; align-items:center; gap:8px; margin-bottom:10px;"><span class="material-icons-round">delete_forever</span> データの初期化</span>
+            <button class="btn btn-error" onclick="openResetModal()">すべてリセット</button>
+        </div>
+    </div>
+
+    <!-- ==================== クイズ ==================== -->
+    <div id="view-quiz" class="view">
+        <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+        <div class="question-box">
+            <div class="question-label" id="quiz-status-label">この単語を英語で書いてください</div>
+            <div class="question-word" id="question-ja"></div>
+        </div>
+        <div class="input-group">
+            <input type="text" id="answer-input" placeholder=" " autocomplete="off" inputmode="latin" spellcheck="false" style="ime-mode: disabled;">
+            <label class="input-label">英語を入力</label>
+        </div>
+        <div class="quiz-footer">
+            <div id="feedback-area" class="feedback">
+                <div id="feedback-text" style="font-size:18px; width: 100%;"></div>
+            </div>
+            <button class="btn" id="check-btn" onclick="checkAnswer()">チェック</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav" id="bottom-nav">
+        <div class="nav-item active" id="nav-home" onclick="switchView('home', 'fade')">
+            <div class="nav-icon-wrapper"><span class="material-icons-round">home</span></div>ホーム
+        </div>
+        <div class="nav-item" id="nav-manage" onclick="switchView('manage', 'fade')">
+            <div class="nav-icon-wrapper"><span class="material-icons-round">list_alt</span></div>単語帳
+        </div>
+        <div class="nav-item" id="nav-settings" onclick="switchView('settings', 'fade')">
+            <div class="nav-icon-wrapper"><span class="material-icons-round">settings</span></div>設定
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 印刷・PDF用裏側エリア ==================== -->
+<div id="print-area">
+    <div id="pdf-content" style="background:white; color:black;">
+        <div class="print-layout">
+            <div class="print-header">
+                <div style="display:flex; align-items:baseline; gap:30px;">
+                    <h1 class="print-title">英単語 小テスト</h1>
+                    <div style="font-size:14pt;">氏名：＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿</div>
+                </div>
+                <div class="print-score-box">
+                    <div class="print-score-label">得点</div>
+                    <div class="print-score-val">/ <span id="print-total-score"></span></div>
+                </div>
+            </div>
+            <div style="font-size:12pt; margin-bottom:20px; font-weight:bold;">問題：次の日本語の意味に合う英単語を書きなさい。</div>
+            <div id="print-area-content-q"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 効果音設定
+    const correctAudio = new Audio("正解.mp3");
+    const wrongAudio = new Audio("不正解.mp3");
+    const finishAudio = new Audio("完了.mp3");
+
+    let isSoundEnabled = localStorage.getItem('em_sound') !== 'false';
+    document.getElementById('sound-toggle').checked = isSoundEnabled;
+
+    function toggleSound() {
+        isSoundEnabled = document.getElementById('sound-toggle').checked;
+        localStorage.setItem('em_sound', isSoundEnabled);
+    }
+
+    function playSound(type) {
+        if (!isSoundEnabled) return;
+        try {
+            if(type === 'correct') { correctAudio.currentTime = 0; correctAudio.play(); }
+            else if (type === 'wrong') { wrongAudio.currentTime = 0; wrongAudio.play(); }
+            else if (type === 'finish') { finishAudio.currentTime = 0; finishAudio.play(); }
+        } catch(e) {}
+    }
+
+    let vocabulary = JSON.parse(localStorage.getItem('em_vocab')) || [];
+    // Migration
+    vocabulary = vocabulary.map((v, i) => {
+        let tags = v.tags || [];
+        if (v.status && tags.length === 0) tags.push(v.status);
+        if (tags.length === 0) tags.push('weak');
+        return { ...v, num: i + 1, tags, isImportant: v.isImportant || false, correctCount: v.correctCount || 0, interval: v.interval || 0, easeFactor: v.easeFactor || 2.5, nextReviewDate: v.nextReviewDate || 0 };
+    });
+    let stats = JSON.parse(localStorage.getItem('em_stats')) || { lastStudyDate: null, streak: 0, totalAnswers: 0, correctAnswers: 0 };
+    let currentWordTab = 'weak';
+    let openedSwipeId = null;
+
+    function saveData() { localStorage.setItem('em_vocab', JSON.stringify(vocabulary)); localStorage.setItem('em_stats', JSON.stringify(stats)); }
+
+    function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-msg').innerText = msg; document.getElementById('toast-icon').innerText = type === 'success' ? 'check_circle' : 'error';
+        toast.className = `toast show ${type}`; setTimeout(() => toast.className = 'toast', 3000);
+    }
+
+    function updateRangeLimits() {
+        const maxLen = vocabulary.length || 1;
+        ['home-range-start', 'home-range-end', 'print-range-start', 'print-range-end'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) { el.max = maxLen; if (parseInt(el.value) > maxLen) el.value = maxLen; }
+        });
+    }
+
+    function initRanges() {
+        const len = vocabulary.length || 1;
+        document.getElementById('home-range-end').value = len; document.getElementById('print-range-end').value = len;
+    }
+
+    // スワイプを閉じる制御 (画面のどこかを触ったら閉じる)
+    document.addEventListener('touchstart', closeOpenedSwipe, {passive: true});
+    document.addEventListener('mousedown', closeOpenedSwipe);
+
+    function closeOpenedSwipe(e) {
+        if (!openedSwipeId) return;
+        const target = e.target;
+        if (target.closest('.swipe-container') && target.closest('.swipe-container').dataset.id == openedSwipeId) return; 
+        const el = document.querySelector(`.swipe-content[data-id="${openedSwipeId}"]`);
+        if (el) el.style.transform = `translateX(0px)`;
+        openedSwipeId = null;
+    }
+
+    window.onload = () => { 
+        initRanges(); updateRangeLimits(); switchView('home', 'none'); 
+        if(!localStorage.getItem('em_tutorial_done')) openTutorial();
+    }
+
+    // === チュートリアル制御 ===
+    let tutorialStep = 0;
+    function openTutorial() {
+        tutorialStep = 0; updateTutorialUI();
+        document.getElementById('modal-tutorial').classList.add('active');
+        localStorage.setItem('em_tutorial_done', 'true');
+    }
+    function closeTutorial() { document.getElementById('modal-tutorial').classList.remove('active'); }
+    function nextTutorial() {
+        if (tutorialStep < 3) { tutorialStep++; updateTutorialUI(); }
+        else { closeTutorial(); }
+    }
+    function prevTutorial() {
+        if (tutorialStep > 0) { tutorialStep--; updateTutorialUI(); }
+    }
+    function updateTutorialUI() {
+        document.querySelectorAll('.tut-slide').forEach((el, i) => el.classList.toggle('active', i === tutorialStep));
+        document.querySelectorAll('.tut-dot').forEach((el, i) => el.classList.toggle('active', i === tutorialStep));
+        document.getElementById('tut-prev-btn').disabled = (tutorialStep === 0);
+        document.getElementById('tut-next-btn').innerText = (tutorialStep === 3) ? '完了' : '次へ';
+    }
+
+    function switchView(viewName, animType = 'fade') {
+        document.querySelectorAll('.view').forEach(v => { v.classList.remove('active', 'fade-enter', 'slide-enter-right', 'slide-enter-left'); });
+        
+        setTimeout(() => {
+            const view = document.getElementById(`view-${viewName}`);
+            view.classList.add('active');
+            if(animType === 'fade') view.classList.add('fade-enter');
+            else if(animType === 'slide-right') view.classList.add('slide-enter-right');
+            else if(animType === 'slide-left') view.classList.add('slide-enter-left');
+        }, 10);
+        
+        const nav = document.getElementById('bottom-nav'); const headerTitle = document.getElementById('header-title'); 
+        const closeBtn = document.getElementById('close-btn'); const helpBtn = document.getElementById('help-btn');
+        if (viewName === 'quiz' || viewName === 'print') {
+            nav.style.display = 'none'; headerTitle.innerText = viewName === 'quiz' ? "テスト中" : "プリント作成";
+            closeBtn.style.display = 'flex'; closeBtn.onclick = viewName === 'quiz' ? askQuitQuiz : () => switchView('settings', 'slide-right');
+            helpBtn.style.display = 'none';
+        } else {
+            nav.style.display = 'flex'; headerTitle.innerText = "English Master"; closeBtn.style.display = 'none'; helpBtn.style.display = 'flex';
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); document.getElementById(`nav-${viewName}`).classList.add('active');
+        }
+        if (viewName === 'home') updateHomeUI();
+        if (viewName === 'manage') renderWordList();
+    }
+
+    function switchWordTab(tab) { currentWordTab = tab; document.getElementById('tab-weak').classList.remove('active'); document.getElementById('tab-review').classList.remove('active'); document.getElementById('tab-test').classList.remove('active'); document.getElementById(`tab-${tab}`).classList.add('active'); renderWordList(); }
+    
+    function updateHomeUI() {
+        updateRangeLimits();
+        const btnStart = document.getElementById('btn-start'); const warning = document.getElementById('home-warning');
+        if (vocabulary.length === 0) { btnStart.disabled = true; warning.style.display = 'block'; } else { btnStart.disabled = false; warning.style.display = 'none'; }
+    }
+
+    function toggleTheme() {
+        if (document.getElementById('theme-toggle').checked) { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('em_theme', 'dark'); }
+        else { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('em_theme', 'light'); }
+    }
+
+    // リセットポップアップ
+    function openResetModal() { document.getElementById('modal-reset').classList.add('active'); }
+    function closeResetModal() { document.getElementById('modal-reset').classList.remove('active'); }
+    function confirmReset() {
+        vocabulary = []; stats = { lastStudyDate: null, streak: 0, totalAnswers: 0, correctAnswers: 0 }; 
+        saveData(); initRanges(); updateRangeLimits(); 
+        closeResetModal(); openTutorial(); showToast("リセットしました"); switchView('home', 'fade'); 
+    }
+
+    // 単語追加
+    async function addWordByAI() {
+        const inputElem = document.getElementById('new-word-input'); const wordEn = inputElem.value.trim().toLowerCase();
+        if (!wordEn) return;
+        if (vocabulary.some(v => v.en.toLowerCase() === wordEn)) { showToast("登録済みの単語です", "error"); return; }
+
+        let tags = [];
+        if(document.getElementById('add-tag-weak').checked) tags.push('weak');
+        if(document.getElementById('add-tag-review').checked) tags.push('review');
+        if(document.getElementById('add-tag-test').checked) tags.push('test');
+        if (tags.length === 0) { showToast("タグを選択してください", "error"); return; }
+
+        document.getElementById('full-loading').classList.add('active');
+        try {
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ja&dt=t&q=${encodeURIComponent(wordEn)}`;
+            const response = await fetch(url); const data = await response.json();
+            let translatedText = data[0][0][0].replace(/[\r\n]+/g, '').trim();
+            if (!translatedText || translatedText.toLowerCase() === wordEn) {
+                document.getElementById('full-loading').classList.remove('active');
+                translatedText = await promptManualTranslation(wordEn);
+                if (!translatedText) return;
+            }
+
+            const prevLen = vocabulary.length;
+            vocabulary.push({ id: Date.now(), en: wordEn, ja: translatedText, isImportant: false, tags: tags, correctCount: 0, num: prevLen + 1, interval: 0, easeFactor: 2.5, nextReviewDate: 0 });
+            
+            if (parseInt(document.getElementById('home-range-end').value) === prevLen || prevLen === 0) document.getElementById('home-range-end').value = vocabulary.length;
+            if (parseInt(document.getElementById('print-range-end').value) === prevLen || prevLen === 0) document.getElementById('print-range-end').value = vocabulary.length;
+
+            saveData(); updateRangeLimits(); inputElem.value = ""; showToast("追加しました"); switchWordTab(tags[0]);
+        } catch (e) { showToast("通信エラーが発生しました", "error"); }
+        document.getElementById('full-loading').classList.remove('active');
+    }
+
+    let modalResolve = null;
+    function promptManualTranslation(wordEn) {
+        return new Promise((resolve) => {
+            document.getElementById('modal-word').innerText = wordEn; document.getElementById('modal-input').value = '';
+            document.getElementById('modal-manual').classList.add('active'); setTimeout(() => document.getElementById('modal-input').focus(), 100);
+            modalResolve = resolve;
+        });
+    }
+    function submitManualModal() { const val = document.getElementById('modal-input').value.trim(); if (val) { document.getElementById('modal-manual').classList.remove('active'); if (modalResolve) modalResolve(val); } else { showToast("入力してください", "error"); } }
+    function cancelManualModal() { document.getElementById('modal-manual').classList.remove('active'); if (modalResolve) modalResolve(null); }
+
+    function renderWordList() {
+        const container = document.getElementById('word-list-container'); container.innerHTML = "";
+        let list = vocabulary.filter(v => v.tags.includes(currentWordTab)).reverse();
+
+        if (list.length === 0) { container.innerHTML = `<p style="text-align:center; color:var(--text-muted); margin-top:30px;">単語がありません</p>`; return; }
+        
+        list.forEach(word => {
+            const li = document.createElement('li'); li.className = 'swipe-container'; li.dataset.id = word.id;
+            const penIcon = word.isImportant ? `<span style="color:var(--pen); font-size:14px; margin-right:4px;" class="material-icons-round">edit</span>` : '';
+            
+            let badges = '';
+            if(word.tags.includes('weak')) badges += `<span class="badge badge-weak">苦手</span>`;
+            if(word.tags.includes('review')) badges += `<span class="badge badge-review">見直し</span>`;
+            if(word.tags.includes('test')) badges += `<span class="badge badge-test">テスト</span>`;
+
+            li.innerHTML = `
+                <div class="swipe-background">
+                    <button class="swipe-btn swipe-btn-pen" onclick="togglePen(${word.id})"><span class="material-icons-round" style="margin-bottom:4px;">edit</span>重要</button>
+                    <button class="swipe-btn swipe-btn-del" onclick="deleteWord(${word.id})"><span class="material-icons-round" style="margin-bottom:4px;">delete</span>削除</button>
+                </div>
+                <div class="swipe-content" data-id="${word.id}">
+                    <div style="flex:1;">
+                        <div style="display:flex; align-items:center; margin-bottom:4px;">
+                            <span style="font-size:12px; font-weight:bold; color:var(--primary); margin-right:8px; background:var(--primary-light); padding:2px 6px; border-radius:6px;">No.${word.num}</span>
+                            ${penIcon}<span class="word-en">${word.en}</span> ${badges}
+                        </div>
+                        <span class="word-ja">${word.ja}</span>
+                    </div>
+                </div>`;
+            container.appendChild(li);
+        });
+        document.querySelectorAll('.swipe-content').forEach(el => attachSwipeMenu(el, el.dataset.id));
+    }
+
+    function togglePen(id) { const w = vocabulary.find(v => v.id == id); if(w){ w.isImportant = !w.isImportant; saveData(); renderWordList(); } }
+    function deleteWord(id) { vocabulary = vocabulary.filter(v => v.id != id); vocabulary.forEach((v,i)=>v.num=i+1); saveData(); updateRangeLimits(); renderWordList(); }
+
+    function attachSwipeMenu(element, id) {
+        let startX = 0, currentX = 0, isDragging = false, isOpen = false;
+        
+        const onStart = (e) => { 
+            if (e.target.closest('button')) return; 
+            startX = e.type.includes('mouse') ? e.pageX : e.touches[0].clientX; 
+            isDragging = false; element.style.transition = 'none'; 
+            
+            if (openedSwipeId && openedSwipeId != id) {
+                const el = document.querySelector(`.swipe-content[data-id="${openedSwipeId}"]`);
+                if (el) el.style.transform = `translateX(0px)`;
+            }
+        };
+        const onMove = (e) => {
+            currentX = e.type.includes('mouse') ? e.pageX : e.touches[0].clientX; let diff = currentX - startX;
+            if (Math.abs(diff) > 10) isDragging = true;
+            if (!isDragging) return;
+            
+            if (isOpen) diff -= 140; 
+            if (diff > 0) diff = 0; if (diff < -160) diff = -160;
+            element.style.transform = `translateX(${diff}px)`;
+        };
+        const onEnd = () => {
+            if (!isDragging) {
+                if (isOpen) { element.style.transform = `translateX(0px)`; isOpen = false; openedSwipeId = null; }
+                else { openEditModal(id); } // タップ判定
+                return;
+            }
+            element.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
+            let diff = currentX - startX; if (isOpen) diff -= 140;
+            if (diff < -40) { element.style.transform = `translateX(-140px)`; isOpen = true; openedSwipeId = id; }
+            else { element.style.transform = `translateX(0)`; isOpen = false; if(openedSwipeId == id) openedSwipeId = null; }
+        };
+        element.addEventListener('touchstart', onStart, {passive: true}); element.addEventListener('touchmove', onMove, {passive: true}); element.addEventListener('touchend', onEnd);
+        element.addEventListener('mousedown', onStart); element.addEventListener('mousemove', onMove); element.addEventListener('mouseup', onEnd); element.addEventListener('mouseleave', () => { if(isDragging) onEnd(); });
+    }
+
+    let editId = null;
+    function openEditModal(id) {
+        const el = document.querySelector(`.swipe-content[data-id="${id}"]`);
+        if (el && el.style.transform !== '' && el.style.transform !== 'translateX(0px)') return;
+        
+        const word = vocabulary.find(v => v.id == id); if(!word) return;
+        editId = id; document.getElementById('edit-en').value = word.en; document.getElementById('edit-ja').value = word.ja;
+        document.getElementById('edit-tag-weak').checked = word.tags.includes('weak');
+        document.getElementById('edit-tag-review').checked = word.tags.includes('review');
+        document.getElementById('edit-tag-test').checked = word.tags.includes('test');
+        document.getElementById('modal-edit').classList.add('active');
+    }
+    function closeEditModal() { document.getElementById('modal-edit').classList.remove('active'); }
+    function saveEditModal() {
+        const word = vocabulary.find(v => v.id == editId); if(!word) return;
+        const en = document.getElementById('edit-en').value.trim(); const ja = document.getElementById('edit-ja').value.trim();
+        if(!en || !ja) return; 
+
+        let newTags = [];
+        if(document.getElementById('edit-tag-weak').checked) newTags.push('weak');
+        if(document.getElementById('edit-tag-review').checked) newTags.push('review');
+        if(document.getElementById('edit-tag-test').checked) newTags.push('test');
+        
+        if (newTags.length === 0) {
+            deleteWord(editId); closeEditModal(); showToast("タグがないため削除されました"); return;
+        }
+
+        word.en = en; word.ja = ja; word.tags = newTags; saveData(); closeEditModal(); renderWordList(); showToast("保存しました");
+    }
+
+    // IME無効化
+    document.getElementById('answer-input').addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^a-zA-Z0-9\s\'\-]/g, '');
+    });
+
+    function showBigMark(isCorrect) {
+        const mark = document.getElementById('big-mark');
+        mark.innerText = isCorrect ? '〇' : '×';
+        mark.className = isCorrect ? 'mark-correct' : 'mark-wrong';
+        mark.classList.add('show');
+        setTimeout(() => mark.classList.remove('show'), 600);
+    }
+
+    // 忘却曲線に基づく出題ロジック
+    function getAiQuizQueue(words) {
+        const now = Date.now();
+        words.forEach(w => {
+            if (!w.nextReviewDate) { w.aiScore = 100; } // 新規は最優先
+            else {
+                const overdue = now - w.nextReviewDate;
+                w.aiScore = overdue > 0 ? 50 + (overdue / (24*60*60*1000)) : Math.random() * 10;
+            }
+        });
+        words.sort((a, b) => b.aiScore - a.aiScore);
+        return words.slice(0, 10).sort(() => 0.5 - Math.random());
+    }
+
+    function updateWordMemory(word, isCorrect) {
+        if (isCorrect) {
+            if (!word.interval) { word.interval = 1; word.easeFactor = 2.5; } 
+            else { word.interval = word.interval === 1 ? 3 : Math.round(word.interval * word.easeFactor); }
+        } else {
+            word.interval = 1; word.easeFactor = Math.max(1.3, (word.easeFactor || 2.5) - 0.2);
+        }
+        word.nextReviewDate = Date.now() + word.interval * 24 * 60 * 60 * 1000;
+    }
+
+    // デジタルクイズ
+    let quizQueue = [], currentIndex = 0, isAnswered = false;
+    
+    function startQuiz() {
+        if (vocabulary.length === 0) return;
+        const startNum = parseInt(document.getElementById('home-range-start').value) || 1;
+        const endNum = parseInt(document.getElementById('home-range-end').value) || vocabulary.length;
+        const tagFilter = document.getElementById('home-tag-select').value;
+
+        let words = vocabulary.filter(v => v.num >= startNum && v.num <= endNum);
+        if(tagFilter !== 'all') words = words.filter(v => v.tags.includes(tagFilter));
+
+        if (words.length === 0) { showToast("この条件に合う単語がありません", "error"); return; }
+
+        quizQueue = getAiQuizQueue(words);
+        currentIndex = 0; switchView('quiz', 'slide-left'); updateQuizUI();
+    }
+
+    function askQuitQuiz() { document.getElementById('modal-quit').classList.add('active'); }
+    function closeQuitModal() { document.getElementById('modal-quit').classList.remove('active'); }
+    function forceEndQuiz() { closeQuitModal(); switchView('home', 'slide-right'); }
+    function endQuiz() { switchView('home', 'slide-right'); }
+    
+    function updateQuizUI() {
+        const total = currentIndex + quizQueue.length;
+        document.getElementById('progress-bar').style.width = `${(currentIndex / total) * 100}%`;
+        const checkBtn = document.getElementById('check-btn'); const feedback = document.getElementById('feedback-area'); const answerInput = document.getElementById('answer-input');
+
+        answerInput.disabled = false; answerInput.value = ""; 
+
+        if (quizQueue.length === 0) {
+            const today = new Date().toDateString();
+            if (stats.lastStudyDate !== today) { let yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1); if (stats.lastStudyDate === yesterday.toDateString()) stats.streak++; else stats.streak = 1; stats.lastStudyDate = today; saveData(); }
+
+            document.getElementById('progress-bar').style.width = `100%`; document.getElementById('question-ja').innerText = "テスト完了！";
+            document.getElementById('quiz-status-label').innerText = "素晴らしい結果です";
+            answerInput.parentElement.style.display = 'none'; feedback.style.display = 'none';
+            checkBtn.innerHTML = '<span class="material-icons-round">home</span> ホームに戻る'; checkBtn.className = "btn"; checkBtn.onclick = endQuiz; 
+            
+            playSound('finish');
+            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+            return;
+        }
+
+        const currentWord = quizQueue[0];
+        document.getElementById('question-ja').innerText = currentWord.ja;
+        const penHtml = currentWord.isImportant ? `<span style="color:var(--pen); font-size:16px;" class="material-icons-round">edit</span>` : '';
+        document.getElementById('quiz-status-label').innerHTML = `No.${currentWord.num} を英語で書いてください ${penHtml}`;
+        
+        answerInput.parentElement.style.display = 'block'; setTimeout(() => answerInput.focus(), 100);
+        checkBtn.innerText = "チェック"; checkBtn.className = "btn"; checkBtn.onclick = checkAnswer; feedback.style.display = 'none'; isAnswered = false;
+    }
+
+    function handleEnter(e) { if (e.key === 'Enter') { if (isAnswered) nextQuestion(); else checkAnswer(); } }
+
+    function checkAnswer() {
+        const answerInputElem = document.getElementById('answer-input'); const userInput = answerInputElem.value.trim().toLowerCase();
+        const currentWord = quizQueue[0]; const correctAnswer = currentWord.en.toLowerCase();
+        const feedback = document.getElementById('feedback-area');
+        const feedbackText = document.getElementById('feedback-text'); const checkBtn = document.getElementById('check-btn');
+
+        if (userInput === "" && !isAnswered) return;
+        isAnswered = true; stats.totalAnswers++;
+        let actualWord = vocabulary.find(v => v.id === currentWord.id);
+
+        if (userInput === correctAnswer) {
+            playSound('correct'); showBigMark(true);
+            stats.correctAnswers++; quizQueue.shift(); currentIndex++;
+            if(actualWord) {
+                actualWord.correctCount++;
+                updateWordMemory(actualWord, true);
+                if(actualWord.correctCount >= 2 && actualWord.tags.includes('weak')) { 
+                    actualWord.tags = actualWord.tags.filter(t=>t!=='weak'); 
+                    if(!actualWord.tags.includes('review')) actualWord.tags.push('review');
+                }
+            }
+            feedbackText.innerText = "正解！";
+            feedback.className = "feedback correct"; checkBtn.innerText = "次へ"; checkBtn.className = "btn btn-success";
+        } else {
+            playSound('wrong'); showBigMark(false);
+            answerInputElem.disabled = true;
+            const wrongWord = quizQueue.shift(); quizQueue.push(wrongWord);
+            if(actualWord) {
+                actualWord.correctCount = 0;
+                updateWordMemory(actualWord, false);
+            }
+            
+            feedbackText.innerHTML = `
+                <div style="font-size:18px; font-weight:bold; color:var(--error); margin-bottom:8px;">不正解！</div>
+                <div>正解: <span style="font-size:24px; display:block; margin-top:4px; color:var(--text-main);">${correctAnswer}</span></div>
+            `;
+            feedback.className = "feedback incorrect"; checkBtn.innerText = "分かった"; checkBtn.className = "btn btn-error";
+        }
+        saveData(); checkBtn.onclick = nextQuestion;
+    }
+    function nextQuestion() { updateQuizUI(); }
+
+    // === プリント生成（問題のみ・解答なし） ===
+    function generatePrintData() {
+        const startNum = parseInt(document.getElementById('print-range-start').value) || 1;
+        const endNum = parseInt(document.getElementById('print-range-end').value) || vocabulary.length;
+        const tagFilter = document.getElementById('print-tag-select').value;
+
+        let targetWords = vocabulary.filter(v => v.num >= startNum && v.num <= endNum);
+        if(tagFilter !== 'all') targetWords = targetWords.filter(v => v.tags.includes(tagFilter));
+
+        if(targetWords.length === 0) {
+            showToast("指定された範囲に単語がありません", "error"); return false;
+        }
+
+        let totalQ = targetWords.length;
+        document.getElementById('print-total-score').innerText = totalQ;
+
+        const half = Math.ceil(totalQ / 2);
+        const col1 = targetWords.slice(0, half); const col2 = targetWords.slice(half);
+
+        const buildRowsQ = (col, startIdx) => {
+            let h = '';
+            col.forEach((w, i) => {
+                const pen = w.isImportant ? `<span class="material-icons-round print-pen-icon">edit</span>` : '';
+                h += `
+                <div class="print-row">
+                    <div class="print-num">${pen}${i + startIdx}.</div>
+                    <div class="print-ja">${w.ja}</div>
+                    <div style="flex:1; display:flex; align-items:flex-end;">
+                        <div style="flex:1; width:100%; border-bottom:1px solid #000; height:20px;"></div>
+                    </div>
+                </div>`;
+            }); return h;
+        };
+
+        document.getElementById('print-area-content-q').innerHTML = `<div class="print-table-wrapper"><div class="print-col">${buildRowsQ(col1, 1)}</div><div class="print-col">${buildRowsQ(col2, 1 + half)}</div></div>`;
+        return true;
+    }
+
+    function doPrint() {
+        if(!generatePrintData()) return;
+        document.title = "単語テスト"; 
+        window.print();
+        setTimeout(() => document.title = "English Master", 500); 
+    }
+    
+    function doDownloadPDF() {
+        if(!generatePrintData()) return;
+        const element = document.getElementById('pdf-content');
+        document.getElementById('print-area').style.display = 'block'; 
+        
+        const opt = {
+            margin: 0, filename: '単語テスト.pdf',
+            image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        document.getElementById('full-loading-msg').innerText = "PDFを作成中...";
+        document.getElementById('full-loading').classList.add('active');
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            document.getElementById('print-area').style.display = 'none';
+            document.getElementById('full-loading').classList.remove('active');
+            showToast("ダウンロードしました！");
+        });
+    }
+
+</script>
+</body>
+</html>
