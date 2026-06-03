@@ -3,54 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>待機中</title>
+    <meta property="og:title" content=" ">
+    <meta property="og:description" content=" ">
+    <title>　</title>
     <style>
-        :root {
-            --primary: #1a73e8;
-            --bg: #ffffff;
-            --text: #202124;
+        :root { --primary: #1a73e8; }
+        body { 
+            background-color: #ffffff; 
+            margin: 0; 
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; /* 横方向中央 */
+            align-items: center;     /* 縦方向中央 */
+            font-family: monospace; 
+            transition: all 0.3s; 
+            overflow: hidden;
         }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+        .box { 
+            width: 80px; 
+            height: 80px; 
+            border: 4px solid var(--primary); 
+            animation: rotate 2s linear infinite; 
+            margin: 0 auto 20px; /* ボックス自体も中央へ */
         }
-
-        .container {
-            text-align: center;
-            padding: 40px;
-        }
-
-        .box {
-            width: 80px;
-            height: 80px;
-            border: 4px solid var(--primary);
-            margin: 0 auto 30px;
-            animation: rotate 4s linear infinite;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        h1 { font-size: 1.2rem; font-weight: 400; letter-spacing: 0.1em; }
-        .sub { color: #5f6368; font-size: 0.9rem; margin-top: 10px; cursor: pointer; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        #cnt { text-align: center; cursor: pointer; user-select: none; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="box"></div>
-        <h1 id="msg">接続を待機しています</h1>
-        <p class="sub" onclick="change()">不明なプロセス: _e^_c C6=62D6</p>
+    <div id="cnt" onclick="decay()">
+        <div class="box" id="box"></div>
+        <h1 id="msg">「タップ」を待機しています</h1>
     </div>
 
+    <script>
+        let c = 0;
+        function decay() {
+            c++;
+            const b = document.getElementById('box');
+            const m = document.getElementById('msg');
+            
+            b.style.animationDuration = (2 / (c + 1)) + "s";
+            document.body.style.filter = `invert(${c * 15}%) blur(${c * 0.8}px)`;
+            document.body.style.backgroundColor = c % 2 === 0 ? "#fff" : "#000";
+            document.body.style.color = c % 2 === 0 ? "#000" : "#fff";
+            
+            if(c === 1) m.innerText = "同期エラー：セグメント不整合";
+            if(c === 2) m.innerText = "_e^_c C6=62D6";
+            if(c === 3) m.innerText = "破壊";
+            if(c >= 4) {
+                b.style.border = "none";
+                b.style.background = "red";
+                m.innerText = "NULL";
+            }
+        }
+    </script>
 </body>
 </html>
