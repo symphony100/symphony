@@ -101,25 +101,44 @@
     .play-btn:active { transform: scale(0.9); }
     .play-btn .material-symbols-rounded { font-size: 28px; font-variation-settings: 'FILL' 1; }
 
-    .seek-bar-container { flex-grow: 1; display: flex; flex-direction: column; gap: 4px; }
-    .seek-bar-wrapper { position: relative; width: 100%; height: 4px; margin: 10px 0; }
+    .seek-bar-container { flex-grow: 1; display: flex; flex-direction: column; gap: 4px; justify-content: center; }
+    .seek-bar-wrapper { position: relative; width: 100%; display: flex; align-items: center; }
+    
+    /* ズレを完全に排除したスライダー */
     .seek-bar {
-      width: 100%; height: 4px; border-radius: 2px;
-      background: #ccc; position: relative; cursor: pointer;
+      width: 100%; height: 6px; border-radius: 3px;
+      background: #ccc;
+      position: relative; cursor: pointer;
       -webkit-appearance: none; appearance: none; outline: none;
       margin: 0;
     }
-    .seek-bar::-webkit-slider-runnable-track { background: transparent; }
+    .seek-bar::-webkit-slider-runnable-track { background: transparent; border: none; }
     .seek-bar::-webkit-slider-thumb {
       -webkit-appearance: none; appearance: none;
-      width: 12px; height: 12px; border-radius: 50%;
-      background: var(--primary); margin-top: -4px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--primary);
+      border: 2px solid #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      margin-top: -4px; /* トラック高に対して中央に位置合わせ */
+      cursor: pointer;
     }
-    .progress-fill {
-      position: absolute; left: 0; top: 0; height: 100%;
-      background: var(--primary); border-radius: 2px; pointer-events: none;
+    .seek-bar::-moz-range-thumb {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--primary);
+      border: 2px solid #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      cursor: pointer;
     }
-    .time-info { font-size: 12px; font-weight: 900; color: var(--outline); display: flex; justify-content: space-between; }
+
+    /* タイム情報表示 (見やすさを最重視したカラーへ調整) */
+    .time-info { 
+      font-size: 13px; 
+      font-weight: 700; 
+      color: #5f6368; /* 視認性の高いくっきりしたグレーに変更 */
+      display: flex; 
+      justify-content: space-between; 
+      margin-top: 4px;
+    }
 
     /* ダウンロードボタン */
     .download-btn {
@@ -149,7 +168,7 @@
     .history-table tr:hover td { background: #fafafa; }
 
     /* --- フッター --- */
-    footer { 
+    .footer { 
       background: #111111; color: white; padding: 80px 24px; text-align: center; border-top: 8px solid var(--primary); 
     }
     .f-logo { font-size: 24px; font-weight: 900; margin-bottom: 16px; color: var(--primary); letter-spacing: 1px; }
@@ -200,7 +219,6 @@
         <div class="seek-bar-container">
             <div class="seek-bar-wrapper">
                 <input type="range" class="seek-bar" id="seek-bar" value="0" step="0.1" oninput="manualSeek()">
-                <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
             </div>
             <div class="time-info">
                 <span id="current-time">0:00</span>
@@ -245,7 +263,7 @@
     <h3 style="font-size: 24px; font-weight: 900; margin: 0 0 20px 0; letter-spacing: -0.5px;">Symphony System Group</h3>
     <p class="origin-text">
         <span class="accent-word">Symphony</span> は、日本語で「交響曲」を意味します。<br>
-        ギリシャ語の「syn（共に）」と「phone（響く）」が言葉のルーツです。<br><br>
+        ギリシャ語 of 「syn（共に）」と「phone（響く）」が言葉のルーツです。<br><br>
         さらに、多くの機能を追加し、オーケストラのように厚みを増して盛り上がっていく。そんな願いを込めて名称を決定しました。現在は、より組織的で包括的なサービスを目指し、現在の名称を採用しています。
     </p>
   </div>
@@ -288,7 +306,7 @@
 
 </main>
 
-<footer>
+<footer class="footer">
   <div class="f-logo">SYMPHONY SYSTEM GROUP</div>
   <div class="f-copy">© 2024-2026 Symphony System Group. All Rights Reserved.</div>
 </footer>
@@ -298,13 +316,13 @@
   function syncTheme() {
     const savedColor = localStorage.getItem('symphony-color') || '#008DBD';
     document.documentElement.style.setProperty('--primary', savedColor);
+    updateSeekBarBackground(seekBar.value);
   }
 
   // --- カスタムプレーヤー制御 (分・秒対応) ---
   const audio = document.getElementById('audio-src');
   const playIcon = document.getElementById('play-icon');
   const seekBar = document.getElementById('seek-bar');
-  const progressFill = document.getElementById('progress-fill');
   const currTime = document.getElementById('current-time');
   const durTime = document.getElementById('duration-time');
 
@@ -318,12 +336,18 @@
     }
   }
 
+  // シークバーの背景（進行状況の色）を動的に上書きする関数
+  function updateSeekBarBackground(progress) {
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#008DBD';
+    seekBar.style.background = `linear-gradient(to right, ${primaryColor} 0%, ${primaryColor} ${progress}%, #ccc ${progress}%, #ccc 100%)`;
+  }
+
   // 再生時間の更新処理 (分・秒に対応)
   audio.addEventListener('timeupdate', () => {
     if (isNaN(audio.duration)) return;
     const progress = (audio.currentTime / audio.duration) * 100;
     seekBar.value = progress;
-    progressFill.style.width = progress + '%';
+    updateSeekBarBackground(progress);
     currTime.innerText = formatTime(audio.currentTime);
   });
 
@@ -337,7 +361,7 @@
     if (isNaN(audio.duration)) return;
     const time = (seekBar.value / 100) * audio.duration;
     audio.currentTime = time;
-    progressFill.style.width = seekBar.value + '%';
+    updateSeekBarBackground(seekBar.value);
   }
 
   // 分・秒フォーマット化関数
@@ -356,6 +380,7 @@
     if (audio.readyState >= 1) {
       durTime.innerText = formatTime(audio.duration);
     }
+    updateSeekBarBackground(0);
   };
 
   // リアルタイム反映
