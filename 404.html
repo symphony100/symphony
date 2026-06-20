@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/x-icon" href="https://symphony100.github.io/symphony/symphony.png">
+  <title>ページが見つかりません</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: #008DBD;
+      --on-primary: #ffffff;
+      --surface: #fdfcff;
+      --on-surface: #1a1c1e;
+      --surface-variant: #e0e2ec;
+      --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --soft: cubic-bezier(0.4, 0, 0.2, 1);
+      --glass: rgba(255, 255, 255, 0.85);
+      --text-main: #1a1c1e;
+      --text-sub: #44474e;
+    }
+
+    * { box-sizing: border-box; font-family: Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+    
+    body { 
+      margin: 0; background: var(--surface); color: var(--text-main); 
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow-x: hidden;
+    }
+
+    /* --- ポップアップ（ダイアログ） --- */
+    #modal-404 {
+      display: flex; align-items: center; justify-content: center; z-index: 2000;
+      opacity: 0; transition: opacity 0.4s var(--soft);
+    }
+    body.ready #modal-404 { opacity: 1; }
+
+    .dialog-404 {
+      background: white; width: 95%; max-width: 440px; padding: 32px; border-radius: 40px;
+      box-shadow: 0 30px 70px rgba(0,0,0,0.3); transform: scale(0.9) translateY(20px); opacity: 0; 
+      transition: transform 0.5s var(--spring), opacity 0.4s var(--soft);
+      max-height: 85vh; overflow-y: auto; color: #1a1c1e; text-align: center;
+    }
+    body.ready .dialog-404 { transform: scale(1) translateY(0); opacity: 1; }
+
+    .error-icon {
+      font-size: 64px; color: var(--primary); margin-bottom: 16px;
+      font-variation-settings: 'FILL' 1;
+    }
+
+    h1 { font-size: 32px; font-weight: 900; margin: 0 0 16px 0; letter-spacing: -1px; }
+    p { font-size: 16px; color: var(--text-sub); line-height: 1.7; font-weight: 700; margin: 0 0 32px 0; }
+
+    /* ボタン（Symphonyの設定完了ボタン等の丸みを踏襲） */
+    .btn {
+      display: inline-block; padding: 18px 40px; border-radius: 100px; border: none; 
+      background: var(--primary); color: white; font-weight: 900; cursor: pointer; 
+      font-size: 16px; text-decoration: none; transition: transform 0.3s var(--spring), box-shadow 0.3s var(--soft);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 25px rgba(0,82,111,0.2);
+    }
+  </style>
+</head>
+<body id="app-body">
+
+<div id="modal-404">
+  <div class="dialog-404">
+    <span class="material-symbols-rounded error-icon">error</span>
+    <h1>404 Not Found</h1>
+    <p id="error-message">
+      お探しのページは見つかりませんでした。<br>
+      URLが間違っているか、削除された可能性があります。
+    </p>
+    <a href="https://symphony100.github.io/symphony/" class="btn">トップページへ戻る</a>
+  </div>
+</div>
+
+<script>
+  window.onload = () => {
+    // 画面のフェードイン処理
+    document.body.classList.add('ready');
+
+    // もし削除した「shikenyou」の場所から来た場合の設定
+    if (window.location.pathname.includes('/shikenyou/')) {
+      const msg = document.getElementById('error-message');
+      msg.innerHTML = `古いページは削除されました。<br><span style="color:var(--primary)">3秒後に新しいSymphonyへ自動移動します。</span>`;
+      
+      setTimeout(() => {
+        window.location.href = "https://symphony100.github.io/symphony/";
+      }, 3000);
+    }
+  };
+</script>
+</body>
+</html>
