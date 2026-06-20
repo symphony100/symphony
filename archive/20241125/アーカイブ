@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <link rel="icon" type="image/x-icon" href="https://symphony100.github.io/symphony/symphony.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>symphony</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .button {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background-color: #1e90ff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #4682b4;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>アーカイブセンター</h1>
+
+    <a href="https://symphony100.github.io/symphony/archive/20241125/error/" class="button" >2024/11/25時点</a>    
+    <a href="https://symphony100.github.io/symphony/archive/20241125/error/" class="button" >2024/09/14時点</a>
+    <a href="https://symphony100.github.io/symphony/archive/20241125/error/" class="button" >2024/09/02時点</a>
+    <a href="https://symphony100.github.io/symphony/archive/20241125/" class="button" >元のサイトに戻る</a>
+
+</body>
+</html>
