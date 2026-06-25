@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <link rel="icon" type="image/x-icon" href="https://static.wixstatic.com/media/669165_89484848ada942a39a0db93ecdd66446~mv2.png/v1/fill/w_280,h_280,al_c,lg_1,q_85,enc_auto/669165_89484848ada942a39a0db93ecdd66446~mv2.png"><link rel="sympony" sizes="180x180" href="https://static.wixstatic.com/media/669165_89484848ada942a39a0db93ecdd66446~mv2.png/v1/fill/w_280,h_280,al_c,lg_1,q_85,enc_auto/669165_89484848ada942a39a0db93ecdd66446~mv2.png">
+　<meta charset="UTF-8">
+　<meta name="viewport" content="width=device-width, initial-scale=1.0">
+　<title>symphonyお知らせ</title>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "c6389fa6-e7e3-4ed8-b7bd-72b51ed3fb50",
+    });
+  });
+</script>
+  <style>
+body{
+margin: 20px; 
+padding: 50px 10px 50px 10px; 
+}
+.Header {
+position: fixed; 
+top: 0; 
+left: 0; 
+width: 100%; 
+height: 40px; 
+padding: 10px; 
+background-color: #008DBD;
+color: #FFFFFF; 
+}
+.Contents {
+width: 100%; 
+overflow: auto; 
+}
+</style>
+</head>
+<body>
+<font face="sans-serif">
+<div class="Header">symphony</div>
+<div class="Contents">
+<h1>お知らせ</h1><br>
+<a href="https://symphony100.github.io/shikenyou/">元のサイトに戻る。</a><br>
+<p>2025/04/10 「Symphony System Group」に変更し、新サイトを公開しました。</p>
+<p>2025/03/01 「迷路ゲーム」を追加しました。</p>
+<p>2025/01/26 「プッシュ通知」を追加しました。</p>
+<p>2025/01/08「symtem」から「SSG」に名称変更しました。 </p>
+<p>2025/01/01 鉄道ドア開閉ゲームを作成しました。</p>
+<p>2025/12/23 「symphony system」から「symtem」に名称変更しました。</p>
+<p>2024/12/20 「symphony」から「symphony system」に名称変更しました。</p>
+<p>2024/12/04 個人用アカウントのログインサイトを作成しました。</p>
+<p>2024/11/23 リラックスサイトを作成しました。</p>
+<p>2024/11/18 〇✕ゲームを作成しました。</p>
+<p>2024/11/17 ホームページにエフェクトを追加しました。</p>
+<p>2024/10/31 ホームでのアイコンを作成しました。</p>
+<p>2024/10/21 ゲームを作成しました。</p>
+<p>2024/10/21 メモ帳のスタイルを変更しました。</p>
+<p>2024/10/21 電卓を作成しました。</p>
+<p>2024/10/15 「試験用ウェブサイト」から「symphony」に名称変更しました。</p>
+<p>2024/10/07 フッターを追加しました。</p>
+<p>2024/10/07 スクロールを滑らかにしました。</p>
+<p>2024/10/05 コマンドのタグ一覧を作成しました。</p>
+<p>2024/10/03 時間割を追加しました。</p>
+<p>2024/10/01 メモ帳を作成しました。</p>
+<p>2024/09/29 月間読書ランキングのページを作成しました。</p>
+<p>2024/09/27 明朝体のフォントからゴシック体に変更しました。</p>
+<p>2024/09/26 スマートフォンやタブレット、パーソナルコンピューターでも観覧できるようになりました。</p>
+<p>2024/09/26 「お知らせ一覧」を作成しました。</p>
+<p>2024/09/24 オーディオプレーヤーを廃止しました。</p>
+<p>2024/09/23 Google mapを廃止しました。</p>
+<p>2024/09/02 試験用ウェブサイトを公開しました。</p>
+</div>
+<br>
+<br>
+<br><script>
+let lastKnownHash = ""; // 前回確認したハッシュ値を保存
+
+// サイトの変更をチェックする関数
+function checkForUpdates() {
+  fetch('https://symphony100.github.io/shikenyou/oshirase/check_update.php') // PHPスクリプトにリクエスト
+    .then(response => response.json())
+    .then(data => {
+      if (lastKnownHash && data.contentHash !== lastKnownHash) {
+        // ハッシュ値が異なる場合、内容が変更されたと判断
+        alert('新しいお知らせがあります。');
+      }
+      lastKnownHash = data.contentHash; // ハッシュ値を更新
+    })
+    .catch(error => console.error('更新確認中にエラーが発生しました:', error));
+}
+
+// 5秒ごとに更新を確認
+setInterval(checkForUpdates, 5000);
+</script>
+
+</font>
+</body>
+</html>
