@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<link rel="icon" type="image/x-icon" href="https://symphony100.github.io/symphony/symphony.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScriptコード例一覧</title>
+<style>
+body {
+  margin: 20px;
+  padding: 50px 10px;
+  font-family: sans-serif;
+}
+.Header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  padding: 10px;
+  background-color: #008DBD;
+  color: #FFFFFF;
+}
+.Contents {
+  margin-top: 60px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+table, th, td {
+  border: 1px solid #ddd;
+}
+th, td {
+  padding: 10px;
+  text-align: left;
+}
+th {
+  background-color: #f2f2f2;
+}
+code {
+  font-family: monospace;
+  background-color: #f4f4f4;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+a {
+  display: block;
+  margin-top: 20px;
+  color: #008DBD;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+</style>
+</head>
+<body>
+
+<div class="Header">symphony</div>
+<div class="Contents">
+  <h1>JavaScriptコード例一覧</h1>
+  <table>
+    <tr>
+      <th>コード</th>
+      <th>説明</th>
+    </tr>
+    <tr>
+      <td><code>console.log("Hello, World!");</code></td>
+      <td>コンソールに文字列を表示する。</td>
+    </tr>
+    <tr>
+      <td><code>let x = 5;</code></td>
+      <td>変数xに数値5を代入する。</td>
+    </tr>
+    <tr>
+      <td><code>const y = 10;</code></td>
+      <td>定数yに数値10を代入する。</td>
+    </tr>
+    <tr>
+      <td><code>if (x > 0) { console.log("xは正の数"); }</code></td>
+      <td>条件分岐でxが正の数かどうかを確認する。</td>
+    </tr>
+    <tr>
+      <td><code>function greet(name) { return "Hello, " + name; }</code></td>
+      <td>引数として渡された名前で挨拶する関数を定義する。</td>
+    </tr>
+    <tr>
+      <td><code>let numbers = [1, 2, 3, 4];</code></td>
+      <td>配列を作成する。</td>
+    </tr>
+    <tr>
+      <td><code>numbers.forEach(num => { console.log(num); });</code></td>
+      <td>配列の各要素をコンソールに表示する。</td>
+    </tr>
+    <tr>
+      <td><code>let result = numbers.map(num => num * 2);</code></td>
+      <td>配列の各要素を2倍にする。</td>
+    </tr>
+    <tr>
+      <td><code>let isEven = (num) => num % 2 === 0;</code></td>
+      <td>偶数かどうかを判定する関数。</td>
+    </tr>
+    <tr>
+      <td><code>document.getElementById("myButton").addEventListener("click", function() { alert("クリックされました!"); });</code></td>
+      <td>ボタンがクリックされたときにアラートを表示するイベントリスナーを追加する。</td>
+    </tr>
+    <tr>
+      <td><code>setTimeout(() => { console.log("3秒後"); }, 3000);</code></td>
+      <td>指定した時間（ミリ秒）後にコードを実行する。</td>
+    </tr>
+    <tr>
+      <td><code>let newArray = [1, 2, 3].concat([4, 5]);</code></td>
+      <td>2つの配列を結合する。</td>
+    </tr>
+    <tr>
+      <td><code>let str = "JavaScript"; let length = str.length;</code></td>
+      <td>文字列の長さを取得する。</td>
+    </tr>
+    <tr>
+      <td><code>let date = new Date();</code></td>
+      <td>現在の日付と時刻を取得する。</td>
+    </tr>
+    <tr>
+      <td><code>localStorage.setItem("name", "John");</code></td>
+      <td>ローカルストレージにデータを保存する。</td>
+    </tr>
+  </table>
+
+  <a href="https://symphony100.github.io/shikenyou/command">元のサイトに戻る。</a>
+</div>
+
+</body>
+</html>
