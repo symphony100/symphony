@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<link rel="icon" type="image/x-icon" href="https://symphony100.github.io/symphony/symphony.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTMLコード一覧</title>
+<style>
+body {
+  margin: 20px;
+  padding: 50px 10px;
+  font-family: sans-serif;
+}
+.Header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  padding: 10px;
+  background-color: #008DBD;
+  color: #FFFFFF;
+}
+.Contents {
+  margin-top: 60px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+table, th, td {
+  border: 1px solid #ddd;
+}
+th, td {
+  padding: 10px;
+  text-align: left;
+}
+th {
+  background-color: #f2f2f2;
+}
+code {
+  font-family: monospace;
+  background-color: #f4f4f4;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+a {
+  display: block;
+  margin-top: 20px;
+  color: #008DBD;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+</style>
+</head>
+<body>
+
+<div class="Header">symphony</div>
+<div class="Contents">
+  <h1>HTMLコード例一覧</h1>
+  <table>
+    <tr>
+      <th>コード</th>
+      <th>説明</th>
+    </tr>
+    <tr>
+      <td><code>&lt;html&gt;&lt;/html&gt;</code></td>
+      <td>HTMLドキュメントの開始と終了を示すタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;head&gt;&lt;/head&gt;</code></td>
+      <td>メタデータやスタイルシート、スクリプトなどを含むタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;title&gt;タイトル&lt;/title&gt;</code></td>
+      <td>ブラウザのタブに表示されるページタイトルを指定するタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;body&gt;&lt;/body&gt;</code></td>
+      <td>ページの内容を含む本体部分を示すタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;h1&gt;見出し&lt;/h1&gt; ～ &lt;h6&gt;</code></td>
+      <td>見出しタグ（1が最大、6が最小の見出しサイズ）。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;p&gt;段落&lt;/p&gt;</code></td>
+      <td>段落を表すタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;a href="URL"&gt;リンク&lt;/a&gt;</code></td>
+      <td>リンクを作成するタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;img src="image.jpg" alt="画像"&gt;</code></td>
+      <td>画像を表示するタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;ul&gt;&lt;li&gt;項目&lt;/li&gt;&lt;/ul&gt;</code></td>
+      <td>順序なしリスト（点付きリスト）を作成するタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;ol&gt;&lt;li&gt;項目&lt;/li&gt;&lt;/ol&gt;</code></td>
+      <td>順序付きリスト（番号付きリスト）を作成するタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;table&gt;&lt;tr&gt;&lt;td&gt;セル&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</code></td>
+      <td>表を作成するタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;div&gt;&lt;/div&gt;</code></td>
+      <td>ブロック要素を作成するためのタグ。セクションを分けるのに使用。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;span&gt;&lt;/span&gt;</code></td>
+      <td>インライン要素を作成するためのタグ。特定部分にスタイルを適用。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;form&gt;&lt;/form&gt;</code></td>
+      <td>ユーザー入力を受け取るフォームを作成するタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;input type="text"&gt;</code></td>
+      <td>テキスト入力欄を作成するタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;button&gt;ボタン&lt;/button&gt;</code></td>
+      <td>クリック可能なボタンを作成するタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;select&gt;&lt;option&gt;項目&lt;/option&gt;&lt;/select&gt;</code></td>
+      <td>ドロップダウンリストを作成するタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta charset="UTF-8"&gt;</code></td>
+      <td>文字エンコーディングを指定するタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;br&gt;</code></td>
+      <td>改行を挿入するタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;hr&gt;</code></td>
+      <td>水平線を挿入するタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;strong&gt;強調&lt;/strong&gt;</code></td>
+      <td>太字で強調するタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;em&gt;強調&lt;/em&gt;</code></td>
+      <td>斜体で強調するタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;iframe src="URL"&gt;&lt;/iframe&gt;</code></td>
+      <td>他のHTMLページを埋め込むタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;audio controls&gt;&lt;source src="音声ファイル"&gt;&lt;/audio&gt;</code></td>
+      <td>音声ファイルを再生するためのタグ。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;video controls&gt;&lt;source src="動画ファイル"&gt;&lt;/video&gt;</code></td>
+      <td>動画ファイルを再生するためのタグ。</td>
+    </tr>
+  </table>
+
+  <a href="https://symphony100.github.io/shikenyou/command">元のサイトに戻る。</a>
+</div>
+
+</body>
+</html>
