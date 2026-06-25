@@ -1,19 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <link rel="icon" type="image/x-icon" href="https://static.wixstatic.com/media/669165_89484848ada942a39a0db93ecdd66446~mv2.png/v1/fill/w_280,h_280,al_c,lg_1,q_85,enc_auto/669165_89484848ada942a39a0db93ecdd66446~mv2.png"><link rel="sympony" sizes="180x180" href="https://static.wixstatic.com/media/669165_89484848ada942a39a0db93ecdd66446~mv2.png/v1/fill/w_280,h_280,al_c,lg_1,q_85,enc_auto/669165_89484848ada942a39a0db93ecdd66446~mv2.png">
+  <link rel="icon" type="image/x-icon" href="https://symphony100.github.io/symphony/symphony.png">
 　<meta charset="UTF-8">
 　<meta name="viewport" content="width=device-width, initial-scale=1.0">
-　<title>symphonyお知らせ</title>
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "c6389fa6-e7e3-4ed8-b7bd-72b51ed3fb50",
-    });
-  });
-</script>
+　<title>symphony</title>
   <style>
 body{
 margin: 20px; 
@@ -72,26 +63,6 @@ overflow: auto;
 </div>
 <br>
 <br>
-<br><script>
-let lastKnownHash = ""; // 前回確認したハッシュ値を保存
-
-// サイトの変更をチェックする関数
-function checkForUpdates() {
-  fetch('https://symphony100.github.io/shikenyou/oshirase/check_update.php') // PHPスクリプトにリクエスト
-    .then(response => response.json())
-    .then(data => {
-      if (lastKnownHash && data.contentHash !== lastKnownHash) {
-        // ハッシュ値が異なる場合、内容が変更されたと判断
-        alert('新しいお知らせがあります。');
-      }
-      lastKnownHash = data.contentHash; // ハッシュ値を更新
-    })
-    .catch(error => console.error('更新確認中にエラーが発生しました:', error));
-}
-
-// 5秒ごとに更新を確認
-setInterval(checkForUpdates, 5000);
-</script>
 
 </font>
 </body>
