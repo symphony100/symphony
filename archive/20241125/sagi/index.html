@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iPhone当選ページ</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      overflow: hidden;
+    }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+    .popup {
+      width: 90%;
+      max-width: 400px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .icon {
+      font-size: 50px;
+      color: #e63946;
+      margin-bottom: 10px;
+    }
+    h1 {
+      font-size: 1.8em;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .message {
+      font-size: 1.1em;
+      color: #555;
+      margin: 10px 0;
+    }
+    .timer {
+      font-size: 1.2em;
+      color: #e63946;
+      font-weight: bold;
+    }
+    .button {
+      background-color: #ff7f50;
+      color: white;
+      padding: 15px 20px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-top: 15px;
+      width: 100%;
+    }
+    .button:hover {
+      background-color: #ff6347;
+    }
+    .question {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .answer {
+      margin: 5px 0;
+      font-size: 1em;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 100%;
+    }
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay" id="popup1">
+    <div class="popup">
+      <div class="icon">🎉</div>
+      <h1>おめでとうございます！</h1>
+      <p class="message">あなたは本日のキャンペーンで</p>
+      <p class="message"><strong>iPhone 16</strong>が当選しました！</p>
+      <p class="message">残りの受け取り時間:</p>
+      <div class="timer" id="timer">01:00</div>
+      <button class="button" onclick="showNextPopup()">今すぐ受け取る</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="popup2" style="display: none;">
+    <div class="popup">
+      <h1>賞品の確認中...</h1>
+      <div class="loader"></div>
+      <p class="message">少々お待ちください...</p>
+    </div>
+  </div>
+
+  <div class="overlay" id="popup3" style="display: none;">
+    <div class="popup">
+      <h1>最終ステップ - アンケート</h1>
+      <p class="message">賞品を受け取るには、以下のアンケートにお答えください。</p>
+      <div class="question">
+        <p>Q1. 今のご職業は？</p>
+        <input class="answer" type="text" id="q1" placeholder="例：会社員">
+      </div>
+      <div class="question">
+        <p>Q2. 週に何時間インターネットを利用しますか？</p>
+        <input class="answer" type="text" id="q2" placeholder="例：10時間">
+      </div>
+      <button class="button" onclick="submitSurvey()">アンケートを完了して受け取る</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="popup4" style="display: none;">
+    <div class="popup">
+      <h1>ありがとうございます！</h1>
+      <p class="message">アンケートにご協力いただきありがとうございます。</p>
+      <button class="button" onclick="claimPrize()">賞品を受け取る</button>
+    </div>
+  </div>
+
+  <script>
+    let timeLeft = 60;
+    const timerElement = document.getElementById("timer");
+    const countdown = setInterval(() => {
+      timeLeft--;
+      timerElement.innerText = `00:${timeLeft < 10 ? '0' + timeLeft : timeLeft}`;
+      if (timeLeft <= 0) {
+        clearInterval(countdown);
+        alert("時間切れ！再度ページを更新してください。");
+      }
+    }, 1000);
+
+    function showNextPopup() {
+      document.getElementById("popup1").style.display = "none";
+      document.getElementById("popup2").style.display = "flex";
+
+      setTimeout(() => {
+        document.getElementById("popup2").style.display = "none";
+        document.getElementById("popup3").style.display = "flex";
+      }, 3000);
+    }
+
+    function submitSurvey() {
+      const q1 = document.getElementById("q1").value.trim();
+      const q2 = document.getElementById("q2").value.trim();
+
+      if (q1 === "" || q2 === "") {
+        alert("すべての質問にお答えください。");
+        return;
+      }
+      document.getElementById("popup3").style.display = "none";
+      document.getElementById("popup4").style.display = "flex";
+    }
+
+    function claimPrize() {
+      alert("ご入力ありがとうございました！詐欺サイトの典型的な誘導方法です。お気をつけください！");
+    }
+  </script>
+</body>
+</html>
