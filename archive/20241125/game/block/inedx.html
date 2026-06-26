@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ブロック崩しゲーム</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        canvas {
+            background-color: #fff;
+            border: 2px solid #0095DD;
+            display: block;
+            margin: 0 auto;
+        }
+        #info {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+        #soundToggle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background-color: #32CD32;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #tapMessage {
+            font-size: 1.5em;
+            color: black;
+            text-align: center;
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: block;
+            opacity: 0;
+            animation: fadeInOut 3s ease-in-out infinite;
+        }
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>ブロック崩しゲーム</h1>
+    <canvas id="gameCanvas" width="480" height="320"></canvas>
+    <div id="info">スコア: <span id="score">0</span> | レベル: <span id="level">1</span></div>
+    <button id="soundToggle" onclick="toggleSound()">音をオフ</button>
+    <div id="tapMessage">タップしてスタート</div>
+
+    <audio id="bounceSound" src="bounce.mp3" preload="auto"></audio>
+    <audio id="breakSound" src="break.mp3" preload="auto"></audio>
+    <audio id="gameOverSound" src="gameover.mp3" preload="auto"></audio>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let ballRadius = 10;
+        let ball = { x: canvas.width / 2, y: canvas.height - 30, dx: 2, dy: -2 };
+        let paddle = { width: 75, height: 10, x: (canvas.width - 75) / 2, speed: 7 };
+        let rightPressed = false, leftPressed = false;
+        let score = 0, level = 1;
+        let gameOver = false;
+
+        let blockRowCount = 3;
+        let blockColumnCount = 5;
+        let blockWidth = 75;
+        let blockHeight = 20;
+        let blockPadding = 10;
+        let blockOffsetTop = 30;
+        let blockOffsetLeft = 30;
+        let blocks = [];
+
+        const bounceSound = document.getElementById("bounceSound");
+        const breakSound = document.getElementById("breakSound");
+        const gameOverSound = document.getElementById("gameOverSound");
+
+        let isSoundOn = true;
+
+        function toggleSound() {
+            isSoundOn = !isSoundOn;
+            document.getElementById("soundToggle").innerText = isSoundOn ? "音をオフ" : "音をオン";
+        }
+
+        function generateBlocks() {
+            blocks = [];
+            let placedBlocks = 0;
+            while (placedBlocks < 8) {
+                let c = Math.floor(Math.random() * blockColumnCount);
+                let r = Math.floor(Math.random() * blockRowCount);
+                if (!blocks[c]) blocks[c] = [];
+                if (!blocks[c][r]) {
+                    let x = blockOffsetLeft + c * (blockWidth + blockPadding);
+                    let y = blockOffsetTop + r * (blockHeight + blockPadding);
+                    blocks[c][r] = { x: x, y: y, status: 1 };
+                    placedBlocks++;
+                }
+            }
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
+            ctx.fillStyle = "#FF4500";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawPaddle() {
+            ctx.beginPath();
+            ctx.rect(paddle.x, canvas.height - paddle.height, paddle.width, paddle.height);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawBlocks() {
+            for (let c = 0; c < blockColumnCount; c++) {
+                if (blocks[c]) {
+                    for (let r = 0; r < blockRowCount; r++) {
+                        let b = blocks[c][r];
+                        if (b && b.status === 1) {
+                            ctx.beginPath();
+                            ctx.rect(b.x, b.y, blockWidth, blockHeight);
+                            ctx.fillStyle = "#32CD32";
+                            ctx.fill();
+                            ctx.closePath();
+                        }
+                    }
+                }
+            }
+        }
+
+        function collisionDetection() {
+            for (let c = 0; c < blockColumnCount; c++) {
+                if (blocks[c]) {
+                    for (let r = 0; r < blockRowCount; r++) {
+                        let b = blocks[c][r];
+                        if (b && b.status === 1) {
+                            if (ball.x > b.x && ball.x < b.x + blockWidth && ball.y > b.y && ball.y < b.y + blockHeight) {
+                                ball.dy = -ball.dy;
+                                b.status = 0;
+                                score += 10;
+                                document.getElementById("score").innerText = score;
+
+                                if (isSoundOn) breakSound.play();
+
+                                if (checkClearCondition()) {
+                                    alert("おめでとう！");
+                                    nextLevel();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function checkClearCondition() {
+            for (let c = 0; c < blockColumnCount; c++) {
+                if (blocks[c]) {
+                    for (let r = 0; r < blockRowCount; r++) {
+                        if (blocks[c][r] && blocks[c][r].status === 1) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        function startGame() {
+            gameOver = false;
+            score = 0;
+            level = 1;
+            document.getElementById("score").innerText = score;
+            document.getElementById("level").innerText = level;
+            generateBlocks();
+            draw();
+
+            document.addEventListener("keydown", keyDownHandler, false);
+            document.addEventListener("keyup", keyUpHandler, false);
+
+            document.getElementById("tapMessage").style.display = 'none';
+        }
+
+        function draw() {
+            if (gameOver) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBall();
+            drawPaddle();
+            drawBlocks();
+            collisionDetection();
+
+            if (ball.x + ball.dx > canvas.width - ballRadius || ball.x + ball.dx < ballRadius) {
+                ball.dx = -ball.dx;
+                if (isSoundOn) bounceSound.play();
+            }
+            if (ball.y + ball.dy < ballRadius) {
+                ball.dy = -ball.dy;
+                if (isSoundOn) bounceSound.play();
+            } else if (ball.y + ball.dy > canvas.height - ballRadius) {
+                if (ball.x > paddle.x && ball.x < paddle.x + paddle.width) {
+                    ball.dy = -ball.dy;
+                    if (isSoundOn) bounceSound.play();
+                } else {
+                    gameOver = true;
+                    if (isSoundOn) gameOverSound.play();
+                    alert("ゲームオーバー！");
+                    return;
+                }
+            }
+
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            if (rightPressed && paddle.x < canvas.width - paddle.width) {
+                paddle.x += paddle.speed;
+            }
+            if (leftPressed && paddle.x > 0) {
+                paddle.x -= paddle.speed;
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        function nextLevel() {
+            level++;
+            document.getElementById("level").innerText = level;
+
+            // レベルが上がっても速さやパドルのサイズは変更しない
+            generateBlocks();
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height - 30;
+
+            // ボールの速さはレベルに関係なく一定にする
+            ball.dx = 2;  
+            ball.dy = -2;
+
+            startGame();
+        }
+
+        function keyDownHandler(e) {
+            if (e.key === "Right" || e.key === "ArrowRight") {
+                rightPressed = true;
+            } else if (e.key === "Left" || e.key === "ArrowLeft") {
+                leftPressed = true;
+            }
+        }
+
+        function keyUpHandler(e) {
+            if (e.key === "Right" || e.key === "ArrowRight") {
+                rightPressed = false;
+            } else if (e.key === "Left" || e.key === "ArrowLeft") {
+                leftPressed = false;
+            }
+        }
+
+        canvas.addEventListener("click", startGame);
+    </script>
+</body>
+</html>
