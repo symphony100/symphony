@@ -1,84 +1,79 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <link rel="icon" type="image/x-icon" href="https://symphony100.github.io/symphony/symphony.png">
-<meta charset="UTF-8">
-　<meta name="viewport" content="width=device-width, initial-scale=1.0">
-　<title>symphony</title>
-<style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>symphony</title>
+  <style>
+    ul {
+      display: flex;
+      text-align: center;
+    }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
 
-ul {
-  display: flex;
-  text-align: center;
-}
-body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
+    /* ヘッダー全体のスタイル */
+    body {
+      margin: 20px; 
+      padding: 50px 10px 50px 10px; 
+    }
+    .Header {
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 40px; 
+      padding: 10px; 
+      background-color: #008DBD;
+      color: #FFFFFF; 
+      z-index: 1000;
+    }
+    .Contents {
+      width: 100%; 
+      overflow: auto; 
+    }
 
-        /* ヘッダー全体のスタイル */
-body{
-margin: 20px; 
-padding: 50px 10px 50px 10px; 
-}
-.Header {
-position: fixed; 
-top: 0; 
-left: 0; 
-width: 100%; 
-height: 40px; 
-padding: 10px; 
-background-color: #008DBD;
-color: #FFFFFF; 
-}
-.Contents {
-width: 100%; 
-overflow: auto; 
-}
+    /* 左側のロゴやタイトル */
+    .logo {
+      font-size: 1.5em;
+      font-weight: auto;
+    }
 
+    /* リンクボタンのコンテナ */
+    .nav-buttons {
+      display: flex;
+      gap: 15px;
+    }
 
+    /* ボタンのスタイル */
+    .nav-buttons a {
+      text-decoration: none;
+      color: white;
+      background-color: #9ACD32;
+      padding: 8px 16px;
+      border-radius: 10px;
+      transition: background-color 0.3s ease;
+    }
 
-        /* 左側のロゴやタイトル */
-.logo {
-            font-size: 1.5em;
-            font-weight: auto;
-        }
-
-        /* リンクボタンのコンテナ */
-        .nav-buttons {
-            display: flex;
-            gap: 15px;
-        }
-
-        /* ボタンのスタイル */
-        .nav-buttons a {
-            text-decoration: none;
-            color: white;
-            background-color: #9ACD32;
-            padding: 8px 16px;
-            border-radius: 10px;
-            transition: background-color 0.3s ease;
-        }
-
-        .nav-buttons a:hover {
-            background-color: #008000;
-	}
+    .nav-buttons a:hover {
+      background-color: #008000;
+    }
 	
-/* アイコン */
-
-    /* グリッドコンテナ設定 */
+    /* アイコン一覧（グリッド） */
     .icon-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr); /* 6列に設定 */
+      grid-template-columns: repeat(4, 1fr); /* 4列に設定 */
       gap: 15px;
       padding: 20px;
     }
 
-    /* アイコンのリンクと画像のスタイル */
+    /* アイコンのリンクとCSSアイコンのスタイル */
     .icon-link {
       text-decoration: none;
-      color: black; /* テキストの色 */
+      color: black;
     }
 
     .icon {
@@ -93,17 +88,12 @@ overflow: auto;
       transition: background-color 0.3s, transform 0.3s;
     }
 
-    /* 画像のサイズ制限 */
-    .icon img {
-      max-width: 40px;
-      max-height: 40px;
-    }
-
     /* ラベルのスタイル */
     .icon span {
       margin-top: 5px;
-      font-size: 14px;
+      font-size: 11px;
       text-align: center;
+      font-weight: bold;
     }
 
     .icon:hover {
@@ -111,369 +101,678 @@ overflow: auto;
       transform: scale(1.1);
     }
 
+    /* ===== ピュアCSSアイコンの定義 ===== */
+    .css-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-sizing: border-box;
+    }
 
-/* ボタンの装飾 */
+    /* 1. ゲーム */
+    .css-icon-game {
+      width: 32px;
+      height: 18px;
+      background: #555;
+      border-radius: 9px;
+    }
+    .css-icon-game::before {
+      content: '';
+      position: absolute;
+      left: 18px;
+      top: 16px;
+      width: 8px;
+      height: 8px;
+      background: #aaa;
+      clip-path: polygon(30% 0%, 70% 0%, 70% 30%, 100% 30%, 100% 70%, 70% 70%, 70% 100%, 30% 100%, 30% 70%, 0% 70%, 0% 30%, 30% 30%);
+    }
+    .css-icon-game::after {
+      content: '';
+      position: absolute;
+      right: 18px;
+      top: 16px;
+      width: 5px;
+      height: 5px;
+      background: #e74c3c;
+      border-radius: 50%;
+      box-shadow: -6px 3px 0 #3498db;
+    }
 
-.btn,
-a.btn,
-button.btn {
-  text-decoration: none;
-  color: #212529;
-}
+    /* 2. 電卓 */
+    .css-icon-calc {
+      width: 22px;
+      height: 30px;
+      border: 2px solid #333;
+      border-radius: 3px;
+      background: #fff;
+    }
+    .css-icon-calc::before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: 12px;
+      width: 16px;
+      height: 6px;
+      background: #a9dfbf;
+      border: 1px solid #333;
+    }
+    .css-icon-calc::after {
+      content: '';
+      position: absolute;
+      bottom: 8px;
+      left: 12px;
+      width: 16px;
+      height: 12px;
+      background: repeating-linear-gradient(to right, #333 0, #333 2px, transparent 2px, transparent 5px),
+                  repeating-linear-gradient(to bottom, #333 0, #333 2px, transparent 2px, transparent 4px);
+    }
 
+    /* 3. メモ帳 */
+    .css-icon-memo {
+      width: 22px;
+      height: 28px;
+      border: 2px solid #333;
+      background: #fff;
+      border-radius: 2px;
+    }
+    .css-icon-memo::before {
+      content: '';
+      position: absolute;
+      top: 11px;
+      left: 12px;
+      width: 16px;
+      height: 14px;
+      background: repeating-linear-gradient(transparent 0, transparent 3px, #5d6d7e 3px, #5d6d7e 5px);
+    }
 
-a.btn-border {
-  border: 2px solid #000;
-  border-radius: 0;
-  background: #fff;
-}
+    /* 4. ログイン */
+    .css-icon-login {
+      width: 30px;
+      height: 30px;
+    }
+    .css-icon-login::before {
+      content: '';
+      position: absolute;
+      right: 6px;
+      top: 6px;
+      width: 12px;
+      height: 24px;
+      border: 2px solid #333;
+      border-left: none;
+    }
+    .css-icon-login::after {
+      content: '→';
+      position: absolute;
+      left: 4px;
+      top: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+    }
 
-a.btn-border:hover {
-  color: #fff;
-  background: #000;
-}
+    /* 5. クイズ */
+    .css-icon-quiz {
+      width: 26px;
+      height: 26px;
+      background: #3498db;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 5px;
+    }
 
-a.btn-flat {
-  overflow: hidden;
-  padding: 1.5rem 6rem;
-  color: #fff;
-  border-radius: 0;
-  background: #000;
-}
+    /* 6. 今日の占い */
+    .css-icon-fortune {
+      width: 30px;
+      height: 30px;
+    }
+    .css-icon-fortune::before, .css-icon-fortune::after {
+      content: '';
+      position: absolute;
+      background: #f1c40f;
+      width: 24px;
+      height: 24px;
+      clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+    }
+    .css-icon-fortune::before {
+      left: 3px;
+      top: 3px;
+    }
+    .css-icon-fortune::after {
+      left: 12px;
+      top: 0px;
+      transform: scale(0.5);
+      opacity: 0.7;
+    }
 
-a.btn-flat span {
-  position: relative;
-}
+    /* 7. コマンド */
+    .css-icon-cmd {
+      width: 32px;
+      height: 22px;
+      background: #222;
+      border-radius: 3px;
+      border: 1px solid #777;
+    }
+    .css-icon-cmd::before {
+      content: '>';
+      position: absolute;
+      left: 8px;
+      top: 10px;
+      color: #2ecc71;
+      font-family: monospace;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .css-icon-cmd::after {
+      content: '_';
+      position: absolute;
+      left: 15px;
+      top: 10px;
+      color: #2ecc71;
+      font-family: monospace;
+      font-size: 12px;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
 
-a.btn-flat:before {
-  position: absolute;
-  top: 0;
-  left: 30px;
-  width: 150%;
-  height: 500%;
-  content: '';
-  -webkit-transition: all .5s ease-in-out;
-  transition: all .5s ease-in-out;
-  -webkit-transform: translateX(-98%) translateY(-70%) rotate(135deg);
-  transform: translateX(-98%) translateY(-70%) rotate(135deg);
-  background: #fff100;
-}
+    /* 8. ロゴマーク */
+    .css-icon-logo {
+      width: 26px;
+      height: 26px;
+      border: 2px solid #e74c3c;
+      border-radius: 50%;
+      background: #3498db;
+    }
+    .css-icon-logo::before {
+      content: '';
+      position: absolute;
+      top: 11px;
+      left: 11px;
+      width: 14px;
+      height: 14px;
+      background: #f1c40f;
+      transform: rotate(45deg);
+    }
 
-a.btn-flat:hover:before {
-  -webkit-transform: translateX(-9%) translateY(-25%) rotate(135deg);
-  transform: translateX(-9%) translateY(-25%) rotate(135deg);
-}
+    /* 9. ヘルプ */
+    .css-icon-help {
+      width: 26px;
+      height: 26px;
+      border: 2px solid #7f8c8d;
+      border-radius: 50%;
+      font-size: 16px;
+      font-weight: bold;
+      color: #7f8c8d;
+    }
 
-/* スクロールエフェクト */
+    /* 10. 詐欺体験 */
+    .css-icon-scam {
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-bottom: 26px solid #f1c40f;
+    }
+    .css-icon-scam::before {
+      content: '!';
+      position: absolute;
+      top: 10px;
+      left: 18px;
+      font-size: 13px;
+      font-weight: bold;
+      color: black;
+    }
 
-html{
-  scroll-behavior: smooth;
-}
-#topButton {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 10px 15px;
-  background-color: #333;
-  color: #fff;
-  text-decoration: none;
-}
+    /* 11. 自己紹介 */
+    .css-icon-profile {
+      width: 30px;
+      height: 30px;
+    }
+    .css-icon-profile::before {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 15px;
+      width: 10px;
+      height: 10px;
+      background: #34495e;
+      border-radius: 50%;
+    }
+    .css-icon-profile::after {
+      content: '';
+      position: absolute;
+      bottom: 6px;
+      left: 10px;
+      width: 20px;
+      height: 8px;
+      background: #34495e;
+      border-radius: 8px 8px 0 0;
+    }
 
-#topButton:hover {
-  background-color: #555;
-}
+    /* 12. ランキング */
+    .css-icon-ranking {
+      width: 26px;
+      height: 20px;
+      background: #f1c40f;
+      clip-path: polygon(0% 0%, 25% 60%, 50% 0%, 75% 60%, 100% 0%, 80% 100%, 20% 100%);
+    }
 
-/* フッター */
+    /* 13. サポート */
+    .css-icon-support {
+      width: 28px;
+      height: 18px;
+      border: 2px solid #e67e22;
+      background: #fff;
+      border-radius: 2px;
+    }
+    .css-icon-support::before {
+      content: '';
+      position: absolute;
+      top: 11px;
+      left: 6px;
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-top: 8px solid #e67e22;
+    }
+    /* ================================== */
 
-        /* 基本スタイル */
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-        }
+    /* ボタンの装飾 */
+    .btn,
+    a.btn,
+    button.btn {
+      text-decoration: none;
+      color: #212529;
+      cursor: pointer;
+    }
 
-        /* フッターのスタイル */
-        footer {
-            background-color: #abbaba;
-            color: #000000;
-            text-align: center;
-            padding: 20px;
-            width: 100%;
-            box-sizing: border-box;
-        }
+    a.btn-border {
+      border: 2px solid #000;
+      border-radius: 0;
+      background: #fff;
+      display: inline-block;
+      padding: 5px 10px;
+      margin: 2px;
+    }
 
-        footer p {
-            margin: 5px 0;
-        }
+    a.btn-border:hover {
+      color: #fff;
+      background: #000;
+    }
 
-        footer a {
-            color: #050505;
-            text-decoration: none;
-            margin: 0 10px;
-        }
+    a.btn-flat {
+      overflow: hidden;
+      padding: 1.5rem 6rem;
+      color: #fff;
+      border-radius: 0;
+      background: #000;
+    }
 
-        footer a:hover {
-            text-decoration: underline;
-        }
+    a.btn-flat span {
+      position: relative;
+    }
 
-        /* スマートフォン対応 */
-        @media (max-width: 600px) {
-            footer {
-                padding: 15px;
-                font-size: 14px;
-            }
-            footer a {
-                margin: 0 5px;
-            }
-        }
+    a.btn-flat:before {
+      position: absolute;
+      top: 0;
+      left: 30px;
+      width: 150%;
+      height: 500%;
+      content: '';
+      transition: all .5s ease-in-out;
+      transform: translateX(-98%) translateY(-70%) rotate(135deg);
+      background: #fff100;
+    }
 
-        /* タブレット対応 */
-        @media (min-width: 601px) and (max-width: 1024px) {
-            footer {
-                padding: 20px;
-                font-size: 16px;
-            }
-            footer a {
-                margin: 0 8px;
-            }
-        }
+    a.btn-flat:hover:before {
+      transform: translateX(-9%) translateY(-25%) rotate(135deg);
+    }
+
+    /* スクロールエフェクト */
+    html {
+      scroll-behavior: smooth;
+    }
+    #topButton {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 15px;
+      background-color: #333;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    #topButton:hover {
+      background-color: #555;
+    }
+
+    /* フッター */
+    footer {
+      background-color: #abbaba;
+      color: #000000;
+      text-align: center;
+      padding: 20px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    footer p {
+      margin: 5px 0;
+    }
+
+    footer a {
+      color: #050505;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* スマートフォン対応 */
+    @media (max-width: 600px) {
+      footer {
+        padding: 15px;
+        font-size: 14px;
+      }
+      footer a {
+        margin: 0 5px;
+      }
+    }
+
+    /* タブレット対応 */
+    @media (min-width: 601px) and (max-width: 1024px) {
+      footer {
+        padding: 20px;
+        font-size: 16px;
+      }
+      footer a {
+        margin: 0 8px;
+      }
+    }
 	
-/* フェードインするテキストのスタイル */
-  .fade-in-text {
-    font-size: 2em;
-    opacity: 0;
-    animation: fadeIn 4s ease-in-out forwards;
-  }
+    /* フェードインするテキストのスタイル */
+    .fade-in-text {
+      font-size: 2em;
+      opacity: 0;
+      animation: fadeIn 4s ease-in-out forwards;
+    }
 
-  /* フェードインアニメーション */
-  @keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-	
-</style>
+    /* フェードインアニメーション */
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    /* 時間割表示エリアの装飾 */
+    .timetable-box {
+      border: 2px solid #000;
+      padding: 20px;
+      background-color: #fcfcfc;
+      margin: 15px 0;
+      max-width: 500px;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <div class="Header">symphony</div>
-        <div class="nav-buttons">
-        </div>
-    </header>
+  <header>
+    <div class="Header">symphony</div>
+    <div class="nav-buttons"></div>
+  </header>
 
-
-<br><br><br>
+  <br><br><br>
   <h1>symphony公式サイトへようこそ</h1>
 
   <h3>今日は、<span id="text"></span>です。</h3>
 
   <script type="text/javascript">
     document.getElementById("text").innerHTML = showDay();
-  function showDay() {
-    var weeks = [ "日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日" ];
-    var now = new Date();
-    var weekdays = now.getDay();
-    return weeks[weekdays];
-  }
+    function showDay() {
+      var weeks = [ "日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日" ];
+      var now = new Date();
+      var weekdays = now.getDay();
+      return weeks[weekdays];
+    }
   </script>
 
-<br>
+  <br>
 
-<SCRIPT LANGUAGE="JavaScript">
-<!--
-h = (new Date()).getHours();
+  <script type="text/javascript">
+    var h = (new Date()).getHours();
 
-if((h >= 0) && (h < 3)){ document.write("こんばんは。"); }
-if((h >= 3) && (h < 6)){ document.write("おはようございます。"); }
-if((h >= 6) && (h < 9)){ document.write("おはようございます。"); }
-if((h >= 9) && (h < 12)){ document.write("こんにちは。"); }
-if((h >= 12) && (h < 15)){ document.write("こんにちは。"); }
-if((h >= 15) && (h < 18)){ document.write("こんにちは。"); }
-if((h >= 18) && (h < 21)){ document.write("こんばんは。"); }
-if((h >= 21) && (h < 24)){ document.write("こんばんは。"); }
-//-->
-</SCRIPT>
+    if((h >= 0) && (h < 3)){ document.write("こんばんは。"); }
+    if((h >= 3) && (h < 6)){ document.write("おはようございます。"); }
+    if((h >= 6) && (h < 9)){ document.write("おはようございます。"); }
+    if((h >= 9) && (h < 12)){ document.write("こんにちは。"); }
+    if((h >= 12) && (h < 15)){ document.write("こんにちは。"); }
+    if((h >= 15) && (h < 18)){ document.write("こんにちは。"); }
+    if((h >= 18) && (h < 21)){ document.write("こんばんは。"); }
+    if((h >= 21) && (h < 24)){ document.write("こんばんは。"); }
+  </script>
 
-<br>
-<br>
-<span id="view_clock"></span>
+  <br><br>
+  <span id="view_clock"></span>
 
-<script type="text/javascript">
-timerID = setInterval('clock()',500); 
+  <script type="text/javascript">
+    timerID = setInterval('clock()',500); 
 
-function clock() {
-	document.getElementById("view_clock").innerHTML = getNow();
-}
+    function clock() {
+      document.getElementById("view_clock").innerHTML = getNow();
+    }
 
-function getNow() {
-	var now = new Date();
-	var year = now.getFullYear();
-	var mon = now.getMonth()+1; 
-	var day = now.getDate();
-	var hour = now.getHours();
-	var min = now.getMinutes();
-	var sec = now.getSeconds();
+    function getNow() {
+      var now = new Date();
+      var year = now.getFullYear();
+      var mon = now.getMonth()+1; 
+      var day = now.getDate();
+      var hour = now.getHours();
+      var min = now.getMinutes();
+      var sec = now.getSeconds();
 
-	
-	var s = year + "年" + mon + "月" + day + "日" + hour + "時" + min + "分" + sec + "秒"; 
-	return s;
-}
-</script>
+      var s = year + "年" + mon + "月" + day + "日" + hour + "時" + min + "分" + sec + "秒"; 
+      return s;
+    }
+  </script>
 
-<br>
+  <br><br>
 
-</body>
-</div>
+  <h3><a name="3">今日の曜日を選択してください。（通常授業の時間割です。）</a></h3>
+  <br>
+  <!-- リンク先をJavaScriptでの切り替え処理に変更しました -->
+  <a href="javascript:void(0)" onclick="displayTimetable(1)" class="btn btn-border"><span>月曜日</span></a>
+  <a href="javascript:void(0)" onclick="displayTimetable(2)" class="btn btn-border"><span>火曜日</span></a>
+  <a href="javascript:void(0)" onclick="displayTimetable(3)" class="btn btn-border"><span>水曜日</span></a>
+  <a href="javascript:void(0)" onclick="displayTimetable(4)" class="btn btn-border"><span>木曜日</span></a>
+  <a href="javascript:void(0)" onclick="displayTimetable(5)" class="btn btn-border"><span>金曜日</span></a>
+  <a href="javascript:void(0)" onclick="displayTimetable(6)" class="btn btn-border"><span>土曜日</span></a>
+  <a href="javascript:void(0)" onclick="displayTimetable(0)" class="btn btn-border"><span>日曜日</span></a>
+  <br><br>
 
-<br>
-<h3><a name="3">今日の曜日を選択してください。（通常授業の時間割です。）</a></h3>
-<br>
-	<a href="" class="btn btn-border"><span>月曜日</span></a>
-	<a href="" class="btn btn-border"><span>火曜日</span></a>
-	<a href="" class="btn btn-border"><span>水曜日</span></a>
-	<a href="" class="btn btn-border"><span>木曜日</span></a>
-	<a href="" class="btn btn-border"><span>金曜日</span></a>
-	<a href="" class="btn btn-border"><span>土曜日</span></a>
-	<a href="" class="btn btn-border"><span>日曜日</span></a>
-	<br><br><br>
+  <!-- 曜日ごとの時間割を表示するためのエリア（初期状態は非表示） -->
+  <div id="timetable-area" class="timetable-box" style="display: none;">
+    <h2 id="timetable-title"></h2>
+    <p id="timetable-status" style="font-weight: bold; color: #ff0000; font-size: 1.1em;"></p>
+    <h3>時間割</h3>
+    <p id="timetable-list"></p>
+  </div>
 
-<h4>中等部卒業まであと、
-<SCRIPT LANGUAGE = "JavaScript">
-<!---
-  today = new Date();
-  NectC = new Date(2027,02,09);
-  NC = (NectC.getTime() - today.getTime())/(24*60*60*1000)
-  document.write("<font color=red><b>" + Math.ceil(NC) + "</b></font>日です。")
-//--->
-</SCRIPT></h4>
-<br>
-<label><a name="1">＜お知らせ＞</a><br>
-<p><font color="red">新着メッセージがあります。</front><font color="black"></p>
-<p>2024/09/02 試験用ウェブサイトを公開しました。</p>
-<br>
-<a href=""><p>もっと詳しく</p></a>
-<br><br>
-<p>＜サイト紹介＞<br>
-このサイトは、htmlや、CSS、JavaScriptなどでつくりました。<br><br>
-＜機能紹介＞<br>
-今の曜日などを見れたり、次の授業の科目を観覧することができます。</p><br><br>
+  <br>
 
+  <h4>中等部卒業まであと、
+  <script type="text/javascript">
+    today = new Date();
+    NectC = new Date(2027,2,9); // 月は0から始まるため(2は3月)
+    NC = (NectC.getTime() - today.getTime())/(24*60*60*1000)
+    document.write("<font color=red><b>" + Math.ceil(NC) + "</b></font>日です。")
+  </script></h4>
+  <br>
 
+  <label><a name="1">＜お知らせ＞</a><br>
+  <p><font color="red">新着メッセージがあります。</font></p>
+  <p>2024/09/02 試験用ウェブサイトを公開しました。</p>
+  <br>
+  <a href=""><p>もっと詳しく</p></a>
+  <br><br>
+  <p>＜サイト紹介＞<br>
+  このサイトは、htmlや、CSS、JavaScriptなどでつくりました。<br><br>
+  ＜機能紹介＞<br>
+  今の曜日などを見れたり、次の授業の科目を観覧することができます。</p><br><br>
+
+  <!-- imgタグからCSSアイコン（class="css-icon..."）に置き換えました -->
   <div class="icon-grid">
     <a href="" class="icon-link" aria-label="game">
       <div class="icon">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSNTyAVgVHOKrNHVZMYB5sbVKMCNd5SSna0A&s" alt="smphonygame">
+        <div class="css-icon css-icon-game"></div>
         <span>ゲーム</span>
       </div>
     </a>
     <a href="" class="icon-link" aria-label="電卓">
       <div class="icon">
-        <img src="https://i.pinimg.com/originals/61/e8/c3/61e8c31e436cb783465fcac907c2519a.png" alt="電卓">
+        <div class="css-icon css-icon-calc"></div>
         <span>電卓</span>
       </div>
     </a>
     <a href="" class="icon-link" aria-label="メモ帳">
       <div class="icon">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQe0skY7Re55wogRBQ1qx9Gb1eICAwmiyIxtg&s" alt="メモ帳">
+        <div class="css-icon css-icon-memo"></div>
         <span>メモ帳</span>
       </div>
     </a>
     <a href="" class="icon-link" aria-label="ログイン">
       <div class="icon">
-        <img src="https://i.pinimg.com/474x/91/5c/7a/915c7a17ea7ad9410e243ee5a9e45640.jpg" alt="login">
+        <div class="css-icon css-icon-login"></div>
         <span>ログイン</span>
       </div>
     </a>
     <a href="" class="icon-link" aria-label="symphony">
       <div class="icon">
-        <img src="https://www.silhouette-illust.com/wp-content/uploads/2016/07/5390-300x300.jpg" alt="gakusyu">
+        <div class="css-icon css-icon-quiz">Q</div>
         <span>クイズ</span>
       </div>
     </a>
     <a href="" class="icon-link" aria-label="占い">
       <div class="icon">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcKlOGCHA10sSJ0DGrI60_dXxA82hiGPXnyA&s" alt="占い">
+        <div class="css-icon css-icon-fortune"></div>
         <span>今日の占い</span>
       </div>
     </a>
     <a href="" class="icon-link" aria-label="コマンド">
       <div class="icon">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGZKdhiYbpfN_PiuMJ1CBIohjNl3klvX2Yig&s" alt="コマンド">
+        <div class="css-icon css-icon-cmd"></div>
         <span>コマンド</span>
       </div>
     </a>
     <a href="" class="icon-link" aria-label="ロゴマーク">
       <div class="icon">
-        <img src="https://everydayicons.jp/wp/wp-content/themes/everydayicons/icons/thumbs/ei-picture.png" alt="ロゴマーク">
+        <div class="css-icon css-icon-logo"></div>
         <span>ロゴマーク</span>
       </div>
     </a>
     <a href="" class="icon-link" aria-label="ヘルプ">
       <div class="icon">
-        <img src="https://cdn.icon-icons.com/icons2/1863/PNG/512/help-outline_119052.png" alt="ヘルプ">
+        <div class="css-icon css-icon-help">?</div>
         <span>ヘルプ</span>
       </div>
     </a>
     <a href="" class="icon-link" aria-label="詐欺サイト体験ページ">
       <div class="icon">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUy9U2lXT8ieW-x0Ix6ILEfsb50TlrQjZ-uA&s" alt="詐欺サイト体験ページ">
+        <div class="css-icon css-icon-scam"></div>
         <span>詐欺体験</span>
       </div>
     </a>
     <a href="" class="icon-link" aria-label="プロフィール">
       <div class="icon">
-        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAPFBMVEXk5ueutLepsLPo6uursbXJzc/p6+zj5ea2u76orrKvtbi0ubzZ3N3O0dPAxcfg4uPMz9HU19i8wcPDx8qKXtGiAAAFTElEQVR4nO2d3XqzIAyAhUD916L3f6+f1m7tVvtNINFg8x5tZ32fQAIoMcsEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQTghAJD1jWtnXJPP/54IgNzZQulSmxvTH6oYXX4WS+ivhTbqBa1r26cvCdCu6i0YXbdZ0o4A1rzV+5IcE3YE+z58T45lqo7g1Aa/JY5tgoqQF3qb382x7lNzBLcxft+O17QUYfQI4IIeklKsPSN4i6LKj/7Zm8n99RbHJpEw9gEBXNBpKIYLJqKYRwjOikf//r+J8ZsVuacbqCMNleI9TqGLGqMzhnVdBOdd6F/RlrFijiCoVMk320CBIahUxTWI0KKEcJqKbMdpdJb5QvdHq6wCI5qhKlgGMS/RBHkubWDAE+QZxB4xhCyDiDkLZxgGEVdQldzSKbTIhmZkFkSEPcVvmBn2SMuZB9od7fQDsMiDdKJjFUSCQarM5WirZ3C2TT/htYnyPcPfgrFHWz0BI74gr6J/IZiGUxAZGQLqmvQLTrtE/Go4YxhVRIpEw+sww1IIcqr5NKmUUzLF3d4/qPkYIp2T/obPuemlojFUR4t9Q2Vojhb7BmgElWHzLPH8hucfpefPNFTVgs9h1AdU/Pin96vwWbWdf+X9Absn3OdO34aMdsDnP8WgKYisTqI6CkNGqZQo1XA6Ef6AU32SJzOcBukHPF07/xNSgmHKa5BOhtezv6mA/rYJpwXNAnbRZ1XuF3BzDcO3vpA3+ny2909gbqE4hhD3LIPhLLyBNhPZvbZ3B+3tPYa18A7auSlXQayKwTPNLKDcuOB0xPYKDPFTkWsevQPRZ1J8Hji9I1KQ34r7hZhrwNwOZ97QxNx0drwn4QI0wQk1DcEsfKCWKdxVvxPSNUIp/knmAXT+nT+Ko3+0H96rcNb3m1fx7MBTJdeBJ7uFcWsc0wvgAsC4pROW0l2inbAmIBv/7GZmuhQH6API2rr8T0e6yuZJ+80A9LZeG62T3tik31XwxtwZcizKuTHkMjB1WdZde4Kmic/A5ZI3rr1ae21d08PlVHYfAaxw9G9CYRbJ+8ZdbTcMRV1XM3VdF0M32vtoTdZ0+u29s0OttJ5bz64UwinjaFMVY9vkqc3KKSxN21Xl+0L4Q3Vuv1tYl0pqnX6ms4XetFz7gdZVAgUEoJntfOUe4ZwsHd9FzqQ3Vv6xe41l0XJcqcKl6TZvlv7ClAW3BsqQW4X7ypApB8dmTgK4IX5wvqIVj33HtD2qSG4BqznxdIefL27Y4sahi0MdIdvUsDva8agGGbCtITmCY31MHD2O0uIdh/0rJDQ1VX5Zdxz3rR2QDbv6qXl9vudzqQtGm1Jv9LDXOsfvvB7VcZ8PDKD0mQ1VHPYQ9O+Yj4hR1IUD8rBnn3ho2m8oQMxbCFiKlL2ioSW5heeJqegED52CzxCtcGD3Kv8Wms9EYLyUhwaFIhSMBClevWEmiK/Iaogu4H7sg6ppQhQG8RUqivuTGOAJOg6FfgW0q0M0PQMRMEgXaeNf3SYDZ8PIMI0+wHgr/MgN7wYwpiLjCCqM6ydUDZLQiB6nDdNC8SDyig3jPPpFXGcC9O8BUBDVmgBY59E7Md/35Loe/UVEECEJwYggJjELZ4J71SaQSBeC02n4Da29CayJNA28SAhd2CQyC1Xw6pSmGSINQVuMhAZp4DClan9MgmkDDNmezqwS8sgtlXK/EPBhoaSmYVC/F7IO1jQEdHOlabpKh3+jzLQSTUiq4X2I+Ip/zU8rlaqAvkS21ElR+gqu3zbjjL+hIAiCIAiCIAiCIAiCsCf/AKrfVhSbvA+DAAAAAElFTkSuQmCC" alt="プロフィール">
+        <div class="css-icon css-icon-profile"></div>
         <span>自己紹介</span>
       </div>
     </a>
     <a href="" class="icon-link" aria-label="読書ランキング">
       <div class="icon">
-        <img src="https://icon-pit.com/wp-content/uploads/2019/02/book_note_icon_4691.png" alt="読書ランキング">
+        <div class="css-icon css-icon-ranking"></div>
         <span>ランキング</span>
       </div>
     </a>
     <a href="" class="icon-link" aria-label="お問い合わせ">
       <div class="icon">
-        <img src="https://www.silhouette-illust.com/wp-content/uploads/2017/04/contact-us_29255-600x600.jpg" alt="お問い合わせ">
+        <div class="css-icon css-icon-support"></div>
         <span>サポート</span>
+      </div>
+    </a>
   </div>
-</a>
-</div>
 
+  <br><br><br><br><br>
 
+  <h2>広告</h2>
 
+  <footer>
+    <p>このサイトは、2024/09/02に作成されました。</p>
+    <p>
+      <a href="">利用規約</a>
+    </p>
+  </footer>
 
+  <a href="#top" id="topButton">⇧</a>
 
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
+  <!-- 曜日ごとの時間割切り替えを行うJavaScript処理 -->
+  <script type="text/javascript">
+    var classSchedule = [
+      { start: 6,  end: 9,  periodName: "１時間目", index: 0 },
+      { start: 9,  end: 10, periodName: "２時間目", index: 1 },
+      { start: 10, end: 11, periodName: "３時間目", index: 2 },
+      { start: 11, end: 12, periodName: "４時間目", index: 3 },
+      { start: 13, end: 14, periodName: "５時間目", index: 4 }, 
+      { start: 14, end: 15, periodName: "６時間目", index: 5 }
+    ];
 
-<br>
-<br>
-<br>
-<br>
-<h2>広告</h2>
-<a href=""><img src="https://static.wixstatic.com/media/669165_8d3b7de5b3d64b2a9a0a3f9f08c2f19f~mv2.png/v1/fill/w_900,h_636,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/669165_8d3b7de5b3d64b2a9a0a3f9f08c2f19f~mv2.png" alt="リクエスト募集" width="300" height="250"></a>
-<a href=""><img src="https://static.wixstatic.com/media/669165_d899a97e4ed647508d12f4896f0d4d99~mv2.png/v1/fill/w_420,h_234,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/669165_d899a97e4ed647508d12f4896f0d4d99~mv2.png" alt="焼き鳥" width="300" height="250"></a>
-<br>
-<br>
-<br>
+    var subjectsData = {
+      1: { dayName: "月曜日", list: ["国語", "数学", "英語", "理科", "社会", "音楽"] },
+      2: { dayName: "火曜日", list: ["数学", "理科", "社会", "国語", "体育", "英語"] },
+      3: { dayName: "水曜日", list: ["英語", "国語", "数学", "理科", "図工", "音楽"] },
+      4: { dayName: "木曜日", list: ["理科", "社会", "体育", "数学", "英語", "国語"] },
+      5: { dayName: "金曜日", list: ["社会", "英語", "国語", "理科", "家庭科", "総合"] },
+      6: { dayName: "土曜日", list: ["理科", "国語", "体育", "社会", "（なし）", "（なし）"] },
+      0: { dayName: "日曜日", list: ["（なし）", "（なし）", "（なし）", "（なし）", "（なし）", "（なし）"] }
+    };
 
-    <footer>
-        <p>このサイトは、2024/09/02に作成されました。</p>
-        <p>
-            <a href="">利用規約</a> |
-            <a href="">お問い合わせ</a>
-        </p>
-    </footer>
+    function displayTimetable(dayIndex) {
+      var data = subjectsData[dayIndex];
+      if (!data) return;
 
-<a href="#top" id="topButton">⇧</a>
-</font>
+      document.getElementById("timetable-title").innerText = data.dayName + "の授業";
+
+      var now = new Date();
+      var currentHour = now.getHours();
+      var currentClassText = "只今のお時間は、授業はありません。";
+
+      for (var i = 0; i < classSchedule.length; i++) {
+        var sched = classSchedule[i];
+        if (currentHour >= sched.start && currentHour < sched.end) {
+          var subject = data.list[sched.index];
+          if (subject && subject !== "（なし）" && subject !== "") {
+            currentClassText = sched.periodName + "の授業は、" + subject + "です。";
+          }
+          break;
+        }
+      }
+      document.getElementById("timetable-status").innerText = currentClassText;
+
+      var listHtml = "";
+      for (var j = 0; j < 6; j++) {
+        var subName = data.list[j] || "（なし）";
+        listHtml += (j + 1) + "時間目　" + subName + "<br>";
+      }
+      document.getElementById("timetable-list").innerHTML = listHtml;
+
+      document.getElementById("timetable-area").style.display = "block";
+    }
+  </script>
 </body>
 </html>
