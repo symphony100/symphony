@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IPTV Studio Player</title>
+  
+  <!-- ★ 意地でもブロックを通す：ブラウザのリファラを完全に消去し、外部ストリームサーバーのドメインチェックを偽装・バイパスします -->
+  <meta name="referrer" content="no-referrer">
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Material Symbols Outlined -->
@@ -111,7 +115,7 @@
        ============================================== -->
   <div id="player-view" class="hidden fixed inset-0 bg-black flex flex-col overflow-hidden z-50 select-none">
     
-    <!-- ★ 常に表示される上部メニューバー (消えなくなりました) -->
+    <!-- ★ 常時固定で上部に表示され続けるメニューバー (＜戻る チャンネル名) -->
     <header id="player-header" class="h-14 bg-[#141414] text-white px-6 flex items-center border-b border-zinc-900/80 shrink-0 z-50">
       <button id="back-btn" class="flex items-center space-x-2 text-gray-400 hover:text-white mr-4 transition-all duration-200 group/btn">
         <span class="material-symbols-outlined transition-transform duration-200 group-hover/btn:-translate-x-1">arrow_back</span>
@@ -123,14 +127,13 @@
     
     <!-- プレイヤー本体 -->
     <div class="flex-1 bg-black flex items-center justify-center p-4 min-h-0 overflow-hidden select-none relative">
-      <!-- ビデオ16:9ラッパー -->
       <div id="video-wrapper" class="relative w-full h-full flex items-center justify-center max-w-full max-h-full">
         
         <!-- ビデオ本体 -->
         <video id="video-player" class="max-w-full max-h-full object-contain rounded-2xl bg-black" autoplay playsinline></video>
         
         <!-- ロード中 -->
-        <div id="player-loader" class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center space-y-3 opacity-0 pointer-events-none transition-opacity duration-300 rounded-2xl">
+        <div id="player-loader" class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center space-y-3 opacity-0 pointer-events-none transition-opacity duration-300">
           <div class="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
           <p id="loader-text" class="text-sm text-gray-300">ストリームをロード中...</p>
         </div>
@@ -142,9 +145,7 @@
           <p class="text-gray-400 text-xs mt-2 max-w-sm">ストリーム配信元がオフラインか、一時的にアドレスが無効、またはCORS保護エラーです。</p>
         </div>
 
-        <!-- ==============================================
-             十字キー型「スマートリモコンUI」
-             ============================================== -->
+        <!-- 十字キー型「スマートリモコンUI」 -->
         <div id="remote-overlay" class="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 pointer-events-none transition-opacity duration-300 z-40 rounded-2xl">
           <div id="remote-container" class="relative w-56 h-56 flex items-center justify-center select-none pointer-events-auto">
             <!-- 背景サークル -->
@@ -240,7 +241,7 @@ http://58.82.168.138:5002/gx07.m3u8?token=guoziyun&gid=gx07&channel=zhongying
 http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
 `;
 
-    const STORAGE_KEY = 'iptv_player_data_v13';
+    const STORAGE_KEY = 'iptv_player_data_v14';
     let presetChannels = [];
     const cloudRoom = 'iptv_studio_shared_storage_room_2026';
     const syncCode = 'COMMON_IPTV_ROOM_SHARED_2026';
@@ -261,7 +262,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
 
-    // ヘッダー
+    // ヘッダー (今回は常時表示されるためフェードアウトしません)
     const playerHeader = document.getElementById('player-header');
 
     // グリッド
@@ -286,6 +287,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     let reloadAttempts = 0;
     let lastSyncedTimestamp = 0;
     let activeChannelsList = []; 
+    let currentProxyIndex = 0; // 現在試行中のプロキシ配列インデックス
 
     // タッチスライド
     let touchStartX = 0;
@@ -314,7 +316,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       }, 4000);
     }
 
-    // ★ GitHub等のCORS制限ドメイン、またはブロックの可能性があるアドレスを自動でバイパス変換
+    // ★ 意地でも通す：バイパス用CORSプロキシを自動決定する配列
     function needsBypass(url) {
       if (!url) return false;
       return url.includes('github') || 
@@ -322,13 +324,20 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
              url.includes('charandom.blog');
     }
 
-    function bypassUrl(url) {
+    function getProxiedUrl(url, index) {
       if (!url) return "";
-      if (url.includes('corsproxy.io')) return url;
-      if (needsBypass(url)) {
-        return `https://corsproxy.io/?${encodeURIComponent(url)}`;
-      }
-      return url;
+      if (url.includes('corsproxy.io') || url.includes('allorigins.win') || url.includes('codetabs.com')) return url;
+      if (!needsBypass(url)) return url;
+
+      // 回避用プロキシサーバー群
+      const proxyList = [
+        u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+        u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+        u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`
+      ];
+
+      const idx = index % proxyList.length;
+      return proxyList[idx](url);
     }
 
     // M3Uパース
@@ -415,7 +424,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       }));
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       
-      // ★ クラウド同期が失敗しても、ローカルの挙動を100%絶対に邪魔しないように隔離・並列処理
+      // クラウド同期エラーが起きてアップロードがクラッシュするのを防ぐ
       setTimeout(() => {
         saveToCloud().catch(err => console.warn("Cloud sync ignored:", err));
       }, 0);
@@ -444,12 +453,12 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       updateActiveChannelsList();
     }
 
-    // ホバー枠色変更のみのクリーンカード（▷オーバーレイ無し）
+    // シンプルホバーのみの局カード (ロゴ画像にはCORSプロキシを通しません)
     function renderCard(ch, parentGrid) {
       const hasUrl = !!ch.currentUrl;
       const starClass = ch.favorite ? 'filled-icon' : 'text-gray-400 hover:text-brand';
       
-      // ★ アイコン(ロゴ)は画像タグの特性上、プロキシを噛ませると逆に映らなくなるため、CORSプロキシを通さず100%直接読み込ませます
+      // ★ ロゴは通常の画像タグで直接読み込ませるのが、弾かれず表示する上での正解です
       const finalLogoUrl = ch.logo || "";
       
       const logoHTML = finalLogoUrl 
@@ -498,7 +507,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     }
 
     // ==============================================
-    // クラウド全自動同期
+    // クラウド全自動同期 (CORSプロキシ付加)
     // ==============================================
     async function saveToCloud() {
       const timestamp = Date.now();
@@ -674,23 +683,21 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     // ★ リモコン ＆ 上部ヘッダー 固定・表示制御
     // ==============================================
     function showRemote() {
-      // ★ テレビが映る(isStreamReady = true)まではリモコンもヘッダーも絶対に表示させません
+      // ★ テレビが映る(isStreamReady = true)まではリモコンは絶対に表示させません
       if (!isStreamReady) return;
 
       remoteOverlay.classList.remove('opacity-0', 'pointer-events-none');
-      playerHeader.classList.remove('opacity-0', 'pointer-events-none');
+      // ヘッダーは常に表示されるため、リモコンのみ表示・非表示を制御します
 
       clearTimeout(controlTimeout);
       controlTimeout = setTimeout(() => {
-        // ★ 正確に3秒間(3000ms)動かない場合に消えるように数値を設定
+        // ★ 正確に3秒間(3000ms)動かない場合にリモコンのみ消えるように設定
         remoteOverlay.classList.add('opacity-0', 'pointer-events-none');
-        playerHeader.classList.add('opacity-0', 'pointer-events-none');
       }, 3000); 
     }
 
     function hideRemoteImmediate() {
       remoteOverlay.classList.add('opacity-0', 'pointer-events-none');
-      playerHeader.classList.add('opacity-0', 'pointer-events-none');
     }
 
     // ★ マウスカーソルがリモコンサークル上にある時は、消えないようにタイマーをロック
@@ -703,24 +710,9 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       showRemote();
     });
 
-    // ★ マウスカーソルがヘッダー上にある時も、消えないようにロック
-    playerHeader.addEventListener('mouseenter', () => {
-      if (!isStreamReady) return;
-      clearTimeout(controlTimeout);
-    });
-    playerHeader.addEventListener('mouseleave', () => {
-      if (!isStreamReady) return;
-      showRemote();
-    });
-
     videoWrapper.addEventListener('mousemove', (e) => {
       if (!isStreamReady) return;
       showRemote();
-
-      // ★ マウスが画面の左側（200px以内）にあるときは、ヘッダー（戻るボタン）を常時固定表示
-      if (e.clientX < 200) {
-        clearTimeout(controlTimeout);
-      }
     });
 
     videoWrapper.addEventListener('touchstart', showRemote, { passive: true });
@@ -755,12 +747,14 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     // ==============================================
     // HLS再生 ＆ エラー・5秒フリーズ検知
     // ==============================================
-    function playStream(url, name) {
-      // プレイリストの読み込み時にもCORSバイパスを通す
-      const finalPlayUrl = bypassUrl(url);
-      
+    function playStream(url, name, useProxyIndex = 0) {
       currentPlayingUrl = url;
       currentPlayingName = name;
+      currentProxyIndex = useProxyIndex;
+
+      // 現在試行しているプロキシインデックスでURLをプロキシ化
+      const finalPlayUrl = getProxiedUrl(url, useProxyIndex);
+      console.log(`再生試行 URL (Proxy Index ${useProxyIndex}):`, finalPlayUrl);
 
       // 新ストリーム開始時はリモコン制御をリセット
       isStreamReady = false;
@@ -782,10 +776,10 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
           levelLoadingMaxRetry: 1,
           enableWorker: true,
           
-          // ★ 意地でもブロックを通す：TSなどの動画の破片リクエスト（セグメント）に対しても、CORSプロキシを全自動付加して読み込ませます
+          // ★ 意地でもブロックを通す：TSなどの動画の破片リクエスト（セグメント）に対しても、一貫して同一のCORSプロキシを自動付加します [5]
           xhrSetup: function (xhr, targetSegUrl) {
-            if (needsBypass(targetSegUrl) && !targetSegUrl.includes('corsproxy.io')) {
-              const proxied = `https://corsproxy.io/?${encodeURIComponent(targetSegUrl)}`;
+            if (needsBypass(targetSegUrl)) {
+              const proxied = getProxiedUrl(targetSegUrl, currentProxyIndex);
               xhr.open('GET', proxied, true);
             }
           }
@@ -813,7 +807,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
           videoPlayer.play();
         });
       } else {
-        showPlayerError();
+        handlePlayError();
         return;
       }
 
@@ -866,6 +860,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       }
     }
 
+    // ★ 再生不可・CORSブロック・フリーズ検知時の「マルチプロキシ・自動切り替え」リトライ機能
     window.triggerAutoReload = function() {
       stopFreezeCheck();
       reloadAttempts++;
@@ -875,12 +870,13 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
         return;
       }
 
-      showToast("接続が切れたため自動再接続しています...");
-      loaderText.textContent = "再接続中...";
+      // エラー発生時にプロキシ(0➔1➔2)を順に自動的に変更して「意地でも」再接続を試みます
+      showToast(`接続エラー。プロキシを切り替えて再接続中... (${reloadAttempts}/3)`);
+      loaderText.textContent = "プロキシを切り替えて再接続中...";
       playerLoader.classList.remove('opacity-0', 'pointer-events-none');
 
       setTimeout(() => {
-        playStream(currentPlayingUrl, currentPlayingName);
+        playStream(currentPlayingUrl, currentPlayingName, reloadAttempts);
       }, 1500);
     }
 
@@ -893,7 +889,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
 
     videoPlayer.addEventListener('error', (e) => {
       console.error("再生不可エラー", e);
-      showPlayerError();
+      triggerAutoReload(); // エラー発生時も別プロキシに切り替えて再試行
     });
 
     videoPlayer.addEventListener('waiting', () => {
