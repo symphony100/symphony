@@ -11,7 +11,7 @@
   <!-- HLS.js (m3u8再生用) -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
-    /* ★ システム（ブラウザ）の履歴戻る・引っ張ってリフレッシュを完全に禁止 */
+    /* ブラウザ標準の引っ張り更新、左右スワイプ戻りを強制禁止 */
     html, body {
       font-family: 'Roboto', 'Noto Sans JP', sans-serif;
       background-color: #f0f4f9;
@@ -30,7 +30,7 @@
       display: none !important;
     }
     
-    /* プレイヤー表示時にスクロールを完全無効化する設定 */
+    /* プレイヤー稼働時のボディロック */
     .player-active {
       overflow: hidden !important;
       height: 100vh !important;
@@ -56,132 +56,137 @@
 <body class="text-gray-900 min-h-screen">
 
   <!-- ==============================================
-       A. メイン一覧画面 (標準の表示ビュー)
+       画面遷移用スライダーコンテナ
        ============================================== -->
-  <div id="main-view" class="block w-full min-h-screen flex flex-col">
-    <header class="bg-white/80 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-40 select-none">
-      <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <span class="material-symbols-outlined text-brand text-3xl">tv</span>
-          <h1 class="text-xl font-normal tracking-tight text-gray-800">IPTV Player Studio</h1>
-        </div>
-      </div>
-    </header>
+  <div class="w-full overflow-hidden relative min-h-screen">
+    <div id="view-slider" class="flex w-[200%] min-h-screen transition-transform duration-300 ease-out transform translate-x-0">
+      
+      <!-- ==============================================
+           A. メイン一覧画面 (1/2幅) 
+           ============================================== -->
+      <div class="w-1/2 min-h-screen flex flex-col shrink-0">
+        <header class="bg-white/80 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-40 select-none">
+          <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <span class="material-symbols-outlined text-brand text-3xl">tv</span>
+              <h1 class="text-xl font-normal tracking-tight text-gray-800">IPTV Player Studio</h1>
+            </div>
+          </div>
+        </header>
 
-    <main class="max-w-6xl mx-auto px-6 mt-8 space-y-8 pb-16 w-full">
-      <!-- アップロードエリア -->
-      <div id="drop-zone" class="border border-dashed border-gray-300 hover:border-brand bg-white hover:bg-brand-light/30 rounded-3xl p-8 text-center cursor-pointer transition-all duration-300">
-        <input type="file" id="file-input" accept=".m3u,.m3u8" class="hidden">
-        <span class="material-symbols-outlined text-4xl text-brand mb-2">cloud_upload</span>
-        <p class="text-sm font-medium text-gray-700">最新のM3Uファイルをドラッグ＆ドロップ、または選択</p>
-        <p class="text-xs text-gray-400 mt-1">※アップロードすると、自動で全端末の配信URLが上書き・同期されます</p>
+        <main class="max-w-6xl mx-auto px-6 mt-8 space-y-8 pb-16 w-full">
+          <!-- アップロードエリア -->
+          <div id="drop-zone" class="border border-dashed border-gray-300 hover:border-brand bg-white hover:bg-brand-light/30 rounded-3xl p-8 text-center cursor-pointer transition-all duration-300">
+            <input type="file" id="file-input" accept=".m3u,.m3u8" class="hidden">
+            <span class="material-symbols-outlined text-4xl text-brand mb-2">cloud_upload</span>
+            <p class="text-sm font-medium text-gray-700">最新のM3Uファイルをドラッグ＆ドロップ、または選択</p>
+            <p class="text-xs text-gray-400 mt-1">※アップロードすると、全端末に全自動で同期・配信URLが更新されます</p>
+          </div>
+
+          <!-- A-1. お気に入りセクション -->
+          <div id="favorite-section" class="hidden space-y-4">
+            <h3 class="text-lg font-medium text-gray-800 px-2 flex items-center space-x-2">
+              <span class="material-symbols-outlined text-amber-500 favorite-star">star</span>
+              <span>お気に入り</span>
+            </h3>
+            <div id="favorite-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+          </div>
+
+          <!-- A-2. 東京のテレビ -->
+          <div class="space-y-4">
+            <h3 class="text-lg font-medium text-gray-800 px-2 flex items-center space-x-2">
+              <span class="material-symbols-outlined text-brand">map</span>
+              <span>東京のテレビ</span>
+            </h3>
+            <div id="tokyo-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+          </div>
+
+          <!-- A-3. 大阪のテレビ -->
+          <div class="space-y-4">
+            <h3 class="text-lg font-medium text-gray-800 px-2 flex items-center space-x-2">
+              <span class="material-symbols-outlined text-brand">location_on</span>
+              <span>大阪のテレビ</span>
+            </h3>
+            <div id="osaka-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+          </div>
+        </main>
       </div>
 
-      <!-- A-1. お気に入りセクション -->
-      <div id="favorite-section" class="hidden space-y-4">
-        <h3 class="text-lg font-medium text-gray-800 px-2 flex items-center space-x-2">
-          <span class="material-symbols-outlined text-amber-500 favorite-star">star</span>
-          <span>お気に入り</span>
-        </h3>
-        <div id="favorite-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
-      </div>
-
-      <!-- A-2. 東京のテレビ -->
-      <div class="space-y-4">
-        <h3 class="text-lg font-medium text-gray-800 px-2 flex items-center space-x-2">
-          <span class="material-symbols-outlined text-brand">map</span>
-          <span>東京のテレビ</span>
-        </h3>
-        <div id="tokyo-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
-      </div>
-
-      <!-- A-3. 大阪のテレビ -->
-      <div class="space-y-4">
-        <h3 class="text-lg font-medium text-gray-800 px-2 flex items-center space-x-2">
-          <span class="material-symbols-outlined text-brand">location_on</span>
-          <span>大阪のテレビ</span>
-        </h3>
-        <div id="osaka-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
-      </div>
-    </main>
-  </div>
-
-  <!-- ==============================================
-       B. 専用プレイヤー画面 (非表示で待機・完全にハミ出さない)
-       ============================================== -->
-  <div id="player-view" class="hidden fixed inset-0 bg-[#070707] flex flex-col overflow-hidden z-50 select-none">
-    
-    <!-- プレイヤーヘッダー (雰囲気用としてそのまま綺麗に残してあります) -->
-    <header class="h-14 bg-[#141414] text-white px-6 flex items-center border-b border-zinc-900 shrink-0">
-      <button id="back-btn" class="flex items-center space-x-2 text-gray-400 hover:text-white mr-4 transition-all duration-200 group/btn">
-        <span class="material-symbols-outlined transition-transform duration-200 group-hover/btn:-translate-x-1">arrow_back</span>
-        <span class="text-sm font-medium">戻る</span>
-      </button>
-      <div class="h-5 w-[1px] bg-zinc-700 mr-4"></div>
-      <h2 id="playing-channel-name" class="text-sm font-medium truncate text-gray-300">チャンネル名</h2>
-    </header>
-    
-    <!-- プレイヤー本体 -->
-    <div class="flex-1 bg-black flex items-center justify-center p-2 min-h-0 overflow-hidden relative select-none">
-      <div id="video-wrapper" class="relative w-full h-full flex items-center justify-center max-w-full max-h-full">
+      <!-- ==============================================
+           B. 専用プレイヤー画面 (1/2幅) - 余計なヘッダーを廃止した完全全画面フィット
+           ============================================== -->
+      <div id="player-view" class="w-1/2 h-screen bg-[#070707] flex flex-col overflow-hidden relative shrink-0">
         
-        <!-- ビデオ本体 -->
-        <video id="video-player" class="max-w-full max-h-full object-contain bg-black shadow-2xl" autoplay playsinline></video>
-        
-        <!-- ロード中 -->
-        <div id="player-loader" class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center space-y-3 opacity-0 pointer-events-none transition-opacity duration-300">
-          <div class="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
-          <p id="loader-text" class="text-sm text-gray-300">ストリームをロード中...</p>
+        <!-- ★ 左端ホバー時のみ固定で浮かび上がる「＜ 戻る」パネル -->
+        <div id="left-back-panel" class="fixed left-0 top-1/2 -translate-y-1/2 bg-[#1c1c1c]/95 backdrop-blur-md text-white px-4 py-8 rounded-r-3xl border-y border-r border-zinc-800 shadow-2xl flex flex-col items-center justify-center space-y-2 opacity-0 pointer-events-none transition-all duration-300 z-50 transform -translate-x-4 cursor-pointer hover:bg-zinc-800 select-none">
+          <span class="material-symbols-outlined text-3xl font-light">arrow_back</span>
+          <span class="text-[10px] font-medium tracking-widest [writing-mode:vertical-lr] mt-1 text-gray-300">戻る</span>
         </div>
 
-        <!-- 再生不可時の赤文字エラー表示 -->
-        <div id="player-error" class="hidden absolute inset-0 bg-[#0f0f0f]/95 flex flex-col items-center justify-center p-6 text-center z-30 transition-opacity duration-300">
-          <span class="material-symbols-outlined text-red-500 text-6xl mb-3 font-light animate-pulse">error</span>
-          <h3 class="text-red-500 text-lg font-bold tracking-wide">このチャンネルは現在視聴できません</h3>
-          <p class="text-gray-400 text-xs mt-2 max-w-sm">ストリーム配信元がオフラインか、アドレスが無効、またはCORS保護エラーです。</p>
-        </div>
+        <!-- プレイヤー本体 -->
+        <div class="flex-1 bg-black flex items-center justify-center min-h-0 overflow-hidden select-none relative">
+          <!-- ビデオアスペクト比保護ラッパー -->
+          <div id="video-wrapper" class="relative w-full h-full flex items-center justify-center max-w-full max-h-full">
+            
+            <!-- ビデオ本体 (ハミ出しを100%防御) -->
+            <video id="video-player" class="max-w-full max-h-full object-contain rounded-2xl bg-black" autoplay playsinline></video>
+            
+            <!-- ロード中 -->
+            <div id="player-loader" class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center space-y-3 opacity-0 pointer-events-none transition-opacity duration-300 rounded-2xl">
+              <div class="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
+              <p id="loader-text" class="text-sm text-gray-300">ストリームをロード中...</p>
+            </div>
 
-        <!-- ==============================================
-             ★ 浮かび上がる円形十字「スマートリモコンUI」
-             ============================================== -->
-        <div id="remote-overlay" class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 pointer-events-none transition-opacity duration-300 z-40">
-          <!-- リモコンのコンテナ -->
-          <div id="remote-container" class="relative w-56 h-56 flex items-center justify-center select-none pointer-events-auto">
-            <!-- 背景サークル (Google TV風) -->
-            <div class="absolute inset-0 bg-[#1e1e1e]/95 backdrop-blur-md rounded-full shadow-2xl border border-zinc-800"></div>
-            
-            <!-- 上：プレーヤー更新 -->
-            <button onclick="triggerAutoReload()" class="absolute top-2.5 w-16 h-12 flex flex-col items-center justify-center text-gray-300 hover:text-brand focus:outline-none transition-colors group/btn">
-              <span class="material-symbols-outlined text-2xl group-hover/btn:scale-115 transition-transform">refresh</span>
-              <span class="text-[9px] text-gray-400 mt-0.5 tracking-wider">更新</span>
-            </button>
-            
-            <!-- 左：前のチャンネル -->
-            <button onclick="playPrevChannel()" class="absolute left-2.5 w-16 h-12 flex flex-col items-center justify-center text-gray-300 hover:text-brand focus:outline-none transition-colors group/btn">
-              <span class="material-symbols-outlined text-2xl group-hover/btn:scale-115 transition-transform">skip_previous</span>
-              <span class="text-[9px] text-gray-400 mt-0.5 tracking-wider">前へ</span>
-            </button>
-            
-            <!-- 中央：一時停止・再生 -->
-            <button id="remote-play-btn" onclick="togglePlay()" class="absolute w-14 h-14 bg-brand text-white rounded-full flex items-center justify-center shadow-lg hover:bg-brand-dark focus:outline-none transition-all scale-100 active:scale-95">
-              <span id="remote-play-icon" class="material-symbols-outlined text-2xl">pause</span>
-            </button>
-            
-            <!-- 右：後のチャンネル -->
-            <button onclick="playNextChannel()" class="absolute right-2.5 w-16 h-12 flex flex-col items-center justify-center text-gray-300 hover:text-brand focus:outline-none transition-colors group/btn">
-              <span class="material-symbols-outlined text-2xl group-hover/btn:scale-115 transition-transform">skip_next</span>
-              <span class="text-[9px] text-gray-400 mt-0.5 tracking-wider">次へ</span>
-            </button>
-            
-            <!-- 下：閉じる -->
-            <button onclick="switchToMainView()" class="absolute bottom-2.5 w-16 h-12 flex flex-col items-center justify-center text-gray-300 hover:text-red-500 focus:outline-none transition-colors group/btn">
-              <span class="material-symbols-outlined text-2xl group-hover/btn:scale-115 transition-transform">close</span>
-              <span class="text-[9px] text-gray-400 mt-0.5 tracking-wider">閉じる</span>
-            </button>
+            <!-- 再生不可時の赤文字エラー表示 -->
+            <div id="player-error" class="hidden absolute inset-0 bg-[#0f0f0f]/95 flex flex-col items-center justify-center p-6 text-center z-30 transition-opacity duration-300 rounded-2xl">
+              <span class="material-symbols-outlined text-red-500 text-6xl mb-3 font-light animate-pulse">error</span>
+              <h3 class="text-red-500 text-lg font-bold tracking-wide">このチャンネルは現在視聴できません</h3>
+              <p class="text-gray-400 text-xs mt-2 max-w-sm">ストリーム配信元がオフラインか、一時的にアドレスが無効、またはCORS保護エラーです。</p>
+            </div>
+
+            <!-- ==============================================
+                 浮かび上がる円形十字「スマートリモコンUI」
+                 ============================================== -->
+            <div id="remote-overlay" class="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 pointer-events-none transition-opacity duration-300 z-40">
+              <div id="remote-container" class="relative w-56 h-56 flex items-center justify-center select-none pointer-events-auto">
+                <!-- 背景サークル (Google TV風) -->
+                <div class="absolute inset-0 bg-[#1a1a1a]/95 backdrop-blur-md rounded-full shadow-2xl border border-zinc-800/80"></div>
+                
+                <!-- 上：プレーヤー更新 -->
+                <button onclick="triggerAutoReload()" class="absolute top-2.5 w-16 h-12 flex flex-col items-center justify-center text-gray-300 hover:text-brand focus:outline-none transition-colors group/btn">
+                  <span class="material-symbols-outlined text-2xl group-hover/btn:scale-115 transition-transform">refresh</span>
+                  <span class="text-[9px] text-gray-400 mt-0.5 tracking-wider">更新</span>
+                </button>
+                
+                <!-- 左：前のチャンネル -->
+                <button onclick="playPrevChannel()" class="absolute left-2.5 w-16 h-12 flex flex-col items-center justify-center text-gray-300 hover:text-brand focus:outline-none transition-colors group/btn">
+                  <span class="material-symbols-outlined text-2xl group-hover/btn:scale-115 transition-transform">skip_previous</span>
+                  <span class="text-[9px] text-gray-400 mt-0.5 tracking-wider">前へ</span>
+                </button>
+                
+                <!-- 中央：一時停止・再生 -->
+                <button id="remote-play-btn" onclick="togglePlay()" class="absolute w-14 h-14 bg-brand text-white rounded-full flex items-center justify-center shadow-lg hover:bg-brand-dark focus:outline-none transition-all scale-100 active:scale-95">
+                  <span id="remote-play-icon" class="material-symbols-outlined text-2xl">pause</span>
+                </button>
+                
+                <!-- 右：後のチャンネル -->
+                <button onclick="playNextChannel()" class="absolute right-2.5 w-16 h-12 flex flex-col items-center justify-center text-gray-300 hover:text-brand focus:outline-none transition-colors group/btn">
+                  <span class="material-symbols-outlined text-2xl group-hover/btn:scale-115 transition-transform">skip_next</span>
+                  <span class="text-[9px] text-gray-400 mt-0.5 tracking-wider">次へ</span>
+                </button>
+                
+                <!-- ★ 下：シングルクリックで閉じる(リモコン消去) / ダブルクリックで戻る -->
+                <button id="remote-bottom-btn" class="absolute bottom-2.5 w-16 h-12 flex flex-col items-center justify-center text-gray-300 hover:text-red-500 focus:outline-none transition-colors group/btn">
+                  <span class="material-symbols-outlined text-2xl group-hover/btn:scale-115 transition-transform">close</span>
+                  <span class="text-[9px] text-gray-400 mt-0.5 tracking-wider">閉じる</span>
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
-
       </div>
+
     </div>
   </div>
 
@@ -240,9 +245,10 @@ http://58.82.168.138:5002/gx07.m3u8?token=guoziyun&gid=gx07&channel=zhongying
 http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
 `;
 
-    const STORAGE_KEY = 'iptv_player_data_v9';
+    const STORAGE_KEY = 'iptv_player_data_v10';
     let presetChannels = [];
     const cloudRoom = 'iptv_studio_shared_storage_room_2026';
+    const syncCode = 'COMMON_IPTV_ROOM_SHARED_2026';
 
     // UI要素
     const mainView = document.getElementById('main-view');
@@ -260,6 +266,9 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
 
+    // 左固定の戻るパネル
+    const leftBackPanel = document.getElementById('left-back-panel');
+
     // グリッド
     const favoriteSection = document.getElementById('favorite-section');
     const favoriteGrid = document.getElementById('favorite-grid');
@@ -269,6 +278,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     // 十字リモコン
     const remoteOverlay = document.getElementById('remote-overlay');
     const remotePlayIcon = document.getElementById('remote-play-icon');
+    const remoteBottomBtn = document.getElementById('remote-bottom-btn');
 
     // 監視・再生制御
     let checkInterval = null;
@@ -279,9 +289,10 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     let controlTimeout = null;
     let reloadAttempts = 0;
     let lastSyncedTimestamp = 0;
-    let activeChannelsList = []; // 前後切り替え用リスト
+    let activeChannelsList = []; 
+    let lastBottomClickTime = 0; // ダブルクリック判別用
 
-    // タッチスライド用変数
+    // タッチスライド
     let touchStartX = 0;
     let touchStartY = 0;
     let touchEndX = 0;
@@ -303,6 +314,24 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
         toast.classList.remove('opacity-100');
         toast.classList.add('opacity-0', 'pointer-events-none');
       }, 4000);
+    }
+
+    // ★ GitHub等のCORS制限ドメイン、またはブロックの可能性があるアドレスを自動でバイパス変換
+    function bypassUrl(url) {
+      if (!url) return "";
+      if (url.includes('corsproxy.io')) return url;
+
+      // ブロックが懸念されるターゲットドメインのチェック
+      const needsBypass = url.includes('github.io') || 
+                          url.includes('githubusercontent') || 
+                          url.includes('netgenx.site') || 
+                          url.includes('charandom.blog');
+                          
+      if (needsBypass) {
+        // 無料のCORSプロキシを経由させて制限をパスします
+        return `https://corsproxy.io/?${encodeURIComponent(url)}`;
+      }
+      return url;
     }
 
     // M3Uパース
@@ -376,6 +405,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
           }
         });
       }
+      
       saveState();
     }
 
@@ -413,13 +443,15 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       updateActiveChannelsList();
     }
 
-    // ★ ▷オーバーレイを完全撤廃し、枠線変化のみの極めてシンプルなUIへ修正
     function renderCard(ch, parentGrid) {
       const hasUrl = !!ch.currentUrl;
       const starClass = ch.favorite ? 'filled-icon' : 'text-gray-400 hover:text-brand';
       
-      const logoHTML = ch.logo 
-        ? `<img src="${ch.logo}" alt="${ch.name}" class="w-12 h-12 object-contain bg-gray-50 rounded-2xl p-1 border border-gray-100" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`
+      // ★ ロゴ画像に対してもバイパスプロキシを適応し、GitHub Pagesのブロックによる表示崩れを防ぎます
+      const finalLogoUrl = ch.logo ? bypassUrl(ch.logo) : "";
+      
+      const logoHTML = finalLogoUrl 
+        ? `<img src="${finalLogoUrl}" alt="${ch.name}" class="w-12 h-12 object-contain bg-gray-50 rounded-2xl p-1 border border-gray-100" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`
         : '';
       const fallbackLogoHTML = `<div class="w-12 h-12 flex items-center justify-center bg-brand-light rounded-2xl text-brand" style="${ch.logo ? 'display:none;' : ''}">
                                   <span class="material-symbols-outlined text-2xl font-light">live_tv</span>
@@ -464,7 +496,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     }
 
     // ==============================================
-    // クラウド全自動同期 (CORS対応・無言同期)
+    // クラウド全自動同期
     // ==============================================
     async function saveToCloud() {
       const timestamp = Date.now();
@@ -532,17 +564,16 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     }, 15000);
 
     // ==============================================
-    // 画面切り替えとジェスチャー制御
+    // 画面切り替えとフィット制御 ＆ 左端ホバー戻る
     // ==============================================
     function switchToPlayerView(channelName) {
       window.scrollTo(0, 0); 
       playingChannelName.textContent = channelName;
       
-      // ★ スライドアニメーション撤廃：瞬時にクラス切り替え
       mainView.classList.add('hidden');
       playerView.classList.remove('hidden');
       
-      // スクロールを完全ロック
+      // スクロール禁止
       document.body.classList.add('player-active');
     }
 
@@ -560,7 +591,10 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
 
     backBtn.addEventListener('click', switchToMainView);
 
-    // ★ スワイプで前のサイトに戻るのを徹底的に防御 ＆ スライド終了ジェスチャー
+    // ★ 左固定戻るパネルのクリックイベント
+    leftBackPanel.addEventListener('click', switchToMainView);
+
+    // ★ スワイプで前のサイトに戻るのを強力に防止
     playerView.addEventListener('touchstart', (e) => {
       touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
@@ -574,18 +608,16 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       touchEndY = e.touches[0].clientY;
 
       const diffX = touchEndX - touchStartX;
-      // ★ 画面の左端付近（50px以内）からの右スワイプ移動があった場合、ブラウザの「戻る」履歴遷移を強力に防止
       if (touchStartX < 50 && diffX > 10) {
         if (e.cancelable) e.preventDefault(); 
       }
-    }, { passive: false }); // preventDefaultを使うため、passive: falseにする必要があります
+    }, { passive: false });
 
     playerView.addEventListener('touchend', (e) => {
       if (touchStartX > 0 && touchEndX > 0) {
         const diffX = touchEndX - touchStartX;
         const diffY = touchEndY - touchStartY;
 
-        // 左から右への十分なスライド量（100px以上）があり、かつブレが少ないとき
         if (diffX > 100 && Math.abs(diffY) < 80) {
           switchToMainView();
         }
@@ -630,21 +662,37 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     }
 
     // ==============================================
-    // ★ 浮かび上がるスマートリモコン表示制御
+    // ★ リモコン ＆ 左端ホバー戻る 表示制御
     // ==============================================
     function showRemote() {
       remoteOverlay.classList.remove('opacity-0', 'pointer-events-none');
       clearTimeout(controlTimeout);
       controlTimeout = setTimeout(() => {
         remoteOverlay.classList.add('opacity-0', 'pointer-events-none');
-      }, 4000); // 4秒操作がなければふわっと非表示に
+      }, 4000); 
     }
 
-    videoWrapper.addEventListener('mousemove', showRemote);
+    function hideRemoteImmediate() {
+      remoteOverlay.classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    videoWrapper.addEventListener('mousemove', (e) => {
+      // 1. リモコンサークルを表示
+      showRemote();
+
+      // 2. 左端150px以内にカーソルが入ったら左固定「＜戻る」パネルをスライド表示
+      if (e.clientX < 150) {
+        leftBackPanel.classList.remove('opacity-0', 'pointer-events-none', '-translate-x-4');
+        leftBackPanel.classList.add('opacity-100', 'pointer-events-auto', 'translate-x-0');
+      } else {
+        leftBackPanel.classList.remove('opacity-100', 'pointer-events-auto', 'translate-x-0');
+        leftBackPanel.classList.add('opacity-0', 'pointer-events-none', '-translate-x-4');
+      }
+    });
+
     videoWrapper.addEventListener('touchstart', showRemote, { passive: true });
     
     videoWrapper.addEventListener('click', (e) => {
-      // リモコンサークル内を直接クリックした場合は表示を維持
       if (e.target.closest('#remote-container')) return;
       showRemote();
     });
@@ -665,12 +713,37 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       remotePlayIcon.textContent = "play_arrow";
     });
 
+    // ★ リモコン下ボタン：シングルクリックで閉じる(リモコン消去) / ダブルクリックでメインに戻る
+    remoteBottomBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // プレイヤー側のクリックイベント伝搬防止
+      const currentTime = Date.now();
+      const timeDiff = currentTime - lastBottomClickTime;
+
+      if (timeDiff < 300) {
+        // ダブルクリックを検知：メイン一覧画面に戻る
+        switchToMainView();
+        lastBottomClickTime = 0; // リセット
+      } else {
+        // シングルクリック時：リモコンパネルをその場ですぐ閉じる
+        lastBottomClickTime = currentTime;
+        setTimeout(() => {
+          // 300ms以内にダブルクリックに移行しなかった時のみ、メニューを閉じる
+          if (lastBottomClickTime === currentTime) {
+            hideRemoteImmediate();
+          }
+        }, 300);
+      }
+    });
+
     // ==============================================
     // HLS再生 ＆ エラー・5秒フリーズ検知
     // ==============================================
     function playStream(url, name) {
       currentPlayingUrl = url;
       currentPlayingName = name;
+
+      // HLSまたはロゴURLに対して、CORSバイパスプロキシを自動適用
+      const finalPlayUrl = bypassUrl(url);
 
       playerError.classList.add('hidden');
       playerLoader.classList.remove('opacity-0', 'pointer-events-none');
@@ -689,7 +762,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
           enableWorker: true
         });
         window.hlsInstance = hls;
-        hls.loadSource(url);
+        hls.loadSource(finalPlayUrl);
         hls.attachMedia(videoPlayer);
 
         hls.on(Hls.Events.MANIFEST_PARSED, function() {
@@ -706,7 +779,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
         });
 
       } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-        videoPlayer.src = url;
+        videoPlayer.src = finalPlayUrl;
         videoPlayer.addEventListener('loadedmetadata', function() {
           videoPlayer.play();
         });
@@ -793,7 +866,6 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       showPlayerError();
     });
 
-    // プレイヤーの読み込みUI制御
     videoPlayer.addEventListener('waiting', () => {
       loaderText.textContent = "バッファリング中...";
       playerLoader.classList.remove('opacity-0', 'pointer-events-none');
@@ -825,7 +897,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
 
         saveState();
         renderLibrary();
-        showToast(`${updatedCount}個のアドレスを更新・同期しました。`);
+        showToast(`${updatedCount}個のアドレスを更新・全自動同期しました。`);
       };
       reader.readAsText(file);
     }
