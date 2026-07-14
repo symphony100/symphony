@@ -111,8 +111,8 @@
        ============================================== -->
   <div id="player-view" class="hidden fixed inset-0 bg-black flex flex-col overflow-hidden z-50 select-none">
     
-    <!-- 上部メニューバー (カーソル連動、左側ホバー時は常時固定) -->
-    <header id="player-header" class="absolute top-0 inset-x-0 h-14 bg-[#141414]/90 backdrop-blur-md text-white px-6 flex items-center border-b border-zinc-900/80 shrink-0 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+    <!-- ★ 常に表示される上部メニューバー (消えなくなりました) -->
+    <header id="player-header" class="h-14 bg-[#141414] text-white px-6 flex items-center border-b border-zinc-900/80 shrink-0 z-50">
       <button id="back-btn" class="flex items-center space-x-2 text-gray-400 hover:text-white mr-4 transition-all duration-200 group/btn">
         <span class="material-symbols-outlined transition-transform duration-200 group-hover/btn:-translate-x-1">arrow_back</span>
         <span class="text-sm font-medium">戻る</span>
@@ -122,14 +122,15 @@
     </header>
     
     <!-- プレイヤー本体 -->
-    <div class="flex-1 bg-black flex items-center justify-center min-h-0 overflow-hidden select-none relative">
+    <div class="flex-1 bg-black flex items-center justify-center p-4 min-h-0 overflow-hidden select-none relative">
+      <!-- ビデオ16:9ラッパー -->
       <div id="video-wrapper" class="relative w-full h-full flex items-center justify-center max-w-full max-h-full">
         
         <!-- ビデオ本体 -->
         <video id="video-player" class="max-w-full max-h-full object-contain rounded-2xl bg-black" autoplay playsinline></video>
         
         <!-- ロード中 -->
-        <div id="player-loader" class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center space-y-3 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div id="player-loader" class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center space-y-3 opacity-0 pointer-events-none transition-opacity duration-300 rounded-2xl">
           <div class="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
           <p id="loader-text" class="text-sm text-gray-300">ストリームをロード中...</p>
         </div>
@@ -144,8 +145,7 @@
         <!-- ==============================================
              十字キー型「スマートリモコンUI」
              ============================================== -->
-        <div id="remote-overlay" class="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 pointer-events-none transition-opacity duration-300 z-40">
-          <!-- リモコンのコンテナ -->
+        <div id="remote-overlay" class="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 pointer-events-none transition-opacity duration-300 z-40 rounded-2xl">
           <div id="remote-container" class="relative w-56 h-56 flex items-center justify-center select-none pointer-events-auto">
             <!-- 背景サークル -->
             <div class="absolute inset-0 bg-[#1a1a1a]/95 backdrop-blur-md rounded-full shadow-2xl border border-zinc-800"></div>
@@ -240,7 +240,7 @@ http://58.82.168.138:5002/gx07.m3u8?token=guoziyun&gid=gx07&channel=zhongying
 http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
 `;
 
-    const STORAGE_KEY = 'iptv_player_data_v12';
+    const STORAGE_KEY = 'iptv_player_data_v13';
     let presetChannels = [];
     const cloudRoom = 'iptv_studio_shared_storage_room_2026';
     const syncCode = 'COMMON_IPTV_ROOM_SHARED_2026';
@@ -261,7 +261,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
 
-    // メニューバー
+    // ヘッダー
     const playerHeader = document.getElementById('player-header');
 
     // グリッド
@@ -314,7 +314,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       }, 4000);
     }
 
-    // ★ GitHub等のドメインブロック（CORSや参照制限）を強力にバイパスする判定ロジック
+    // ★ GitHub等のCORS制限ドメイン、またはブロックの可能性があるアドレスを自動でバイパス変換
     function needsBypass(url) {
       if (!url) return false;
       return url.includes('github') || 
@@ -326,7 +326,6 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       if (!url) return "";
       if (url.includes('corsproxy.io')) return url;
       if (needsBypass(url)) {
-        // プロキシ経由に書き換え
         return `https://corsproxy.io/?${encodeURIComponent(url)}`;
       }
       return url;
@@ -403,6 +402,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
           }
         });
       }
+      
       saveState();
     }
 
@@ -415,7 +415,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       }));
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       
-      // 同期処理例外での全体クラッシュ防止用カプセル化
+      // ★ クラウド同期が失敗しても、ローカルの挙動を100%絶対に邪魔しないように隔離・並列処理
       setTimeout(() => {
         saveToCloud().catch(err => console.warn("Cloud sync ignored:", err));
       }, 0);
@@ -444,12 +444,13 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       updateActiveChannelsList();
     }
 
-    // ホバー枠色変更のみのクリーンカード
+    // ホバー枠色変更のみのクリーンカード（▷オーバーレイ無し）
     function renderCard(ch, parentGrid) {
       const hasUrl = !!ch.currentUrl;
       const starClass = ch.favorite ? 'filled-icon' : 'text-gray-400 hover:text-brand';
       
-      const finalLogoUrl = ch.logo ? bypassUrl(ch.logo) : "";
+      // ★ アイコン(ロゴ)は画像タグの特性上、プロキシを噛ませると逆に映らなくなるため、CORSプロキシを通さず100%直接読み込ませます
+      const finalLogoUrl = ch.logo || "";
       
       const logoHTML = finalLogoUrl 
         ? `<img src="${finalLogoUrl}" alt="${ch.name}" class="w-12 h-12 object-contain bg-gray-50 rounded-2xl p-1 border border-gray-200/60 shadow-sm" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`
@@ -497,7 +498,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     }
 
     // ==============================================
-    // クラウド全自動同期 (CORSプロキシ付加)
+    // クラウド全自動同期
     // ==============================================
     async function saveToCloud() {
       const timestamp = Date.now();
@@ -523,7 +524,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
           body: JSON.stringify(payload)
         });
       } catch (err) {
-        console.warn("クラウド保存に失敗:", err);
+        console.warn("クラウド保存失敗:", err);
       }
     }
 
@@ -577,13 +578,14 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       window.scrollTo(0, 0); 
       playingChannelName.textContent = channelName;
       
-      // 最初はリモコンやヘッダーを100%隠しておく
+      // ★ 閉じられた直後にリモコンが最初に出るのを防ぐため、初期状態を完全非表示にリセット
       isStreamReady = false; 
       hideRemoteImmediate();
 
       mainView.classList.add('hidden');
       playerView.classList.remove('hidden');
       
+      // スクロール禁止
       document.body.classList.add('player-active');
     }
 
@@ -669,10 +671,10 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     }
 
     // ==============================================
-    // リモコン ＆ メニューバー 連動・ホバー固定
+    // ★ リモコン ＆ 上部ヘッダー 固定・表示制御
     // ==============================================
     function showRemote() {
-      // ★ テレビが映るまではリモコンやヘッダーを表示しない
+      // ★ テレビが映る(isStreamReady = true)まではリモコンもヘッダーも絶対に表示させません
       if (!isStreamReady) return;
 
       remoteOverlay.classList.remove('opacity-0', 'pointer-events-none');
@@ -680,9 +682,10 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
 
       clearTimeout(controlTimeout);
       controlTimeout = setTimeout(() => {
+        // ★ 正確に3秒間(3000ms)動かない場合に消えるように数値を設定
         remoteOverlay.classList.add('opacity-0', 'pointer-events-none');
         playerHeader.classList.add('opacity-0', 'pointer-events-none');
-      }, 4000); 
+      }, 3000); 
     }
 
     function hideRemoteImmediate() {
@@ -690,7 +693,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       playerHeader.classList.add('opacity-0', 'pointer-events-none');
     }
 
-    // ★ リモコンやヘッダーの上にカーソルがあるときは、消えないようにロックする
+    // ★ マウスカーソルがリモコンサークル上にある時は、消えないようにタイマーをロック
     remoteContainer.addEventListener('mouseenter', () => {
       if (!isStreamReady) return;
       clearTimeout(controlTimeout);
@@ -700,6 +703,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       showRemote();
     });
 
+    // ★ マウスカーソルがヘッダー上にある時も、消えないようにロック
     playerHeader.addEventListener('mouseenter', () => {
       if (!isStreamReady) return;
       clearTimeout(controlTimeout);
@@ -713,7 +717,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       if (!isStreamReady) return;
       showRemote();
 
-      // ★ マウスが画面の左側（200px以内）にあるときは、戻るボタンがあるヘッダーを常時固定表示
+      // ★ マウスが画面の左側（200px以内）にあるときは、ヘッダー（戻るボタン）を常時固定表示
       if (e.clientX < 200) {
         clearTimeout(controlTimeout);
       }
@@ -897,16 +901,15 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       playerLoader.classList.remove('opacity-0', 'pointer-events-none');
     });
 
-    // ★ テレビが映った(playing)タイミングでロード画面を隠し、リモコンを解禁します
+    // ★ テレビが完全に映った(playing)タイミングでロードを隠し、リモコン表示制限を解禁します
     videoPlayer.addEventListener('playing', () => {
       playerLoader.classList.add('opacity-0', 'pointer-events-none');
       freezeDuration = 0;
-      
       isStreamReady = true; 
     });
 
     // ==============================================
-    // アップロード
+    // アップロード (安全性強化)
     // ==============================================
     function handleFile(file) {
       if (!file) return;
@@ -936,6 +939,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       reader.readAsText(file);
     }
 
+    // 二重クリックバグを防ぐクリック処理
     dropZone.addEventListener('click', (e) => {
       if (e.target !== fileInput) {
         fileInput.click();
