@@ -11,7 +11,7 @@
   <!-- HLS.js (m3u8再生用) -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
-    /* ブラウザ標準の引っ張り更新、左右スワイプ戻りを強制禁止 */
+    /* システム標準のスワイプを強制禁止 */
     html, body {
       font-family: 'Roboto', 'Noto Sans JP', sans-serif;
       background-color: #f0f4f9;
@@ -56,7 +56,7 @@
 <body class="text-gray-900 min-h-screen">
 
   <!-- ==============================================
-       メイン画面
+       A. メイン一覧画面
        ============================================== -->
   <div id="main-view" class="block w-full min-h-screen flex flex-col">
     <header class="bg-white/80 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-40 select-none">
@@ -111,7 +111,7 @@
        ============================================== -->
   <div id="player-view" class="hidden fixed inset-0 bg-black flex flex-col overflow-hidden z-50 select-none">
     
-    <!-- ★ 復活した上部メニューバー (カーソル連動でフェードイン、左固定時は常時表示) -->
+    <!-- 上部メニューバー (カーソル連動、左側ホバー時は常時固定) -->
     <header id="player-header" class="absolute top-0 inset-x-0 h-14 bg-[#141414]/90 backdrop-blur-md text-white px-6 flex items-center border-b border-zinc-900/80 shrink-0 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
       <button id="back-btn" class="flex items-center space-x-2 text-gray-400 hover:text-white mr-4 transition-all duration-200 group/btn">
         <span class="material-symbols-outlined transition-transform duration-200 group-hover/btn:-translate-x-1">arrow_back</span>
@@ -120,20 +120,13 @@
       <div class="h-5 w-[1px] bg-zinc-700 mr-4"></div>
       <h2 id="playing-channel-name" class="text-sm font-medium truncate text-gray-300">チャンネル名</h2>
     </header>
-
-    <!-- ★ 左端ホバー時のみ左に固定出現する「＜ 戻る」パネル -->
-    <div id="left-back-panel" class="fixed left-0 top-1/2 -translate-y-1/2 bg-[#1c1c1c]/95 backdrop-blur-md text-white px-4 py-8 rounded-r-3xl border-y border-r border-zinc-800 shadow-2xl flex flex-col items-center justify-center space-y-2 opacity-0 pointer-events-none transition-all duration-300 z-50 transform -translate-x-4 cursor-pointer hover:bg-zinc-800 select-none">
-      <span class="material-symbols-outlined text-3xl font-light">arrow_back</span>
-      <span class="text-[10px] font-medium tracking-widest [writing-mode:vertical-lr] mt-1 text-gray-300">戻る</span>
-    </div>
     
     <!-- プレイヤー本体 -->
     <div class="flex-1 bg-black flex items-center justify-center min-h-0 overflow-hidden select-none relative">
-      <!-- ビデオ16:9ラッパー -->
       <div id="video-wrapper" class="relative w-full h-full flex items-center justify-center max-w-full max-h-full">
         
-        <!-- ビデオ本体 (ハミ出しを100%防御) -->
-        <video id="video-player" class="max-w-full max-h-full object-contain bg-black shadow-2xl" autoplay playsinline></video>
+        <!-- ビデオ本体 -->
+        <video id="video-player" class="max-w-full max-h-full object-contain rounded-2xl bg-black" autoplay playsinline></video>
         
         <!-- ロード中 -->
         <div id="player-loader" class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center space-y-3 opacity-0 pointer-events-none transition-opacity duration-300">
@@ -152,6 +145,7 @@
              十字キー型「スマートリモコンUI」
              ============================================== -->
         <div id="remote-overlay" class="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 pointer-events-none transition-opacity duration-300 z-40">
+          <!-- リモコンのコンテナ -->
           <div id="remote-container" class="relative w-56 h-56 flex items-center justify-center select-none pointer-events-auto">
             <!-- 背景サークル -->
             <div class="absolute inset-0 bg-[#1a1a1a]/95 backdrop-blur-md rounded-full shadow-2xl border border-zinc-800"></div>
@@ -179,7 +173,7 @@
               <span class="text-[9px] text-gray-400 mt-0.5 tracking-wider">次へ</span>
             </button>
             
-            <!-- 下：シングルクリックで閉じる(リモコン消去) / ダブルクリックでメインに戻る -->
+            <!-- 下：1クリックでプレイヤーを閉じる（ホームへ戻る） -->
             <button id="remote-bottom-btn" class="absolute bottom-2.5 w-16 h-12 flex flex-col items-center justify-center text-gray-300 hover:text-red-500 focus:outline-none transition-colors group/btn">
               <span class="material-symbols-outlined text-2xl group-hover/btn:scale-115 transition-transform">close</span>
               <span class="text-[9px] text-gray-400 mt-0.5 tracking-wider">閉じる</span>
@@ -246,7 +240,7 @@ http://58.82.168.138:5002/gx07.m3u8?token=guoziyun&gid=gx07&channel=zhongying
 http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
 `;
 
-    const STORAGE_KEY = 'iptv_player_data_v11';
+    const STORAGE_KEY = 'iptv_player_data_v12';
     let presetChannels = [];
     const cloudRoom = 'iptv_studio_shared_storage_room_2026';
     const syncCode = 'COMMON_IPTV_ROOM_SHARED_2026';
@@ -267,9 +261,8 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
 
-    // ヘッダー＆左固定戻るパネル
+    // メニューバー
     const playerHeader = document.getElementById('player-header');
-    const leftBackPanel = document.getElementById('left-back-panel');
 
     // グリッド
     const favoriteSection = document.getElementById('favorite-section');
@@ -279,6 +272,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
 
     // 十字リモコン
     const remoteOverlay = document.getElementById('remote-overlay');
+    const remoteContainer = document.getElementById('remote-container');
     const remotePlayIcon = document.getElementById('remote-play-icon');
     const remoteBottomBtn = document.getElementById('remote-bottom-btn');
 
@@ -292,13 +286,15 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     let reloadAttempts = 0;
     let lastSyncedTimestamp = 0;
     let activeChannelsList = []; 
-    let lastBottomClickTime = 0; // ダブルクリック判別用
 
-    // タッチスライド用変数
+    // タッチスライド
     let touchStartX = 0;
     let touchStartY = 0;
     let touchEndX = 0;
     let touchEndY = 0;
+
+    // テレビの描画（映ったか）検知フラグ
+    let isStreamReady = false;
 
     // トースト
     function showToast(message, isError = false) {
@@ -318,19 +314,19 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       }, 4000);
     }
 
-    // ★ GitHub等のCORS制限ドメイン、またはブロックの可能性があるアドレスを自動でバイパス変換
+    // ★ GitHub等のドメインブロック（CORSや参照制限）を強力にバイパスする判定ロジック
+    function needsBypass(url) {
+      if (!url) return false;
+      return url.includes('github') || 
+             url.includes('netgenx.site') || 
+             url.includes('charandom.blog');
+    }
+
     function bypassUrl(url) {
       if (!url) return "";
       if (url.includes('corsproxy.io')) return url;
-
-      // ブロックが懸念されるターゲットドメインのチェック
-      const needsBypass = url.includes('github.io') || 
-                          url.includes('githubusercontent') || 
-                          url.includes('netgenx.site') || 
-                          url.includes('charandom.blog');
-                          
-      if (needsBypass) {
-        // 無料のCORSプロキシを経由させて制限をパスします
+      if (needsBypass(url)) {
+        // プロキシ経由に書き換え
         return `https://corsproxy.io/?${encodeURIComponent(url)}`;
       }
       return url;
@@ -407,7 +403,6 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
           }
         });
       }
-      
       saveState();
     }
 
@@ -420,7 +415,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       }));
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       
-      // ★ 同期処理が失敗しても、アップロード全体の動作を壊さないように完全にスレッドから分離
+      // 同期処理例外での全体クラッシュ防止用カプセル化
       setTimeout(() => {
         saveToCloud().catch(err => console.warn("Cloud sync ignored:", err));
       }, 0);
@@ -449,12 +444,11 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       updateActiveChannelsList();
     }
 
-    // ★ ▷オーバーレイを完全撤廃し、枠線変化のみの極めてシンプルなUI
+    // ホバー枠色変更のみのクリーンカード
     function renderCard(ch, parentGrid) {
       const hasUrl = !!ch.currentUrl;
       const starClass = ch.favorite ? 'filled-icon' : 'text-gray-400 hover:text-brand';
       
-      // ★ ロゴ画像に対してもバイパスプロキシを適応し、GitHubのブロックによる非表示を防ぎます
       const finalLogoUrl = ch.logo ? bypassUrl(ch.logo) : "";
       
       const logoHTML = finalLogoUrl 
@@ -503,7 +497,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     }
 
     // ==============================================
-    // クラウド全自動同期 (CORS完全回避)
+    // クラウド全自動同期 (CORSプロキシ付加)
     // ==============================================
     async function saveToCloud() {
       const timestamp = Date.now();
@@ -520,7 +514,6 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       };
       
       try {
-        // ★ CORS制限を確実に回避してPUTリクエストを貫通させます
         const targetUrl = `https://kvs.ix.workers.dev/${cloudRoom}/iptv_sync_data`;
         const proxiedUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
         
@@ -536,7 +529,6 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
 
     async function silentSyncFromCloud() {
       try {
-        // ★ CORS制限を確実に回避してGETリクエストを貫通させます
         const targetUrl = `https://kvs.ix.workers.dev/${cloudRoom}/iptv_sync_data`;
         const proxiedUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
 
@@ -579,16 +571,19 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     }, 15000);
 
     // ==============================================
-    // 画面切り替えとフィット制御 ＆ 左端ホバー戻る
+    // 画面切り替えとフィット制御
     // ==============================================
     function switchToPlayerView(channelName) {
       window.scrollTo(0, 0); 
       playingChannelName.textContent = channelName;
       
+      // 最初はリモコンやヘッダーを100%隠しておく
+      isStreamReady = false; 
+      hideRemoteImmediate();
+
       mainView.classList.add('hidden');
       playerView.classList.remove('hidden');
       
-      // スクロール禁止
       document.body.classList.add('player-active');
     }
 
@@ -606,10 +601,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
 
     backBtn.addEventListener('click', switchToMainView);
 
-    // ★ 左固定戻るパネルのクリックイベント
-    leftBackPanel.addEventListener('click', switchToMainView);
-
-    // ★ スワイプで前のサイトに戻るのを強力に防止
+    // スワイプ戻り防止
     playerView.addEventListener('touchstart', (e) => {
       touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
@@ -677,16 +669,17 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
     }
 
     // ==============================================
-    // ★ リモコン ＆ メニューバー＆左端ホバー連動制御
+    // リモコン ＆ メニューバー 連動・ホバー固定
     // ==============================================
     function showRemote() {
-      // 1. リモコンと上部メニューバーをフェードイン表示
+      // ★ テレビが映るまではリモコンやヘッダーを表示しない
+      if (!isStreamReady) return;
+
       remoteOverlay.classList.remove('opacity-0', 'pointer-events-none');
       playerHeader.classList.remove('opacity-0', 'pointer-events-none');
 
       clearTimeout(controlTimeout);
       controlTimeout = setTimeout(() => {
-        // 4秒間何もしなければ両方消える
         remoteOverlay.classList.add('opacity-0', 'pointer-events-none');
         playerHeader.classList.add('opacity-0', 'pointer-events-none');
       }, 4000); 
@@ -697,17 +690,32 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       playerHeader.classList.add('opacity-0', 'pointer-events-none');
     }
 
+    // ★ リモコンやヘッダーの上にカーソルがあるときは、消えないようにロックする
+    remoteContainer.addEventListener('mouseenter', () => {
+      if (!isStreamReady) return;
+      clearTimeout(controlTimeout);
+    });
+    remoteContainer.addEventListener('mouseleave', () => {
+      if (!isStreamReady) return;
+      showRemote();
+    });
+
+    playerHeader.addEventListener('mouseenter', () => {
+      if (!isStreamReady) return;
+      clearTimeout(controlTimeout);
+    });
+    playerHeader.addEventListener('mouseleave', () => {
+      if (!isStreamReady) return;
+      showRemote();
+    });
+
     videoWrapper.addEventListener('mousemove', (e) => {
+      if (!isStreamReady) return;
       showRemote();
 
-      // ★ 2. マウスが画面の左側（200px以内）に近づいたら、「＜戻る」パネルを固定表示させ、ヘッダーも消えないようロック
+      // ★ マウスが画面の左側（200px以内）にあるときは、戻るボタンがあるヘッダーを常時固定表示
       if (e.clientX < 200) {
-        leftBackPanel.classList.remove('opacity-0', 'pointer-events-none', '-translate-x-4');
-        leftBackPanel.classList.add('opacity-100', 'pointer-events-auto', 'translate-x-0');
-        clearTimeout(controlTimeout); // 自動フェードアウトタイマーをクリアして固定
-      } else {
-        leftBackPanel.classList.remove('opacity-100', 'pointer-events-auto', 'translate-x-0');
-        leftBackPanel.classList.add('opacity-0', 'pointer-events-none', '-translate-x-4');
+        clearTimeout(controlTimeout);
       }
     });
 
@@ -734,37 +742,25 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       remotePlayIcon.textContent = "play_arrow";
     });
 
-    // ★ リモコン下ボタン：シングルクリックで閉じる(リモコン消去) / ダブルクリックでメインに戻る
+    // ★ リモコン下ボタン：1回のクリックで即座にプレイヤーを完全に閉じてホームに戻る
     remoteBottomBtn.addEventListener('click', (e) => {
       e.stopPropagation(); 
-      const currentTime = Date.now();
-      const timeDiff = currentTime - lastBottomClickTime;
-
-      if (timeDiff < 300) {
-        // ダブルクリックを検知：メイン一覧画面に戻る
-        switchToMainView();
-        lastBottomClickTime = 0; // リセット
-      } else {
-        // シングルクリック時：リモコンパネルをその場ですぐ閉じる
-        lastBottomClickTime = currentTime;
-        setTimeout(() => {
-          // 300ms以内にダブルクリックに移行しなかった時のみ、メニューを閉じる
-          if (lastBottomClickTime === currentTime) {
-            hideRemoteImmediate();
-          }
-        }, 300);
-      }
+      switchToMainView();
     });
 
     // ==============================================
     // HLS再生 ＆ エラー・5秒フリーズ検知
     // ==============================================
     function playStream(url, name) {
+      // プレイリストの読み込み時にもCORSバイパスを通す
+      const finalPlayUrl = bypassUrl(url);
+      
       currentPlayingUrl = url;
       currentPlayingName = name;
 
-      // HLSまたはロゴURLに対して、CORSバイパスプロキシを自動適用
-      const finalPlayUrl = bypassUrl(url);
+      // 新ストリーム開始時はリモコン制御をリセット
+      isStreamReady = false;
+      hideRemoteImmediate();
 
       playerError.classList.add('hidden');
       playerLoader.classList.remove('opacity-0', 'pointer-events-none');
@@ -780,7 +776,15 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
         const hls = new Hls({
           manifestLoadingMaxRetry: 1,
           levelLoadingMaxRetry: 1,
-          enableWorker: true
+          enableWorker: true,
+          
+          // ★ 意地でもブロックを通す：TSなどの動画の破片リクエスト（セグメント）に対しても、CORSプロキシを全自動付加して読み込ませます
+          xhrSetup: function (xhr, targetSegUrl) {
+            if (needsBypass(targetSegUrl) && !targetSegUrl.includes('corsproxy.io')) {
+              const proxied = `https://corsproxy.io/?${encodeURIComponent(targetSegUrl)}`;
+              xhr.open('GET', proxied, true);
+            }
+          }
         });
         window.hlsInstance = hls;
         hls.loadSource(finalPlayUrl);
@@ -823,6 +827,7 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       playerLoader.classList.add('opacity-0', 'pointer-events-none');
       playerError.classList.add('hidden');
       reloadAttempts = 0;
+      isStreamReady = false;
     }
 
     function startFreezeCheck() {
@@ -887,19 +892,21 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       showPlayerError();
     });
 
-    // プレイヤーの読み込みUI制御
     videoPlayer.addEventListener('waiting', () => {
       loaderText.textContent = "バッファリング中...";
       playerLoader.classList.remove('opacity-0', 'pointer-events-none');
     });
 
+    // ★ テレビが映った(playing)タイミングでロード画面を隠し、リモコンを解禁します
     videoPlayer.addEventListener('playing', () => {
       playerLoader.classList.add('opacity-0', 'pointer-events-none');
       freezeDuration = 0;
+      
+      isStreamReady = true; 
     });
 
     // ==============================================
-    // アップロード (安全性強化)
+    // アップロード
     // ==============================================
     function handleFile(file) {
       if (!file) return;
@@ -929,7 +936,6 @@ http://haru.charandom.blog/stream/jp/kbs/stream-output.m3u8?mode=hls
       reader.readAsText(file);
     }
 
-    // ★ クリックバブリングによる二重クリックバグを防ぐ頑丈なクリック処理
     dropZone.addEventListener('click', (e) => {
       if (e.target !== fileInput) {
         fileInput.click();
