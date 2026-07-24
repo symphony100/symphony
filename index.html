@@ -30,22 +30,6 @@
       min-height: 100vh; overflow-x: hidden; transition: background 1.2s ease, color 0.5s ease; 
     }
 
-    /* --- プル・トゥ・リフレッシュ用インジケーター --- */
-    #ptr-indicator {
-      position: fixed; top: -60px; left: 50%; transform: translateX(-50%);
-      width: 48px; height: 48px; border-radius: 50%;
-      background: var(--glass); backdrop-filter: blur(20px);
-      border: 1px solid var(--surface-variant);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--primary); z-index: 3000;
-      transition: transform 0.2s var(--spring), opacity 0.2s;
-      pointer-events: none; opacity: 0;
-    }
-    #ptr-indicator .material-symbols-rounded { font-size: 26px; transition: transform 0.2s ease; }
-    #ptr-indicator.refreshing .material-symbols-rounded { animation: ptrSpin 0.8s linear infinite; }
-    @keyframes ptrSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
     /* --- 起動画面 --- */
     #splash {
       position: fixed; inset: 0; background: #fdfcff; z-index: 9999;
@@ -203,7 +187,7 @@
       padding: 12px 16px; border-radius: 20px; font-size: 14px; line-height: 1.6; font-weight: 700; word-break: break-word;
     }
     
-    /* 文字が見えないバグを修正（文字色を強制的に視認性の良い色へ固定） */
+    /* 文字が見えないバグを修正（文字色をくっきり固定） */
     .chat-msg.ai .chat-msg-bubble {
       background: #ffffff; color: #1a1c1e !important; border-bottom-left-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);
     }
@@ -274,11 +258,6 @@
   </style>
 </head>
 <body id="app-body">
-
-<!-- プル・トゥ・リフレッシュ UI インジケーター -->
-<div id="ptr-indicator">
-  <span class="material-symbols-rounded">arrow_downward</span>
-</div>
 
 <div id="splash">
   <img src="https://symphony100.github.io/symphony/symphony.png" alt="logo">
@@ -545,63 +524,9 @@
     setTimeout(() => { m.style.display = 'none'; }, 500); 
   }
 
-  /* --- プル・トゥ・リフレッシュ --- */
-  let ptrStartY = 0;
-  let ptrCurrentY = 0;
-  let isPtrPulling = false;
-  const PTR_THRESHOLD = 80;
-
-  window.addEventListener('touchstart', (e) => {
-    if (window.scrollY === 0) {
-      ptrStartY = e.touches[0].clientY;
-      isPtrPulling = true;
-    }
-  }, { passive: true });
-
-  window.addEventListener('touchmove', (e) => {
-    if (!isPtrPulling || window.scrollY > 0) return;
-    ptrCurrentY = e.touches[0].clientY;
-    const pullDistance = ptrCurrentY - ptrStartY;
-
-    if (pullDistance > 0) {
-      const ptr = document.getElementById('ptr-indicator');
-      const dist = Math.min(pullDistance * 0.45, 90);
-      ptr.style.opacity = Math.min(dist / 30, 1);
-      ptr.style.transform = `translate(-50%, ${dist}px)`;
-      
-      const icon = ptr.querySelector('.material-symbols-rounded');
-      if (dist >= PTR_THRESHOLD * 0.45) {
-        icon.style.transform = `rotate(180deg)`;
-      } else {
-        icon.style.transform = `rotate(0deg)`;
-      }
-    }
-  }, { passive: true });
-
-  window.addEventListener('touchend', () => {
-    if (!isPtrPulling) return;
-    isPtrPulling = false;
-    const ptr = document.getElementById('ptr-indicator');
-    const pullDistance = ptrCurrentY - ptrStartY;
-
-    if (window.scrollY === 0 && pullDistance * 0.45 >= PTR_THRESHOLD * 0.45) {
-      ptr.style.transform = `translate(-50%, 65px)`;
-      ptr.classList.add('refreshing');
-      ptr.querySelector('.material-symbols-rounded').innerText = 'sync';
-      setTimeout(() => {
-        location.reload();
-      }, 500);
-    } else {
-      ptr.style.transform = `translate(-50%, -60px)`;
-      ptr.style.opacity = '0';
-    }
-    ptrStartY = 0; ptrCurrentY = 0;
-  });
-
   /* --- 高機能 AI チャットロジック --- */
   let aiChatInitialized = false;
 
-  // 初期質問プール（絵文字なし）
   const QUESTION_POOL = [
     "Symphonyのロゴの由来を教えてください",
     "どのようなサービスを提供しているのですか？",
@@ -678,9 +603,8 @@
     return ngList.some(w => text.includes(w));
   }
 
-  /* 高精度・インテリジェントAI応答エンジン（絵文字なし、リンク直接移動機能付き） */
+  /* 高精度・インテリジェントAI応答エンジン（絵文字なし、直接リンク付き） */
   function getSmartAIResponse(userText) {
-    // 1. 不適切発言・公序良俗チェック
     if (isNGWord(userText)) {
       return {
         reply: "申し訳ありませんが、不適切または安全性に懸念のある質問にはお答えできません。適切で安全な話題についてご相談ください。",
@@ -690,7 +614,6 @@
 
     const text = userText.toLowerCase();
 
-    // 2. 製作者情報
     if (text.includes("製作者") || text.includes("作者") || text.includes("岡本") || text.includes("英大") || text.includes("おかもと") || text.includes("開発者") || text.includes("誰") || text.includes("プロフ") || text.includes("クリエイター")) {
       return {
         reply: "Symphonyのメイン開発者 兼 デザイナーは、岡本 英大（おかもと えいた / 2011年9月5日生まれ）です。洗練された美しいデザインと、誰でも快適に使える次世代Webポータルを目指して制作されており、UIデザインやアニメーション、リアルタイム天気API、AI連携機能まで自ら構築しています。詳しい経歴や思想は<a href=\"profile/\" class=\"chat-link\">製作者（profile/）</a>ページで公開しています。",
@@ -698,7 +621,6 @@
       };
     }
 
-    // 3. Symphonyの由来
     if (text.includes("由来") || text.includes("ロゴ") || text.includes("マーク") || text.includes("デザイン") || text.includes("交響曲") || text.includes("ギリシャ")) {
       return {
         reply: "Symphonyは、日本語で『交響曲』を意味します。ギリシャ語の『syn（共に）』と『phone（響く）』が言葉のルーツです。多くの機能を追加し、オーケストラのように厚みを増して盛り上がっていくという願いを込めて名称を決定しました。現在は、より組織的で包括的なサービスを目指し現在の名称を採用しています。詳しくは<a href=\"origin/\" class=\"chat-link\">ロゴの由来（origin/）</a>をご覧ください。",
@@ -706,7 +628,6 @@
       };
     }
 
-    // 4. 最新情報・ニュース
     if (text.includes("新着") || text.includes("ニュース") || text.includes("最新") || text.includes("お知らせ") || text.includes("更新")) {
       return {
         reply: "Symphonyの『最新情報（新着情報）』エリアでは、ニュースフレームを通じてシステムのアップデート履歴、新機能リリース、メンテナンス情報などをリアルタイムで配信しています。トップページのニュースカード内をスクロールして最新トピックをご確認いただけます。",
@@ -714,7 +635,6 @@
       };
     }
 
-    // 5. サービス一覧
     if (text.includes("サービス") || text.includes("提供") || text.includes("何ができる") || text.includes("なにができる") || text.includes("機能")) {
       return {
         reply: "Symphonyポータルでは以下の主要サービスを提供しています。<br>・<a href=\"game/\" class=\"chat-link\">ゲーム（game/）</a>: ブラウザゲーム集<br>・<a href=\"study/\" class=\"chat-link\">学習（study/）</a>: 勉強用ツールとクイズ<br>・<a href=\"archive/\" class=\"chat-link\">アーカイブ（archive/）</a>: 過去作品保管庫<br>・<a href=\"origin/\" class=\"chat-link\">ロゴの由来（origin/）</a>: デザインの背景<br>・<a href=\"contact/\" class=\"chat-link\">お問い合わせ（contact/）</a>: ご意見や不具合報告<br>・<a href=\"profile/\" class=\"chat-link\">製作者（profile/）</a>: 開発者プロフィール<br>各リンクから直接ページを開くことができます。",
@@ -722,7 +642,6 @@
       };
     }
 
-    // 6. 各種個別サービス
     if (text.includes("ゲーム")) {
       return {
         reply: "<a href=\"game/\" class=\"chat-link\">ゲーム（game/）</a>エリアでは、ブラウザで手軽に遊べるオリジナルWebゲームやミニゲームを公開しています。気分転換や息抜きにご利用ください。",
@@ -779,7 +698,6 @@
       };
     }
 
-    // 一般雑談・お悩み相談対応
     if (text.includes("相談") || text.includes("悩み") || text.includes("教えて") || text.includes("どう思う") || text.includes("おすすめ")) {
       return {
         reply: `『${userText}』についてのご相談ですね。私でお役に立てることがあれば、どのようなことでも丁寧にお答えいたします。さらに詳しく質問していただくか、Symphonyのサービス（<a href=\"game/\" class=\"chat-link\">ゲーム（game/）</a>や<a href=\"study/\" class=\"chat-link\">学習（study/）</a>など）もぜひご覧ください。`,
@@ -787,7 +705,6 @@
       };
     }
 
-    // デフォルト応答
     return {
       reply: `ご質問ありがとうございます。『${userText}』についてお調べいたしました。Symphonyポータルでは各種Webツールや<a href=\"profile/\" class=\"chat-link\">製作者（profile/）</a>情報、カスタマイズ設定などを提供しています。ご不明な点があればお気軽にお尋ねください。`,
       nextQuestions: getRandomQuestions(3)
