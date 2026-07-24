@@ -30,6 +30,22 @@
       min-height: 100vh; overflow-x: hidden; transition: background 1.2s ease, color 0.5s ease; 
     }
 
+    /* --- プル・トゥ・リフレッシュ用インジケーター --- */
+    #ptr-indicator {
+      position: fixed; top: -60px; left: 50%; transform: translateX(-50%);
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--glass); backdrop-filter: blur(20px);
+      border: 1px solid var(--surface-variant);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--primary); z-index: 3000;
+      transition: transform 0.2s var(--spring), opacity 0.2s;
+      pointer-events: none; opacity: 0;
+    }
+    #ptr-indicator .material-symbols-rounded { font-size: 26px; transition: transform 0.2s ease; }
+    #ptr-indicator.refreshing .material-symbols-rounded { animation: ptrSpin 0.8s linear infinite; }
+    @keyframes ptrSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
     /* --- 起動画面 --- */
     #splash {
       position: fixed; inset: 0; background: #fdfcff; z-index: 9999;
@@ -60,21 +76,12 @@
     #greet { font-size: 56px; font-weight: 900; margin-bottom: 12px; letter-spacing: -3px; }
     #trivia { font-size: 17px; color: var(--text-sub); line-height: 1.7; max-width: 650px; font-weight: 700; }
 
-    /* --- 見出しデザイン刷新 (ボックス型) --- */
-    .section-header { 
-      margin: 64px 0 24px 0; 
-      display: flex;
-    }
+    /* --- 見出しデザイン --- */
+    .section-header { margin: 64px 0 24px 0; display: flex; }
     .section-title-box { 
-      background: var(--primary); 
-      color: var(--on-primary);
-      padding: 10px 24px;
-      border-radius: 16px;
-      font-size: 14px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      background: var(--primary); color: var(--on-primary);
+      padding: 10px 24px; border-radius: 16px; font-size: 14px; font-weight: 900;
+      text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
 
     /* ニュース */
@@ -93,16 +100,13 @@
       text-decoration: none; color: inherit; border: 3px solid transparent; 
       transition: border-color 0.3s var(--soft), box-shadow 0.3s var(--soft), background 0.3s;
     }
-    /* 枠線ホバー (白くならない、枠だけ光る) */
     .card:hover { 
-      border-color: var(--primary); 
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-      background: var(--glass); /* 背景色は維持 */
+      border-color: var(--primary); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); background: var(--glass);
     }
     .card .material-symbols-rounded { font-size: 56px; color: var(--primary); margin-bottom: 12px; font-variation-settings: 'FILL' 1; }
     .card span { font-size: 15px; font-weight: 900; color: var(--text-main); }
 
-    /* --- 設定ポップアップ (フェードイン) --- */
+    /* --- 設定ポップアップ --- */
     .overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.5);
       display: none; align-items: center; justify-content: center; z-index: 2000;
@@ -121,12 +125,10 @@
     .slot { width: 56px; height: 56px; border-radius: 20px; cursor: pointer; transition: 0.4s var(--spring); }
     .slot.active { transform: scale(1.15); border: 4px solid #1a1c1e; }
 
-    /* 並び替えUI (右寄せ固定) */
     .reorder-list { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
     .reorder-item {
       display: flex; align-items: center; padding: 14px 20px; background: #f0f3f6;
-      border-radius: 20px; font-size: 15px; font-weight: 900; color: #1a1c1e;
-      transition: transform 0.4s var(--spring);
+      border-radius: 20px; font-size: 15px; font-weight: 900; color: #1a1c1e; transition: transform 0.4s var(--spring);
     }
     .reorder-item span { flex-grow: 1; }
     .move-btn-group { display: flex; gap: 6px; }
@@ -140,6 +142,126 @@
     .slider:before { position: absolute; content: ""; height: 24px; width: 24px; left: 4px; bottom: 4px; background-color: white; transition: .4s var(--spring); border-radius: 50%; }
     input:checked + .slider:before { transform: translateX(20px); }
 
+    /* --- 右下 AI チャットウィジェット --- */
+    #ai-chat-fab {
+      position: fixed; right: 24px; bottom: 24px; width: 62px; height: 62px;
+      border-radius: 50%; background: linear-gradient(135deg, var(--primary), #38b6ff);
+      color: var(--on-primary); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 25px rgba(0, 141, 189, 0.4); z-index: 2500;
+      transition: transform 0.3s var(--spring), background 0.3s;
+    }
+    #ai-chat-fab:hover { transform: scale(1.1); box-shadow: 0 12px 30px rgba(0, 141, 189, 0.5); }
+    #ai-chat-fab:active { transform: scale(0.95); }
+    #ai-chat-fab .material-symbols-rounded { font-size: 30px; font-variation-settings: 'FILL' 1; }
+
+    #ai-chat-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 2499;
+      display: none; opacity: 0; transition: opacity 0.3s var(--soft); backdrop-filter: blur(4px);
+    }
+    #ai-chat-overlay.open { display: block; opacity: 1; }
+
+    .ai-chat-window {
+      position: fixed; right: 24px; bottom: 98px; width: 380px; max-width: calc(100vw - 32px);
+      height: 540px; max-height: calc(100vh - 120px);
+      background: var(--glass); backdrop-filter: blur(40px);
+      border-radius: 32px; border: 1px solid rgba(255,255,255,0.4);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.18); z-index: 2500;
+      display: flex; flex-direction: column; overflow: hidden;
+      opacity: 0; transform: translateY(20px) scale(0.95); pointer-events: none;
+      transition: opacity 0.3s var(--soft), transform 0.4s var(--spring);
+    }
+    .ai-chat-window.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+    .ai-chat-header {
+      padding: 16px 20px; background: rgba(255,255,255,0.3);
+      border-bottom: 1px solid var(--surface-variant);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .ai-chat-brand { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 16px; color: var(--text-main); }
+    .ai-chat-brand img { width: 28px; height: 28px; border-radius: 50%; }
+
+    .ai-chat-close-btn {
+      border: none; background: transparent; cursor: pointer; color: var(--text-sub);
+      width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s;
+    }
+    .ai-chat-close-btn:hover { background: rgba(0,0,0,0.06); }
+
+    .ai-chat-body { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+
+    /* メッセージの「ほわっ」と浮き出るアニメーション */
+    @keyframes howaMsg {
+      0% { opacity: 0; transform: scale(0.85) translateY(12px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .chat-msg { display: flex; gap: 8px; max-width: 88%; align-items: flex-end; animation: howaMsg 0.4s var(--spring) forwards; }
+    .chat-msg.ai { align-self: flex-start; }
+    .chat-msg.user { align-self: flex-end; flex-direction: row-reverse; }
+
+    .chat-msg-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; background: white; padding: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .chat-msg-bubble {
+      padding: 12px 16px; border-radius: 20px; font-size: 14px; line-height: 1.6; font-weight: 700; word-break: break-word;
+    }
+    
+    /* 文字が見えないバグを修正（文字色を強制的に視認性の良い色へ固定） */
+    .chat-msg.ai .chat-msg-bubble {
+      background: #ffffff; color: #1a1c1e !important; border-bottom-left-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    .chat-msg.user .chat-msg-bubble {
+      background: var(--primary); color: #ffffff !important; border-bottom-right-radius: 4px;
+    }
+
+    /* AIテキスト内の直接リンクスタイル */
+    .chat-link {
+      color: var(--primary); font-weight: 900; text-decoration: underline; cursor: pointer;
+    }
+    .chat-link:hover { opacity: 0.8; }
+
+    /* AI考え中アニメーション */
+    .dots { display: flex; align-items: center; gap: 4px; padding: 14px 18px !important; }
+    .dots span {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--primary);
+      animation: dotBounce 1.2s infinite ease-in-out;
+    }
+    .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotBounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+      40% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    /* サジェスト（送信候補チップ） */
+    .suggestion-container {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; margin-left: 40px;
+      animation: howaMsg 0.4s var(--spring) forwards;
+    }
+    .chip-btn {
+      background: rgba(255, 255, 255, 0.95); border: 1.5px solid var(--primary); color: var(--primary);
+      border-radius: 100px; padding: 7px 14px; font-size: 12px; font-weight: 900; cursor: pointer;
+      transition: all 0.2s var(--spring); box-shadow: 0 2px 8px rgba(0,0,0,0.05); text-align: left;
+    }
+    .chip-btn:hover {
+      background: var(--primary); color: white; transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .chip-btn:active { transform: scale(0.95); }
+
+    .ai-chat-footer {
+      padding: 12px 16px; background: rgba(255,255,255,0.4); border-top: 1px solid var(--surface-variant);
+      display: flex; gap: 8px; align-items: center;
+    }
+    .ai-chat-input {
+      flex: 1; border: 1px solid var(--surface-variant); background: white;
+      border-radius: 24px; padding: 12px 18px; font-size: 14px; outline: none; font-weight: 700; transition: border-color 0.2s;
+    }
+    .ai-chat-input:focus { border-color: var(--primary); }
+    .ai-chat-send-btn {
+      border: none; background: var(--primary); color: white; width: 42px; height: 42px;
+      border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .ai-chat-send-btn:hover { transform: scale(1.05); }
+
     footer { background: #111; color: white; padding: 80px 24px; text-align: center; border-top: 10px solid var(--primary); }
     footer .f-logo { font-size: 26px; font-weight: 900; margin-bottom: 20px; color: var(--primary); }
 
@@ -152,6 +274,11 @@
   </style>
 </head>
 <body id="app-body">
+
+<!-- プル・トゥ・リフレッシュ UI インジケーター -->
+<div id="ptr-indicator">
+  <span class="material-symbols-rounded">arrow_downward</span>
+</div>
 
 <div id="splash">
   <img src="https://symphony100.github.io/symphony/symphony.png" alt="logo">
@@ -195,6 +322,7 @@
   <div style="font-size:12px; color:#555; font-weight: 900;">© 2024-2026 Symphony System Group. All Rights Reserved.</div>
 </footer>
 
+<!-- 設定モーダル -->
 <div id="modal-settings" class="overlay" onclick="closeSettings()">
   <div class="dialog" onclick="event.stopPropagation()">
     <h2 style="margin:0; font-weight:900; font-size:24px;">設定</h2>
@@ -217,6 +345,34 @@
 
     <div class="reorder-list" id="reorderList"></div>
     <button onclick="closeSettings()" style="width:100%; padding:18px; border-radius:100px; border:none; background:var(--primary); color:white; font-weight:900; cursor:pointer; margin-top:20px; font-size:16px;">完了</button>
+  </div>
+</div>
+
+<!-- 右下 AI チャットボタン & ポップアップ -->
+<button id="ai-chat-fab" onclick="toggleAIChat()" aria-label="AIチャットを開く">
+  <span class="material-symbols-rounded">auto_awesome</span>
+</button>
+
+<div id="ai-chat-overlay" onclick="closeAIChat()"></div>
+
+<div id="ai-chat-window" class="ai-chat-window">
+  <div class="ai-chat-header">
+    <div class="ai-chat-brand">
+      <img src="https://symphony100.github.io/symphony/symphony.png" alt="Symphony AI">
+      <span>Symphony AI</span>
+    </div>
+    <button class="ai-chat-close-btn" onclick="closeAIChat()">
+      <span class="material-symbols-rounded">close</span>
+    </button>
+  </div>
+  
+  <div class="ai-chat-body" id="ai-chat-body"></div>
+
+  <div class="ai-chat-footer">
+    <input type="text" id="ai-chat-input" class="ai-chat-input" placeholder="質問を入力またはタップ..." onkeydown="handleChatKeyDown(event)">
+    <button class="ai-chat-send-btn" onclick="sendChatMessage()">
+      <span class="material-symbols-rounded">send</span>
+    </button>
   </div>
 </div>
 
@@ -377,7 +533,6 @@
   function openSettings() { 
     const m = document.getElementById('modal-settings');
     m.style.display = 'flex';
-    // 強制的に再描画させてからクラス付与（フェードインを確実に実行）
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         m.classList.add('open');
@@ -388,6 +543,325 @@
     const m = document.getElementById('modal-settings');
     m.classList.remove('open'); 
     setTimeout(() => { m.style.display = 'none'; }, 500); 
+  }
+
+  /* --- プル・トゥ・リフレッシュ --- */
+  let ptrStartY = 0;
+  let ptrCurrentY = 0;
+  let isPtrPulling = false;
+  const PTR_THRESHOLD = 80;
+
+  window.addEventListener('touchstart', (e) => {
+    if (window.scrollY === 0) {
+      ptrStartY = e.touches[0].clientY;
+      isPtrPulling = true;
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchmove', (e) => {
+    if (!isPtrPulling || window.scrollY > 0) return;
+    ptrCurrentY = e.touches[0].clientY;
+    const pullDistance = ptrCurrentY - ptrStartY;
+
+    if (pullDistance > 0) {
+      const ptr = document.getElementById('ptr-indicator');
+      const dist = Math.min(pullDistance * 0.45, 90);
+      ptr.style.opacity = Math.min(dist / 30, 1);
+      ptr.style.transform = `translate(-50%, ${dist}px)`;
+      
+      const icon = ptr.querySelector('.material-symbols-rounded');
+      if (dist >= PTR_THRESHOLD * 0.45) {
+        icon.style.transform = `rotate(180deg)`;
+      } else {
+        icon.style.transform = `rotate(0deg)`;
+      }
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchend', () => {
+    if (!isPtrPulling) return;
+    isPtrPulling = false;
+    const ptr = document.getElementById('ptr-indicator');
+    const pullDistance = ptrCurrentY - ptrStartY;
+
+    if (window.scrollY === 0 && pullDistance * 0.45 >= PTR_THRESHOLD * 0.45) {
+      ptr.style.transform = `translate(-50%, 65px)`;
+      ptr.classList.add('refreshing');
+      ptr.querySelector('.material-symbols-rounded').innerText = 'sync';
+      setTimeout(() => {
+        location.reload();
+      }, 500);
+    } else {
+      ptr.style.transform = `translate(-50%, -60px)`;
+      ptr.style.opacity = '0';
+    }
+    ptrStartY = 0; ptrCurrentY = 0;
+  });
+
+  /* --- 高機能 AI チャットロジック --- */
+  let aiChatInitialized = false;
+
+  // 初期質問プール（絵文字なし）
+  const QUESTION_POOL = [
+    "Symphonyのロゴの由来を教えてください",
+    "どのようなサービスを提供しているのですか？",
+    "製作者（プロフィール）について詳しく知りたい",
+    "最新情報にはどんなことが書かれていますか？",
+    "東京の天気と背景を連動させるには？",
+    "ゲームサービスには何がありますか？",
+    "テーマカラーの変更方法を教えて",
+    "学習ツールの内容を詳しく教えて"
+  ];
+
+  function getRandomQuestions(count = 3) {
+    const shuffled = [...QUESTION_POOL].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  }
+
+  function toggleAIChat() {
+    const win = document.getElementById('ai-chat-window');
+    if (win.classList.contains('open')) { closeAIChat(); } else { openAIChat(); }
+  }
+
+  function openAIChat() {
+    const win = document.getElementById('ai-chat-window');
+    const overlay = document.getElementById('ai-chat-overlay');
+    win.classList.add('open');
+    overlay.classList.add('open');
+
+    if (!aiChatInitialized) {
+      addAIMessage("こんにちは。Symphony AI アシスタントです。何かお手伝いできることはありますか？");
+      renderSuggestions(getRandomQuestions(3));
+      aiChatInitialized = true;
+    }
+    setTimeout(() => { document.getElementById('ai-chat-input').focus(); }, 300);
+  }
+
+  function closeAIChat() {
+    const win = document.getElementById('ai-chat-window');
+    const overlay = document.getElementById('ai-chat-overlay');
+    win.classList.remove('open');
+    overlay.classList.remove('open');
+  }
+
+  function handleChatKeyDown(e) {
+    if (e.key === 'Enter' && !e.isComposing) {
+      e.preventDefault();
+      sendChatMessage();
+    }
+  }
+
+  function sendChatMessage(overrideText) {
+    const input = document.getElementById('ai-chat-input');
+    const text = overrideText || input.value.trim();
+    if (!text) return;
+
+    const oldContainer = document.querySelector('.suggestion-container');
+    if (oldContainer) oldContainer.remove();
+
+    addUserMessage(text);
+    if (!overrideText) input.value = '';
+
+    showTypingIndicator();
+
+    setTimeout(() => {
+      hideTypingIndicator();
+      const res = getSmartAIResponse(text);
+      addAIMessage(res.reply);
+      renderSuggestions(res.nextQuestions);
+    }, 700);
+  }
+
+  /* 不適切ワード判定ガード */
+  function isNGWord(text) {
+    const ngList = ["死ね", "殺す", "エロ", "暴力", "性行為", "薬物", "違法", "ハック", "攻撃", "脅迫"];
+    return ngList.some(w => text.includes(w));
+  }
+
+  /* 高精度・インテリジェントAI応答エンジン（絵文字なし、リンク直接移動機能付き） */
+  function getSmartAIResponse(userText) {
+    // 1. 不適切発言・公序良俗チェック
+    if (isNGWord(userText)) {
+      return {
+        reply: "申し訳ありませんが、不適切または安全性に懸念のある質問にはお答えできません。適切で安全な話題についてご相談ください。",
+        nextQuestions: getRandomQuestions(3)
+      };
+    }
+
+    const text = userText.toLowerCase();
+
+    // 2. 製作者情報
+    if (text.includes("製作者") || text.includes("作者") || text.includes("岡本") || text.includes("英大") || text.includes("おかもと") || text.includes("開発者") || text.includes("誰") || text.includes("プロフ") || text.includes("クリエイター")) {
+      return {
+        reply: "Symphonyのメイン開発者 兼 デザイナーは、岡本 英大（おかもと えいた / 2011年9月5日生まれ）です。洗練された美しいデザインと、誰でも快適に使える次世代Webポータルを目指して制作されており、UIデザインやアニメーション、リアルタイム天気API、AI連携機能まで自ら構築しています。詳しい経歴や思想は<a href=\"profile/\" class=\"chat-link\">製作者（profile/）</a>ページで公開しています。",
+        nextQuestions: ["Symphonyの由来について教えて", "どのようなサービスがある？", "お問い合わせ先は？"]
+      };
+    }
+
+    // 3. Symphonyの由来
+    if (text.includes("由来") || text.includes("ロゴ") || text.includes("マーク") || text.includes("デザイン") || text.includes("交響曲") || text.includes("ギリシャ")) {
+      return {
+        reply: "Symphonyは、日本語で『交響曲』を意味します。ギリシャ語の『syn（共に）』と『phone（響く）』が言葉のルーツです。多くの機能を追加し、オーケストラのように厚みを増して盛り上がっていくという願いを込めて名称を決定しました。現在は、より組織的で包括的なサービスを目指し現在の名称を採用しています。詳しくは<a href=\"origin/\" class=\"chat-link\">ロゴの由来（origin/）</a>をご覧ください。",
+        nextQuestions: ["製作者について詳しく教えて", "どのようなサービスがある？", "最新情報を確認したい"]
+      };
+    }
+
+    // 4. 最新情報・ニュース
+    if (text.includes("新着") || text.includes("ニュース") || text.includes("最新") || text.includes("お知らせ") || text.includes("更新")) {
+      return {
+        reply: "Symphonyの『最新情報（新着情報）』エリアでは、ニュースフレームを通じてシステムのアップデート履歴、新機能リリース、メンテナンス情報などをリアルタイムで配信しています。トップページのニュースカード内をスクロールして最新トピックをご確認いただけます。",
+        nextQuestions: ["製作者について詳しく教えて", "どんなサービスがあるの？", "Symphonyの由来は？"]
+      };
+    }
+
+    // 5. サービス一覧
+    if (text.includes("サービス") || text.includes("提供") || text.includes("何ができる") || text.includes("なにができる") || text.includes("機能")) {
+      return {
+        reply: "Symphonyポータルでは以下の主要サービスを提供しています。<br>・<a href=\"game/\" class=\"chat-link\">ゲーム（game/）</a>: ブラウザゲーム集<br>・<a href=\"study/\" class=\"chat-link\">学習（study/）</a>: 勉強用ツールとクイズ<br>・<a href=\"archive/\" class=\"chat-link\">アーカイブ（archive/）</a>: 過去作品保管庫<br>・<a href=\"origin/\" class=\"chat-link\">ロゴの由来（origin/）</a>: デザインの背景<br>・<a href=\"contact/\" class=\"chat-link\">お問い合わせ（contact/）</a>: ご意見や不具合報告<br>・<a href=\"profile/\" class=\"chat-link\">製作者（profile/）</a>: 開発者プロフィール<br>各リンクから直接ページを開くことができます。",
+        nextQuestions: ["ゲームサービスについて教えて", "学習コンテンツとは？", "サービスの並び替え方法は？"]
+      };
+    }
+
+    // 6. 各種個別サービス
+    if (text.includes("ゲーム")) {
+      return {
+        reply: "<a href=\"game/\" class=\"chat-link\">ゲーム（game/）</a>エリアでは、ブラウザで手軽に遊べるオリジナルWebゲームやミニゲームを公開しています。気分転換や息抜きにご利用ください。",
+        nextQuestions: ["学習コンテンツについて", "最新情報を知りたい", "製作者について詳しく教えて"]
+      };
+    }
+
+    if (text.includes("学習") || text.includes("勉強") || text.includes("クイズ") || text.includes("ツール")) {
+      return {
+        reply: "<a href=\"study/\" class=\"chat-link\">学習（study/）</a>エリアでは、毎日の勉強をサポートする便利なWebツールや知識深めに役立つコンテンツを提供しています。",
+        nextQuestions: ["ゲームについて教えて", "天気を背景に反映するには？", "製作者について詳しく教えて"]
+      };
+    }
+
+    if (text.includes("アーカイブ") || text.includes("過去") || text.includes("歴史")) {
+      return {
+        reply: "<a href=\"archive/\" class=\"chat-link\">アーカイブ（archive/）</a>エリアでは、Symphony System Groupが過去に制作した作品や開発の歴史を閲覧・プレイできるように保存しています。",
+        nextQuestions: ["最新情報を確認したい", "どんなサービスがある？", "製作者について詳しく教えて"]
+      };
+    }
+
+    if (text.includes("天気") || text.includes("背景") || text.includes("時間") || text.includes("雨") || text.includes("空")) {
+      return {
+        reply: "ヘッダー右上の設定（歯車アイコン）から『東京の天候・時間連動背景』をONにすると、リアルタイムの東京の天気や時間帯に合わせて背景が美しく変わります。",
+        nextQuestions: ["テーマカラーの変更は？", "サービスの並び替え方は？", "どんなサービスがある？"]
+      };
+    }
+
+    if (text.includes("設定") || text.includes("カラー") || text.includes("テーマ") || text.includes("並び替え") || text.includes("色")) {
+      return {
+        reply: "設定ボタンから、8種類のカラーテーマ変更やリアルタイム背景の切り替え、主要サービスカードの表示順の変更が可能です。",
+        nextQuestions: ["背景の天気を変えるには？", "最新情報を確認するには？", "Symphonyの由来は？"]
+      };
+    }
+
+    if (text.includes("問い合わせ") || text.includes("連絡") || text.includes("意見") || text.includes("バグ")) {
+      return {
+        reply: "ご意見や不具合報告は<a href=\"contact/\" class=\"chat-link\">お問い合わせ（contact/）</a>ページのフォームから送信できます。開発者にメッセージが直接届きます。",
+        nextQuestions: ["製作者について詳しく教えて", "最新情報を確認するには？", "どんなサービスがある？"]
+      };
+    }
+
+    if (text.includes("こんにちは") || text.includes("おはよう") || text.includes("こんばんは") || text.includes("初めまして")) {
+      return {
+        reply: "こんにちは。Symphony AIです。Symphonyのサービスに関することから、日常の些細なご相談まで何でもお気軽にお尋ねください。",
+        nextQuestions: getRandomQuestions(3)
+      };
+    }
+
+    if (text.includes("ありがとう") || text.includes("感謝")) {
+      return {
+        reply: "お役に立てて光栄です。その他にご質問やご相談があれば、いつでも気軽にお声がけください。",
+        nextQuestions: getRandomQuestions(3)
+      };
+    }
+
+    // 一般雑談・お悩み相談対応
+    if (text.includes("相談") || text.includes("悩み") || text.includes("教えて") || text.includes("どう思う") || text.includes("おすすめ")) {
+      return {
+        reply: `『${userText}』についてのご相談ですね。私でお役に立てることがあれば、どのようなことでも丁寧にお答えいたします。さらに詳しく質問していただくか、Symphonyのサービス（<a href=\"game/\" class=\"chat-link\">ゲーム（game/）</a>や<a href=\"study/\" class=\"chat-link\">学習（study/）</a>など）もぜひご覧ください。`,
+        nextQuestions: getRandomQuestions(3)
+      };
+    }
+
+    // デフォルト応答
+    return {
+      reply: `ご質問ありがとうございます。『${userText}』についてお調べいたしました。Symphonyポータルでは各種Webツールや<a href=\"profile/\" class=\"chat-link\">製作者（profile/）</a>情報、カスタマイズ設定などを提供しています。ご不明な点があればお気軽にお尋ねください。`,
+      nextQuestions: getRandomQuestions(3)
+    };
+  }
+
+  function showTypingIndicator() {
+    const body = document.getElementById('ai-chat-body');
+    const indicator = document.createElement('div');
+    indicator.id = 'ai-typing-indicator';
+    indicator.className = 'chat-msg ai';
+    indicator.innerHTML = `
+      <img class="chat-msg-avatar" src="https://symphony100.github.io/symphony/symphony.png" alt="Symphony AI">
+      <div class="chat-msg-bubble dots"><span></span><span></span><span></span></div>
+    `;
+    body.appendChild(indicator);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function hideTypingIndicator() {
+    const indicator = document.getElementById('ai-typing-indicator');
+    if (indicator) indicator.remove();
+  }
+
+  function addAIMessage(htmlContent) {
+    const body = document.getElementById('ai-chat-body');
+    const msg = document.createElement('div');
+    msg.className = 'chat-msg ai';
+    msg.innerHTML = `
+      <img class="chat-msg-avatar" src="https://symphony100.github.io/symphony/symphony.png" alt="Symphony AI">
+      <div class="chat-msg-bubble">${htmlContent}</div>
+    `;
+    body.appendChild(msg);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function addUserMessage(text) {
+    const body = document.getElementById('ai-chat-body');
+    const msg = document.createElement('div');
+    msg.className = 'chat-msg user';
+    msg.innerHTML = `<div class="chat-msg-bubble">${escapeHTML(text)}</div>`;
+    body.appendChild(msg);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function renderSuggestions(questions) {
+    const oldContainer = document.querySelector('.suggestion-container');
+    if (oldContainer) oldContainer.remove();
+
+    if (!questions || questions.length === 0) return;
+
+    const body = document.getElementById('ai-chat-body');
+    const container = document.createElement('div');
+    container.className = 'suggestion-container';
+    
+    questions.forEach(q => {
+      const btn = document.createElement('button');
+      btn.className = 'chip-btn';
+      btn.innerText = q;
+      btn.onclick = () => {
+        container.remove();
+        sendChatMessage(q);
+      };
+      container.appendChild(btn);
+    });
+
+    body.appendChild(container);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function escapeHTML(str) {
+    return str.replace(/[&<>'"]/g, 
+      tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+    );
   }
 
   window.onload = () => { initSplash(); updateThemeUI(); renderServices(); initTrivia(); initWeather(); };
