@@ -30,30 +30,34 @@
       height: 100dvh; display: flex; flex-direction: column; overflow: hidden;
     }
 
-    /* --- ヘッダー --- */
+    /* --- ヘッダー (スマホ改行防止・アイコン化) --- */
     header {
-      height: 60px; display: flex; align-items: center; padding: 0 16px; gap: 10px;
+      height: 60px; display: flex; align-items: center; padding: 0 14px; gap: 8px;
       background: var(--glass); backdrop-filter: blur(20px);
       position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--primary);
       flex-shrink: 0;
     }
-    .brand { display: flex; align-items: center; gap: 8px; color: var(--primary); font-weight: 900; font-size: 18px; text-decoration: none; }
+    .brand { display: flex; align-items: center; gap: 8px; color: var(--primary); font-weight: 900; font-size: 17px; text-decoration: none; white-space: nowrap; }
 
-    .role-badge { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 20px; background: rgba(0,141,189,0.1); color: var(--primary); }
+    .role-badge { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 20px; background: rgba(0,141,189,0.1); color: var(--primary); white-space: nowrap; }
     .role-badge.admin { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
 
     .avatar-icon { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; }
 
-    .btn-sm { border: none; font-size: 11px; font-weight: bold; padding: 6px 12px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: 0.2s; }
+    /* アイコン専用丸ボタン (改行崩れ防止) */
+    .btn-icon {
+      border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: 0.2s;
+    }
     .btn-notify { background: #e8f5e9; color: #2e7d32; }
     .btn-switch { background: #f0f3f6; color: var(--text-main); border: 1px solid #d0d4dc; }
 
-    /* --- レスポンシブ レイアウト (スマホ最適化) --- */
+    /* --- レイアウト --- */
     .chat-layout { flex: 1; display: flex; overflow: hidden; position: relative; }
 
     /* サイドバー */
     .sidebar {
-      width: 280px; background: #ffffff; border-right: 1px solid var(--surface-variant);
+      width: 260px; background: #ffffff; border-right: 1px solid var(--surface-variant);
       display: flex; flex-direction: column; flex-shrink: 0; transition: transform 0.3s ease;
       z-index: 10;
     }
@@ -86,13 +90,20 @@
       flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth;
     }
 
+    /* 重要なお知らせカード */
+    .system-announcement-card {
+      background: #eef7ff; border: 1px solid #b3e0ff; border-radius: 18px; padding: 14px;
+      margin-bottom: 10px; font-size: 13px; line-height: 1.6; color: #004d73; box-shadow: 0 2px 10px rgba(0,141,189,0.08);
+    }
+    .system-announcement-card .title { font-weight: 900; font-size: 14px; color: var(--primary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    .calendar-link { color: var(--primary); font-weight: 900; text-decoration: underline; cursor: pointer; padding: 2px 4px; background: rgba(0,141,189,0.1); border-radius: 4px; }
+
     /* 日付区切り */
     .date-divider {
       align-self: center; background: rgba(0, 0, 0, 0.06); color: var(--text-sub);
       font-size: 11px; font-weight: bold; padding: 4px 14px; border-radius: 20px; margin: 10px 0;
     }
 
-    /* 案内表示 */
     .empty-state {
       flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
       color: var(--text-sub); text-align: center;
@@ -135,7 +146,7 @@
     }
     .icon-btn { border: none; background: none; color: var(--primary); cursor: pointer; padding: 6px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
 
-    /* リアクションポップアップ */
+    /* リアクションメニュー */
     .reaction-picker {
       position: absolute; bottom: 56px; right: 48px; background: white; border-radius: 20px;
       padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; grid-template-columns: repeat(5, 1fr); gap: 8px; border: 1px solid var(--surface-variant); z-index: 10;
@@ -143,7 +154,15 @@
     .reaction-item { font-size: 22px; cursor: pointer; text-align: center; transition: 0.15s var(--spring); }
     .reaction-item:hover { transform: scale(1.3); }
 
-    /* トーストポップアップ */
+    /* カレンダー UI */
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 10px; text-align: center; font-size: 12px; }
+    .calendar-day-header { font-weight: bold; color: var(--text-sub); padding: 4px; }
+    .calendar-cell {
+      padding: 8px; border-radius: 10px; background: #f0f3f6; font-weight: bold; cursor: pointer; transition: 0.2s;
+    }
+    .calendar-cell.active-view { background: var(--primary); color: white; }
+
+    /* トースト */
     .toast {
       position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-60px);
       background: #323232; color: white; padding: 10px 20px; border-radius: 20px;
@@ -155,18 +174,15 @@
 
     /* モーダル */
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-    .dialog { background: white; width: 90%; max-width: 320px; padding: 24px; border-radius: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+    .dialog { background: white; width: 90%; max-width: 340px; padding: 24px; border-radius: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
     .form-group { margin-bottom: 14px; }
     .form-label { font-size: 12px; font-weight: bold; color: var(--text-sub); margin-bottom: 4px; display: block; }
     .form-input { width: 100%; padding: 10px 12px; border-radius: 12px; border: 2px solid #e0e2ec; outline: none; font-size: 14px; font-weight: bold; }
     .form-input:focus { border-color: var(--primary); }
     .btn { width: 100%; padding: 12px; border-radius: 100px; border: none; background: var(--primary); color: white; font-weight: bold; font-size: 14px; cursor: pointer; }
 
-    /* スマホ画面最適化 CSS Media Query */
     @media (max-width: 768px) {
-      .sidebar {
-        width: 100%; position: absolute; inset: 0; z-index: 20;
-      }
+      .sidebar { width: 100%; position: absolute; inset: 0; z-index: 20; }
       .sidebar.hide-mobile { transform: translateX(-100%); }
       .back-btn { display: flex; }
       .msg-group { max-width: 88%; }
@@ -175,7 +191,7 @@
 </head>
 <body>
 
-<!-- ポップアップ通知トースト -->
+<!-- トーストポップアップ -->
 <div id="toast" class="toast">
   <span class="material-symbols-rounded" id="toastIcon" style="font-size:18px;">info</span>
   <span id="toastText"></span>
@@ -187,14 +203,13 @@
   </a>
   <div style="flex:1"></div>
   
-  <button id="notifyBtn" class="btn-sm btn-notify" onclick="enableNativeNotification()">
-    <span class="material-symbols-rounded" style="font-size:16px;">notifications</span>
-    <span id="notifyBtnText">通知を許可</span>
+  <!-- 改行防止：CSSアイコンだけの丸ボタン -->
+  <button id="notifyBtn" class="btn-icon btn-notify" onclick="enableNativeNotification()" title="通知許可">
+    <span class="material-symbols-rounded" style="font-size:20px;">notifications</span>
   </button>
 
-  <button class="btn-sm btn-switch" onclick="openSwitchModal()">
-    <span class="material-symbols-rounded" style="font-size:16px;">swap_horiz</span>
-    <span>アカウント切替</span>
+  <button class="btn-icon btn-switch" onclick="openSwitchModal()" title="アカウント切替">
+    <span class="material-symbols-rounded" style="font-size:20px;">swap_horiz</span>
   </button>
 
   <div id="roleDisplay" class="role-badge">
@@ -257,6 +272,27 @@
   </main>
 </div>
 
+<!-- カレンダーモーダル -->
+<div id="calendarModal" class="overlay" style="display:none;">
+  <div class="dialog">
+    <h3 style="margin:0 0 8px 0; color:var(--primary); font-size:16px; display:flex; align-items:center; gap:6px;">
+      <span class="material-symbols-rounded">calendar_month</span>
+      <span>管理者観覧スケジュール</span>
+    </h3>
+    <p style="font-size:12px; color:var(--text-sub); margin-bottom:12px;">
+      管理者観覧時間帯：<strong style="color:var(--primary);" id="viewTimeText">12:00 ～ 20:00 (一律)</strong>
+    </p>
+
+    <div class="calendar-grid">
+      <div class="calendar-day-header">日</div><div class="calendar-day-header">月</div><div class="calendar-day-header">火</div>
+      <div class="calendar-day-header">水</div><div class="calendar-day-header">木</div><div class="calendar-day-header">金</div><div class="calendar-day-header">土</div>
+    </div>
+    <div class="calendar-grid" id="calendarDays"></div>
+
+    <button class="btn" style="margin-top:18px;" onclick="closeCalendarModal()">閉じる</button>
+  </div>
+</div>
+
 <!-- アカウント切り替えモーダル -->
 <div id="switchModal" class="overlay" style="display:none;">
   <div class="dialog">
@@ -303,11 +339,14 @@
     localStorage.setItem('s_sym_num', savedUserNumber);
   }
 
-  // リロード（更新）してもログイン状態（管理者/一般）をキープ
+  // ログイン保持
   let myRole = localStorage.getItem('symphony_current_role') || 'user';
   let myId = myRole === 'admin' ? 'Symphony-System' : 'Sym-' + savedUserNumber;
   let myName = myId;
   let activeTargetId = myRole === 'user' ? 'Symphony-System' : null;
+
+  // 管理者観覧日データ (デフォルトは全日観覧可能)
+  let adminViewDays = JSON.parse(localStorage.getItem('symphony_view_days')) || [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
 
   // ストレージ
   let messages = JSON.parse(localStorage.getItem('symphony_msg_history')) || [];
@@ -320,7 +359,7 @@
     userId: myId
   });
 
-  const CHANNEL = 'symphony_gchat_v5_channel';
+  const CHANNEL = 'symphony_gchat_v6_channel';
 
   window.onload = () => {
     checkNotificationStatus();
@@ -346,6 +385,7 @@
     localStorage.setItem('symphony_user_list', JSON.stringify(Array.from(userList)));
     localStorage.setItem('symphony_unread', JSON.stringify(unreadCounts));
     localStorage.setItem('symphony_current_role', myRole);
+    localStorage.setItem('symphony_view_days', JSON.stringify(adminViewDays));
   }
 
   function showToast(text, icon = 'info') {
@@ -356,7 +396,6 @@
     setTimeout(() => toast.classList.remove('show'), 3000);
   }
 
-  // --- UI更新 ---
   function updateUserInterface() {
     const roleBadgeText = document.getElementById('roleBadgeText');
     const roleDisplay = document.getElementById('roleDisplay');
@@ -385,13 +424,44 @@
     renderMessages();
   }
 
-  // --- モバイル画面切替 ---
-  function hideSidebarMobile() {
-    document.getElementById('sidebar').classList.add('hide-mobile');
+  // --- カレンダー ポップアップ制御 ---
+  function openCalendarModal() {
+    const daysContainer = document.getElementById('calendarDays');
+    daysContainer.innerHTML = '';
+
+    const today = new Date();
+    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const cell = document.createElement('div');
+      const isViewing = adminViewDays.includes(day);
+      cell.className = `calendar-cell ${isViewing ? 'active-view' : ''}`;
+      cell.innerText = day;
+
+      if (myRole === 'admin') {
+        cell.onclick = () => {
+          if (adminViewDays.includes(day)) {
+            adminViewDays = adminViewDays.filter(d => d !== day);
+          } else {
+            adminViewDays.push(day);
+          }
+          saveHistory();
+          openCalendarModal();
+        };
+      }
+      daysContainer.appendChild(cell);
+    }
+
+    document.getElementById('calendarModal').style.display = 'flex';
   }
-  function showSidebarMobile() {
-    document.getElementById('sidebar').classList.remove('hide-mobile');
+
+  function closeCalendarModal() {
+    document.getElementById('calendarModal').style.display = 'none';
   }
+
+  // --- スマホ画面切替 ---
+  function hideSidebarMobile() { document.getElementById('sidebar').classList.add('hide-mobile'); }
+  function showSidebarMobile() { document.getElementById('sidebar').classList.remove('hide-mobile'); }
 
   // --- サイドバー描画 ---
   function renderSidebar() {
@@ -412,7 +482,7 @@
       document.getElementById('chatTitleIcon').innerHTML = `<img src="${ADMIN_ICON_URL}" class="avatar-icon">`;
       document.getElementById('chatTitleText').innerText = 'Symphony-System';
     } else {
-      // 管理者専用: 全員へ一斉送信アナウンス
+      // 全員へ一斉送信アナウンス
       const bItem = document.createElement('div');
       bItem.className = `user-item broadcast ${activeTargetId === 'BROADCAST_ALL' ? 'active' : ''}`;
       bItem.innerHTML = `
@@ -429,7 +499,7 @@
       };
       container.appendChild(bItem);
 
-      // 個別ユーザー一覧
+      // 個別ユーザー
       userList.forEach(userId => {
         if (userId === 'Symphony-System') return;
         const item = document.createElement('div');
@@ -466,7 +536,7 @@
 
       if (activeTargetId === 'BROADCAST_ALL') {
         document.getElementById('chatTitleIcon').innerHTML = `<span class="material-symbols-rounded" style="color:#b78103;">campaign</span>`;
-        document.getElementById('chatTitleText').innerText = '📢 全員へ一斉送信 (アナウンス)';
+        document.getElementById('chatTitleText').innerText = '📢 全員へ一斉送信';
       } else if (activeTargetId) {
         document.getElementById('chatTitleIcon').innerHTML = `<span class="material-symbols-rounded">account_circle</span>`;
         document.getElementById('chatTitleText').innerText = activeTargetId;
@@ -477,7 +547,6 @@
     }
   }
 
-  // --- ユーザー長押し削除 ---
   function openDeleteUserConfirm(userId) {
     document.getElementById('confirmModalTitle').innerText = 'ユーザー削除';
     document.getElementById('confirmModalText').innerText = `「${userId}」とこのユーザーのすべてのログを削除しますか？`;
@@ -607,12 +676,24 @@
     showToast('メッセージを削除しました', 'delete');
   }
 
-  // --- メッセージ描画 ---
+  // --- メッセージ描画 (最上部に重要なお知らせ表示) ---
   function renderMessages() {
     const container = document.getElementById('chat-container');
     const emptyState = document.getElementById('emptyState');
     const inputBar = document.getElementById('inputBarContainer');
     container.innerHTML = '';
+
+    // 最上部に指定のお知らせメッセージを固定表示
+    const announcementCard = document.createElement('div');
+    announcementCard.className = 'system-announcement-card';
+    announcementCard.innerHTML = `
+      <div class="title"><span class="material-symbols-rounded">info</span> 【重要】Symphony Chatについて</div>
+      ・通知は、iPhone等に来ないので、各自でご確認よろしくお願い致します。<br>
+      ・管理者が観覧する日付は、<span class="calendar-link" onclick="openCalendarModal()">こちら</span> をタップ<br>
+      ・不適切な表現は禁じます。<br>
+      <strong>Symphony System Group代表：岡本 英大</strong>
+    `;
+    container.appendChild(announcementCard);
 
     if (myRole === 'admin' && !activeTargetId) {
       emptyState.style.display = 'flex';
@@ -633,7 +714,7 @@
       if (myRole === 'user') {
         return (m.senderId === myId && m.targetId === 'Symphony-System') || 
                (m.senderId === 'Symphony-System' && m.targetId === myId) || 
-               (m.targetId === 'BROADCAST_ALL'); // 一斉送信メッセージ
+               (m.targetId === 'BROADCAST_ALL');
       } else {
         if (currentTarget === 'BROADCAST_ALL') {
           return m.targetId === 'BROADCAST_ALL';
@@ -688,7 +769,6 @@
     const pass = document.getElementById('adminPassInput').value;
 
     if (selectedRole === 'admin') {
-      // 強化された管理者パスワード
       if (pass !== 'Symphony@2026') return showToast('管理者パスワードが違います', 'error');
       myRole = 'admin';
       showToast('管理者 (Symphony-System) に切り替えました');
@@ -704,17 +784,13 @@
   // --- 通知 ---
   function checkNotificationStatus() {
     const btnText = document.getElementById('notifyBtnText');
-    if (!("Notification" in window)) return btnText.innerText = '通知非対応';
-    if (Notification.permission === 'granted') btnText.innerText = '通知: ON';
-    else if (Notification.permission === 'denied') btnText.innerText = '通知: OFF';
-    else btnText.innerText = '通知を許可';
+    if (!("Notification" in window)) return;
   }
 
   function enableNativeNotification() {
     if (!("Notification" in window)) return showToast('お使いのブラウザは通知に対応していません', 'warning');
     
     Notification.requestPermission().then(permission => {
-      checkNotificationStatus();
       if (permission === "granted") {
         showToast('通知が有効化されました', 'notifications');
         new Notification("Symphony Chat", {
