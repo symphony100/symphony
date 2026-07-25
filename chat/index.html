@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="icon" type="image/x-icon" href="https://symphony100.github.io/symphony/symphony.png">
-  <title>Symphony Chat - 管理者監視対応</title>
+  <title>Symphony Chat</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
-  <!-- 通信ライブラリ (設定なしで即動作) -->
-  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <!-- 完全同期用PubSub SDK -->
+  <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
 
   <style>
     :root {
@@ -38,50 +38,71 @@
       flex-shrink: 0;
     }
     .brand { display: flex; align-items: center; gap: 8px; color: var(--primary); font-weight: 900; font-size: 18px; text-decoration: none; }
-    .brand img { width: 26px; height: 26px; }
 
-    .role-badge { font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 20px; background: rgba(0,141,189,0.1); color: var(--primary); }
-    .role-badge.admin { background: #fff0f0; color: #d32f2f; border: 1px solid #ffcdd2; }
+    .role-badge { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 20px; background: rgba(0,141,189,0.1); color: var(--primary); }
+    .role-badge.admin { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
 
-    .notify-btn { border: none; background: #e8f5e9; color: #2e7d32; font-size: 11px; font-weight: bold; padding: 6px 10px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .btn-sm { border: none; font-size: 11px; font-weight: bold; padding: 6px 12px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: 0.2s; }
+    .btn-notify { background: #e8f5e9; color: #2e7d32; }
+    .btn-switch { background: #f0f3f6; color: var(--text-main); border: 1px solid #d0d4dc; }
 
-    /* --- アプリレイアウト --- */
-    .app-body { flex: 1; display: flex; overflow: hidden; }
+    /* --- レイアウト --- */
+    .chat-layout { flex: 1; display: flex; overflow: hidden; }
 
-    /* サイドバー (管理者時のユーザー一覧) */
+    /* サイドバー */
     .sidebar {
-      width: 240px; background: #ffffff; border-right: 1px solid var(--surface-variant);
+      width: 260px; background: #ffffff; border-right: 1px solid var(--surface-variant);
       display: flex; flex-direction: column; flex-shrink: 0;
     }
-    .sidebar-header { padding: 12px; font-size: 12px; font-weight: bold; color: var(--text-sub); border-bottom: 1px solid var(--surface-variant); background: #f8f9fa; }
+    .sidebar-header { padding: 14px; font-size: 12px; font-weight: bold; color: var(--text-sub); border-bottom: 1px solid var(--surface-variant); background: #f8f9fa; }
     .user-list { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
     
     .user-item {
-      display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 12px;
-      cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s;
+      display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 12px;
+      cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s; user-select: none;
     }
-    .user-item:hover, .user-item.active { background: rgba(0,141,189,0.08); color: var(--primary); }
+    .user-item:hover, .user-item.active { background: rgba(0,141,189,0.1); color: var(--primary); }
+
+    /* 未読バッジ */
+    .unread-badge {
+      background: #ff3b30; color: white; font-size: 10px; font-weight: bold;
+      padding: 2px 7px; border-radius: 10px; min-width: 18px; text-align: center;
+    }
 
     /* メインチャットエリア */
-    main { flex: 1; display: flex; flex-direction: column; padding: 10px; overflow: hidden; background: var(--surface); }
+    main { flex: 1; display: flex; flex-direction: column; padding: 12px; overflow: hidden; background: var(--surface); position: relative; }
+
+    .chat-header { font-size: 14px; font-weight: bold; padding: 0 4px 10px 4px; border-bottom: 1px solid #e0e2ec; margin-bottom: 8px; color: var(--text-sub); display: flex; align-items: center; gap: 6px; }
 
     #chat-container {
-      flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth;
+      flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth;
     }
 
-    /* メッセージ要素 */
-    .msg-group { display: flex; flex-direction: column; max-width: 80%; animation: popIn 0.2s var(--spring); }
+    /* 日付区切り (中央表示) */
+    .date-divider {
+      align-self: center; background: rgba(0, 0, 0, 0.06); color: var(--text-sub);
+      font-size: 11px; font-weight: bold; padding: 4px 14px; border-radius: 20px; margin: 10px 0;
+    }
+
+    /* 未選択時のプレースホルダー案内 */
+    .empty-state {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      color: var(--text-sub); text-align: center;
+    }
+
+    /* メッセージ配置 */
+    .msg-group { display: flex; flex-direction: column; max-width: 75%; animation: popIn 0.2s var(--spring); }
     .msg-group.me { align-self: flex-end; align-items: flex-end; }
     .msg-group.other { align-self: flex-start; align-items: flex-start; }
 
-    .msg-sender { font-size: 11px; font-weight: bold; color: var(--text-sub); margin-bottom: 3px; padding: 0 4px; }
+    .msg-sender { font-size: 11px; font-weight: bold; color: var(--text-sub); margin-bottom: 3px; padding: 0 4px; display: flex; align-items: center; gap: 4px; }
     
     .msg-wrapper { display: flex; align-items: flex-end; gap: 6px; }
     .msg-group.me .msg-wrapper { flex-direction: row-reverse; }
 
     .msg-bubble {
-      padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4;
-      word-break: break-word; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.5;
+      word-break: break-word; box-shadow: 0 2px 8px rgba(0,0,0,0.04); white-space: pre-wrap;
     }
     .msg-group.me .msg-bubble { background: var(--primary); color: var(--on-primary); border-bottom-right-radius: 4px; }
     .msg-group.other .msg-bubble { background: var(--glass-card); color: var(--text-main); border-bottom-left-radius: 4px; border: 1px solid #e0e2ec; }
@@ -89,69 +110,135 @@
     .msg-meta { font-size: 10px; color: var(--text-sub); display: flex; flex-direction: column; align-items: flex-end; }
     .msg-read { color: var(--primary); font-weight: bold; }
 
-    .msg-img { max-width: 200px; max-height: 180px; border-radius: 12px; margin-top: 4px; cursor: pointer; object-fit: cover; }
+    .msg-img { max-width: 220px; max-height: 180px; border-radius: 12px; margin-top: 4px; cursor: pointer; object-fit: cover; }
     .msg-file { display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.05); padding: 6px 10px; border-radius: 10px; text-decoration: none; color: inherit; font-size: 12px; font-weight: bold; }
 
-    .del-btn { border: none; background: none; color: #aaa; cursor: pointer; padding: 2px; }
+    .del-btn { border: none; background: none; color: #aaa; cursor: pointer; padding: 2px; display: flex; align-items: center; }
     .del-btn:hover { color: #ff4d4d; }
 
     @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-    /* --- 入力バー --- */
+    /* 入力バー */
     .input-bar {
-      display: flex; align-items: center; gap: 8px; padding: 6px 12px;
-      background: var(--glass-card); border-radius: 28px; border: 1px solid #d0d4dc;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 6px; flex-shrink: 0;
+      display: flex; align-items: flex-end; gap: 8px; padding: 8px 12px;
+      background: var(--glass-card); border-radius: 24px; border: 1px solid #d0d4dc;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 6px; flex-shrink: 0; position: relative;
     }
-    .input-bar input[type="text"] { flex: 1; border: none; background: transparent; padding: 8px; font-size: 14px; outline: none; }
+    .input-bar textarea {
+      flex: 1; border: none; background: transparent; padding: 6px 4px; font-size: 14px; outline: none;
+      resize: none; max-height: 100px; height: 28px; line-height: 1.4;
+    }
     .icon-btn { border: none; background: none; color: var(--primary); cursor: pointer; padding: 6px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+
+    /* リアクション / スタンプ選択ポップアップ */
+    .reaction-picker {
+      position: absolute; bottom: 56px; right: 48px; background: white; border-radius: 20px;
+      padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; grid-template-columns: repeat(5, 1fr); gap: 8px; border: 1px solid var(--surface-variant); z-index: 10;
+    }
+    .reaction-item { font-size: 22px; cursor: pointer; text-align: center; transition: 0.15s var(--spring); }
+    .reaction-item:hover { transform: scale(1.3); }
+
+    /* トーストポップアップ */
+    .toast {
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-60px);
+      background: #323232; color: white; padding: 10px 20px; border-radius: 20px;
+      font-size: 13px; font-weight: bold; opacity: 0; z-index: 3000;
+      transition: transform 0.3s var(--spring), opacity 0.3s ease; pointer-events: none;
+      display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     /* モーダル */
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-    .dialog { background: white; width: 90%; max-width: 360px; padding: 24px; border-radius: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+    .dialog { background: white; width: 90%; max-width: 320px; padding: 24px; border-radius: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
     .form-group { margin-bottom: 14px; }
     .form-label { font-size: 12px; font-weight: bold; color: var(--text-sub); margin-bottom: 4px; display: block; }
     .form-input { width: 100%; padding: 10px 12px; border-radius: 12px; border: 2px solid #e0e2ec; outline: none; font-size: 14px; font-weight: bold; }
     .form-input:focus { border-color: var(--primary); }
     .btn { width: 100%; padding: 12px; border-radius: 100px; border: none; background: var(--primary); color: white; font-weight: bold; font-size: 14px; cursor: pointer; }
 
-    @media (max-width: 600px) {
-      .sidebar { width: 100px; }
-    }
+    @media (max-width: 600px) { .sidebar { width: 120px; } }
   </style>
 </head>
 <body>
 
+<!-- ポップアップ通知トースト -->
+<div id="toast" class="toast">
+  <span class="material-symbols-rounded" id="toastIcon" style="font-size:18px;">info</span>
+  <span id="toastText"></span>
+</div>
+
 <header>
   <a href="#" class="brand">
-    <img src="https://symphony100.github.io/symphony/symphony.png" alt="logo">
-    <span>Symphony</span>
+    <span>Symphony Chat</span>
   </a>
   <div style="flex:1"></div>
-  <button class="notify-btn" onclick="enableNotification()">
+  
+  <button id="notifyBtn" class="btn-sm btn-notify" onclick="enableNativeNotification()">
     <span class="material-symbols-rounded" style="font-size:16px;">notifications</span>
-    <span>通知許可</span>
+    <span id="notifyBtnText">通知を許可</span>
   </button>
-  <div id="roleDisplay" class="role-badge">...</div>
+
+  <button class="btn-sm btn-switch" onclick="openSwitchModal()">
+    <span class="material-symbols-rounded" style="font-size:16px;">swap_horiz</span>
+    <span>アカウント切替</span>
+  </button>
+
+  <div id="roleDisplay" class="role-badge">
+    <span class="material-symbols-rounded" style="font-size:16px;">account_circle</span>
+    <span id="roleBadgeText">一般ユーザー</span>
+  </div>
 </header>
 
-<div class="app-body">
-  <!-- 管理者用サイドバー (全メッセージ閲覧用) -->
-  <div class="sidebar" id="adminSidebar" style="display:none;">
-    <div class="sidebar-header">🛡️ 閲覧ユーザー切り替え</div>
-    <div class="user-list" id="userList">
-      <div class="user-item active" onclick="filterUser('ALL')">全発言ログ一覧</div>
-    </div>
+<div class="chat-layout">
+  <!-- 左サイドバー -->
+  <div class="sidebar">
+    <div class="sidebar-header" id="sidebarHeader">チャット相手</div>
+    <div class="user-list" id="userList"></div>
   </div>
 
-  <main>
+  <!-- メインメッセージ領域 -->
+  <main id="mainChatArea">
+    <div class="chat-header" id="currentChatTitle">
+      <span class="material-symbols-rounded">chat</span>
+      <span>チャットを選択してください</span>
+    </div>
+
+    <!-- ユーザー未選択時の案内プレースホルダー -->
+    <div id="emptyState" class="empty-state" style="display:none;">
+      <span class="material-symbols-rounded" style="font-size:64px; opacity:0.3;">forum</span>
+      <p style="font-size:14px; font-weight:bold; margin-top:12px;">左のリストからユーザーを選択してください</p>
+    </div>
+    
     <div id="chat-container"></div>
 
-    <div class="input-bar">
-      <button class="icon-btn" onclick="document.getElementById('fileInput').click()"><span class="material-symbols-rounded">attach_file</span></button>
+    <div class="input-bar" id="inputBarContainer">
+      <button class="icon-btn" onclick="document.getElementById('fileInput').click()">
+        <span class="material-symbols-rounded">attach_file</span>
+      </button>
       <input type="file" id="fileInput" style="display:none" onchange="sendFile(this)">
       
-      <input type="text" id="msgInput" placeholder="メッセージを入力..." onkeydown="if(event.key==='Enter') sendText()">
+      <textarea id="msgInput" placeholder="メッセージを入力..." onkeydown="handleKeyDown(event)" oninput="autoGrow(this)"></textarea>
+
+      <!-- リアクション / スタンプボタン (送信ボタンの左側) -->
+      <button class="icon-btn" onclick="toggleReactionPicker()">
+        <span class="material-symbols-rounded">add_reaction</span>
+      </button>
+
+      <!-- リアクション選択メニュー -->
+      <div id="reactionPicker" class="reaction-picker">
+        <span class="reaction-item" onclick="sendReaction('👍')">👍</span>
+        <span class="reaction-item" onclick="sendReaction('❤️')">❤️</span>
+        <span class="reaction-item" onclick="sendReaction('😊')">😊</span>
+        <span class="reaction-item" onclick="sendReaction('🎉')">🎉</span>
+        <span class="reaction-item" onclick="sendReaction('🔥')">🔥</span>
+        <span class="reaction-item" onclick="sendReaction('👏')">👏</span>
+        <span class="reaction-item" onclick="sendReaction('💡')">💡</span>
+        <span class="reaction-item" onclick="sendReaction('😭')">😭</span>
+        <span class="reaction-item" onclick="sendReaction('✅')">✅</span>
+        <span class="reaction-item" onclick="sendReaction('✨')">✨</span>
+      </div>
+
       <button class="icon-btn" style="background:var(--primary); color:white; width:36px; height:36px;" onclick="sendText()">
         <span class="material-symbols-rounded" style="font-size:18px;">send</span>
       </button>
@@ -159,125 +246,231 @@
   </main>
 </div>
 
-<!-- 初回設定モーダル -->
-<div id="loginModal" class="overlay">
+<!-- アカウント切り替えモーダル -->
+<div id="switchModal" class="overlay" style="display:none;">
   <div class="dialog">
-    <h3 style="margin:0 0 16px 0; color:var(--primary);">チャットを開始</h3>
+    <h3 style="margin:0 0 16px 0; color:var(--primary); font-size:18px;">アカウント切り替え</h3>
     
     <div class="form-group">
-      <label class="form-label">名前</label>
-      <input type="text" id="initName" class="form-input" placeholder="名前を入力">
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">役割</label>
-      <select id="initRole" class="form-input" onchange="togglePass(this.value)">
-        <option value="user">一般ユーザー</option>
-        <option value="admin">管理者</option>
+      <label class="form-label">切り替え先アカウント</label>
+      <select id="switchRoleSelect" class="form-input" onchange="toggleAdminPassField(this.value)">
+        <option value="user">一般ユーザー (Sym-○○○○)</option>
+        <option value="admin">管理者 (Symphony-System)</option>
       </select>
     </div>
 
-    <div class="form-group" id="passGroup" style="display:none;">
-      <label class="form-label" style="color:#d32f2f;">管理者パスワード (2024)</label>
-      <input type="password" id="initPass" class="form-input" placeholder="パスワードを入力">
+    <div class="form-group" id="adminPassGroup" style="display:none;">
+      <label class="form-label" style="color:#c62828;">管理者パスワード (2024)</label>
+      <input type="password" id="adminPassInput" class="form-input" placeholder="パスワードを入力">
     </div>
 
-    <button class="btn" onclick="startApp()">決定して始める</button>
+    <div style="display:flex; gap:8px;">
+      <button class="btn" style="background:#ccc;" onclick="closeSwitchModal()">キャンセル</button>
+      <button class="btn" onclick="executeSwitch()">切替実行</button>
+    </div>
+  </div>
+</div>
+
+<!-- 削除確認モーダル (メッセージ/ユーザー削除共通) -->
+<div id="confirmModal" class="overlay" style="display:none;">
+  <div class="dialog">
+    <h3 style="margin:0 0 12px 0; font-size:16px;" id="confirmModalTitle">確認</h3>
+    <p style="font-size:13px; color:var(--text-sub); margin-bottom:20px;" id="confirmModalText">本当に削除しますか？</p>
+    <div style="display:flex; gap:8px;">
+      <button class="btn" style="background:#ccc;" onclick="closeConfirmModal()">キャンセル</button>
+      <button class="btn" style="background:#c62828;" id="confirmExecuteBtn">削除</button>
+    </div>
   </div>
 </div>
 
 <script>
-  let myProfile = null;
-  let peer = null;
-  let adminConn = null;
-  let userConns = {}; 
-  let allMessages = []; // 全発言ログ
-  let currentFilter = 'ALL';
-
-  const ADMIN_PEER_ID = "symphony-sys-admin-watch-v2";
-
-  function togglePass(role) {
-    document.getElementById('passGroup').style.display = (role === 'admin') ? 'block' : 'none';
+  let savedUserNumber = localStorage.getItem('s_sym_num');
+  if (!savedUserNumber) {
+    savedUserNumber = Math.floor(1000 + Math.random() * 9000).toString();
+    localStorage.setItem('s_sym_num', savedUserNumber);
   }
 
-  function startApp() {
-    const name = document.getElementById('initName').value.trim();
-    const role = document.getElementById('initRole').value;
-    const pass = document.getElementById('initPass').value;
+  let myRole = 'user';
+  let myId = 'Sym-' + savedUserNumber;
+  let myName = myId;
+  let activeTargetId = 'Symphony-System';
 
-    if (!name) return alert('名前を入力してください');
-    if (role === 'admin' && pass !== '2024') return alert('管理者パスワードが違います');
+  // 永続化ストレージ
+  let messages = JSON.parse(localStorage.getItem('symphony_msg_history')) || [];
+  let userList = new Set(JSON.parse(localStorage.getItem('symphony_user_list')) || ['Symphony-System']);
+  let unreadCounts = JSON.parse(localStorage.getItem('symphony_unread')) || {};
 
-    myProfile = {
-      uid: 'u_' + Math.random().toString(36).substr(2, 7),
-      name: name,
-      role: role
+  const pubnub = new PubNub({
+    publishKey: 'demo',
+    subscribeKey: 'demo',
+    userId: myId
+  });
+
+  const CHANNEL = 'symphony_gchat_v4_channel';
+
+  window.onload = () => {
+    checkNotificationStatus();
+    updateUserInterface();
+
+    pubnub.subscribe({ channels: [CHANNEL] });
+    pubnub.addListener({
+      message: (event) => {
+        const data = event.message;
+        if (data.type === 'msg') {
+          receiveMessage(data.msg);
+        } else if (data.type === 'del') {
+          deleteLocalMsg(data.id);
+        } else if (data.type === 'read_ack') {
+          handleReadAck(data.msgId);
+        }
+      }
+    });
+  };
+
+  function saveHistory() {
+    localStorage.setItem('symphony_msg_history', JSON.stringify(messages));
+    localStorage.setItem('symphony_user_list', JSON.stringify(Array.from(userList)));
+    localStorage.setItem('symphony_unread', JSON.stringify(unreadCounts));
+  }
+
+  function showToast(text, icon = 'info') {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastText').innerText = text;
+    document.getElementById('toastIcon').innerText = icon;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  function updateUserInterface() {
+    const roleBadgeText = document.getElementById('roleBadgeText');
+    const roleDisplay = document.getElementById('roleDisplay');
+    const sidebarHeader = document.getElementById('sidebarHeader');
+
+    if (myRole === 'admin') {
+      myId = 'Symphony-System';
+      myName = 'Symphony-System';
+      roleBadgeText.innerText = 'Symphony-System';
+      roleDisplay.className = 'role-badge admin';
+      roleDisplay.querySelector('.material-symbols-rounded').innerText = 'engineering';
+      sidebarHeader.innerText = 'ユーザー一覧 (長押しで削除)';
+      activeTargetId = null; // 管理者の初期は未選択状態
+    } else {
+      myId = 'Sym-' + savedUserNumber;
+      myName = myId;
+      roleBadgeText.innerText = myName;
+      roleDisplay.className = 'role-badge';
+      roleDisplay.querySelector('.material-symbols-rounded').innerText = 'account_circle';
+      sidebarHeader.innerText = 'チャット相手';
+      activeTargetId = 'Symphony-System';
+    }
+
+    renderSidebar();
+    renderMessages();
+  }
+
+  // --- サイドバー描画 & 長押し削除 ＆ 未読バッジ ---
+  function renderSidebar() {
+    const container = document.getElementById('userList');
+    container.innerHTML = '';
+
+    if (myRole === 'user') {
+      const item = document.createElement('div');
+      item.className = 'user-item active';
+      item.innerHTML = `
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="material-symbols-rounded">engineering</span>
+          <span>Symphony-System</span>
+        </div>
+      `;
+      container.appendChild(item);
+      document.getElementById('currentChatTitle').innerHTML = `<span class="material-symbols-rounded">engineering</span> <span>Symphony-System</span>`;
+    } else {
+      userList.forEach(userId => {
+        if (userId === 'Symphony-System') return;
+        const item = document.createElement('div');
+        item.className = `user-item ${userId === activeTargetId ? 'active' : ''}`;
+
+        const unreadNum = unreadCounts[userId] || 0;
+        const unreadHtml = unreadNum > 0 ? `<span class="unread-badge">${unreadNum}</span>` : '';
+
+        item.innerHTML = `
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="material-symbols-rounded">account_circle</span>
+            <span>${userId}</span>
+          </div>
+          ${unreadHtml}
+        `;
+
+        // タップ処理
+        item.onclick = () => {
+          activeTargetId = userId;
+          delete unreadCounts[userId];
+          saveHistory();
+          renderSidebar();
+          renderMessages();
+        };
+
+        // 管理者の長押し削除処理 (Touch / Mouse / Right Click)
+        let pressTimer = null;
+        const startPress = () => {
+          pressTimer = setTimeout(() => openDeleteUserConfirm(userId), 600);
+        };
+        const cancelPress = () => clearTimeout(pressTimer);
+
+        item.onmousedown = item.ontouchstart = startPress;
+        item.onmouseup = item.mouseleave = item.ontouchend = item.ontouchcancel = cancelPress;
+        item.oncontextmenu = (e) => {
+          e.preventDefault();
+          openDeleteUserConfirm(userId);
+        };
+
+        container.appendChild(item);
+      });
+
+      if (activeTargetId) {
+        document.getElementById('currentChatTitle').innerHTML = `<span class="material-symbols-rounded">account_circle</span> <span>${activeTargetId}</span>`;
+      } else {
+        document.getElementById('currentChatTitle').innerHTML = `<span class="material-symbols-rounded">chat</span> <span>未選択</span>`;
+      }
+    }
+  }
+
+  // --- 管理者用：ユーザー長押し削除 ---
+  function openDeleteUserConfirm(userId) {
+    document.getElementById('confirmModalTitle').innerText = 'ユーザー削除';
+    document.getElementById('confirmModalText').innerText = `「${userId}」とこのユーザーのすべてのチャット履歴を削除しますか？`;
+    document.getElementById('confirmModal').style.display = 'flex';
+
+    document.getElementById('confirmExecuteBtn').onclick = () => {
+      userList.delete(userId);
+      messages = messages.filter(m => m.senderId !== userId && m.targetId !== userId);
+      delete unreadCounts[userId];
+      if (activeTargetId === userId) activeTargetId = null;
+      saveHistory();
+      closeConfirmModal();
+      renderSidebar();
+      renderMessages();
+      showToast(`${userId} を削除しました`, 'delete');
     };
-
-    document.getElementById('loginModal').style.display = 'none';
-    const badge = document.getElementById('roleDisplay');
-    
-    if (role === 'admin') {
-      badge.innerText = '🛡️ 管理者 (監視中)';
-      badge.classList.add('admin');
-      document.getElementById('adminSidebar').style.display = 'flex';
-    } else {
-      badge.innerText = '一般ユーザー';
-    }
-
-    setupNetwork();
   }
 
-  // --- 通信処理 ---
-  function setupNetwork() {
-    if (myProfile.role === 'admin') {
-      // 管理者は全ユーザーの発言を受信・中継
-      peer = new Peer(ADMIN_PEER_ID);
-
-      peer.on('connection', (conn) => {
-        conn.on('data', (data) => {
-          if (data.type === 'login') {
-            userConns[data.uid] = conn;
-            addUserToSidebar(data.uid, data.name);
-          } else if (data.type === 'msg') {
-            receiveMessage(data.msg);
-            broadcast(data); // 他のユーザーへ中継
-          } else if (data.type === 'del') {
-            deleteLocalMsg(data.id);
-            broadcast(data);
-          }
-        });
-      });
-    } else {
-      // 一般ユーザー
-      peer = new Peer('user_' + myProfile.uid);
-
-      peer.on('open', () => {
-        connectToAdmin();
-      });
-    }
-  }
-
-  function connectToAdmin() {
-    adminConn = peer.connect(ADMIN_PEER_ID);
-    adminConn.on('open', () => {
-      adminConn.send({ type: 'login', uid: myProfile.uid, name: myProfile.name });
-    });
-
-    adminConn.on('data', (data) => {
-      if (data.type === 'msg') receiveMessage(data.msg);
-      if (data.type === 'del') deleteLocalMsg(data.id);
-    });
-
-    // 接続が切れたら自動再接続
-    adminConn.on('close', () => setTimeout(connectToAdmin, 2000));
-  }
-
-  function broadcast(data) {
-    Object.values(userConns).forEach(c => { if (c.open) c.send(data); });
+  function closeConfirmModal() {
+    document.getElementById('confirmModal').style.display = 'none';
   }
 
   // --- 送信機能 ---
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendText();
+    }
+  }
+
+  function autoGrow(element) {
+    element.style.height = '28px';
+    element.style.height = (element.scrollHeight - 12) + 'px';
+  }
+
   function sendText() {
     const input = document.getElementById('msgInput');
     const text = input.value.trim();
@@ -285,11 +478,23 @@
 
     postMessage({ text });
     input.value = '';
+    input.style.height = '28px';
+  }
+
+  function sendReaction(emoji) {
+    postMessage({ text: emoji });
+    document.getElementById('reactionPicker').style.display = 'none';
+  }
+
+  function toggleReactionPicker() {
+    const p = document.getElementById('reactionPicker');
+    p.style.display = p.style.display === 'grid' ? 'none' : 'grid';
   }
 
   function sendFile(input) {
     const file = input.files[0];
     if (!file) return;
+    if (file.size > 1500000) return showToast('ファイルサイズは1.5MB以下にしてください', 'warning');
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -306,92 +511,126 @@
   }
 
   function postMessage(payload) {
+    const target = myRole === 'user' ? 'Symphony-System' : activeTargetId;
+    if (!target) return showToast('ユーザーを選択してください', 'warning');
+
+    const now = new Date();
     const msg = {
-      id: 'm_' + Date.now(),
-      senderId: myProfile.uid,
-      senderName: myProfile.name,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      id: 'm_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+      targetId: target,
+      senderId: myId,
+      senderName: myName,
+      dateStr: now.toLocaleDateString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short' }),
+      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      read: false,
       ...payload
     };
 
-    receiveMessage(msg); // 自分の画面へ反映
-
-    const packet = { type: 'msg', msg };
-    if (myProfile.role === 'admin') {
-      broadcast(packet);
-    } else if (adminConn && adminConn.open) {
-      adminConn.send(packet);
-    }
+    pubnub.publish({
+      channel: CHANNEL,
+      message: { type: 'msg', msg: msg }
+    });
   }
 
   function receiveMessage(msg) {
-    allMessages.push(msg);
-    if (myProfile.role === 'admin') {
-      addUserToSidebar(msg.senderId, msg.senderName);
-    }
-    renderMessages();
+    if (msg.senderId.startsWith('Sym-')) userList.add(msg.senderId);
+    if (msg.targetId.startsWith('Sym-')) userList.add(msg.targetId);
 
-    // 通知を飛ばす
-    if (msg.senderId !== myProfile.uid) {
-      triggerNotification(msg.senderName, msg.text || 'ファイルが送信されました');
+    if (!messages.find(m => m.id === msg.id)) {
+      messages.push(msg);
+
+      // 未読カウントアップ（画面を開いていない場合）
+      if (msg.senderId !== myId) {
+        if (myRole === 'admin' && activeTargetId !== msg.senderId) {
+          unreadCounts[msg.senderId] = (unreadCounts[msg.senderId] || 0) + 1;
+        }
+        pubnub.publish({
+          channel: CHANNEL,
+          message: { type: 'read_ack', msgId: msg.id }
+        });
+        triggerNativeNotification(msg.senderName, msg.text || 'ファイルを送信しました');
+      }
+
+      saveHistory();
+      renderSidebar();
+      renderMessages();
     }
   }
 
-  function deleteMsg(id) {
-    if (!confirm('メッセージを削除しますか？')) return;
-    deleteLocalMsg(id);
-
-    const packet = { type: 'del', id };
-    if (myProfile.role === 'admin') {
-      broadcast(packet);
-    } else if (adminConn && adminConn.open) {
-      adminConn.send(packet);
+  function handleReadAck(msgId) {
+    const msg = messages.find(m => m.id === msgId);
+    if (msg && msg.senderId === myId) {
+      msg.read = true;
+      saveHistory();
+      renderMessages();
     }
+  }
+
+  function requestDeleteMsg(id) {
+    document.getElementById('confirmModalTitle').innerText = 'メッセージ削除';
+    document.getElementById('confirmModalText').innerText = 'このメッセージを削除しますか？';
+    document.getElementById('confirmModal').style.display = 'flex';
+
+    document.getElementById('confirmExecuteBtn').onclick = () => {
+      pubnub.publish({
+        channel: CHANNEL,
+        message: { type: 'del', id: id }
+      });
+      closeConfirmModal();
+    };
   }
 
   function deleteLocalMsg(id) {
-    allMessages = allMessages.filter(m => m.id !== id);
+    messages = messages.filter(m => m.id !== id);
+    saveHistory();
     renderMessages();
+    showToast('メッセージを削除しました', 'delete');
   }
 
-  // --- 管理者用サイドバー管理 ---
-  function addUserToSidebar(uid, name) {
-    const list = document.getElementById('userList');
-    if (document.getElementById(`uitem_${uid}`)) return;
-
-    const item = document.createElement('div');
-    item.id = `uitem_${uid}`;
-    item.className = 'user-item';
-    item.innerText = '👤 ' + name;
-    item.onclick = () => filterUser(uid);
-    list.appendChild(item);
-  }
-
-  function filterUser(uid) {
-    currentFilter = uid;
-    document.querySelectorAll('.user-item').forEach(el => el.classList.remove('active'));
-    if (uid === 'ALL') {
-      document.querySelector('.user-item').classList.add('active');
-    } else {
-      const target = document.getElementById(`uitem_${uid}`);
-      if (target) target.classList.add('active');
-    }
-    renderMessages();
-  }
-
-  // --- 描画レンダリング ---
+  // --- メッセージ描画 (中央日付表示 & 未選択時のプレースホルダー) ---
   function renderMessages() {
     const container = document.getElementById('chat-container');
+    const emptyState = document.getElementById('emptyState');
+    const inputBar = document.getElementById('inputBarContainer');
     container.innerHTML = '';
 
-    // フィルタリング処理（管理者が特定のユーザーを選んだ場合）
-    const displayMsgs = allMessages.filter(m => {
-      if (currentFilter === 'ALL') return true;
-      return m.senderId === currentFilter;
+    // 管理者でユーザー未選択の時
+    if (myRole === 'admin' && !activeTargetId) {
+      emptyState.style.display = 'flex';
+      container.style.display = 'none';
+      inputBar.style.opacity = '0.4';
+      inputBar.style.pointerEvents = 'none';
+      return;
+    } else {
+      emptyState.style.display = 'none';
+      container.style.display = 'flex';
+      inputBar.style.opacity = '1';
+      inputBar.style.pointerEvents = 'auto';
+    }
+
+    const currentTarget = myRole === 'user' ? 'Symphony-System' : activeTargetId;
+
+    const filteredMessages = messages.filter(m => {
+      if (myRole === 'user') {
+        return (m.senderId === myId && m.targetId === 'Symphony-System') || (m.senderId === 'Symphony-System' && m.targetId === myId);
+      } else {
+        return (m.senderId === currentTarget) || (m.targetId === currentTarget);
+      }
     });
 
-    displayMsgs.forEach(m => {
-      const isMe = m.senderId === myProfile.uid;
+    let lastDateStr = '';
+
+    filteredMessages.forEach(m => {
+      // 中央の日付表示 (日付が変わったタイミングで追加)
+      if (m.dateStr && m.dateStr !== lastDateStr) {
+        const dateDiv = document.createElement('div');
+        dateDiv.className = 'date-divider';
+        dateDiv.innerText = m.dateStr;
+        container.appendChild(dateDiv);
+        lastDateStr = m.dateStr;
+      }
+
+      const isMe = m.senderId === myId;
       const group = document.createElement('div');
       group.className = `msg-group ${isMe ? 'me' : 'other'}`;
 
@@ -401,17 +640,20 @@
         if (m.file.isImg) {
           body += `<img src="${m.file.url}" class="msg-img" onclick="window.open('${m.file.url}')">`;
         } else {
-          body += `<a href="${m.file.url}" download="${m.file.name}" class="msg-file"><span class="material-symbols-rounded">description</span>${escapeHTML(m.file.name)}</a>`;
+          body += `<a href="${m.file.url}" download="${m.file.name}" class="msg-file"><span class="material-symbols-rounded">description</span> ${escapeHTML(m.file.name)}</a>`;
         }
       }
 
+      const iconName = m.senderId === 'Symphony-System' ? 'engineering' : 'account_circle';
+
       group.innerHTML = `
-        <div class="msg-sender">${escapeHTML(m.senderName)}</div>
+        <div class="msg-sender"><span class="material-symbols-rounded" style="font-size:14px;">${iconName}</span> <span>${escapeHTML(m.senderName)}</span></div>
         <div class="msg-wrapper">
           <div class="msg-bubble">${body}</div>
           <div class="msg-meta">
+            ${isMe && m.read ? '<span class="msg-read">既読</span>' : ''}
             <span>${m.time}</span>
-            ${isMe || myProfile.role === 'admin' ? `<button class="del-btn" onclick="deleteMsg('${m.id}')"><span class="material-symbols-rounded" style="font-size:14px;">delete</span></button>` : ''}
+            ${isMe || myRole === 'admin' ? `<button class="del-btn" onclick="requestDeleteMsg('${m.id}')"><span class="material-symbols-rounded" style="font-size:14px;">delete</span></button>` : ''}
           </div>
         </div>
       `;
@@ -421,20 +663,59 @@
     container.scrollTop = container.scrollHeight;
   }
 
-  // --- 通知機能 ---
-  function enableNotification() {
-    if (!("Notification" in window)) return alert('通知非対応のブラウザです');
-    Notification.requestPermission().then(p => {
-      if (p === "granted") alert('通知がオンになりました！');
+  // --- アカウント切替 ---
+  function openSwitchModal() { document.getElementById('switchModal').style.display = 'flex'; }
+  function closeSwitchModal() { document.getElementById('switchModal').style.display = 'none'; }
+  function toggleAdminPassField(role) { document.getElementById('adminPassGroup').style.display = role === 'admin' ? 'block' : 'none'; }
+
+  function executeSwitch() {
+    const selectedRole = document.getElementById('switchRoleSelect').value;
+    const pass = document.getElementById('adminPassInput').value;
+
+    if (selectedRole === 'admin') {
+      if (pass !== '2024') return showToast('管理者パスワードが違います', 'error');
+      myRole = 'admin';
+      showToast('管理者 (Symphony-System) に切り替えました');
+    } else {
+      myRole = 'user';
+      showToast('一般ユーザー (' + myId + ') に切り替えました');
+    }
+
+    closeSwitchModal();
+    updateUserInterface();
+  }
+
+  // --- 通知 ---
+  function checkNotificationStatus() {
+    const btnText = document.getElementById('notifyBtnText');
+    if (!("Notification" in window)) return btnText.innerText = '通知非対応';
+    if (Notification.permission === 'granted') btnText.innerText = '通知: ON';
+    else if (Notification.permission === 'denied') btnText.innerText = '通知: OFF';
+    else btnText.innerText = '通知を許可';
+  }
+
+  function enableNativeNotification() {
+    if (!("Notification" in window)) return showToast('お使いのブラウザは通知に対応していません', 'warning');
+    
+    Notification.requestPermission().then(permission => {
+      checkNotificationStatus();
+      if (permission === "granted") {
+        showToast('通知が有効化されました', 'notifications');
+        new Notification("Symphony Chat", {
+          body: "通知が正常に有効化されました！",
+          icon: "https://symphony100.github.io/symphony/symphony.png"
+        });
+      }
     });
   }
 
-  function triggerNotification(title, body) {
-    if (Notification.permission === "granted" && document.hidden) {
-      new Notification(title, {
-        body: body,
+  function triggerNativeNotification(title, bodyText) {
+    if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
+      const n = new Notification(title, {
+        body: bodyText,
         icon: "https://symphony100.github.io/symphony/symphony.png"
       });
+      n.onclick = () => { window.focus(); };
     }
   }
 
