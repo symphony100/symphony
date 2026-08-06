@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>おとマップ Japan - OtoMap Japan</title>
+  
+  <!-- Google Fonts: 令和和モダン明朝 ＆ ゴシック -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700;900&family=Shippori+Mincho:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===================================================
+       1. 令和和モダン（白ベース × 金箔ゴールド）
+       =================================================== */
+    :root {
+      --bg-washi: #fbf9f5;
+      --bg-card: #ffffff;
+      --color-gold: #c5a059;
+      --color-gold-bright: #e5c158;
+      --color-gold-dark: #8c6d2d;
+      --color-crimson: #d9383a;
+      --text-main: #1f2937;
+      --text-sub: #64748b;
+      --border-gold: rgba(197, 160, 89, 0.4);
+      --font-serif: 'Shippori Mincho', 'Noto Serif JP', serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* 画面スクロールの完全防止 */
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-washi);
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(197, 160, 89, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(217, 56, 58, 0.05) 0%, transparent 40%),
+        linear-gradient(180deg, #ffffff 0%, #f7f4ed 100%);
+      color: var(--text-main);
+      font-family: var(--font-serif);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* --- スマホ対応ヘッダー --- */
+    header {
+      padding: 10px 20px;
+      height: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.95);
+      border-bottom: 1px solid var(--border-gold);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-logo-mark {
+      width: 20px;
+      height: 20px;
+      border: 1px solid var(--color-gold);
+      transform: rotate(45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .header-logo-mark::after {
+      content: '';
+      width: 7px;
+      height: 7px;
+      background: var(--color-crimson);
+    }
+
+    .header-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* シェアボタン */
+    .share-btn {
+      background: #ffffff;
+      border: 1px solid var(--color-gold);
+      color: var(--text-main);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-family: var(--font-serif);
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      transition: all 0.2s;
+    }
+    .share-btn:hover {
+      background: var(--color-gold);
+      color: #ffffff;
+    }
+    .share-btn svg {
+      fill: currentColor;
+    }
+
+    /* 言語切替トグル */
+    .lang-switch-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .switch-label {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .switch-toggle {
+      position: relative;
+      display: inline-block;
+      width: 42px;
+      height: 22px;
+    }
+
+    .switch-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #cbd5e1;
+      border: 1px solid var(--color-gold);
+      transition: .3s;
+      border-radius: 22px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    input:checked + .slider {
+      background-color: var(--color-gold);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* スマホ向けヘッダーレスポンシブ設計 */
+    @media (max-width: 600px) {
+      header {
+        padding: 8px 12px;
+      }
+      .header-title {
+        font-size: 0.95rem;
+        letter-spacing: 0px;
+      }
+      .share-btn {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+      }
+      .share-btn-text {
+        display: none; /* スマホではテキストを隠してアイコン化 */
+      }
+      .lang-switch-container {
+        font-size: 0.75rem;
+        gap: 4px;
+      }
+      .switch-toggle {
+        width: 36px;
+        height: 18px;
+      }
+      .slider:before {
+        height: 12px;
+        width: 12px;
+      }
+      input:checked + .slider:before {
+        transform: translateX(18px);
+      }
+    }
+
+    /* メインエリア */
+    .main-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 12px;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .map-card {
+      position: relative;
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-gold);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .map-controls {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 20;
+    }
+
+    .reset-btn {
+      background: #ffffff;
+      border: 1px solid var(--color-gold);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-family: var(--font-serif);
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      transition: all 0.3s;
+    }
+    .reset-btn:hover {
+      background: var(--color-gold);
+      color: #fff;
+    }
+
+    .map-viewport {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+    }
+
+    /* SVG日本地図 */
+    .geolonia-svg-map {
+      width: 100%;
+      height: 100%;
+      max-height: 750px;
+    }
+
+    /* ホバー時の「かくかく・ガタガタ」揺れを完全に防ぐスムーズな塗り・線の指定 */
+    .geolonia-svg-map .prefecture {
+      stroke: #ffffff;
+      stroke-width: 1.2;
+      stroke-linejoin: round;
+      cursor: pointer;
+      transition: fill 0.25s ease, stroke 0.25s ease, opacity 0.25s ease;
+    }
+
+    .geolonia-svg-map .prefecture:hover {
+      stroke: var(--color-gold);
+      opacity: 0.85;
+    }
+
+    .geolonia-svg-map .prefecture.active {
+      fill: var(--color-crimson) !important;
+      stroke: #ffffff !important;
+      stroke-width: 2 !important;
+      filter: drop-shadow(0 0 10px rgba(217, 56, 58, 0.5));
+    }
+
+    .geolonia-svg-map.has-active .prefecture:not(.active) {
+      opacity: 0.35;
+    }
+
+    /* 市町村ピン ＆ 引き出し線 ＆ ラベル (変形拡大させず安定表示) */
+    .city-marker-group {
+      cursor: pointer;
+    }
+
+    .city-pin-dot {
+      fill: #111111;
+      stroke: #ffffff;
+      stroke-width: 1.5;
+    }
+
+    .city-line {
+      stroke: #111111;
+      stroke-width: 1.2;
+      stroke-dasharray: 2, 2;
+    }
+
+    .city-label-bg {
+      fill: #ffffff;
+      stroke: var(--color-gold);
+      stroke-width: 1;
+      rx: 4;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.12));
+      transition: fill 0.2s, stroke 0.2s;
+    }
+
+    .city-marker-group:hover .city-label-bg {
+      fill: var(--color-gold);
+      stroke: var(--color-crimson);
+    }
+
+    .city-label-text {
+      font-size: 11px;
+      font-family: var(--font-serif);
+      font-weight: 700;
+      fill: var(--text-main);
+      text-anchor: middle;
+      dominant-baseline: central;
+      transition: fill 0.2s;
+    }
+
+    .city-marker-group:hover .city-label-text {
+      fill: #ffffff;
+    }
+
+    .loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--bg-washi);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-gold);
+      font-size: 1rem;
+      letter-spacing: 2px;
+      z-index: 30;
+      transition: opacity 0.5s;
+    }
+
+    /* ポップアップモーダル */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.35s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border: 2px solid var(--color-gold);
+      border-radius: 16px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 560px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      transform: scale(0.92);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+
+    .modal-overlay.open .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-gold);
+      background: #fdfbf7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .modal-title-group {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .modal-pref-name {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .modal-city-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--color-crimson);
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--text-sub);
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .modal-close-btn:hover {
+      background: rgba(0,0,0,0.05);
+      color: var(--text-main);
+    }
+
+    .modal-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow-y: auto;
+    }
+
+    .modal-photo-container {
+      width: 100%;
+      height: 220px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border-gold);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-sub);
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .modal-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .modal-sound-title {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .playing-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background-color: var(--color-crimson);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--color-crimson);
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.9); opacity: 0.7; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.7; }
+    }
+
+    .modal-desc {
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: var(--text-sub);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header>
+    <div class="header-logo">
+      <div class="header-logo-mark"></div>
+      <h1 class="header-title" id="headerTitle">おとマップ Japan</h1>
+    </div>
+
+    <div class="header-right">
+      <!-- シェアボタン -->
+      <button class="share-btn" onclick="shareApp()">
+        <svg viewBox="0 0 24 24" width="14" height="14"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+        <span class="share-btn-text" id="shareBtnText">シェア</span>
+      </button>
+
+      <!-- 言語切替トグルスイッチ -->
+      <div class="lang-switch-container">
+        <span class="switch-label" onclick="setLang('ja')">日本語</span>
+        <label class="switch-toggle">
+          <input type="checkbox" id="langToggle" onchange="toggleLanguage(this.checked)">
+          <span class="slider"></span>
+        </label>
+        <span class="switch-label" onclick="setLang('en')">English</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- メインレイアウト -->
+  <div class="main-container">
+    <div class="map-card">
+      <div class="map-controls">
+        <button class="reset-btn" id="resetBtn" onclick="resetMapZoom()">全国表示に戻る</button>
+      </div>
+
+      <!-- 背景（海）タップでリセット -->
+      <div class="map-viewport" id="mapContainer" onclick="handleBgClick(event)">
+        <div id="loading" class="loading-overlay">高精度日本地図を読み込み中...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ポップアップモーダル -->
+  <div id="soundModal" class="modal-overlay" onclick="if(event.target===this) closeModal()">
+    <div class="modal-card">
+      
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span id="modalPrefJp" class="modal-pref-name">徳島県</span>
+          <span id="modalCityName" class="modal-city-name">徳島市</span>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-photo-container" id="modalPhotoBox">
+          <img id="modalPhoto" class="modal-photo" src="" alt="風景写真" style="display:none;">
+          <span id="photoPlaceholderText">※ 画像ファイル準備中</span>
+        </div>
+
+        <div class="modal-sound-title">
+          <span class="playing-indicator" id="playingIndicator" style="display:none;"></span>
+          <span id="modalSoundTitle">♪ 阿波踊りの賑やかな「ぞめき」囃子</span>
+        </div>
+        
+        <p id="modalDesc" class="modal-desc"></p>
+
+        <!-- 隠しオーディオ要素 -->
+        <audio id="hiddenAudio" style="display:none;"></audio>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let currentLang = 'ja';
+    const UI_TEXT = {
+      ja: { title: "おとマップ Japan", resetBtn: "全国表示に戻る", loading: "高精度日本地図を読み込み中...", shareBtn: "シェア", copied: "URLをコピーしました！", noPhoto: "※ 写真準備中", noAudio: "（※ 音声ファイル準備中）" },
+      en: { title: "OtoMap Japan", resetBtn: "Reset Map", loading: "Loading Japan Map...", shareBtn: "Share", copied: "URL copied to clipboard!", noPhoto: "※ Image Coming Soon", noAudio: "(※ Audio Coming Soon)" }
+    };
+
+    const REGION_COLORS = {
+      hokkaido_tohoku: "#e0eafd", kanto: "#e8f5e9", chubu: "#fff8e1", kansai: "#f3e5f5", chugoku: "#fce7f3", shikoku: "#f1f8e9", kyushu_okinawa: "#fff3e0"
+    };
+
+    function getRegionKey(codeStr) {
+      const code = parseInt(codeStr, 10);
+      if (code >= 1 && code <= 7) return "hokkaido_tohoku";
+      if (code >= 8 && code <= 14) return "kanto";
+      if (code >= 15 && code <= 23) return "chubu";
+      if (code >= 24 && code <= 30) return "kansai";
+      if (code >= 31 && code <= 35) return "chugoku";
+      if (code >= 36 && code <= 39) return "shikoku";
+      if (code >= 40 && code <= 47) return "kyushu_okinawa";
+      return "kanto";
+    }
+
+    let PREFECTURE_DATA = {}; // data.json から非同期読み込み
+
+    function getPrefDataWithFallback(code, element) {
+      const codeStr = String(parseInt(code, 10));
+      if (PREFECTURE_DATA[codeStr]) {
+        return PREFECTURE_DATA[codeStr];
+      }
+      const rawName = element.getAttribute('data-name') || "都道府県";
+      const cleanName = rawName.replace(/(府|県)$/, "");
+      const cityName = cleanName + "市";
+      return {
+        nameJp: rawName, nameEn: cleanName,
+        cities: [
+          {
+            cityName: cityName, cityNameEn: cityName,
+            relX: 0.5, relY: 0.5, dx: 40, dy: -10,
+            title: `${cityName}の歴史と伝統の音`, titleEn: `Traditional Sound of ${cityName}`,
+            desc: `${rawName}の風土と歴史を象徴する心地よい音色です。`, descEn: `Traditional sounds reflecting the culture of ${rawName}.`,
+            image: "", audio: ""
+          }
+        ]
+      };
+    }
+
+    // DOM要素参照
+    const headerTitle = document.getElementById('headerTitle');
+    const shareBtnText = document.getElementById('shareBtnText');
+    const resetBtn = document.getElementById('resetBtn');
+    const mapContainer = document.getElementById('mapContainer');
+    const loading = document.getElementById('loading');
+    const soundModal = document.getElementById('soundModal');
+    const modalPrefJp = document.getElementById('modalPrefJp');
+    const modalCityName = document.getElementById('modalCityName');
+    const modalPhoto = document.getElementById('modalPhoto');
+    const photoPlaceholderText = document.getElementById('photoPlaceholderText');
+    const modalSoundTitle = document.getElementById('modalSoundTitle');
+    const playingIndicator = document.getElementById('playingIndicator');
+    const modalDesc = document.getElementById('modalDesc');
+    const hiddenAudio = document.getElementById('hiddenAudio');
+    const langToggle = document.getElementById('langToggle');
+
+    let svgMapElement = null;
+    let cityMarkersGroup = null;
+    let activeCode = null;
+    let activeCityIndex = 0;
+    let initialViewBox = [0, 0, 1000, 1000];
+    let animFrameId = null;
+
+    function toggleLanguage(isEnglish) {
+      currentLang = isEnglish ? 'en' : 'ja';
+      updateLanguageUI();
+    }
+
+    function setLang(lang) {
+      currentLang = lang;
+      langToggle.checked = (lang === 'en');
+      updateLanguageUI();
+    }
+
+    function updateLanguageUI() {
+      headerTitle.textContent = UI_TEXT[currentLang].title;
+      shareBtnText.textContent = UI_TEXT[currentLang].shareBtn;
+      resetBtn.textContent = UI_TEXT[currentLang].resetBtn;
+      if (loading) loading.textContent = UI_TEXT[currentLang].loading;
+
+      if (activeCode) {
+        const prefElement = mapContainer.querySelector(`.prefecture[data-code="${activeCode}"]`);
+        if (prefElement) renderCityMarkersOnMap(activeCode, prefElement);
+      }
+
+      if (soundModal.classList.contains('open') && activeCode !== null) {
+        updateModalContent(activeCode, activeCityIndex);
+      }
+    }
+
+    function shareApp() {
+      const title = currentLang === 'en' ? 'OtoMap Japan' : 'おとマップ Japan';
+      const text = currentLang === 'en' ? 'Explore traditional sounds and history of Japan!' : '日本の伝統の音と歴史を探訪する絵巻マップ';
+      const url = window.location.href;
+
+      if (navigator.share) {
+        navigator.share({ title, text, url }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(url).then(() => {
+          alert(UI_TEXT[currentLang].copied);
+        });
+      }
+    }
+
+    // DOMロード時に data.json と SVG を非同期ロード
+    window.addEventListener('DOMContentLoaded', async () => {
+      try {
+        // 1. data.json 取得
+        const dataRes = await fetch('data.json');
+        PREFECTURE_DATA = await dataRes.json();
+      } catch (err) {
+        console.warn('data.json の読み込みに失敗したため、内部補完データを使用します。', err);
+      }
+
+      try {
+        // 2. SVG地図 取得
+        const svgRes = await fetch('https://cdn.jsdelivr.net/gh/geolonia/japanese-prefectures@master/map-polygon.svg');
+        const svgText = await svgRes.text();
+        
+        mapContainer.innerHTML = svgText;
+        loading.style.opacity = '0';
+        setTimeout(() => loading.remove(), 500);
+
+        svgMapElement = mapContainer.querySelector('.geolonia-svg-map');
+
+        const vb = svgMapElement.getAttribute('viewBox');
+        if (vb) {
+          initialViewBox = vb.split(' ').map(Number);
+        }
+
+        cityMarkersGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        cityMarkersGroup.setAttribute("id", "cityMarkersGroup");
+        svgMapElement.appendChild(cityMarkersGroup);
+
+        const prefs = mapContainer.querySelectorAll('.geolonia-svg-map .prefecture');
+        prefs.forEach(pref => {
+          const code = pref.getAttribute('data-code');
+          const regionKey = getRegionKey(code);
+          if (regionKey && REGION_COLORS[regionKey]) {
+            pref.style.fill = REGION_COLORS[regionKey];
+          }
+
+          pref.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectPrefecture(code, pref);
+          });
+        });
+
+      } catch (err) {
+        loading.textContent = '地図データの読み込みに失敗しました。';
+        console.error(err);
+      }
+    });
+
+    function handleBgClick(e) {
+      if (!e.target.classList.contains('prefecture') && !e.target.closest('.city-marker-group')) {
+        resetMapZoom();
+      }
+    }
+
+    function selectPrefecture(code, element) {
+      activeCode = code;
+
+      svgMapElement.classList.add('has-active');
+      mapContainer.querySelectorAll('.prefecture').forEach(p => p.classList.remove('active'));
+      element.classList.add('active');
+
+      zoomToElementViewBox(element);
+      renderCityMarkersOnMap(code, element);
+    }
+
+    function zoomToElementViewBox(element) {
+      const bbox = element.getBBox();
+
+      const paddingRatio = 1.8;
+      let targetW = bbox.width * paddingRatio;
+      let targetH = bbox.height * paddingRatio;
+
+      const maxDim = Math.max(targetW, targetH);
+      const finalDim = Math.max(maxDim, 140);
+
+      const targetX = (bbox.x + bbox.width / 2) - (finalDim / 2);
+      const targetY = (bbox.y + bbox.height / 2) - (finalDim / 2);
+
+      smoothAnimateViewBox(targetX, targetY, finalDim, finalDim, 800);
+    }
+
+    function smoothAnimateViewBox(targetX, targetY, targetW, targetH, duration = 800) {
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+
+      const vb = svgMapElement.getAttribute('viewBox').split(' ').map(Number);
+      const startX = vb[0];
+      const startY = vb[1];
+      const startW = vb[2];
+      const startH = vb[3];
+
+      const startTime = performance.now();
+
+      function step(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+
+        const curX = startX + (targetX - startX) * ease;
+        const curY = startY + (targetY - startY) * ease;
+        const curW = startW + (targetW - startW) * ease;
+        const curH = startH + (targetH - startH) * ease;
+
+        svgMapElement.setAttribute('viewBox', `${curX} ${curY} ${curW} ${curH}`);
+
+        if (progress < 1) {
+          animFrameId = requestAnimationFrame(step);
+        }
+      }
+
+      animFrameId = requestAnimationFrame(step);
+    }
+
+    function renderCityMarkersOnMap(code, prefElement) {
+      cityMarkersGroup.innerHTML = "";
+      const data = getPrefDataWithFallback(code, prefElement);
+
+      const bbox = prefElement.getBBox();
+
+      data.cities.forEach((city, index) => {
+        const pinX = bbox.x + bbox.width * city.relX;
+        const pinY = bbox.y + bbox.height * city.relY;
+
+        const labelX = pinX + (city.dx || 35);
+        const labelY = pinY + (city.dy || -15);
+
+        const cityName = currentLang === 'en' ? (city.cityNameEn || city.cityName) : city.cityName;
+        const textLen = cityName.length;
+        const rectW = textLen * 9 + 16;
+        const rectH = 18;
+
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.setAttribute("class", "city-marker-group");
+
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", pinX);
+        line.setAttribute("y1", pinY);
+        line.setAttribute("x2", labelX);
+        line.setAttribute("y2", labelY);
+        line.setAttribute("class", "city-line");
+
+        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        dot.setAttribute("cx", pinX);
+        dot.setAttribute("cy", pinY);
+        dot.setAttribute("r", "3.5");
+        dot.setAttribute("class", "city-pin-dot");
+
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", labelX - rectW / 2);
+        rect.setAttribute("y", labelY - rectH / 2);
+        rect.setAttribute("width", rectW);
+        rect.setAttribute("height", rectH);
+        rect.setAttribute("class", "city-label-bg");
+
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", labelX);
+        text.setAttribute("y", labelY);
+        text.setAttribute("class", "city-label-text");
+        text.textContent = cityName;
+
+        g.appendChild(line);
+        g.appendChild(dot);
+        g.appendChild(rect);
+        g.appendChild(text);
+
+        g.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openModal(code, index, prefElement);
+        });
+
+        cityMarkersGroup.appendChild(g);
+      });
+    }
+
+    function openModal(code, cityIndex, prefElement) {
+      activeCode = code;
+      activeCityIndex = cityIndex;
+      updateModalContent(code, cityIndex, prefElement);
+      soundModal.classList.add('open');
+
+      const prefData = getPrefDataWithFallback(code, prefElement);
+      const city = prefData?.cities[cityIndex];
+      
+      // 音声再生（audioが空文字 "" の場合は安全に無視）
+      if (city && city.audio && city.audio.trim() !== "") {
+        hiddenAudio.src = city.audio;
+        playingIndicator.style.display = 'inline-block';
+        hiddenAudio.play().catch(() => {});
+      } else {
+        hiddenAudio.src = "";
+        playingIndicator.style.display = 'none';
+      }
+    }
+
+    function updateModalContent(code, cityIndex, prefElement) {
+      const prefElementOrNull = prefElement || mapContainer.querySelector(`.prefecture[data-code="${code}"]`);
+      const prefData = getPrefDataWithFallback(code, prefElementOrNull);
+      const city = prefData?.cities[cityIndex];
+      if (!city) return;
+
+      modalPrefJp.textContent = currentLang === 'en' ? (prefData.nameEn || prefData.nameJp) : prefData.nameJp;
+      modalCityName.textContent = currentLang === 'en' ? (city.cityNameEn || city.cityName) : city.cityName;
+      
+      // 画像が空文字 "" の場合の対応
+      if (city.image && city.image.trim() !== "") {
+        modalPhoto.src = city.image;
+        modalPhoto.style.display = 'block';
+        photoPlaceholderText.style.display = 'none';
+      } else {
+        modalPhoto.src = "";
+        modalPhoto.style.display = 'none';
+        photoPlaceholderText.style.display = 'block';
+        photoPlaceholderText.textContent = UI_TEXT[currentLang].noPhoto;
+      }
+
+      let soundTitle = currentLang === 'en' ? (city.titleEn || city.title) : city.title;
+      if (!city.audio || city.audio.trim() === "") {
+        soundTitle += " " + UI_TEXT[currentLang].noAudio;
+      }
+      modalSoundTitle.textContent = soundTitle;
+
+      modalDesc.textContent = currentLang === 'en' ? (city.descEn || city.desc) : city.desc;
+    }
+
+    function closeModal() {
+      soundModal.classList.remove('open');
+      hiddenAudio.pause();
+      hiddenAudio.currentTime = 0;
+      playingIndicator.style.display = 'none';
+    }
+
+    function resetMapZoom() {
+      if (svgMapElement) {
+        svgMapElement.classList.remove('has-active');
+        mapContainer.querySelectorAll('.prefecture').forEach(p => p.classList.remove('active'));
+        smoothAnimateViewBox(initialViewBox[0], initialViewBox[1], initialViewBox[2], initialViewBox[3], 800);
+      }
+      if (cityMarkersGroup) {
+        cityMarkersGroup.innerHTML = "";
+      }
+      closeModal();
+      activeCode = null;
+    }
+  </script>
+</body>
+</html>
