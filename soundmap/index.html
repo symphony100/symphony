@@ -10,7 +10,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700;900&family=Shippori+Mincho:wght@500;700;800&display=swap" rel="stylesheet">
 
-  
   <style>
     /* ===================================================
        1. 令和和モダン（白ベース × 金箔ゴールド）
@@ -34,7 +33,7 @@
       padding: 0;
     }
 
-    /* 画面スクロールの完全防止 */
+    /* 画面スクロール完全防止 */
     html, body {
       width: 100vw;
       height: 100vh;
@@ -191,7 +190,7 @@
       transform: translateX(20px);
     }
 
-    /* スマホ向けヘッダーレスポンシブ設計 */
+    /* スマホ向けレスポンシブ設計 */
     @media (max-width: 600px) {
       header {
         padding: 8px 12px;
@@ -205,7 +204,7 @@
         font-size: 0.75rem;
       }
       .share-btn-text {
-        display: none; /* スマホではテキストを隠してアイコン化 */
+        display: none;
       }
       .lang-switch-container {
         font-size: 0.75rem;
@@ -295,7 +294,7 @@
       max-height: 750px;
     }
 
-    /* ホバー時の「かくかく・ガタガタ」揺れを完全に防ぐスムーズな塗り・線の指定 */
+    /* ホバー時のガタつき防止スタイル */
     .geolonia-svg-map .prefecture {
       stroke: #ffffff;
       stroke-width: 1.2;
@@ -320,7 +319,7 @@
       opacity: 0.35;
     }
 
-    /* 市町村ピン ＆ 引き出し線 ＆ ラベル (変形拡大させず安定表示) */
+    /* 市町村ピン ＆ 引き出し線 ＆ ラベル */
     .city-marker-group {
       cursor: pointer;
     }
@@ -625,7 +624,181 @@
       return "kanto";
     }
 
-    let PREFECTURE_DATA = {}; // data.json から非同期読み込み
+    /* ===================================================
+       全47都道府県データ内蔵（image, audioは空文字 ""）
+       =================================================== */
+    const PREFECTURE_DATA = {
+      "1": { nameJp: "北海道", nameEn: "Hokkaido", cities: [
+        { cityName: "札幌市", cityNameEn: "Sapporo City", relX: 0.35, relY: 0.65, dx: -45, dy: 10, title: "YOSAKOIソーラン祭りの鳴子と掛け声の音", titleEn: "YOSAKOI Soran Festival Chants", desc: "演舞に合わせて鳴らされる鳴子の心地よいカチカチ音と力強い掛け声です。", descEn: "Rhythmic clack of Naruko clappers accompanied by energetic festival chants.", image: "", audio: "" },
+        { cityName: "登別市", cityNameEn: "Noboribetsu City", relX: 0.42, relY: 0.78, dx: 45, dy: 15, title: "登別温泉 地獄谷の湧き出す源泉の音", titleEn: "Noboribetsu Onsen Geyser Sounds", desc: "地獄谷の吹き出し口からモコモコと音を立てて湧き出す熱湯の音です。", descEn: "The bubbling sound of hot spring geysers emerging from Hell Valley.", image: "", audio: "" }
+      ]},
+      "2": { nameJp: "青森県", nameEn: "Aomori", cities: [
+        { cityName: "青森市", cityNameEn: "Aomori City", relX: 0.5, relY: 0.35, dx: 40, dy: -10, title: "青森ねぶた祭の「ラッセラー！」の掛け声と大太鼓", titleEn: "Aomori Nebuta Festival Chants", desc: "「ラッセラー！」の威勢の良い掛け声とズシンと響く大太鼓の熱狂音です。", descEn: "Exhilarating chants coupled with thunderous Taiko drums reverberating.", image: "", audio: "" },
+        { cityName: "弘前市", cityNameEn: "Hirosaki City", relX: 0.35, relY: 0.55, dx: -45, dy: 10, title: "津軽三味線会館の迫力ある津軽三味線の音", titleEn: "Tsugaru Shamisen Performance", desc: "たたきつけるようなバチさばきが生み出す、津軽三味線の伝統の響きです。", descEn: "The passionate plucking technique of traditional Tsugaru Shamisen.", image: "", audio: "" }
+      ]},
+      "3": { nameJp: "岩手県", nameEn: "Iwate", cities: [
+        { cityName: "盛岡市", cityNameEn: "Morioka City", relX: 0.5, relY: 0.4, dx: 45, dy: 0, title: "南部鉄器の鉄瓶でお湯が沸くポコポコ音", titleEn: "Nanbu Ironware Boiling Water", desc: "伝統工芸・南部鉄器でお湯を沸かしたときに聞こえる温かい湯沸かし音です。", descEn: "The soothing sound of water boiling gently inside Nanbu iron kettles.", image: "", audio: "" }
+      ]},
+      "4": { nameJp: "宮城県", nameEn: "Miyagi", cities: [
+        { cityName: "仙台市", cityNameEn: "Sendai City", relX: 0.45, relY: 0.6, dx: -45, dy: 10, title: "仙台七夕まつりの笹飾りが風になびく音", titleEn: "Sendai Tanabata Streamers Breeze", desc: "大きな和紙飾りが夏の和やかな風にさらさらと擦れ合う風情ある音です。", descEn: "Rustling sounds of giant paper decorations swaying in summer breeze.", image: "", audio: "" },
+        { cityName: "気仙沼市", cityNameEn: "Kesennuma City", relX: 0.75, relY: 0.25, dx: 45, dy: -10, title: "気仙沼港に響くウミネコ・鴎の鳴き声", titleEn: "Seagulls of Kesennuma Port", desc: "港を行き交う漁船の傍らで鳴くウミネコたちの賑やかな鳴き声です。", descEn: "Chirping seagulls flying over the bustling harbor.", image: "", audio: "" }
+      ]},
+      "5": { nameJp: "秋田県", nameEn: "Akita", cities: [
+        { cityName: "秋田市", cityNameEn: "Akita City", relX: 0.4, relY: 0.45, dx: -45, dy: -10, title: "秋田竿燈まつりの「ドッコイショー！」の掛け声", titleEn: "Akita Kanto Festival Chants", desc: "重い竿燈を腰や額で支える妙技とともに響き渡る掛け声とお囃子です。", descEn: "Energetic festival chants celebrating lantern balancing feats.", image: "", audio: "" },
+        { cityName: "男鹿市", cityNameEn: "Oga City", relX: 0.25, relY: 0.35, dx: -45, dy: 15, title: "なまはげがドアをドンドンと叩く音", titleEn: "Namahage Door Thumping", desc: "「泣く子はいねがー！」と扉を強く叩いて練り歩くなまはげの音です。", descEn: "The menacing thumping on wooden doors by Namahage deities.", image: "", audio: "" }
+      ]},
+      "6": { nameJp: "山形県", nameEn: "Yamagata", cities: [
+        { cityName: "天童市", cityNameEn: "Tendo City", relX: 0.55, relY: 0.5, dx: 45, dy: 0, title: "将棋駒を指す「ツォン！」という心地よい木音", titleEn: "Tendo Shogi Piece Sound", desc: "将棋駒の街・天童。盤上に駒をピシッと指したときに響く高音です。", descEn: "Crisp wooden click of placing Shogi chess pieces on the board.", image: "", audio: "" }
+      ]},
+      "7": { nameJp: "福島県", nameEn: "Fukushima", cities: [
+        { cityName: "福島市", cityNameEn: "Fukushima City", relX: 0.45, relY: 0.35, dx: -45, dy: -10, title: "わらじまつりの大わらじを練り歩く熱気あふれる音", titleEn: "Fukushima Waraji Procession", desc: "長さ12mの大わらじを担ぐ熱気とわらじ音頭の賑やかな音です。", descEn: "Lively folk music accompanied by crowds carrying a giant straw sandal.", image: "", audio: "" },
+        { cityName: "いわき市", cityNameEn: "Iwaki City", relX: 0.8, relY: 0.7, dx: 45, dy: 10, title: "スパリゾートハワイアンズのフラガールのウクレレ音", titleEn: "Spa Resort Hawaiians Ukulele", desc: "ハワイアンズのトロピカルな雰囲気の中、フラガールが舞うウクレレ音です。", descEn: "Bright ukulele tunes setting the tropical mood for Hula dancers.", image: "", audio: "" }
+      ]},
+      "8": { nameJp: "茨城県", nameEn: "Ibaraki", cities: [
+        { cityName: "水戸市", cityNameEn: "Mito City", relX: 0.5, relY: 0.45, dx: 45, dy: -10, title: "偕楽園の梅林で春風がそよぐ音", titleEn: "Kairakuen Plum Garden Breeze", desc: "偕楽園の咲き誇る梅の花々を春風が優しく吹き抜ける爽やかな音です。", descEn: "Gentle spring breeze whispering through blooming plum blossoms.", image: "", audio: "" },
+        { cityName: "結城市", cityNameEn: "Yuki City", relX: 0.25, relY: 0.4, dx: -45, dy: 10, title: "結城紬を織る地機の機織り音", titleEn: "Yuki Tsumugi Silk Weaving", desc: "無形文化遺産・結城紬。静かな工房に心地よく響く手織りの音です。", descEn: "The rhythmic tapping of handlooms crafting Yuki Tsumugi silk.", image: "", audio: "" }
+      ]},
+      "9": { nameJp: "栃木県", nameEn: "Tochigi", cities: [
+        { cityName: "日光市", cityNameEn: "Nikko City", relX: 0.35, relY: 0.35, dx: -45, dy: -10, title: "日光東照宮「鳴き龍」の響鳴音", titleEn: "Nikko Toshogu Crying Dragon Echo", desc: "薬師堂の天井画「鳴き龍」の下で拍子木を打つと長く響き渡ります。", descEn: "The echoing reverberation under Crying Dragon ceiling painting.", image: "", audio: "" },
+        { cityName: "宇都宮市", cityNameEn: "Utsunomiya City", relX: 0.6, relY: 0.55, dx: 45, dy: 10, title: "餃子を鉄板でジューッと焼き上げる音", titleEn: "Sizzling Utsunomiya Gyoza Dumplings", desc: "名物・宇都宮餃子。熱々の鉄板で一気に香ばしく焼き上げる音です。", descEn: "Sizzling steam sounds of Utsunomiya's crispy Gyoza dumplings.", image: "", audio: "" }
+      ]},
+      "10": { nameJp: "群馬県", nameEn: "Gunma", cities: [
+        { cityName: "草津町", cityNameEn: "Kusatsu Town", relX: 0.25, relY: 0.3, dx: -45, dy: -10, title: "草津温泉「湯もみ」で板が湯を叩くバシャバシャ音", titleEn: "Kusatsu Onsen Yumomi Performance", desc: "「草津良いとこ一度はおいで」の唄とともに木板で湯を揉む音です。", descEn: "Traditional Yumomi performance splashing hot spring water.", image: "", audio: "" },
+        { cityName: "桐生市", cityNameEn: "Kiryu City", relX: 0.65, relY: 0.6, dx: 45, dy: 10, title: "桐生織の織機がガチャンガチャンと動く音", titleEn: "Kiryu Textile Loom Clanking", desc: "織物の街・桐生。規則正しく動く織機の迫力あるリズムです。", descEn: "The mechanical clanking rhythm of traditional Kiryu textile looms.", image: "", audio: "" }
+      ]},
+      "11": { nameJp: "埼玉県", nameEn: "Saitama", cities: [
+        { cityName: "川越市", cityNameEn: "Kawagoe City", relX: 0.45, relY: 0.5, dx: -45, dy: -10, title: "小江戸の象徴「時の鐘」が街に響き渡る重厚な音", titleEn: "Kawagoe Bell of Time Chimes", desc: "小江戸・川越の街に1日4回響き渡る温かく重厚な鐘の音色です。", descEn: "The historic Toki no Kane bell ringing over Kawagoe streets.", image: "", audio: "" },
+        { cityName: "秩父市", cityNameEn: "Chichibu City", relX: 0.2, relY: 0.45, dx: -45, dy: 15, title: "秩父夜祭の屋台囃子の威勢いい音", titleEn: "Chichibu Night Festival Music", desc: "豪快な屋台行事とともに打ち鳴らされる太鼓と笛のお囃子です。", descEn: "Dynamic festival music accompanying float processions.", image: "", audio: "" }
+      ]},
+      "12": { nameJp: "千葉県", nameEn: "Chiba", cities: [
+        { cityName: "成田市", cityNameEn: "Narita City", relX: 0.5, relY: 0.35, dx: -45, dy: -10, title: "成田山新勝寺のお焚き上げ大太鼓の音", titleEn: "Naritasan Shinshoji Sacred Drums", desc: "御護摩祈祷のなかで炎とともに打ち鳴らされる大太鼓の音です。", descEn: "Solemn Taiko drums thunder during holy fire rituals.", image: "", audio: "" },
+        { cityName: "銚子市", cityNameEn: "Choshi City", relX: 0.85, relY: 0.35, dx: 45, dy: 10, title: "銚子電鉄がカタトトと走るレトロな走行音", titleEn: "Choshi Electric Railway Retro Train", desc: "キャベツ畑の中をのんびりと走り抜けるレトロな電車の音です。", descEn: "Chugging retro train sounds clattering gently through countryside.", image: "", audio: "" }
+      ]},
+      "13": { nameJp: "東京都", nameEn: "Tokyo", cities: [
+        { cityName: "台東区（浅草）", cityNameEn: "Asakusa, Taito", relX: 0.7, relY: 0.35, dx: 45, dy: -10, title: "三社祭の神輿の威勢の良い掛け声", titleEn: "Sanja Matsuri Shrine Chants", desc: "「ソイヤ！ソイヤ！」と浅草の街を揺らすお祭り音です。", descEn: "Energetic 'Soiya!' chants carrying Mikoshi shrines in Asakusa.", image: "", audio: "" },
+        { cityName: "葛飾区（柴又）", cityNameEn: "Shibamata, Katsushika", relX: 0.8, relY: 0.25, dx: 45, dy: 15, title: "帝釈天参道「とんとこアメ」の切る音", titleEn: "Shibamata Candy Cutting Rhythm", desc: "包丁をトントコトントンとリズム良く叩いて飴を切る音です。", descEn: "Rhythmic candy cutting performance on Shibamata approach.", image: "", audio: "" }
+      ]},
+      "14": { nameJp: "神奈川県", nameEn: "Kanagawa", cities: [
+        { cityName: "横浜市", cityNameEn: "Yokohama City", relX: 0.65, relY: 0.35, dx: 45, dy: -10, title: "横浜港の船が一斉に鳴らす汽笛の長笛音", titleEn: "Yokohama Port Ship Horn Whistles", desc: "港に停泊する大型船が一斉にウーと深く響かせる汽笛音です。", descEn: "Deep resounding ship horns echoing across Yokohama Harbor.", image: "", audio: "" },
+        { cityName: "鎌倉市", cityNameEn: "Kamakura City", relX: 0.5, relY: 0.55, dx: -45, dy: 10, title: "鎌倉の禅寺境内に響く静寂と鐘の音", titleEn: "Kamakura Zen Temple Bell Chimes", desc: "豊かな自然の中に静かに浸み渡る寺院の鐘の音色です。", descEn: "Serene temple bell ringing through Kamakura mountain forests.", image: "", audio: "" }
+      ]},
+      "15": { nameJp: "新潟県", nameEn: "Niigata", cities: [
+        { cityName: "長岡市", cityNameEn: "Nagaoka City", relX: 0.45, relY: 0.6, dx: -45, dy: 10, title: "長岡まつり大花火大会の腹に響く破裂音", titleEn: "Nagaoka Fireworks Explosions", desc: "正三尺玉がお腹の底までドンと響き渡る大破裂音です。", descEn: "Massive fireworks exploding high, echoing deep in your chest.", image: "", audio: "" },
+        { cityName: "燕市", cityNameEn: "Tsubame City", relX: 0.4, relY: 0.45, dx: 45, dy: -10, title: "鎚起銅器のカンカン打ち出し音", titleEn: "Tsuiki Copperware Hammering", desc: "銅板を金槌で叩いて立体的な器具へ仕上げる打撃音です。", descEn: "Master artisans hammering copper sheets into metalware.", image: "", audio: "" }
+      ]},
+      "16": { nameJp: "富山県", nameEn: "Toyama", cities: [
+        { cityName: "立山町", cityNameEn: "Tateyama Town", relX: 0.65, relY: 0.5, dx: 45, dy: 0, title: "黒部ダム観光放水の轟音", titleEn: "Kurobe Dam Water Discharge Roar", desc: "毎秒数十トンもの水がダイナミックに吐き出される大轟音です。", descEn: "Thunderous roar of millions of gallons gushing from Kurobe Dam.", image: "", audio: "" }
+      ]},
+      "17": { nameJp: "石川県", nameEn: "Ishikawa", cities: [
+        { cityName: "金沢市", cityNameEn: "Kanazawa City", relX: 0.4, relY: 0.65, dx: -45, dy: 10, title: "金箔押し職人が木槌でポンポン紙を叩く音", titleEn: "Kanazawa Gold Leaf Hammering", desc: "1万分の1ミリまで箔を打ち伸ばす叩く音です。", descEn: "Rhythmic tapping sound of pounding gold leaf to thin perfection.", image: "", audio: "" },
+        { cityName: "輪島市", cityNameEn: "Wajima City", relX: 0.55, relY: 0.2, dx: 45, dy: -10, title: "輪島塗の塗師が静寂の中で漆を塗る音", titleEn: "Wajima Lacquerware Brush Strokes", desc: "静かな漆室で刷毛を静かに滑らせる伝統の音です。", descEn: "Silent precision of master painters applying coats of Wajima lacquer.", image: "", audio: "" }
+      ]},
+      "18": { nameJp: "福井県", nameEn: "Fukui", cities: [
+        { cityName: "越前市", cityNameEn: "Echizen City", relX: 0.45, relY: 0.55, dx: 45, dy: -10, title: "越前打刃物の鍛冶場で金槌が鉄を打つ音", titleEn: "Echizen Forged Cutlery Hammering", desc: "鍛冶職人が熱い鉄を叩き伸ばす澄んだ「カン！カン！」という音です。", descEn: "Clear ringing iron strikes of blacksmiths crafting Echizen cutlery.", image: "", audio: "" },
+        { cityName: "鯖江市", cityNameEn: "Sabae City", relX: 0.55, relY: 0.4, dx: -45, dy: 10, title: "メガネフレームの磨き工程でカラカラ鳴る音", titleEn: "Sabae Eyeglass Polishing Sounds", desc: "樽の中でフレームがカラカラと磨かれる音です。", descEn: "Clicking and clattering of spectacle frames being tumbled.", image: "", audio: "" }
+      ]},
+      "19": { nameJp: "山梨県", nameEn: "Yamanashi", cities: [
+        { cityName: "富士吉田市", cityNameEn: "Fujiyoshida City", relX: 0.5, relY: 0.6, dx: 45, dy: 0, title: "富士山吉田ルート登山口の風とざわめき", titleEn: "Mt. Fuji Trail Breeze & Footsteps", desc: "富士登山への期待を胸に秘めた登山者たちの足音と風の音です。", descEn: "Trail footsteps and mountain wind at Mt. Fuji Yoshida route.", image: "", audio: "" }
+      ]},
+      "20": { nameJp: "長野県", nameEn: "Nagano", cities: [
+        { cityName: "諏訪市", cityNameEn: "Suwa City", relX: 0.5, relY: 0.55, dx: 45, dy: 0, title: "諏訪大社御柱祭の木遣り唄", titleEn: "Suwa Taisha Onbashira Kiyari Song", desc: "大木を山から引き下ろす天下の奇祭。人々の心を一つにする唄です。", descEn: "High-pitched traditional chants pulling giant logs during Onbashira.", image: "", audio: "" }
+      ]},
+      "21": { nameJp: "岐阜県", nameEn: "Gifu", cities: [
+        { cityName: "岐阜市", cityNameEn: "Gifu City", relX: 0.35, relY: 0.7, dx: -45, dy: 0, title: "長良川の鵜飼で鵜匠が船端を叩くドンドン音", titleEn: "Nagara River Ukai Cormorant Fishing", desc: "鵜匠が鵜を奮い立たせるために船端を打つ独特の音です。", descEn: "Cormorant masters beating boat edges under flaming lanterns.", image: "", audio: "" }
+      ]},
+      "22": { nameJp: "静岡県", nameEn: "Shizuoka", cities: [
+        { cityName: "島田市", cityNameEn: "Shimada City", relX: 0.45, relY: 0.45, dx: -45, dy: -10, title: "大井川鐵道SLがシュッシュッポッポと吐く蒸気音", titleEn: "Oigawa Railway Steam Locomotive", desc: "蒸気機関車が白い蒸気を吐き出しながら進む郷愁の音です。", descEn: "Nostalgic steam train chugging through lush tea hills.", image: "", audio: "" },
+        { cityName: "浜松市", cityNameEn: "Hamamatsu City", relX: 0.25, relY: 0.65, dx: 45, dy: 10, title: "浜松のピアノ調律師が鳴らす音叉音", titleEn: "Hamamatsu Piano Tuning Fork Tone", desc: "基準音を響かせる音叉の美しい高音が静かに伸びていきます。", descEn: "Pure vibrating tones of tuning forks in the City of Music.", image: "", audio: "" }
+      ]},
+      "23": { nameJp: "愛知県", nameEn: "Aichi", cities: [
+        { cityName: "岡崎市", cityNameEn: "Okazaki City", relX: 0.45, relY: 0.5, dx: 45, dy: 0, title: "三河花火の職人が使う火薬の調合と試射音", titleEn: "Mikawa Fireworks Testing Explosions", desc: "伝統ある手筒花火の職人たちが打ち出す力強い試射音です。", descEn: "Heavy explosive booms testing traditional Mikawa fireworks.", image: "", audio: "" }
+      ]},
+      "24": { nameJp: "三重県", nameEn: "Mie", cities: [
+        { cityName: "志摩市", cityNameEn: "Shima City", relX: 0.65, relY: 0.75, dx: 45, dy: 10, title: "海女さんが吐く切ない「磯笛」の音", titleEn: "Ama Diver Whistle Isobue", desc: "素潜り漁を終えた海女さんが呼吸を整える際に吐くヒューという音です。", descEn: "Poignantly beautiful whistling sound of Ama divers breathing.", image: "", audio: "" },
+        { cityName: "鈴鹿市", cityNameEn: "Suzuka City", relX: 0.5, relY: 0.35, dx: -45, dy: -10, title: "鈴鹿サーキットF1マシンの駆け抜ける爆音", titleEn: "Suzuka Circuit F1 Racing Engine", desc: "超高回転のエンジン音がサーキットを激しく突き抜けます。", descEn: "Screaming high-RPM F1 engine roars zooming past Suzuka Circuit.", image: "", audio: "" }
+      ]},
+      "25": { nameJp: "滋賀県", nameEn: "Shiga", cities: [
+        { cityName: "大津市", cityNameEn: "Otsu City", relX: 0.35, relY: 0.75, dx: -45, dy: 10, title: "三井寺の「三井の晩鐘」の余韻長き音", titleEn: "Mii-dera Temple Evening Bell Chime", desc: "突いた後にどこまでも深く伸びてゆく鐘の豊かな余韻です。", descEn: "Resonant, long-lasting bell reverberations of Mii-dera temple.", image: "", audio: "" },
+        { cityName: "近江八幡市", cityNameEn: "Omihachiman City", relX: 0.55, relY: 0.45, dx: 45, dy: -10, title: "水郷めぐり手漕ぎ舟がアシをすり抜ける音", titleEn: "Omihachiman Canal Boat Reed Swish", desc: "手漕ぎ舟がアシの茂みを優しくかき分ける水と葉の音です。", descEn: "Peaceful water swishing as wooden canal boats glide through reeds.", image: "", audio: "" }
+      ]},
+      "26": { nameJp: "京都府", nameEn: "Kyoto", cities: [
+        { cityName: "京都市", cityNameEn: "Kyoto City", relX: 0.55, relY: 0.6, dx: 45, dy: 10, title: "祇園祭のコンチキチン（祇園囃子）の音", titleEn: "Kyoto Gion Festival Chimes", desc: "鉦と太鼓、笛が織りなす京都の夏を象徴する風情あふれる音です。", descEn: "Refining gong and bell chimes signifying Kyoto summer.", image: "", audio: "" },
+        { cityName: "宇治市", cityNameEn: "Uji City", relX: 0.6, relY: 0.75, dx: -45, dy: 15, title: "宇治茶の茶摘みで葉を摘むシャキシャキ音", titleEn: "Uji Green Tea Leaf Harvesting", desc: "茶摘み唄を聞きながら新芽を丁寧に摘み取る音です。", descEn: "Snapping fresh green tea leaves during spring tea picking.", image: "", audio: "" }
+      ]},
+      "27": { nameJp: "大阪府", nameEn: "Osaka", cities: [
+        { cityName: "大阪市", cityNameEn: "Osaka City", relX: 0.45, relY: 0.35, dx: -45, dy: 0, title: "天神祭の「手締め（大阪一本締め）」", titleEn: "Osaka Tenjin Festival Clapping", desc: "「打ちましょ（タパン）もひとつセ（タパン）」の手締め音です。", descEn: "Synchronized celebratory clapping rhythm during Tenjin Festival.", image: "", audio: "" }
+      ]},
+      "28": { nameJp: "兵庫県", nameEn: "Hyogo", cities: [
+        { cityName: "豊岡市", cityNameEn: "Toyooka City", relX: 0.55, relY: 0.25, dx: 45, dy: 0, title: "城崎温泉の湯巡りで下駄が鳴るカランコロン音", titleEn: "Kinosaki Onsen Geta Clogs Clack", desc: "浴衣姿の湯客が行き交う石畳を木製の下駄が鳴らします。", descEn: "Rhythmic clacking of wooden clogs walking along stone pathways.", image: "", audio: "" }
+      ]},
+      "29": { nameJp: "奈良県", nameEn: "Nara", cities: [
+        { cityName: "吉野町", cityNameEn: "Yoshino Town", relX: 0.5, relY: 0.6, dx: 45, dy: 0, title: "吉野杉の伐採で木が倒れる豪快なドシーン音", titleEn: "Yoshino Cedar Tree Felling Crash", desc: "きこりの声とともに巨木が大地へと倒れ込む重低音です。", descEn: "Tremendous crashing boom of giant cedar trees harvested in woods.", image: "", audio: "" }
+      ]},
+      "30": { nameJp: "和歌山県", nameEn: "Wakayama", cities: [
+        { cityName: "高野町", cityNameEn: "Koya Town", relX: 0.5, relY: 0.25, dx: -45, dy: -10, title: "高野山奥の院の静寂に響く読経と鈴の音", titleEn: "Koyasan Okunoin Chants & Bell", desc: "杉木立が立ち並ぶ聖地で読経と澄んだ鈴が響きます。", descEn: "Monk chants and bell ringing echoing through sacred Koyasan forests.", image: "", audio: "" },
+        { cityName: "那智勝浦町", cityNameEn: "Nachikatsuura Town", relX: 0.75, relY: 0.75, dx: 45, dy: 10, title: "那智の滝の大水量が一気に落ちる滝音", titleEn: "Nachi Falls Water Roar", desc: "落差日本一の名瀑。水が落ちはじめる大迫力の自然音です。", descEn: "Thunderous roaring cascades of Nachi Falls waterfall.", image: "", audio: "" }
+      ]},
+      "31": { nameJp: "鳥取県", nameEn: "Tottori", cities: [
+        { cityName: "鳥取市", cityNameEn: "Tottori City", relX: 0.7, relY: 0.45, dx: 45, dy: -10, title: "鳥取砂丘でサラサラと砂が崩れ落ちる風の音", titleEn: "Tottori Sand Dunes Wind Whispers", desc: "風に吹かれて砂の風紋が形作られる静かな音です。", descEn: "Soft shifting sand sounds created by wind over Tottori Sand Dunes.", image: "", audio: "" },
+        { cityName: "倉吉市", cityNameEn: "Kurayoshi City", relX: 0.4, relY: 0.55, dx: -45, dy: 10, title: "打吹玉川の白壁土蔵群を流れる水音", titleEn: "Kurayoshi White Wall Storehouses Canal", desc: "白壁土蔵群の傍らをゆったりと流れる清らかな水音です。", descEn: "Tranquil water streams flowing past historical white-walled storehouses.", image: "", audio: "" }
+      ]},
+      "32": { nameJp: "島根県", nameEn: "Shimane", cities: [
+        { cityName: "出雲市", cityNameEn: "Izumo City", relX: 0.55, relY: 0.5, dx: 45, dy: 0, title: "出雲大社の大しめ縄の下で打つ拍手（かしわで）", titleEn: "Izumo Taisha Shrine Prayer Claps", desc: "神話の故郷・出雲大社。参拝客が打つ深い拍手の音です。", descEn: "Solemn prayer handclaps under giant sacred straw rope at Izumo Grand Shrine.", image: "", audio: "" }
+      ]},
+      "33": { nameJp: "岡山県", nameEn: "Okayama", cities: [
+        { cityName: "倉敷市", cityNameEn: "Kurashiki City", relX: 0.45, relY: 0.65, dx: -45, dy: 10, title: "倉敷美観地区で船頭が竿で水面を突く音", titleEn: "Kurashiki Canal Boat Pole Splash", desc: "美観地区。川舟の船頭が水面を漕ぎ進める水音です。", descEn: "Gentle water splashes as wooden boats glide along historical canals.", image: "", audio: "" }
+      ]},
+      "34": { nameJp: "広島県", nameEn: "Hiroshima", cities: [
+        { cityName: "広島市", cityNameEn: "Hiroshima City", relX: 0.4, relY: 0.5, dx: -45, dy: -10, title: "平和記念公園の「平和の鐘」の重厚な音", titleEn: "Hiroshima Peace Bell Deep Toll", desc: "平和への祈りを込めて突かれる鐘の重厚な響きです。", descEn: "Profound, lingering resonance of Peace Bell echoing in Peace Park.", image: "", audio: "" },
+        { cityName: "廿日市市", cityNameEn: "Hatsukaichi City", relX: 0.25, relY: 0.65, dx: -45, dy: 15, title: "宮島（厳島神社）の大鳥居を洗う波音", titleEn: "Miyajima Floating Torii Waves", desc: "満潮時に鳥居を洗う穏やかで神秘的な波の音です。", descEn: "Gentle ocean waves washing around Miyajima's famous Floating Torii Gate.", image: "", audio: "" }
+      ]},
+      "35": { nameJp: "山口県", nameEn: "Yamaguchi", cities: [
+        { cityName: "下関市", cityNameEn: "Shimonoseki City", relX: 0.2, relY: 0.75, dx: -45, dy: 10, title: "唐戸市場フグのセリの掛け声", titleEn: "Karato Market Blowfish Auction", desc: "活気溢れる早朝市場でセリ人の熱い声が飛び交います。", descEn: "Lively morning fish auction chants for famous blowfish at Karato Market.", image: "", audio: "" }
+      ]},
+      "36": { nameJp: "徳島県", nameEn: "Tokushima", cities: [
+        { cityName: "徳島市", cityNameEn: "Tokushima City", relX: 0.7, relY: 0.45, dx: 45, dy: -10, title: "阿波踊りの賑やかな「ぞめき」囃子", titleEn: "Awa Odori Dance Zomeki Rhythm", desc: "鉦、太鼓、笛が打ち鳴らされる、四百年続く情熱の祭り音です。", descEn: "Bustling traditional festival music driving the 400-year-old Awa Dance.", image: "", audio: "" },
+        { cityName: "鳴門市", cityNameEn: "Naruto City", relX: 0.75, relY: 0.2, dx: 45, dy: -15, title: "鳴門の渦潮のゴォーッという潮騒の音", titleEn: "Naruto Whirlpools Roaring Waves", desc: "豪快な鳴門の渦潮が音を立てて渦を巻く潮騒の音です。", descEn: "The deep oceanic roar of water forming giant Naruto Whirlpools.", image: "", audio: "" },
+        { cityName: "三好市", cityNameEn: "Miyoshi City", relX: 0.25, relY: 0.65, dx: -45, dy: 15, title: "祖谷のかずら橋を渡るギシギシ鳴る音", titleEn: "Iya Kazurabashi Vine Bridge Creaks", desc: "秘境・祖谷のカズラ橋。踏み出すたびに揺れる音です。", descEn: "Suspenseful creaking of mountain vine bridge planks crossing deep gorges.", image: "", audio: "" }
+      ]},
+      "37": { nameJp: "香川県", nameEn: "Kagawa", cities: [
+        { cityName: "高松市", cityNameEn: "Takamatsu City", relX: 0.55, relY: 0.5, dx: 45, dy: 0, title: "讃岐うどん生地を叩き伸ばすバシッ音", titleEn: "Sanuki Udon Dough Kneading Slam", desc: "職人が力強くうどん生地を台に叩きつける音です。", descEn: "Rhythmic heavy slapping of wheat dough on wooden blocks by Udon masters.", image: "", audio: "" }
+      ]},
+      "38": { nameJp: "愛媛県", nameEn: "Ehime", cities: [
+        { cityName: "松山市", cityNameEn: "Matsuyama City", relX: 0.45, relY: 0.5, dx: -45, dy: 10, title: "道後温泉本館「振鷺閣」の刻太鼓", titleEn: "Dogo Onsen Shinrokaku Drum", desc: "温泉街の刻を告げる太鼓の音。重々しく鳴り響きます。", descEn: "Historic timekeeping drum strike ringing from Dogo Onsen rooftop tower.", image: "", audio: "" },
+        { cityName: "今治市", cityNameEn: "Imabari City", relX: 0.55, relY: 0.25, dx: 45, dy: -10, title: "来島海峡大橋を吹き抜ける風と潮流音", titleEn: "Kurushima Kaikyo Bridge Winds", desc: "風の唸り声と激しい潮流の音が混ざり合う自然音です。", descEn: "Wind howling through giant suspension cables combined with ocean currents.", image: "", audio: "" }
+      ]},
+      "39": { nameJp: "高知県", nameEn: "Kochi", cities: [
+        { cityName: "高知市", cityNameEn: "Kochi City", relX: 0.45, relY: 0.4, dx: -45, dy: -10, title: "よさこい祭りの鳴子が鳴るカチカチ音", titleEn: "Yosakoi Festival Naruko Clack", desc: "木製の鳴子（なるこ）を鳴らしながら躍動する祭り音です。", descEn: "Rhythmic wooden clack of Naruko held by energetic Yosakoi dancers.", image: "", audio: "" },
+        { cityName: "室戸市", cityNameEn: "Muroto City", relX: 0.85, relY: 0.7, dx: 45, dy: 10, title: "室戸岬の太平洋の荒波が当たる岩音", titleEn: "Muroto Cape Pacific Ocean Waves", desc: "豪快な荒波が奇岩にぶつかり白波を立てる重厚な音です。", descEn: "Powerful crashing waves hitting dramatic coastal volcanic rocks.", image: "", audio: "" }
+      ]},
+      "40": { nameJp: "福岡県", nameEn: "Fukuoka", cities: [
+        { cityName: "福岡市", cityNameEn: "Fukuoka City", relX: 0.35, relY: 0.45, dx: -45, dy: 0, title: "博多祇園山笠の「オイサ！オイサ！」の掛け声", titleEn: "Hakata Gion Yamakasa Oisa Chants", desc: "山笠を担ぎ街を全力で駆け抜ける山笠男たちの掛け声です。", descEn: "Shouting 'Oisa!' as runners carry giant floats through Hakata streets.", image: "", audio: "" }
+      ]},
+      "41": { nameJp: "佐賀県", nameEn: "Saga", cities: [
+        { cityName: "唐津市", cityNameEn: "Karatsu City", relX: 0.4, relY: 0.25, dx: -45, dy: -10, title: "唐津くんちの「エンヤ！」の掛け声と太鼓", titleEn: "Karatsu Kunchi Enya Chants", desc: "曳山（ひきやま）とともに響く「エンヤ！」の掛け声です。", descEn: "Traditional 'Enya!' chants pulling elaborate float sculptures.", image: "", audio: "" },
+        { cityName: "伊万里市", cityNameEn: "Imari City", relX: 0.3, relY: 0.45, dx: -45, dy: 10, title: "伊万里焼の磁器風鈴のチリンチリン音", titleEn: "Imari Porcelain Wind Chimes", desc: "重なり合わさる磁器の繊細で高音の鈴音です。", descEn: "High delicate tinkle of fine Imari porcelain wind bells in summer breeze.", image: "", audio: "" }
+      ]},
+      "42": { nameJp: "長崎県", nameEn: "Nagasaki", cities: [
+        { cityName: "佐世保市", cityNameEn: "Sasebo City", relX: 0.45, relY: 0.35, dx: 45, dy: 0, title: "ハウステンボスの馬車が走るパカパカ音", titleEn: "Huis Ten Bosch Horse Carriage Hooves", desc: "石畳の街並みを馬車が蹄（ひづめ）を鳴らして進む音です。", descEn: "Rhythmic trotting horse hooves on cobblestone streets.", image: "", audio: "" }
+      ]},
+      "43": { nameJp: "熊本県", nameEn: "Kumamoto", cities: [
+        { cityName: "熊本市", cityNameEn: "Kumamoto City", relX: 0.4, relY: 0.35, dx: -45, dy: -10, title: "藤崎八旛宮例大祭の「ドーカイ！」の掛け声", titleEn: "Fujisaki Hachimangu Festival Chants", desc: "飾馬が街を練り歩く活気溢れる掛け声とお囃子です。", descEn: "Energetic 'Dokai!' chants following decorated horses through Kumamoto.", image: "", audio: "" },
+        { cityName: "阿蘇市", cityNameEn: "Aso City", relX: 0.7, relY: 0.3, dx: 45, dy: 10, title: "阿蘇中岳火口の噴煙と大地の地鳴り", titleEn: "Mt. Aso Volcanic Rumble", desc: "立ち上る噴煙と大地の底鳴りです。", descEn: "Low rumbling seismic resonance from Mt. Aso volcanic crater.", image: "", audio: "" }
+      ]},
+      "44": { nameJp: "大分県", nameEn: "Oita", cities: [
+        { cityName: "別府市", cityNameEn: "Beppu City", relX: 0.65, relY: 0.35, dx: 45, dy: -10, title: "別府八湯の湯けむりが噴き出すシューッ音", titleEn: "Beppu Hot Spring Steam Hiss", desc: "あちこちから勢いよく噴き出す蒸気と温泉の音です。", descEn: "Hissing steam vents billowing across Beppu hot spring town.", image: "", audio: "" },
+        { cityName: "由布市", cityNameEn: "Yufu City", relX: 0.45, relY: 0.45, dx: -45, dy: 10, title: "金鱗湖の朝もやの中の小鳥のさえずり", titleEn: "Lake Kinrin Morning Birds Chirping", desc: "朝もやが立ち込める金鱗湖の鳥の声です。", descEn: "Peaceful morning birdsong over misty Lake Kinrin in Yufuin.", image: "", audio: "" }
+      ]},
+      "45": { nameJp: "宮崎県", nameEn: "Miyazaki", cities: [
+        { cityName: "宮崎市", cityNameEn: "Miyazaki City", relX: 0.5, relY: 0.55, dx: 45, dy: 0, title: "鬼の洗濯板に打ち寄せる太平洋の波音", titleEn: "Devil's Washboard Ocean Waves", desc: "鬼の洗濯板を太平洋の波が洗うダイナミックな音です。", descEn: "Crashing ocean waves rolling over Devil's Washboard basalt rock.", image: "", audio: "" }
+      ]},
+      "46": { nameJp: "鹿児島県", nameEn: "Kagoshima", cities: [
+        { cityName: "指宿市", cityNameEn: "Ibusuki City", relX: 0.45, relY: 0.8, dx: 45, dy: 0, title: "砂むし温泉で波音を聞くシュッシュッ音", titleEn: "Ibusuki Sand Bath Waves", desc: "温かい砂に包まれながら聴く海音です。", descEn: "Soothing wave sounds while buried in warm geothermal beach sand.", image: "", audio: "" }
+      ]},
+      "47": { nameJp: "沖縄県", nameEn: "Okinawa", cities: [
+        { cityName: "那覇市", cityNameEn: "Naha City", relX: 0.35, relY: 0.65, dx: 45, dy: 0, title: "国際通りの三線「ツンツンテン」の音色", titleEn: "Kokusai Street Sanshin Music", desc: "南国の温かい風に乗って聞こえてくる三線の音色です。", descEn: "Melodic tropical tunes of Okinawan Sanshin lute echoing in Naha.", image: "", audio: "" }
+      ]}
+    };
 
     function getPrefDataWithFallback(code, element) {
       const codeStr = String(parseInt(code, 10));
@@ -673,6 +846,11 @@
     let initialViewBox = [0, 0, 1000, 1000];
     let animFrameId = null;
 
+    // 音声タイマー変数
+    let fadeIntervalTimer = null;
+    let stopAudioTimer = null;
+    let fadeStartTimer = null;
+
     function toggleLanguage(isEnglish) {
       currentLang = isEnglish ? 'en' : 'ja';
       updateLanguageUI();
@@ -714,18 +892,9 @@
       }
     }
 
-    // DOMロード時に data.json と SVG を非同期ロード
+    // 地図SVGロード
     window.addEventListener('DOMContentLoaded', async () => {
       try {
-        // 1. data.json 取得
-        const dataRes = await fetch('data.json');
-        PREFECTURE_DATA = await dataRes.json();
-      } catch (err) {
-        console.warn('data.json の読み込みに失敗したため、内部補完データを使用します。', err);
-      }
-
-      try {
-        // 2. SVG地図 取得
         const svgRes = await fetch('https://cdn.jsdelivr.net/gh/geolonia/japanese-prefectures@master/map-polygon.svg');
         const svgText = await svgRes.text();
         
@@ -898,15 +1067,48 @@
       const prefData = getPrefDataWithFallback(code, prefElement);
       const city = prefData?.cities[cityIndex];
       
-      // 音声再生（audioが空文字 "" の場合は安全に無視）
+      // 音声自動再生 ＆ 20秒フェードアウトタイマー
+      stopAudioTimerAndReset();
       if (city && city.audio && city.audio.trim() !== "") {
+        hiddenAudio.volume = 1.0;
         hiddenAudio.src = city.audio;
-        playingIndicator.style.display = 'inline-block';
-        hiddenAudio.play().catch(() => {});
+        hiddenAudio.currentTime = 0;
+        
+        hiddenAudio.play().then(() => {
+          playingIndicator.style.display = 'inline-block';
+
+          // 18秒目からフェードアウト開始（2秒かけてvolumeを0へ）
+          fadeStartTimer = setTimeout(() => {
+            let fadeStep = 0;
+            fadeIntervalTimer = setInterval(() => {
+              fadeStep += 1;
+              hiddenAudio.volume = Math.max(0, 1.0 - (fadeStep / 20));
+              if (fadeStep >= 20) {
+                clearInterval(fadeIntervalTimer);
+              }
+            }, 100);
+          }, 18000);
+
+          // 20秒ぴったりで停止
+          stopAudioTimer = setTimeout(() => {
+            stopAudioTimerAndReset();
+          }, 20000);
+
+        }).catch(() => {});
       } else {
         hiddenAudio.src = "";
         playingIndicator.style.display = 'none';
       }
+    }
+
+    function stopAudioTimerAndReset() {
+      clearTimeout(fadeStartTimer);
+      clearTimeout(stopAudioTimer);
+      clearInterval(fadeIntervalTimer);
+      hiddenAudio.pause();
+      hiddenAudio.currentTime = 0;
+      hiddenAudio.volume = 1.0;
+      playingIndicator.style.display = 'none';
     }
 
     function updateModalContent(code, cityIndex, prefElement) {
@@ -918,7 +1120,6 @@
       modalPrefJp.textContent = currentLang === 'en' ? (prefData.nameEn || prefData.nameJp) : prefData.nameJp;
       modalCityName.textContent = currentLang === 'en' ? (city.cityNameEn || city.cityName) : city.cityName;
       
-      // 画像が空文字 "" の場合の対応
       if (city.image && city.image.trim() !== "") {
         modalPhoto.src = city.image;
         modalPhoto.style.display = 'block';
@@ -941,9 +1142,7 @@
 
     function closeModal() {
       soundModal.classList.remove('open');
-      hiddenAudio.pause();
-      hiddenAudio.currentTime = 0;
-      playingIndicator.style.display = 'none';
+      stopAudioTimerAndReset();
     }
 
     function resetMapZoom() {
