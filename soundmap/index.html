@@ -3,28 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>おとマップ Japan - OtoMap Japan</title>
+  <title>さうんどまっぷ - Sound Map Japan</title>
   
-  <!-- Google Fonts: 令和和モダン明朝 ＆ ゴシック -->
+  <!-- Google Fonts: Noto Sans JP & Material Symbols Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700;900&family=Shippori+Mincho:wght@500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
   <style>
     /* ===================================================
-       1. 令和和モダン（白ベース × 金箔ゴールド）
+       1. マテリアル水色テーマ & 基本レイアウト
        =================================================== */
     :root {
-      --bg-washi: #fbf9f5;
+      --primary-blue: #0288d1;
+      --primary-light: #e0f7fa;
+      --primary-hover: #03a9f4;
+      --accent-amber: #ffc107;
+      --bg-main: #f8fafc;
       --bg-card: #ffffff;
-      --color-gold: #c5a059;
-      --color-gold-bright: #e5c158;
-      --color-gold-dark: #8c6d2d;
-      --color-crimson: #d9383a;
-      --text-main: #1f2937;
+      --text-main: #0f172a;
       --text-sub: #64748b;
-      --border-gold: rgba(197, 160, 89, 0.4);
-      --font-serif: 'Shippori Mincho', 'Noto Serif JP', serif;
+      --border-color: #e2e8f0;
+      --font-family: 'Noto Sans JP', sans-serif;
     }
 
     * {
@@ -33,7 +34,6 @@
       padding: 0;
     }
 
-    /* 画面スクロール完全防止 */
     html, body {
       width: 100vw;
       height: 100vh;
@@ -43,28 +43,29 @@
     }
 
     body {
-      background-color: var(--bg-washi);
-      background-image: 
-        radial-gradient(circle at 10% 10%, rgba(197, 160, 89, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 90% 90%, rgba(217, 56, 58, 0.05) 0%, transparent 40%),
-        linear-gradient(180deg, #ffffff 0%, #f7f4ed 100%);
+      background-color: var(--bg-main);
       color: var(--text-main);
-      font-family: var(--font-serif);
+      font-family: var(--font-family);
       display: flex;
       flex-direction: column;
     }
 
-    /* --- スマホ対応ヘッダー --- */
+    .material-symbols-outlined {
+      font-size: 1.15rem;
+      vertical-align: middle;
+      user-select: none;
+    }
+
+    /* ヘッダー */
     header {
       padding: 10px 20px;
       height: 60px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(255, 255, 255, 0.95);
-      border-bottom: 1px solid var(--border-gold);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
       z-index: 10;
       flex-shrink: 0;
     }
@@ -72,163 +73,117 @@
     .header-logo {
       display: flex;
       align-items: center;
-      gap: 10px;
-    }
-
-    .header-logo-mark {
-      width: 20px;
-      height: 20px;
-      border: 1px solid var(--color-gold);
-      transform: rotate(45deg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .header-logo-mark::after {
-      content: '';
-      width: 7px;
-      height: 7px;
-      background: var(--color-crimson);
+      gap: 8px;
     }
 
     .header-title {
-      font-size: 1.2rem;
-      font-weight: 800;
-      letter-spacing: 2px;
-      color: var(--text-main);
-      white-space: nowrap;
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--primary-blue);
+      letter-spacing: 0.5px;
     }
 
-    .header-right {
+    .header-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
     }
 
-    /* シェアボタン */
-    .share-btn {
+    .btn-action {
       background: #ffffff;
-      border: 1px solid var(--color-gold);
+      border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 5px 12px;
+      padding: 6px 12px;
       border-radius: 20px;
       font-size: 0.8rem;
-      font-family: var(--font-serif);
+      font-family: var(--font-family);
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 5px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      gap: 4px;
       transition: all 0.2s;
     }
-    .share-btn:hover {
-      background: var(--color-gold);
-      color: #ffffff;
-    }
-    .share-btn svg {
-      fill: currentColor;
+    .btn-action:hover {
+      background: var(--primary-light);
+      color: var(--primary-blue);
+      border-color: var(--primary-blue);
     }
 
-    /* 言語切替トグル */
     .lang-switch-container {
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .switch-label {
-      cursor: pointer;
-      user-select: none;
     }
 
     .switch-toggle {
       position: relative;
       display: inline-block;
-      width: 42px;
-      height: 22px;
+      width: 38px;
+      height: 20px;
     }
-
-    .switch-toggle input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
+    .switch-toggle input { opacity: 0; width: 0; height: 0; }
     .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #cbd5e1;
-      border: 1px solid var(--color-gold);
-      transition: .3s;
-      border-radius: 22px;
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #cbd5e1; transition: .3s; border-radius: 20px;
     }
-
     .slider:before {
-      position: absolute;
-      content: "";
-      height: 16px;
-      width: 16px;
-      left: 2px;
-      bottom: 2px;
-      background-color: white;
-      transition: .3s;
-      border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px;
+      background-color: white; transition: .3s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--primary-blue); }
+    input:checked + .slider:before { transform: translateX(18px); }
+
+    @media (max-width: 768px) {
+      header { padding: 8px 12px; }
+      .header-title { font-size: 1rem; }
+      .btn-action { padding: 4px 8px; font-size: 0.75rem; }
+      .btn-action span.label-text { display: none; }
     }
 
-    input:checked + .slider {
-      background-color: var(--color-gold);
+    /* ダッシュボード（進捗バー） */
+    .dashboard-bar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
     }
 
-    input:checked + .slider:before {
-      transform: translateX(20px);
+    .progress-text {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
     }
 
-    /* スマホ向けレスポンシブ設計 */
-    @media (max-width: 600px) {
-      header {
-        padding: 8px 12px;
-      }
-      .header-title {
-        font-size: 0.95rem;
-        letter-spacing: 0px;
-      }
-      .share-btn {
-        padding: 4px 8px;
-        font-size: 0.75rem;
-      }
-      .share-btn-text {
-        display: none;
-      }
-      .lang-switch-container {
-        font-size: 0.75rem;
-        gap: 4px;
-      }
-      .switch-toggle {
-        width: 36px;
-        height: 18px;
-      }
-      .slider:before {
-        height: 12px;
-        width: 12px;
-      }
-      input:checked + .slider:before {
-        transform: translateX(18px);
-      }
+    .progress-bar-bg {
+      flex: 1;
+      max-width: 300px;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
     }
 
-    /* メインエリア */
+    .progress-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: var(--primary-blue);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    /* メインコンテナ */
     .main-container {
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: 12px;
+      padding: 10px;
       max-width: 1400px;
       width: 100%;
       margin: 0 auto;
@@ -241,9 +196,9 @@
       position: relative;
       flex: 1;
       background: var(--bg-card);
-      border: 1px solid var(--border-gold);
+      border: 1px solid var(--border-color);
       border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -256,21 +211,34 @@
       z-index: 20;
     }
 
+    /* 全国表示に戻るボタン（デフォルト非表示） */
     .reset-btn {
       background: #ffffff;
-      border: 1px solid var(--color-gold);
-      color: var(--text-main);
+      border: 1px solid var(--primary-blue);
+      color: var(--primary-blue);
       padding: 6px 14px;
       border-radius: 20px;
       font-size: 0.8rem;
-      font-family: var(--font-serif);
+      font-family: var(--font-family);
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-      transition: all 0.3s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: all 0.25s ease;
+      display: none;
+      opacity: 0;
+      pointer-events: none;
+      align-items: center;
+      gap: 4px;
     }
+
+    .reset-btn.visible {
+      display: inline-flex;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     .reset-btn:hover {
-      background: var(--color-gold);
+      background: var(--primary-blue);
       color: #fff;
     }
 
@@ -284,106 +252,84 @@
       padding: 10px;
       overflow: hidden;
       position: relative;
-      cursor: pointer;
     }
 
-    /* SVG日本地図 */
+    /* SVG日本地図（クリーンな統一カラー） */
     .geolonia-svg-map {
       width: 100%;
       height: 100%;
       max-height: 750px;
     }
 
-    /* ホバー時のガタつき防止スタイル */
     .geolonia-svg-map .prefecture {
       stroke: #ffffff;
       stroke-width: 1.2;
       stroke-linejoin: round;
-      cursor: pointer;
-      transition: fill 0.25s ease, stroke 0.25s ease, opacity 0.25s ease;
+      transition: fill 0.2s ease, opacity 0.2s ease;
     }
 
-    .geolonia-svg-map .prefecture:hover {
-      stroke: var(--color-gold);
-      opacity: 0.85;
+    /* 発見済み県 */
+    .geolonia-svg-map .prefecture.discovered {
+      fill: #81d4fa !important;
     }
 
+    /* 選択中アクティブ県 */
     .geolonia-svg-map .prefecture.active {
-      fill: var(--color-crimson) !important;
+      fill: var(--primary-blue) !important;
       stroke: #ffffff !important;
       stroke-width: 2 !important;
-      filter: drop-shadow(0 0 10px rgba(217, 56, 58, 0.5));
     }
 
     .geolonia-svg-map.has-active .prefecture:not(.active) {
       opacity: 0.35;
     }
 
-    /* 市町村ピン ＆ 引き出し線 ＆ ラベル */
-    .city-marker-group {
-      cursor: pointer;
-    }
-
-    .city-pin-dot {
-      fill: #111111;
-      stroke: #ffffff;
-      stroke-width: 1.5;
-    }
-
-    .city-line {
-      stroke: #111111;
-      stroke-width: 1.2;
-      stroke-dasharray: 2, 2;
-    }
-
+    /* 市町村ピン ＆ 引き出し線 */
+    .city-marker-group { cursor: pointer; }
+    .city-pin-dot { fill: var(--primary-blue); stroke: #ffffff; stroke-width: 1.5; }
+    .city-line { stroke: var(--primary-blue); stroke-width: 1.2; stroke-dasharray: 2, 2; }
     .city-label-bg {
       fill: #ffffff;
-      stroke: var(--color-gold);
+      stroke: var(--primary-blue);
       stroke-width: 1;
-      rx: 4;
-      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.12));
-      transition: fill 0.2s, stroke 0.2s;
+      rx: 8;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));
+      transition: fill 0.2s;
     }
-
-    .city-marker-group:hover .city-label-bg {
-      fill: var(--color-gold);
-      stroke: var(--color-crimson);
-    }
-
+    .city-marker-group:hover .city-label-bg { fill: var(--primary-blue); }
     .city-label-text {
       font-size: 11px;
-      font-family: var(--font-serif);
+      font-family: var(--font-family);
       font-weight: 700;
-      fill: var(--text-main);
+      fill: var(--primary-blue);
       text-anchor: middle;
       dominant-baseline: central;
       transition: fill 0.2s;
     }
-
-    .city-marker-group:hover .city-label-text {
-      fill: #ffffff;
-    }
+    .city-marker-group:hover .city-label-text { fill: #ffffff; }
 
     .loading-overlay {
       position: absolute;
       inset: 0;
-      background: var(--bg-washi);
+      background: var(--bg-main);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--color-gold);
-      font-size: 1rem;
-      letter-spacing: 2px;
+      color: var(--primary-blue);
+      font-size: 0.95rem;
+      font-weight: 700;
       z-index: 30;
-      transition: opacity 0.5s;
+      transition: opacity 0.4s;
     }
 
-    /* ポップアップモーダル */
+    /* ===================================================
+       2. モーダル共通
+       =================================================== */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.5);
-      backdrop-filter: blur(6px);
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(4px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -391,7 +337,7 @@
       z-index: 1000;
       opacity: 0;
       pointer-events: none;
-      transition: all 0.35s ease;
+      transition: all 0.25s ease;
     }
 
     .modal-overlay.open {
@@ -401,27 +347,24 @@
 
     .modal-card {
       background: #ffffff;
-      border: 2px solid var(--color-gold);
       border-radius: 16px;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.12);
       width: 100%;
-      max-width: 560px;
+      max-width: 520px;
       max-height: 85vh;
       display: flex;
       flex-direction: column;
-      transform: scale(0.92);
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: scale(0.95);
+      transition: transform 0.25s ease;
       overflow: hidden;
     }
 
-    .modal-overlay.open .modal-card {
-      transform: scale(1);
-    }
+    .modal-overlay.open .modal-card { transform: scale(1); }
 
     .modal-header {
-      padding: 14px 20px;
-      border-bottom: 1px solid var(--border-gold);
-      background: #fdfbf7;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-color);
+      background: #f8fafc;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -430,402 +373,587 @@
 
     .modal-title-group {
       display: flex;
-      align-items: baseline;
-      gap: 10px;
-    }
-
-    .modal-pref-name {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--text-main);
-    }
-
-    .modal-city-name {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--color-crimson);
-    }
-
-    .modal-close-btn {
-      background: transparent;
-      border: none;
-      font-size: 1.4rem;
-      color: var(--text-sub);
-      cursor: pointer;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s;
-    }
-    .modal-close-btn:hover {
-      background: rgba(0,0,0,0.05);
-      color: var(--text-main);
-    }
-
-    .modal-body {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      overflow-y: auto;
-    }
-
-    .modal-photo-container {
-      width: 100%;
-      height: 220px;
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid var(--border-gold);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      background: #f8fafc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-sub);
-      font-size: 0.85rem;
-      flex-shrink: 0;
-    }
-
-    .modal-photo {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .modal-sound-title {
-      font-size: 1.02rem;
-      font-weight: 700;
-      color: var(--text-main);
-      display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .playing-indicator {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      background-color: var(--color-crimson);
-      border-radius: 50%;
-      box-shadow: 0 0 8px var(--color-crimson);
-      animation: pulse 1.2s infinite;
-    }
+    .modal-pref-name { font-size: 1.2rem; font-weight: 900; color: var(--text-main); }
+    .modal-city-name { font-size: 1rem; font-weight: 700; color: var(--primary-blue); }
 
-    @keyframes pulse {
-      0% { transform: scale(0.9); opacity: 0.7; }
-      50% { transform: scale(1.3); opacity: 1; }
-      100% { transform: scale(0.9); opacity: 0.7; }
-    }
-
-    .modal-desc {
-      font-size: 0.88rem;
-      line-height: 1.65;
+    .modal-close-btn {
+      background: transparent;
+      border: none;
       color: var(--text-sub);
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+    .modal-close-btn:hover { background: rgba(0,0,0,0.05); }
+
+    .modal-body {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+    }
+
+    .favorite-btn {
+      background: #fff8e1;
+      border: 1px solid var(--accent-amber);
+      color: #b45309;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      align-self: flex-start;
+    }
+    .favorite-btn.active {
+      background: var(--accent-amber);
+      color: #ffffff;
+    }
+
+    .modal-photo-container {
+      width: 100%;
+      height: 200px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--primary-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-blue);
+      font-size: 0.85rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .modal-photo { width: 100%; height: 100%; object-fit: cover; }
+
+    .modal-sound-title {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .modal-desc { font-size: 0.88rem; line-height: 1.6; color: var(--text-sub); }
+
+    /* リストカード */
+    .item-card-list { display: flex; flex-direction: column; gap: 8px; }
+    .item-card {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .item-title { font-weight: 700; font-size: 0.88rem; }
+    .item-sub { font-size: 0.75rem; color: var(--text-sub); }
+
+    .btn-play-mini {
+      background: var(--primary-blue);
+      color: #fff;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 14px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    /* 全問連続クイズ */
+    .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+    .quiz-btn {
+      background: #ffffff;
+      border: 1.5px solid var(--primary-blue);
+      color: var(--primary-blue);
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .quiz-btn:hover { background: var(--primary-light); }
+
+    .quiz-next-btn {
+      margin-top: 10px;
+      background: var(--primary-blue);
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    /* スライド式チュートリアル */
+    .tutorial-slider-container { width: 100%; overflow: hidden; }
+    .tutorial-slides-wrapper { display: flex; width: 400%; transition: transform 0.35s ease; }
+    .tutorial-slide-item {
+      width: 25%;
+      padding: 10px 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+    }
+    .slide-icon-box {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .slide-icon-box .material-symbols-outlined { font-size: 2rem; }
+    .slide-title { font-weight: 900; font-size: 1.05rem; }
+    .slide-desc { font-size: 0.85rem; color: var(--text-sub); line-height: 1.5; }
+
+    .tutorial-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-color);
+    }
+    .dots-indicator { display: flex; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; transition: all 0.2s; }
+    .dot.active { background: var(--primary-blue); width: 18px; border-radius: 4px; }
+    .btn-slide-nav {
+      background: var(--primary-blue);
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-slide-nav:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+    /* ===================================================
+       3. Androidタブレット風 管理者設定モーダル (Pass: 1234)
+       =================================================== */
+    .settings-card {
+      background: #f1f5f9;
+      border-radius: 16px;
+      max-width: 600px;
+    }
+
+    .settings-group {
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .settings-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .settings-label { font-weight: 700; font-size: 0.9rem; color: var(--text-main); }
+    .settings-sub { font-size: 0.78rem; color: var(--text-sub); }
+
+    .settings-input {
+      padding: 6px 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      width: 100%;
+    }
+
+    /* 展示用 無操作カウントダウン黒フィルター */
+    .idle-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .idle-overlay.active { opacity: 1; pointer-events: auto; }
+
+    .idle-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 28px 20px;
+      text-align: center;
+      max-width: 380px;
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .idle-title { font-size: 1.1rem; font-weight: 800; }
+    .countdown-num { font-size: 2.5rem; font-weight: 900; color: var(--primary-blue); }
   </style>
 </head>
-<body>
+
+<body onclick="resetInactivityTimer(event)" ontouchstart="resetInactivityTimer(event)" onmousemove="resetInactivityTimer(event)">
 
   <!-- ヘッダー -->
   <header>
     <div class="header-logo">
-      <div class="header-logo-mark"></div>
-      <h1 class="header-title" id="headerTitle">おとマップ Japan</h1>
+      <h1 class="header-title" id="headerTitle">さうんどまっぷ</h1>
     </div>
 
-    <div class="header-right">
-      <!-- シェアボタン -->
-      <button class="share-btn" onclick="shareApp()">
-        <svg viewBox="0 0 24 24" width="14" height="14"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
-        <span class="share-btn-text" id="shareBtnText">シェア</span>
+    <div class="header-actions">
+      <button class="btn-action" onclick="openTutorialModal()">
+        <span class="material-symbols-outlined">help</span>
+        <span class="label-text" id="lblTutorial">使い方</span>
       </button>
 
-      <!-- 言語切替トグルスイッチ -->
+      <button class="btn-action" onclick="openFavoritesModal()">
+        <span class="material-symbols-outlined">star</span>
+        <span class="label-text" id="lblFav">お気に入り</span>
+      </button>
+
+      <button class="btn-action" onclick="startQuiz()">
+        <span class="material-symbols-outlined">quiz</span>
+        <span class="label-text" id="lblQuiz">音クイズ</span>
+      </button>
+
+      <!-- 管理者設定ボタン -->
+      <button class="btn-action" onclick="promptAdminSettings()">
+        <span class="material-symbols-outlined">settings</span>
+        <span class="label-text">管理者設定</span>
+      </button>
+
+      <!-- 言語切替 -->
       <div class="lang-switch-container">
-        <span class="switch-label" onclick="setLang('ja')">日本語</span>
+        <span class="switch-label" onclick="setLang('ja')">JP</span>
         <label class="switch-toggle">
           <input type="checkbox" id="langToggle" onchange="toggleLanguage(this.checked)">
           <span class="slider"></span>
         </label>
-        <span class="switch-label" onclick="setLang('en')">English</span>
+        <span class="switch-label" onclick="setLang('en')">EN</span>
       </div>
     </div>
   </header>
+
+  <!-- サブヘッダー：制覇進捗ダッシュボード -->
+  <div class="dashboard-bar">
+    <div class="progress-group">
+      <span class="progress-text" id="progressText">47都道府県中 0県を発見！ (0%)</span>
+      <div class="progress-bar-bg">
+        <div id="progressBarFill" class="progress-bar-fill"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- メインレイアウト -->
   <div class="main-container">
     <div class="map-card">
       <div class="map-controls">
-        <button class="reset-btn" id="resetBtn" onclick="resetMapZoom()">全国表示に戻る</button>
+        <!-- 「全国表示に戻る」ボタン：ズーム時のみ自動表示 -->
+        <button class="reset-btn" id="resetBtn" onclick="resetMapZoom()">
+          <span class="material-symbols-outlined">refresh</span>
+          <span id="resetBtnText">全国表示に戻る</span>
+        </button>
       </div>
 
-      <!-- 背景（海）タップでリセット -->
       <div class="map-viewport" id="mapContainer" onclick="handleBgClick(event)">
-        <div id="loading" class="loading-overlay">高精度日本地図を読み込み中...</div>
+        <div id="loading" class="loading-overlay">日本地図を読み込み中...</div>
       </div>
     </div>
   </div>
 
-  <!-- ポップアップモーダル -->
+  <!-- ① 音声・詳細モーダル -->
   <div id="soundModal" class="modal-overlay" onclick="if(event.target===this) closeModal()">
     <div class="modal-card">
-      
       <div class="modal-header">
         <div class="modal-title-group">
           <span id="modalPrefJp" class="modal-pref-name">徳島県</span>
           <span id="modalCityName" class="modal-city-name">徳島市</span>
         </div>
-        <button class="modal-close-btn" onclick="closeModal()">✕</button>
+        <button class="modal-close-btn" onclick="closeModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
       </div>
 
       <div class="modal-body">
-        <div class="modal-photo-container" id="modalPhotoBox">
-          <img id="modalPhoto" class="modal-photo" src="" alt="風景写真" style="display:none;">
-          <span id="photoPlaceholderText">※ 画像ファイル準備中</span>
+        <button id="favToggleBtn" class="favorite-btn" onclick="toggleFavoriteCurrent()">
+          <span class="material-symbols-outlined">star</span>
+          <span id="favBtnLabel">お気に入りに追加</span>
+        </button>
+
+        <div class="modal-photo-container">
+          <img id="modalPhoto" class="modal-photo" src="" alt="写真" style="display:none;">
+          <span id="photoPlaceholderText">🎵 音と歴史の探訪</span>
         </div>
 
         <div class="modal-sound-title">
-          <span class="playing-indicator" id="playingIndicator" style="display:none;"></span>
+          <span class="material-symbols-outlined" id="soundIcon" style="color:var(--primary-blue); display:none;">equalizer</span>
           <span id="modalSoundTitle">♪ 阿波踊りの賑やかな「ぞめき」囃子</span>
         </div>
         
         <p id="modalDesc" class="modal-desc"></p>
-
-        <!-- 隠しオーディオ要素 -->
         <audio id="hiddenAudio" style="display:none;"></audio>
       </div>
+    </div>
+  </div>
 
+  <!-- ② お気に入り一覧モーダル -->
+  <div id="favModal" class="modal-overlay" onclick="if(event.target===this) closeFavModal()">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="material-symbols-outlined" style="color:var(--accent-amber);">star</span>
+          <span class="modal-pref-name" id="favModalTitle">保存したお気に入り</span>
+        </div>
+        <button class="modal-close-btn" onclick="closeFavModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="favList" class="item-card-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ 全問連続音クイズモーダル -->
+  <div id="quizModal" class="modal-overlay" onclick="if(event.target===this) closeQuizModal()">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="material-symbols-outlined" style="color:var(--primary-blue);">quiz</span>
+          <span class="modal-pref-name">都道府県 音クイズ (<span id="quizIndexText">1</span>/<span id="quizTotalText">10</span>)</span>
+        </div>
+        <button class="modal-close-btn" onclick="closeQuizModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.88rem; color:var(--text-sub);">流れている音を聴いて、正解の都道府県を選ぼう！</p>
+        
+        <div class="modal-sound-title" style="margin-top:6px;">
+          <span class="material-symbols-outlined" style="color:var(--primary-blue);">volume_up</span>
+          <span id="quizSoundTitle">♪ 再生中...</span>
+        </div>
+
+        <div id="quizOptions" class="quiz-options"></div>
+
+        <div id="quizResult" style="display:none; text-align:center; padding:10px; font-weight:700; font-size:0.95rem; border-radius:10px; margin-top:8px;"></div>
+        
+        <button id="btnNextQuiz" class="quiz-next-btn" style="display:none;" onclick="nextQuizQuestion()">次の問題へ →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ スライド式 チュートリアルモーダル（完了ボタン付き） -->
+  <div id="tutorialModal" class="modal-overlay" onclick="if(event.target===this) closeTutorialModal()">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="material-symbols-outlined" style="color:var(--primary-blue);">help</span>
+          <span class="modal-pref-name">使い方・遊び方</span>
+        </div>
+        <button class="modal-close-btn" onclick="closeTutorialModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="tutorial-slider-container">
+          <div class="tutorial-slides-wrapper" id="tutorialSlidesWrapper">
+            
+            <div class="tutorial-slide-item">
+              <div class="slide-icon-box"><span class="material-symbols-outlined">location_on</span></div>
+              <div class="slide-title">1. 場所を選ぶ</div>
+              <div class="slide-desc">地図上の都道府県や気になる市町村のピンをタップしよう。</div>
+            </div>
+
+            <div class="tutorial-slide-item">
+              <div class="slide-icon-box"><span class="material-symbols-outlined">volume_up</span></div>
+              <div class="slide-title">2. 音を聴く</div>
+              <div class="slide-desc">伝統のお祭り、職人の技、大自然の音が自動で流れます。</div>
+            </div>
+
+            <div class="tutorial-slide-item">
+              <div class="slide-icon-box"><span class="material-symbols-outlined">auto_stories</span></div>
+              <div class="slide-title">3. 歴史を知る</div>
+              <div class="slide-desc">その土地に伝わる歴史や文化の解説を読めます。</div>
+            </div>
+
+            <div class="tutorial-slide-item">
+              <div class="slide-icon-box"><span class="material-symbols-outlined">check_circle</span></div>
+              <div class="slide-title">4. 記録・制覇！</div>
+              <div class="slide-desc">音を聴いた場所は自動で記録。47都道府県の全制覇を目指そう！</div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="tutorial-controls">
+          <button class="btn-slide-nav" id="btnPrevSlide" onclick="moveTutorialSlide(-1)">前へ</button>
+          
+          <div class="dots-indicator" id="dotsIndicator">
+            <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          </div>
+
+          <button class="btn-slide-nav" id="btnNextSlide" onclick="moveTutorialSlide(1)">次へ</button>
+          <button class="btn-slide-nav" id="btnCompleteTutorial" style="display:none; background:var(--accent-amber); color:#000;" onclick="closeTutorialModal()">完了 (はじめる)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ Androidタブレット風 管理者設定モーダル (Pass: 1234) -->
+  <div id="settingsModal" class="modal-overlay" onclick="if(event.target===this) closeSettingsModal()">
+    <div class="modal-card settings-card">
+      <div class="modal-header" style="background:#e2e8f0;">
+        <div class="modal-title-group">
+          <span class="material-symbols-outlined" style="color:var(--text-main);">settings</span>
+          <span class="modal-pref-name">管理者設定 (Android Settings)</span>
+        </div>
+        <button class="modal-close-btn" onclick="closeSettingsModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        
+        <!-- モード切替 -->
+        <div class="settings-group">
+          <div class="settings-row">
+            <div>
+              <div class="settings-label">動作モード</div>
+              <div class="settings-sub">標準モード（Web）/ 展示モード（サイネージ）</div>
+            </div>
+            <select id="cfgMode" class="settings-input" style="width:130px;" onchange="saveSettingsFromUI()">
+              <option value="standard">標準モード</option>
+              <option value="exhibition">展示モード</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 無操作リダイレクト -->
+        <div class="settings-group">
+          <div class="settings-row">
+            <div>
+              <div class="settings-label">無操作自動リダイレクト</div>
+              <div class="settings-sub">一定時間操作がない場合初期画面URLへ移動</div>
+            </div>
+            <label class="switch-toggle">
+              <input type="checkbox" id="cfgEnableIdle" onchange="saveSettingsFromUI()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div style="margin-top:6px;">
+            <div class="settings-sub">遷移先URL:</div>
+            <input type="text" id="cfgRedirectUrl" class="settings-input" onchange="saveSettingsFromUI()">
+          </div>
+        </div>
+
+        <!-- 自動初期化 -->
+        <div class="settings-group">
+          <div class="settings-row">
+            <div>
+              <div class="settings-label">アクセス時自動初期化</div>
+              <div class="settings-sub">ページを開いた際に発見記録をリセット</div>
+            </div>
+            <label class="switch-toggle">
+              <input type="checkbox" id="cfgAutoReset" onchange="saveSettingsFromUI()">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- データクリア -->
+        <div class="settings-group">
+          <button class="reset-btn visible" style="border-color:#ef4444; color:#ef4444;" onclick="clearAllUserData()">
+            <span class="material-symbols-outlined">delete</span> 発見記録・お気に入りを消去
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 展示用 20秒無操作カウントダウン黒フィルター -->
+  <div id="idleOverlay" class="idle-overlay" onclick="dismissIdleOverlay(event)">
+    <div class="idle-card">
+      <div class="idle-title">操作が確認されませんでした</div>
+      <div class="idle-message">
+        あと <span id="countdownSec" class="countdown-num">10</span> 秒後に初期画面に戻ります。
+      </div>
+      <div class="idle-sub">画面をタップすると操作を再開できます</div>
     </div>
   </div>
 
   <script>
     let currentLang = 'ja';
     const UI_TEXT = {
-      ja: { title: "おとマップ Japan", resetBtn: "全国表示に戻る", loading: "高精度日本地図を読み込み中...", shareBtn: "シェア", copied: "URLをコピーしました！", noPhoto: "※ 写真準備中", noAudio: "（※ 音声ファイル準備中）" },
-      en: { title: "OtoMap Japan", resetBtn: "Reset Map", loading: "Loading Japan Map...", shareBtn: "Share", copied: "URL copied to clipboard!", noPhoto: "※ Image Coming Soon", noAudio: "(※ Audio Coming Soon)" }
-    };
-
-    const REGION_COLORS = {
-      hokkaido_tohoku: "#e0eafd", kanto: "#e8f5e9", chubu: "#fff8e1", kansai: "#f3e5f5", chugoku: "#fce7f3", shikoku: "#f1f8e9", kyushu_okinawa: "#fff3e0"
-    };
-
-    function getRegionKey(codeStr) {
-      const code = parseInt(codeStr, 10);
-      if (code >= 1 && code <= 7) return "hokkaido_tohoku";
-      if (code >= 8 && code <= 14) return "kanto";
-      if (code >= 15 && code <= 23) return "chubu";
-      if (code >= 24 && code <= 30) return "kansai";
-      if (code >= 31 && code <= 35) return "chugoku";
-      if (code >= 36 && code <= 39) return "shikoku";
-      if (code >= 40 && code <= 47) return "kyushu_okinawa";
-      return "kanto";
-    }
-
-    /* ===================================================
-       全47都道府県データ内蔵（image, audioは空文字 ""）
-       =================================================== */
-    const PREFECTURE_DATA = {
-      "1": { nameJp: "北海道", nameEn: "Hokkaido", cities: [
-        { cityName: "札幌市", cityNameEn: "Sapporo City", relX: 0.35, relY: 0.65, dx: -45, dy: 10, title: "YOSAKOIソーラン祭りの鳴子と掛け声の音", titleEn: "YOSAKOI Soran Festival Chants", desc: "演舞に合わせて鳴らされる鳴子の心地よいカチカチ音と力強い掛け声です。", descEn: "Rhythmic clack of Naruko clappers accompanied by energetic festival chants.", image: "", audio: "" },
-        { cityName: "登別市", cityNameEn: "Noboribetsu City", relX: 0.42, relY: 0.78, dx: 45, dy: 15, title: "登別温泉 地獄谷の湧き出す源泉の音", titleEn: "Noboribetsu Onsen Geyser Sounds", desc: "地獄谷の吹き出し口からモコモコと音を立てて湧き出す熱湯の音です。", descEn: "The bubbling sound of hot spring geysers emerging from Hell Valley.", image: "", audio: "" }
-      ]},
-      "2": { nameJp: "青森県", nameEn: "Aomori", cities: [
-        { cityName: "青森市", cityNameEn: "Aomori City", relX: 0.5, relY: 0.35, dx: 40, dy: -10, title: "青森ねぶた祭の「ラッセラー！」の掛け声と大太鼓", titleEn: "Aomori Nebuta Festival Chants", desc: "「ラッセラー！」の威勢の良い掛け声とズシンと響く大太鼓の熱狂音です。", descEn: "Exhilarating chants coupled with thunderous Taiko drums reverberating.", image: "", audio: "" },
-        { cityName: "弘前市", cityNameEn: "Hirosaki City", relX: 0.35, relY: 0.55, dx: -45, dy: 10, title: "津軽三味線会館の迫力ある津軽三味線の音", titleEn: "Tsugaru Shamisen Performance", desc: "たたきつけるようなバチさばきが生み出す、津軽三味線の伝統の響きです。", descEn: "The passionate plucking technique of traditional Tsugaru Shamisen.", image: "", audio: "" }
-      ]},
-      "3": { nameJp: "岩手県", nameEn: "Iwate", cities: [
-        { cityName: "盛岡市", cityNameEn: "Morioka City", relX: 0.5, relY: 0.4, dx: 45, dy: 0, title: "南部鉄器の鉄瓶でお湯が沸くポコポコ音", titleEn: "Nanbu Ironware Boiling Water", desc: "伝統工芸・南部鉄器でお湯を沸かしたときに聞こえる温かい湯沸かし音です。", descEn: "The soothing sound of water boiling gently inside Nanbu iron kettles.", image: "", audio: "" }
-      ]},
-      "4": { nameJp: "宮城県", nameEn: "Miyagi", cities: [
-        { cityName: "仙台市", cityNameEn: "Sendai City", relX: 0.45, relY: 0.6, dx: -45, dy: 10, title: "仙台七夕まつりの笹飾りが風になびく音", titleEn: "Sendai Tanabata Streamers Breeze", desc: "大きな和紙飾りが夏の和やかな風にさらさらと擦れ合う風情ある音です。", descEn: "Rustling sounds of giant paper decorations swaying in summer breeze.", image: "", audio: "" },
-        { cityName: "気仙沼市", cityNameEn: "Kesennuma City", relX: 0.75, relY: 0.25, dx: 45, dy: -10, title: "気仙沼港に響くウミネコ・鴎の鳴き声", titleEn: "Seagulls of Kesennuma Port", desc: "港を行き交う漁船の傍らで鳴くウミネコたちの賑やかな鳴き声です。", descEn: "Chirping seagulls flying over the bustling harbor.", image: "", audio: "" }
-      ]},
-      "5": { nameJp: "秋田県", nameEn: "Akita", cities: [
-        { cityName: "秋田市", cityNameEn: "Akita City", relX: 0.4, relY: 0.45, dx: -45, dy: -10, title: "秋田竿燈まつりの「ドッコイショー！」の掛け声", titleEn: "Akita Kanto Festival Chants", desc: "重い竿燈を腰や額で支える妙技とともに響き渡る掛け声とお囃子です。", descEn: "Energetic festival chants celebrating lantern balancing feats.", image: "", audio: "" },
-        { cityName: "男鹿市", cityNameEn: "Oga City", relX: 0.25, relY: 0.35, dx: -45, dy: 15, title: "なまはげがドアをドンドンと叩く音", titleEn: "Namahage Door Thumping", desc: "「泣く子はいねがー！」と扉を強く叩いて練り歩くなまはげの音です。", descEn: "The menacing thumping on wooden doors by Namahage deities.", image: "", audio: "" }
-      ]},
-      "6": { nameJp: "山形県", nameEn: "Yamagata", cities: [
-        { cityName: "天童市", cityNameEn: "Tendo City", relX: 0.55, relY: 0.5, dx: 45, dy: 0, title: "将棋駒を指す「ツォン！」という心地よい木音", titleEn: "Tendo Shogi Piece Sound", desc: "将棋駒の街・天童。盤上に駒をピシッと指したときに響く高音です。", descEn: "Crisp wooden click of placing Shogi chess pieces on the board.", image: "", audio: "" }
-      ]},
-      "7": { nameJp: "福島県", nameEn: "Fukushima", cities: [
-        { cityName: "福島市", cityNameEn: "Fukushima City", relX: 0.45, relY: 0.35, dx: -45, dy: -10, title: "わらじまつりの大わらじを練り歩く熱気あふれる音", titleEn: "Fukushima Waraji Procession", desc: "長さ12mの大わらじを担ぐ熱気とわらじ音頭の賑やかな音です。", descEn: "Lively folk music accompanied by crowds carrying a giant straw sandal.", image: "", audio: "" },
-        { cityName: "いわき市", cityNameEn: "Iwaki City", relX: 0.8, relY: 0.7, dx: 45, dy: 10, title: "スパリゾートハワイアンズのフラガールのウクレレ音", titleEn: "Spa Resort Hawaiians Ukulele", desc: "ハワイアンズのトロピカルな雰囲気の中、フラガールが舞うウクレレ音です。", descEn: "Bright ukulele tunes setting the tropical mood for Hula dancers.", image: "", audio: "" }
-      ]},
-      "8": { nameJp: "茨城県", nameEn: "Ibaraki", cities: [
-        { cityName: "水戸市", cityNameEn: "Mito City", relX: 0.5, relY: 0.45, dx: 45, dy: -10, title: "偕楽園の梅林で春風がそよぐ音", titleEn: "Kairakuen Plum Garden Breeze", desc: "偕楽園の咲き誇る梅の花々を春風が優しく吹き抜ける爽やかな音です。", descEn: "Gentle spring breeze whispering through blooming plum blossoms.", image: "", audio: "" },
-        { cityName: "結城市", cityNameEn: "Yuki City", relX: 0.25, relY: 0.4, dx: -45, dy: 10, title: "結城紬を織る地機の機織り音", titleEn: "Yuki Tsumugi Silk Weaving", desc: "無形文化遺産・結城紬。静かな工房に心地よく響く手織りの音です。", descEn: "The rhythmic tapping of handlooms crafting Yuki Tsumugi silk.", image: "", audio: "" }
-      ]},
-      "9": { nameJp: "栃木県", nameEn: "Tochigi", cities: [
-        { cityName: "日光市", cityNameEn: "Nikko City", relX: 0.35, relY: 0.35, dx: -45, dy: -10, title: "日光東照宮「鳴き龍」の響鳴音", titleEn: "Nikko Toshogu Crying Dragon Echo", desc: "薬師堂の天井画「鳴き龍」の下で拍子木を打つと長く響き渡ります。", descEn: "The echoing reverberation under Crying Dragon ceiling painting.", image: "", audio: "" },
-        { cityName: "宇都宮市", cityNameEn: "Utsunomiya City", relX: 0.6, relY: 0.55, dx: 45, dy: 10, title: "餃子を鉄板でジューッと焼き上げる音", titleEn: "Sizzling Utsunomiya Gyoza Dumplings", desc: "名物・宇都宮餃子。熱々の鉄板で一気に香ばしく焼き上げる音です。", descEn: "Sizzling steam sounds of Utsunomiya's crispy Gyoza dumplings.", image: "", audio: "" }
-      ]},
-      "10": { nameJp: "群馬県", nameEn: "Gunma", cities: [
-        { cityName: "草津町", cityNameEn: "Kusatsu Town", relX: 0.25, relY: 0.3, dx: -45, dy: -10, title: "草津温泉「湯もみ」で板が湯を叩くバシャバシャ音", titleEn: "Kusatsu Onsen Yumomi Performance", desc: "「草津良いとこ一度はおいで」の唄とともに木板で湯を揉む音です。", descEn: "Traditional Yumomi performance splashing hot spring water.", image: "", audio: "" },
-        { cityName: "桐生市", cityNameEn: "Kiryu City", relX: 0.65, relY: 0.6, dx: 45, dy: 10, title: "桐生織の織機がガチャンガチャンと動く音", titleEn: "Kiryu Textile Loom Clanking", desc: "織物の街・桐生。規則正しく動く織機の迫力あるリズムです。", descEn: "The mechanical clanking rhythm of traditional Kiryu textile looms.", image: "", audio: "" }
-      ]},
-      "11": { nameJp: "埼玉県", nameEn: "Saitama", cities: [
-        { cityName: "川越市", cityNameEn: "Kawagoe City", relX: 0.45, relY: 0.5, dx: -45, dy: -10, title: "小江戸の象徴「時の鐘」が街に響き渡る重厚な音", titleEn: "Kawagoe Bell of Time Chimes", desc: "小江戸・川越の街に1日4回響き渡る温かく重厚な鐘の音色です。", descEn: "The historic Toki no Kane bell ringing over Kawagoe streets.", image: "", audio: "" },
-        { cityName: "秩父市", cityNameEn: "Chichibu City", relX: 0.2, relY: 0.45, dx: -45, dy: 15, title: "秩父夜祭の屋台囃子の威勢いい音", titleEn: "Chichibu Night Festival Music", desc: "豪快な屋台行事とともに打ち鳴らされる太鼓と笛のお囃子です。", descEn: "Dynamic festival music accompanying float processions.", image: "", audio: "" }
-      ]},
-      "12": { nameJp: "千葉県", nameEn: "Chiba", cities: [
-        { cityName: "成田市", cityNameEn: "Narita City", relX: 0.5, relY: 0.35, dx: -45, dy: -10, title: "成田山新勝寺のお焚き上げ大太鼓の音", titleEn: "Naritasan Shinshoji Sacred Drums", desc: "御護摩祈祷のなかで炎とともに打ち鳴らされる大太鼓の音です。", descEn: "Solemn Taiko drums thunder during holy fire rituals.", image: "", audio: "" },
-        { cityName: "銚子市", cityNameEn: "Choshi City", relX: 0.85, relY: 0.35, dx: 45, dy: 10, title: "銚子電鉄がカタトトと走るレトロな走行音", titleEn: "Choshi Electric Railway Retro Train", desc: "キャベツ畑の中をのんびりと走り抜けるレトロな電車の音です。", descEn: "Chugging retro train sounds clattering gently through countryside.", image: "", audio: "" }
-      ]},
-      "13": { nameJp: "東京都", nameEn: "Tokyo", cities: [
-        { cityName: "台東区（浅草）", cityNameEn: "Asakusa, Taito", relX: 0.7, relY: 0.35, dx: 45, dy: -10, title: "三社祭の神輿の威勢の良い掛け声", titleEn: "Sanja Matsuri Shrine Chants", desc: "「ソイヤ！ソイヤ！」と浅草の街を揺らすお祭り音です。", descEn: "Energetic 'Soiya!' chants carrying Mikoshi shrines in Asakusa.", image: "", audio: "" },
-        { cityName: "葛飾区（柴又）", cityNameEn: "Shibamata, Katsushika", relX: 0.8, relY: 0.25, dx: 45, dy: 15, title: "帝釈天参道「とんとこアメ」の切る音", titleEn: "Shibamata Candy Cutting Rhythm", desc: "包丁をトントコトントンとリズム良く叩いて飴を切る音です。", descEn: "Rhythmic candy cutting performance on Shibamata approach.", image: "", audio: "" }
-      ]},
-      "14": { nameJp: "神奈川県", nameEn: "Kanagawa", cities: [
-        { cityName: "横浜市", cityNameEn: "Yokohama City", relX: 0.65, relY: 0.35, dx: 45, dy: -10, title: "横浜港の船が一斉に鳴らす汽笛の長笛音", titleEn: "Yokohama Port Ship Horn Whistles", desc: "港に停泊する大型船が一斉にウーと深く響かせる汽笛音です。", descEn: "Deep resounding ship horns echoing across Yokohama Harbor.", image: "", audio: "" },
-        { cityName: "鎌倉市", cityNameEn: "Kamakura City", relX: 0.5, relY: 0.55, dx: -45, dy: 10, title: "鎌倉の禅寺境内に響く静寂と鐘の音", titleEn: "Kamakura Zen Temple Bell Chimes", desc: "豊かな自然の中に静かに浸み渡る寺院の鐘の音色です。", descEn: "Serene temple bell ringing through Kamakura mountain forests.", image: "", audio: "" }
-      ]},
-      "15": { nameJp: "新潟県", nameEn: "Niigata", cities: [
-        { cityName: "長岡市", cityNameEn: "Nagaoka City", relX: 0.45, relY: 0.6, dx: -45, dy: 10, title: "長岡まつり大花火大会の腹に響く破裂音", titleEn: "Nagaoka Fireworks Explosions", desc: "正三尺玉がお腹の底までドンと響き渡る大破裂音です。", descEn: "Massive fireworks exploding high, echoing deep in your chest.", image: "", audio: "" },
-        { cityName: "燕市", cityNameEn: "Tsubame City", relX: 0.4, relY: 0.45, dx: 45, dy: -10, title: "鎚起銅器のカンカン打ち出し音", titleEn: "Tsuiki Copperware Hammering", desc: "銅板を金槌で叩いて立体的な器具へ仕上げる打撃音です。", descEn: "Master artisans hammering copper sheets into metalware.", image: "", audio: "" }
-      ]},
-      "16": { nameJp: "富山県", nameEn: "Toyama", cities: [
-        { cityName: "立山町", cityNameEn: "Tateyama Town", relX: 0.65, relY: 0.5, dx: 45, dy: 0, title: "黒部ダム観光放水の轟音", titleEn: "Kurobe Dam Water Discharge Roar", desc: "毎秒数十トンもの水がダイナミックに吐き出される大轟音です。", descEn: "Thunderous roar of millions of gallons gushing from Kurobe Dam.", image: "", audio: "" }
-      ]},
-      "17": { nameJp: "石川県", nameEn: "Ishikawa", cities: [
-        { cityName: "金沢市", cityNameEn: "Kanazawa City", relX: 0.4, relY: 0.65, dx: -45, dy: 10, title: "金箔押し職人が木槌でポンポン紙を叩く音", titleEn: "Kanazawa Gold Leaf Hammering", desc: "1万分の1ミリまで箔を打ち伸ばす叩く音です。", descEn: "Rhythmic tapping sound of pounding gold leaf to thin perfection.", image: "", audio: "" },
-        { cityName: "輪島市", cityNameEn: "Wajima City", relX: 0.55, relY: 0.2, dx: 45, dy: -10, title: "輪島塗の塗師が静寂の中で漆を塗る音", titleEn: "Wajima Lacquerware Brush Strokes", desc: "静かな漆室で刷毛を静かに滑らせる伝統の音です。", descEn: "Silent precision of master painters applying coats of Wajima lacquer.", image: "", audio: "" }
-      ]},
-      "18": { nameJp: "福井県", nameEn: "Fukui", cities: [
-        { cityName: "越前市", cityNameEn: "Echizen City", relX: 0.45, relY: 0.55, dx: 45, dy: -10, title: "越前打刃物の鍛冶場で金槌が鉄を打つ音", titleEn: "Echizen Forged Cutlery Hammering", desc: "鍛冶職人が熱い鉄を叩き伸ばす澄んだ「カン！カン！」という音です。", descEn: "Clear ringing iron strikes of blacksmiths crafting Echizen cutlery.", image: "", audio: "" },
-        { cityName: "鯖江市", cityNameEn: "Sabae City", relX: 0.55, relY: 0.4, dx: -45, dy: 10, title: "メガネフレームの磨き工程でカラカラ鳴る音", titleEn: "Sabae Eyeglass Polishing Sounds", desc: "樽の中でフレームがカラカラと磨かれる音です。", descEn: "Clicking and clattering of spectacle frames being tumbled.", image: "", audio: "" }
-      ]},
-      "19": { nameJp: "山梨県", nameEn: "Yamanashi", cities: [
-        { cityName: "富士吉田市", cityNameEn: "Fujiyoshida City", relX: 0.5, relY: 0.6, dx: 45, dy: 0, title: "富士山吉田ルート登山口の風とざわめき", titleEn: "Mt. Fuji Trail Breeze & Footsteps", desc: "富士登山への期待を胸に秘めた登山者たちの足音と風の音です。", descEn: "Trail footsteps and mountain wind at Mt. Fuji Yoshida route.", image: "", audio: "" }
-      ]},
-      "20": { nameJp: "長野県", nameEn: "Nagano", cities: [
-        { cityName: "諏訪市", cityNameEn: "Suwa City", relX: 0.5, relY: 0.55, dx: 45, dy: 0, title: "諏訪大社御柱祭の木遣り唄", titleEn: "Suwa Taisha Onbashira Kiyari Song", desc: "大木を山から引き下ろす天下の奇祭。人々の心を一つにする唄です。", descEn: "High-pitched traditional chants pulling giant logs during Onbashira.", image: "", audio: "" }
-      ]},
-      "21": { nameJp: "岐阜県", nameEn: "Gifu", cities: [
-        { cityName: "岐阜市", cityNameEn: "Gifu City", relX: 0.35, relY: 0.7, dx: -45, dy: 0, title: "長良川の鵜飼で鵜匠が船端を叩くドンドン音", titleEn: "Nagara River Ukai Cormorant Fishing", desc: "鵜匠が鵜を奮い立たせるために船端を打つ独特の音です。", descEn: "Cormorant masters beating boat edges under flaming lanterns.", image: "", audio: "" }
-      ]},
-      "22": { nameJp: "静岡県", nameEn: "Shizuoka", cities: [
-        { cityName: "島田市", cityNameEn: "Shimada City", relX: 0.45, relY: 0.45, dx: -45, dy: -10, title: "大井川鐵道SLがシュッシュッポッポと吐く蒸気音", titleEn: "Oigawa Railway Steam Locomotive", desc: "蒸気機関車が白い蒸気を吐き出しながら進む郷愁の音です。", descEn: "Nostalgic steam train chugging through lush tea hills.", image: "", audio: "" },
-        { cityName: "浜松市", cityNameEn: "Hamamatsu City", relX: 0.25, relY: 0.65, dx: 45, dy: 10, title: "浜松のピアノ調律師が鳴らす音叉音", titleEn: "Hamamatsu Piano Tuning Fork Tone", desc: "基準音を響かせる音叉の美しい高音が静かに伸びていきます。", descEn: "Pure vibrating tones of tuning forks in the City of Music.", image: "", audio: "" }
-      ]},
-      "23": { nameJp: "愛知県", nameEn: "Aichi", cities: [
-        { cityName: "岡崎市", cityNameEn: "Okazaki City", relX: 0.45, relY: 0.5, dx: 45, dy: 0, title: "三河花火の職人が使う火薬の調合と試射音", titleEn: "Mikawa Fireworks Testing Explosions", desc: "伝統ある手筒花火の職人たちが打ち出す力強い試射音です。", descEn: "Heavy explosive booms testing traditional Mikawa fireworks.", image: "", audio: "" }
-      ]},
-      "24": { nameJp: "三重県", nameEn: "Mie", cities: [
-        { cityName: "志摩市", cityNameEn: "Shima City", relX: 0.65, relY: 0.75, dx: 45, dy: 10, title: "海女さんが吐く切ない「磯笛」の音", titleEn: "Ama Diver Whistle Isobue", desc: "素潜り漁を終えた海女さんが呼吸を整える際に吐くヒューという音です。", descEn: "Poignantly beautiful whistling sound of Ama divers breathing.", image: "", audio: "" },
-        { cityName: "鈴鹿市", cityNameEn: "Suzuka City", relX: 0.5, relY: 0.35, dx: -45, dy: -10, title: "鈴鹿サーキットF1マシンの駆け抜ける爆音", titleEn: "Suzuka Circuit F1 Racing Engine", desc: "超高回転のエンジン音がサーキットを激しく突き抜けます。", descEn: "Screaming high-RPM F1 engine roars zooming past Suzuka Circuit.", image: "", audio: "" }
-      ]},
-      "25": { nameJp: "滋賀県", nameEn: "Shiga", cities: [
-        { cityName: "大津市", cityNameEn: "Otsu City", relX: 0.35, relY: 0.75, dx: -45, dy: 10, title: "三井寺の「三井の晩鐘」の余韻長き音", titleEn: "Mii-dera Temple Evening Bell Chime", desc: "突いた後にどこまでも深く伸びてゆく鐘の豊かな余韻です。", descEn: "Resonant, long-lasting bell reverberations of Mii-dera temple.", image: "", audio: "" },
-        { cityName: "近江八幡市", cityNameEn: "Omihachiman City", relX: 0.55, relY: 0.45, dx: 45, dy: -10, title: "水郷めぐり手漕ぎ舟がアシをすり抜ける音", titleEn: "Omihachiman Canal Boat Reed Swish", desc: "手漕ぎ舟がアシの茂みを優しくかき分ける水と葉の音です。", descEn: "Peaceful water swishing as wooden canal boats glide through reeds.", image: "", audio: "" }
-      ]},
-      "26": { nameJp: "京都府", nameEn: "Kyoto", cities: [
-        { cityName: "京都市", cityNameEn: "Kyoto City", relX: 0.55, relY: 0.6, dx: 45, dy: 10, title: "祇園祭のコンチキチン（祇園囃子）の音", titleEn: "Kyoto Gion Festival Chimes", desc: "鉦と太鼓、笛が織りなす京都の夏を象徴する風情あふれる音です。", descEn: "Refining gong and bell chimes signifying Kyoto summer.", image: "", audio: "" },
-        { cityName: "宇治市", cityNameEn: "Uji City", relX: 0.6, relY: 0.75, dx: -45, dy: 15, title: "宇治茶の茶摘みで葉を摘むシャキシャキ音", titleEn: "Uji Green Tea Leaf Harvesting", desc: "茶摘み唄を聞きながら新芽を丁寧に摘み取る音です。", descEn: "Snapping fresh green tea leaves during spring tea picking.", image: "", audio: "" }
-      ]},
-      "27": { nameJp: "大阪府", nameEn: "Osaka", cities: [
-        { cityName: "大阪市", cityNameEn: "Osaka City", relX: 0.45, relY: 0.35, dx: -45, dy: 0, title: "天神祭の「手締め（大阪一本締め）」", titleEn: "Osaka Tenjin Festival Clapping", desc: "「打ちましょ（タパン）もひとつセ（タパン）」の手締め音です。", descEn: "Synchronized celebratory clapping rhythm during Tenjin Festival.", image: "", audio: "" }
-      ]},
-      "28": { nameJp: "兵庫県", nameEn: "Hyogo", cities: [
-        { cityName: "豊岡市", cityNameEn: "Toyooka City", relX: 0.55, relY: 0.25, dx: 45, dy: 0, title: "城崎温泉の湯巡りで下駄が鳴るカランコロン音", titleEn: "Kinosaki Onsen Geta Clogs Clack", desc: "浴衣姿の湯客が行き交う石畳を木製の下駄が鳴らします。", descEn: "Rhythmic clacking of wooden clogs walking along stone pathways.", image: "", audio: "" }
-      ]},
-      "29": { nameJp: "奈良県", nameEn: "Nara", cities: [
-        { cityName: "吉野町", cityNameEn: "Yoshino Town", relX: 0.5, relY: 0.6, dx: 45, dy: 0, title: "吉野杉の伐採で木が倒れる豪快なドシーン音", titleEn: "Yoshino Cedar Tree Felling Crash", desc: "きこりの声とともに巨木が大地へと倒れ込む重低音です。", descEn: "Tremendous crashing boom of giant cedar trees harvested in woods.", image: "", audio: "" }
-      ]},
-      "30": { nameJp: "和歌山県", nameEn: "Wakayama", cities: [
-        { cityName: "高野町", cityNameEn: "Koya Town", relX: 0.5, relY: 0.25, dx: -45, dy: -10, title: "高野山奥の院の静寂に響く読経と鈴の音", titleEn: "Koyasan Okunoin Chants & Bell", desc: "杉木立が立ち並ぶ聖地で読経と澄んだ鈴が響きます。", descEn: "Monk chants and bell ringing echoing through sacred Koyasan forests.", image: "", audio: "" },
-        { cityName: "那智勝浦町", cityNameEn: "Nachikatsuura Town", relX: 0.75, relY: 0.75, dx: 45, dy: 10, title: "那智の滝の大水量が一気に落ちる滝音", titleEn: "Nachi Falls Water Roar", desc: "落差日本一の名瀑。水が落ちはじめる大迫力の自然音です。", descEn: "Thunderous roaring cascades of Nachi Falls waterfall.", image: "", audio: "" }
-      ]},
-      "31": { nameJp: "鳥取県", nameEn: "Tottori", cities: [
-        { cityName: "鳥取市", cityNameEn: "Tottori City", relX: 0.7, relY: 0.45, dx: 45, dy: -10, title: "鳥取砂丘でサラサラと砂が崩れ落ちる風の音", titleEn: "Tottori Sand Dunes Wind Whispers", desc: "風に吹かれて砂の風紋が形作られる静かな音です。", descEn: "Soft shifting sand sounds created by wind over Tottori Sand Dunes.", image: "", audio: "" },
-        { cityName: "倉吉市", cityNameEn: "Kurayoshi City", relX: 0.4, relY: 0.55, dx: -45, dy: 10, title: "打吹玉川の白壁土蔵群を流れる水音", titleEn: "Kurayoshi White Wall Storehouses Canal", desc: "白壁土蔵群の傍らをゆったりと流れる清らかな水音です。", descEn: "Tranquil water streams flowing past historical white-walled storehouses.", image: "", audio: "" }
-      ]},
-      "32": { nameJp: "島根県", nameEn: "Shimane", cities: [
-        { cityName: "出雲市", cityNameEn: "Izumo City", relX: 0.55, relY: 0.5, dx: 45, dy: 0, title: "出雲大社の大しめ縄の下で打つ拍手（かしわで）", titleEn: "Izumo Taisha Shrine Prayer Claps", desc: "神話の故郷・出雲大社。参拝客が打つ深い拍手の音です。", descEn: "Solemn prayer handclaps under giant sacred straw rope at Izumo Grand Shrine.", image: "", audio: "" }
-      ]},
-      "33": { nameJp: "岡山県", nameEn: "Okayama", cities: [
-        { cityName: "倉敷市", cityNameEn: "Kurashiki City", relX: 0.45, relY: 0.65, dx: -45, dy: 10, title: "倉敷美観地区で船頭が竿で水面を突く音", titleEn: "Kurashiki Canal Boat Pole Splash", desc: "美観地区。川舟の船頭が水面を漕ぎ進める水音です。", descEn: "Gentle water splashes as wooden boats glide along historical canals.", image: "", audio: "" }
-      ]},
-      "34": { nameJp: "広島県", nameEn: "Hiroshima", cities: [
-        { cityName: "広島市", cityNameEn: "Hiroshima City", relX: 0.4, relY: 0.5, dx: -45, dy: -10, title: "平和記念公園の「平和の鐘」の重厚な音", titleEn: "Hiroshima Peace Bell Deep Toll", desc: "平和への祈りを込めて突かれる鐘の重厚な響きです。", descEn: "Profound, lingering resonance of Peace Bell echoing in Peace Park.", image: "", audio: "" },
-        { cityName: "廿日市市", cityNameEn: "Hatsukaichi City", relX: 0.25, relY: 0.65, dx: -45, dy: 15, title: "宮島（厳島神社）の大鳥居を洗う波音", titleEn: "Miyajima Floating Torii Waves", desc: "満潮時に鳥居を洗う穏やかで神秘的な波の音です。", descEn: "Gentle ocean waves washing around Miyajima's famous Floating Torii Gate.", image: "", audio: "" }
-      ]},
-      "35": { nameJp: "山口県", nameEn: "Yamaguchi", cities: [
-        { cityName: "下関市", cityNameEn: "Shimonoseki City", relX: 0.2, relY: 0.75, dx: -45, dy: 10, title: "唐戸市場フグのセリの掛け声", titleEn: "Karato Market Blowfish Auction", desc: "活気溢れる早朝市場でセリ人の熱い声が飛び交います。", descEn: "Lively morning fish auction chants for famous blowfish at Karato Market.", image: "", audio: "" }
-      ]},
-      "36": { nameJp: "徳島県", nameEn: "Tokushima", cities: [
-        { cityName: "徳島市", cityNameEn: "Tokushima City", relX: 0.7, relY: 0.45, dx: 45, dy: -10, title: "阿波踊りの賑やかな「ぞめき」囃子", titleEn: "Awa Odori Dance Zomeki Rhythm", desc: "鉦、太鼓、笛が打ち鳴らされる、四百年続く情熱の祭り音です。", descEn: "Bustling traditional festival music driving the 400-year-old Awa Dance.", image: "", audio: "" },
-        { cityName: "鳴門市", cityNameEn: "Naruto City", relX: 0.75, relY: 0.2, dx: 45, dy: -15, title: "鳴門の渦潮のゴォーッという潮騒の音", titleEn: "Naruto Whirlpools Roaring Waves", desc: "豪快な鳴門の渦潮が音を立てて渦を巻く潮騒の音です。", descEn: "The deep oceanic roar of water forming giant Naruto Whirlpools.", image: "", audio: "" },
-        { cityName: "三好市", cityNameEn: "Miyoshi City", relX: 0.25, relY: 0.65, dx: -45, dy: 15, title: "祖谷のかずら橋を渡るギシギシ鳴る音", titleEn: "Iya Kazurabashi Vine Bridge Creaks", desc: "秘境・祖谷のカズラ橋。踏み出すたびに揺れる音です。", descEn: "Suspenseful creaking of mountain vine bridge planks crossing deep gorges.", image: "", audio: "" }
-      ]},
-      "37": { nameJp: "香川県", nameEn: "Kagawa", cities: [
-        { cityName: "高松市", cityNameEn: "Takamatsu City", relX: 0.55, relY: 0.5, dx: 45, dy: 0, title: "讃岐うどん生地を叩き伸ばすバシッ音", titleEn: "Sanuki Udon Dough Kneading Slam", desc: "職人が力強くうどん生地を台に叩きつける音です。", descEn: "Rhythmic heavy slapping of wheat dough on wooden blocks by Udon masters.", image: "", audio: "" }
-      ]},
-      "38": { nameJp: "愛媛県", nameEn: "Ehime", cities: [
-        { cityName: "松山市", cityNameEn: "Matsuyama City", relX: 0.45, relY: 0.5, dx: -45, dy: 10, title: "道後温泉本館「振鷺閣」の刻太鼓", titleEn: "Dogo Onsen Shinrokaku Drum", desc: "温泉街の刻を告げる太鼓の音。重々しく鳴り響きます。", descEn: "Historic timekeeping drum strike ringing from Dogo Onsen rooftop tower.", image: "", audio: "" },
-        { cityName: "今治市", cityNameEn: "Imabari City", relX: 0.55, relY: 0.25, dx: 45, dy: -10, title: "来島海峡大橋を吹き抜ける風と潮流音", titleEn: "Kurushima Kaikyo Bridge Winds", desc: "風の唸り声と激しい潮流の音が混ざり合う自然音です。", descEn: "Wind howling through giant suspension cables combined with ocean currents.", image: "", audio: "" }
-      ]},
-      "39": { nameJp: "高知県", nameEn: "Kochi", cities: [
-        { cityName: "高知市", cityNameEn: "Kochi City", relX: 0.45, relY: 0.4, dx: -45, dy: -10, title: "よさこい祭りの鳴子が鳴るカチカチ音", titleEn: "Yosakoi Festival Naruko Clack", desc: "木製の鳴子（なるこ）を鳴らしながら躍動する祭り音です。", descEn: "Rhythmic wooden clack of Naruko held by energetic Yosakoi dancers.", image: "", audio: "" },
-        { cityName: "室戸市", cityNameEn: "Muroto City", relX: 0.85, relY: 0.7, dx: 45, dy: 10, title: "室戸岬の太平洋の荒波が当たる岩音", titleEn: "Muroto Cape Pacific Ocean Waves", desc: "豪快な荒波が奇岩にぶつかり白波を立てる重厚な音です。", descEn: "Powerful crashing waves hitting dramatic coastal volcanic rocks.", image: "", audio: "" }
-      ]},
-      "40": { nameJp: "福岡県", nameEn: "Fukuoka", cities: [
-        { cityName: "福岡市", cityNameEn: "Fukuoka City", relX: 0.35, relY: 0.45, dx: -45, dy: 0, title: "博多祇園山笠の「オイサ！オイサ！」の掛け声", titleEn: "Hakata Gion Yamakasa Oisa Chants", desc: "山笠を担ぎ街を全力で駆け抜ける山笠男たちの掛け声です。", descEn: "Shouting 'Oisa!' as runners carry giant floats through Hakata streets.", image: "", audio: "" }
-      ]},
-      "41": { nameJp: "佐賀県", nameEn: "Saga", cities: [
-        { cityName: "唐津市", cityNameEn: "Karatsu City", relX: 0.4, relY: 0.25, dx: -45, dy: -10, title: "唐津くんちの「エンヤ！」の掛け声と太鼓", titleEn: "Karatsu Kunchi Enya Chants", desc: "曳山（ひきやま）とともに響く「エンヤ！」の掛け声です。", descEn: "Traditional 'Enya!' chants pulling elaborate float sculptures.", image: "", audio: "" },
-        { cityName: "伊万里市", cityNameEn: "Imari City", relX: 0.3, relY: 0.45, dx: -45, dy: 10, title: "伊万里焼の磁器風鈴のチリンチリン音", titleEn: "Imari Porcelain Wind Chimes", desc: "重なり合わさる磁器の繊細で高音の鈴音です。", descEn: "High delicate tinkle of fine Imari porcelain wind bells in summer breeze.", image: "", audio: "" }
-      ]},
-      "42": { nameJp: "長崎県", nameEn: "Nagasaki", cities: [
-        { cityName: "佐世保市", cityNameEn: "Sasebo City", relX: 0.45, relY: 0.35, dx: 45, dy: 0, title: "ハウステンボスの馬車が走るパカパカ音", titleEn: "Huis Ten Bosch Horse Carriage Hooves", desc: "石畳の街並みを馬車が蹄（ひづめ）を鳴らして進む音です。", descEn: "Rhythmic trotting horse hooves on cobblestone streets.", image: "", audio: "" }
-      ]},
-      "43": { nameJp: "熊本県", nameEn: "Kumamoto", cities: [
-        { cityName: "熊本市", cityNameEn: "Kumamoto City", relX: 0.4, relY: 0.35, dx: -45, dy: -10, title: "藤崎八旛宮例大祭の「ドーカイ！」の掛け声", titleEn: "Fujisaki Hachimangu Festival Chants", desc: "飾馬が街を練り歩く活気溢れる掛け声とお囃子です。", descEn: "Energetic 'Dokai!' chants following decorated horses through Kumamoto.", image: "", audio: "" },
-        { cityName: "阿蘇市", cityNameEn: "Aso City", relX: 0.7, relY: 0.3, dx: 45, dy: 10, title: "阿蘇中岳火口の噴煙と大地の地鳴り", titleEn: "Mt. Aso Volcanic Rumble", desc: "立ち上る噴煙と大地の底鳴りです。", descEn: "Low rumbling seismic resonance from Mt. Aso volcanic crater.", image: "", audio: "" }
-      ]},
-      "44": { nameJp: "大分県", nameEn: "Oita", cities: [
-        { cityName: "別府市", cityNameEn: "Beppu City", relX: 0.65, relY: 0.35, dx: 45, dy: -10, title: "別府八湯の湯けむりが噴き出すシューッ音", titleEn: "Beppu Hot Spring Steam Hiss", desc: "あちこちから勢いよく噴き出す蒸気と温泉の音です。", descEn: "Hissing steam vents billowing across Beppu hot spring town.", image: "", audio: "" },
-        { cityName: "由布市", cityNameEn: "Yufu City", relX: 0.45, relY: 0.45, dx: -45, dy: 10, title: "金鱗湖の朝もやの中の小鳥のさえずり", titleEn: "Lake Kinrin Morning Birds Chirping", desc: "朝もやが立ち込める金鱗湖の鳥の声です。", descEn: "Peaceful morning birdsong over misty Lake Kinrin in Yufuin.", image: "", audio: "" }
-      ]},
-      "45": { nameJp: "宮崎県", nameEn: "Miyazaki", cities: [
-        { cityName: "宮崎市", cityNameEn: "Miyazaki City", relX: 0.5, relY: 0.55, dx: 45, dy: 0, title: "鬼の洗濯板に打ち寄せる太平洋の波音", titleEn: "Devil's Washboard Ocean Waves", desc: "鬼の洗濯板を太平洋の波が洗うダイナミックな音です。", descEn: "Crashing ocean waves rolling over Devil's Washboard basalt rock.", image: "", audio: "" }
-      ]},
-      "46": { nameJp: "鹿児島県", nameEn: "Kagoshima", cities: [
-        { cityName: "指宿市", cityNameEn: "Ibusuki City", relX: 0.45, relY: 0.8, dx: 45, dy: 0, title: "砂むし温泉で波音を聞くシュッシュッ音", titleEn: "Ibusuki Sand Bath Waves", desc: "温かい砂に包まれながら聴く海音です。", descEn: "Soothing wave sounds while buried in warm geothermal beach sand.", image: "", audio: "" }
-      ]},
-      "47": { nameJp: "沖縄県", nameEn: "Okinawa", cities: [
-        { cityName: "那覇市", cityNameEn: "Naha City", relX: 0.35, relY: 0.65, dx: 45, dy: 0, title: "国際通りの三線「ツンツンテン」の音色", titleEn: "Kokusai Street Sanshin Music", desc: "南国の温かい風に乗って聞こえてくる三線の音色です。", descEn: "Melodic tropical tunes of Okinawan Sanshin lute echoing in Naha.", image: "", audio: "" }
-      ]}
-    };
-
-    function getPrefDataWithFallback(code, element) {
-      const codeStr = String(parseInt(code, 10));
-      if (PREFECTURE_DATA[codeStr]) {
-        return PREFECTURE_DATA[codeStr];
+      ja: { 
+        title: "さうんどまっぷ", resetBtn: "全国表示に戻る", loading: "日本地図を読み込み中...",
+        lblTutorial: "使い方", lblFav: "お気に入り", lblQuiz: "音クイズ",
+        addFav: "お気に入りに追加", removeFav: "お気に入りから削除",
+        progress: "47都道府県中 {count}県を発見！ ({pct}%)",
+        noFav: "保存されたお気に入りはありません。"
+      },
+      en: { 
+        title: "Sound Map", resetBtn: "Reset Map", loading: "Loading Map...",
+        lblTutorial: "Guide", lblFav: "Favorites", lblQuiz: "Quiz",
+        addFav: "Add to Favorites", removeFav: "Remove Favorite",
+        progress: "Discovered {count} / 47 Prefectures! ({pct}%)",
+        noFav: "No favorite sound saved yet."
       }
-      const rawName = element.getAttribute('data-name') || "都道府県";
-      const cleanName = rawName.replace(/(府|県)$/, "");
-      const cityName = cleanName + "市";
-      return {
-        nameJp: rawName, nameEn: cleanName,
-        cities: [
-          {
-            cityName: cityName, cityNameEn: cityName,
-            relX: 0.5, relY: 0.5, dx: 40, dy: -10,
-            title: `${cityName}の歴史と伝統の音`, titleEn: `Traditional Sound of ${cityName}`,
-            desc: `${rawName}の風土と歴史を象徴する心地よい音色です。`, descEn: `Traditional sounds reflecting the culture of ${rawName}.`,
-            image: "", audio: ""
-          }
-        ]
-      };
+    };
+
+    let PREFECTURE_DATA = {}; // data.json から取得
+
+    // 設定データ
+    let appSettings = JSON.parse(localStorage.getItem('soundmap_settings') || JSON.stringify({
+      mode: 'standard',
+      enableIdleRedirect: false,
+      idleTimeoutSec: 20,
+      redirectUrl: 'https://symphony100.github.io/symphony/soundmap/',
+      autoResetOnLoad: false
+    }));
+
+    function getPrefData(code) {
+      const codeStr = String(parseInt(code, 10));
+      return PREFECTURE_DATA[codeStr] || null;
     }
 
     // DOM要素参照
     const headerTitle = document.getElementById('headerTitle');
-    const shareBtnText = document.getElementById('shareBtnText');
     const resetBtn = document.getElementById('resetBtn');
+    const resetBtnText = document.getElementById('resetBtnText');
     const mapContainer = document.getElementById('mapContainer');
     const loading = document.getElementById('loading');
     const soundModal = document.getElementById('soundModal');
@@ -834,10 +962,36 @@
     const modalPhoto = document.getElementById('modalPhoto');
     const photoPlaceholderText = document.getElementById('photoPlaceholderText');
     const modalSoundTitle = document.getElementById('modalSoundTitle');
-    const playingIndicator = document.getElementById('playingIndicator');
+    const soundIcon = document.getElementById('soundIcon');
     const modalDesc = document.getElementById('modalDesc');
     const hiddenAudio = document.getElementById('hiddenAudio');
     const langToggle = document.getElementById('langToggle');
+
+    const favToggleBtn = document.getElementById('favToggleBtn');
+    const favBtnLabel = document.getElementById('favBtnLabel');
+    const favModal = document.getElementById('favModal');
+    const favList = document.getElementById('favList');
+    
+    // クイズ要素
+    const quizModal = document.getElementById('quizModal');
+    const quizIndexText = document.getElementById('quizIndexText');
+    const quizTotalText = document.getElementById('quizTotalText');
+    const quizSoundTitle = document.getElementById('quizSoundTitle');
+    const quizOptions = document.getElementById('quizOptions');
+    const quizResult = document.getElementById('quizResult');
+    const btnNextQuiz = document.getElementById('btnNextQuiz');
+
+    // チュートリアル
+    const tutorialModal = document.getElementById('tutorialModal');
+    const progressText = document.getElementById('progressText');
+    const progressBarFill = document.getElementById('progressBarFill');
+
+    // 設定
+    const settingsModal = document.getElementById('settingsModal');
+
+    // 展示タイマー
+    const idleOverlay = document.getElementById('idleOverlay');
+    const countdownSecEl = document.getElementById('countdownSec');
 
     let svgMapElement = null;
     let cityMarkersGroup = null;
@@ -846,10 +1000,97 @@
     let initialViewBox = [0, 0, 1000, 1000];
     let animFrameId = null;
 
-    // 音声タイマー変数
-    let fadeIntervalTimer = null;
-    let stopAudioTimer = null;
-    let fadeStartTimer = null;
+    let audioFadeInterval = null;
+    let audioLoopTimer = null;
+    let audioCtx = null;
+    let currentWebAudioMasterGain = null;
+
+    let inactivityTimer = null;
+    let countdownInterval = null;
+    let countdownSec = 10;
+    let tutorialSlideIndex = 0;
+
+    let debugModeShowAll = false; // 「1」キー全開放
+
+    // クイズ状態
+    let quizList = [];
+    let quizCurrentIdx = 0;
+
+    let discoveredPrefSet = new Set(JSON.parse(localStorage.getItem('otomap_discovered') || '[]'));
+    let favoritesList = JSON.parse(localStorage.getItem('otomap_favorites') || '[]');
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      if (appSettings.autoResetOnLoad) {
+        discoveredPrefSet.clear();
+        localStorage.setItem('otomap_discovered', '[]');
+      }
+
+      resetInactivityTimer();
+      updateProgressUI();
+
+      try {
+        const dataRes = await fetch('data.json');
+        PREFECTURE_DATA = await dataRes.json();
+      } catch (err) {
+        console.warn("data.json の取得に失敗しました", err);
+      }
+
+      try {
+        const svgRes = await fetch('https://cdn.jsdelivr.net/gh/geolonia/japanese-prefectures@master/map-polygon.svg');
+        const svgText = await svgRes.text();
+        
+        mapContainer.innerHTML = svgText;
+        loading.style.opacity = '0';
+        setTimeout(() => loading.remove(), 500);
+
+        svgMapElement = mapContainer.querySelector('.geolonia-svg-map');
+        const vb = svgMapElement.getAttribute('viewBox');
+        if (vb) initialViewBox = vb.split(' ').map(Number);
+
+        cityMarkersGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        cityMarkersGroup.setAttribute("id", "cityMarkersGroup");
+        svgMapElement.appendChild(cityMarkersGroup);
+
+        refreshMapPrefectures();
+
+      } catch (err) {
+        loading.textContent = '地図データの読み込みに失敗しました。';
+        console.error(err);
+      }
+    });
+
+    // キーボード「1」で全解放トグル
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '1') {
+        debugModeShowAll = !debugModeShowAll;
+        alert(debugModeShowAll ? "【動作確認モード】すべての都道府県を解放しました" : "【通常モード】に戻りました");
+        refreshMapPrefectures();
+      }
+    });
+
+    function refreshMapPrefectures() {
+      if (!svgMapElement) return;
+      const prefs = mapContainer.querySelectorAll('.geolonia-svg-map .prefecture');
+      prefs.forEach(pref => {
+        const code = pref.getAttribute('data-code');
+        const data = getPrefData(code);
+
+        if (data || debugModeShowAll) {
+          pref.style.fill = "#81d4fa"; // 音あり（水色）
+          pref.style.cursor = "pointer";
+          if (discoveredPrefSet.has(code)) pref.classList.add('discovered');
+
+          pref.onclick = (e) => {
+            e.stopPropagation();
+            selectPrefecture(code, pref);
+          };
+        } else {
+          pref.style.fill = "#e2e8f0"; // 音なし（淡グレー）
+          pref.style.cursor = "not-allowed";
+          pref.onclick = null;
+        }
+      });
+    }
 
     function toggleLanguage(isEnglish) {
       currentLang = isEnglish ? 'en' : 'ja';
@@ -864,9 +1105,13 @@
 
     function updateLanguageUI() {
       headerTitle.textContent = UI_TEXT[currentLang].title;
-      shareBtnText.textContent = UI_TEXT[currentLang].shareBtn;
-      resetBtn.textContent = UI_TEXT[currentLang].resetBtn;
+      resetBtnText.textContent = UI_TEXT[currentLang].resetBtn;
+      document.getElementById('lblTutorial').textContent = UI_TEXT[currentLang].lblTutorial;
+      document.getElementById('lblFav').textContent = UI_TEXT[currentLang].lblFav;
+      document.getElementById('lblQuiz').textContent = UI_TEXT[currentLang].lblQuiz;
       if (loading) loading.textContent = UI_TEXT[currentLang].loading;
+
+      updateProgressUI();
 
       if (activeCode) {
         const prefElement = mapContainer.querySelector(`.prefecture[data-code="${activeCode}"]`);
@@ -878,60 +1123,12 @@
       }
     }
 
-    function shareApp() {
-      const title = currentLang === 'en' ? 'OtoMap Japan' : 'おとマップ Japan';
-      const text = currentLang === 'en' ? 'Explore traditional sounds and history of Japan!' : '日本の伝統の音と歴史を探訪する絵巻マップ';
-      const url = window.location.href;
-
-      if (navigator.share) {
-        navigator.share({ title, text, url }).catch(() => {});
-      } else {
-        navigator.clipboard.writeText(url).then(() => {
-          alert(UI_TEXT[currentLang].copied);
-        });
-      }
+    function updateProgressUI() {
+      const count = discoveredPrefSet.size;
+      const pct = Math.round((count / 47) * 100);
+      progressText.textContent = UI_TEXT[currentLang].progress.replace('{count}', count).replace('{pct}', pct);
+      progressBarFill.style.width = `${pct}%`;
     }
-
-    // 地図SVGロード
-    window.addEventListener('DOMContentLoaded', async () => {
-      try {
-        const svgRes = await fetch('https://cdn.jsdelivr.net/gh/geolonia/japanese-prefectures@master/map-polygon.svg');
-        const svgText = await svgRes.text();
-        
-        mapContainer.innerHTML = svgText;
-        loading.style.opacity = '0';
-        setTimeout(() => loading.remove(), 500);
-
-        svgMapElement = mapContainer.querySelector('.geolonia-svg-map');
-
-        const vb = svgMapElement.getAttribute('viewBox');
-        if (vb) {
-          initialViewBox = vb.split(' ').map(Number);
-        }
-
-        cityMarkersGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        cityMarkersGroup.setAttribute("id", "cityMarkersGroup");
-        svgMapElement.appendChild(cityMarkersGroup);
-
-        const prefs = mapContainer.querySelectorAll('.geolonia-svg-map .prefecture');
-        prefs.forEach(pref => {
-          const code = pref.getAttribute('data-code');
-          const regionKey = getRegionKey(code);
-          if (regionKey && REGION_COLORS[regionKey]) {
-            pref.style.fill = REGION_COLORS[regionKey];
-          }
-
-          pref.addEventListener('click', (e) => {
-            e.stopPropagation();
-            selectPrefecture(code, pref);
-          });
-        });
-
-      } catch (err) {
-        loading.textContent = '地図データの読み込みに失敗しました。';
-        console.error(err);
-      }
-    });
 
     function handleBgClick(e) {
       if (!e.target.classList.contains('prefecture') && !e.target.closest('.city-marker-group')) {
@@ -946,17 +1143,16 @@
       mapContainer.querySelectorAll('.prefecture').forEach(p => p.classList.remove('active'));
       element.classList.add('active');
 
+      resetBtn.classList.add('visible'); // 全国に戻るボタン表示
       zoomToElementViewBox(element);
       renderCityMarkersOnMap(code, element);
     }
 
     function zoomToElementViewBox(element) {
       const bbox = element.getBBox();
-
       const paddingRatio = 1.8;
       let targetW = bbox.width * paddingRatio;
       let targetH = bbox.height * paddingRatio;
-
       const maxDim = Math.max(targetW, targetH);
       const finalDim = Math.max(maxDim, 140);
 
@@ -970,11 +1166,7 @@
       if (animFrameId) cancelAnimationFrame(animFrameId);
 
       const vb = svgMapElement.getAttribute('viewBox').split(' ').map(Number);
-      const startX = vb[0];
-      const startY = vb[1];
-      const startW = vb[2];
-      const startH = vb[3];
-
+      const startX = vb[0]; const startY = vb[1]; const startW = vb[2]; const startH = vb[3];
       const startTime = performance.now();
 
       function step(now) {
@@ -988,25 +1180,21 @@
         const curH = startH + (targetH - startH) * ease;
 
         svgMapElement.setAttribute('viewBox', `${curX} ${curY} ${curW} ${curH}`);
-
-        if (progress < 1) {
-          animFrameId = requestAnimationFrame(step);
-        }
+        if (progress < 1) animFrameId = requestAnimationFrame(step);
       }
-
       animFrameId = requestAnimationFrame(step);
     }
 
     function renderCityMarkersOnMap(code, prefElement) {
       cityMarkersGroup.innerHTML = "";
-      const data = getPrefDataWithFallback(code, prefElement);
+      const data = getPrefData(code);
+      if (!data) return;
 
       const bbox = prefElement.getBBox();
 
       data.cities.forEach((city, index) => {
         const pinX = bbox.x + bbox.width * city.relX;
         const pinY = bbox.y + bbox.height * city.relY;
-
         const labelX = pinX + (city.dx || 35);
         const labelY = pinY + (city.dy || -15);
 
@@ -1019,40 +1207,30 @@
         g.setAttribute("class", "city-marker-group");
 
         const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        line.setAttribute("x1", pinX);
-        line.setAttribute("y1", pinY);
-        line.setAttribute("x2", labelX);
-        line.setAttribute("y2", labelY);
+        line.setAttribute("x1", pinX); line.setAttribute("y1", pinY);
+        line.setAttribute("x2", labelX); line.setAttribute("y2", labelY);
         line.setAttribute("class", "city-line");
 
         const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        dot.setAttribute("cx", pinX);
-        dot.setAttribute("cy", pinY);
-        dot.setAttribute("r", "3.5");
-        dot.setAttribute("class", "city-pin-dot");
+        dot.setAttribute("cx", pinX); dot.setAttribute("cy", pinY);
+        dot.setAttribute("r", "3.5"); dot.setAttribute("class", "city-pin-dot");
 
         const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        rect.setAttribute("x", labelX - rectW / 2);
-        rect.setAttribute("y", labelY - rectH / 2);
-        rect.setAttribute("width", rectW);
-        rect.setAttribute("height", rectH);
+        rect.setAttribute("x", labelX - rectW / 2); rect.setAttribute("y", labelY - rectH / 2);
+        rect.setAttribute("width", rectW); rect.setAttribute("height", rectH);
         rect.setAttribute("class", "city-label-bg");
 
         const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.setAttribute("x", labelX);
-        text.setAttribute("y", labelY);
+        text.setAttribute("x", labelX); text.setAttribute("y", labelY);
         text.setAttribute("class", "city-label-text");
         text.textContent = cityName;
 
-        g.appendChild(line);
-        g.appendChild(dot);
-        g.appendChild(rect);
-        g.appendChild(text);
+        g.appendChild(line); g.appendChild(dot); g.appendChild(rect); g.appendChild(text);
 
-        g.addEventListener('click', (e) => {
+        g.onclick = (e) => {
           e.stopPropagation();
           openModal(code, index, prefElement);
-        });
+        };
 
         cityMarkersGroup.appendChild(g);
       });
@@ -1064,85 +1242,354 @@
       updateModalContent(code, cityIndex, prefElement);
       soundModal.classList.add('open');
 
-      const prefData = getPrefDataWithFallback(code, prefElement);
+      discoveredPrefSet.add(code);
+      localStorage.setItem('otomap_discovered', JSON.stringify([...discoveredPrefSet]));
+      updateProgressUI();
+
+      if (prefElement) prefElement.classList.add('discovered');
+
+      const prefData = getPrefData(code);
       const city = prefData?.cities[cityIndex];
-      
-      // 音声自動再生 ＆ 20秒フェードアウトタイマー
-      stopAudioTimerAndReset();
-      if (city && city.audio && city.audio.trim() !== "") {
-        hiddenAudio.volume = 1.0;
-        hiddenAudio.src = city.audio;
-        hiddenAudio.currentTime = 0;
-        
-        hiddenAudio.play().then(() => {
-          playingIndicator.style.display = 'inline-block';
-
-          // 18秒目からフェードアウト開始（2秒かけてvolumeを0へ）
-          fadeStartTimer = setTimeout(() => {
-            let fadeStep = 0;
-            fadeIntervalTimer = setInterval(() => {
-              fadeStep += 1;
-              hiddenAudio.volume = Math.max(0, 1.0 - (fadeStep / 20));
-              if (fadeStep >= 20) {
-                clearInterval(fadeIntervalTimer);
-              }
-            }, 100);
-          }, 18000);
-
-          // 20秒ぴったりで停止
-          stopAudioTimer = setTimeout(() => {
-            stopAudioTimerAndReset();
-          }, 20000);
-
-        }).catch(() => {});
-      } else {
-        hiddenAudio.src = "";
-        playingIndicator.style.display = 'none';
-      }
-    }
-
-    function stopAudioTimerAndReset() {
-      clearTimeout(fadeStartTimer);
-      clearTimeout(stopAudioTimer);
-      clearInterval(fadeIntervalTimer);
-      hiddenAudio.pause();
-      hiddenAudio.currentTime = 0;
-      hiddenAudio.volume = 1.0;
-      playingIndicator.style.display = 'none';
+      startLoopingAudio(city ? city.audio : "");
     }
 
     function updateModalContent(code, cityIndex, prefElement) {
-      const prefElementOrNull = prefElement || mapContainer.querySelector(`.prefecture[data-code="${code}"]`);
-      const prefData = getPrefDataWithFallback(code, prefElementOrNull);
+      const prefData = getPrefData(code);
       const city = prefData?.cities[cityIndex];
       if (!city) return;
 
       modalPrefJp.textContent = currentLang === 'en' ? (prefData.nameEn || prefData.nameJp) : prefData.nameJp;
       modalCityName.textContent = currentLang === 'en' ? (city.cityNameEn || city.cityName) : city.cityName;
       
-      if (city.image && city.image.trim() !== "") {
-        modalPhoto.src = city.image;
-        modalPhoto.style.display = 'block';
-        photoPlaceholderText.style.display = 'none';
-      } else {
-        modalPhoto.src = "";
-        modalPhoto.style.display = 'none';
-        photoPlaceholderText.style.display = 'block';
-        photoPlaceholderText.textContent = UI_TEXT[currentLang].noPhoto;
-      }
+      modalPhoto.src = "";
+      modalPhoto.style.display = 'none';
+      photoPlaceholderText.style.display = 'block';
 
-      let soundTitle = currentLang === 'en' ? (city.titleEn || city.title) : city.title;
-      if (!city.audio || city.audio.trim() === "") {
-        soundTitle += " " + UI_TEXT[currentLang].noAudio;
-      }
-      modalSoundTitle.textContent = soundTitle;
-
+      modalSoundTitle.textContent = currentLang === 'en' ? (city.titleEn || city.title) : city.title;
       modalDesc.textContent = currentLang === 'en' ? (city.descEn || city.desc) : city.desc;
+
+      updateFavBtnState();
+    }
+
+    function toggleFavoriteCurrent() {
+      if (!activeCode) return;
+      const prefData = getPrefData(activeCode);
+      const city = prefData?.cities[activeCityIndex];
+      if (!city) return;
+
+      const favId = `${activeCode}_${activeCityIndex}`;
+      const index = favoritesList.findIndex(f => f.id === favId);
+
+      if (index >= 0) {
+        favoritesList.splice(index, 1);
+      } else {
+        favoritesList.push({
+          id: favId, code: activeCode, cityIndex: activeCityIndex,
+          prefName: prefData.nameJp, cityName: city.cityName, title: city.title, audio: city.audio
+        });
+      }
+
+      localStorage.setItem('otomap_favorites', JSON.stringify(favoritesList));
+      updateFavBtnState();
+    }
+
+    function updateFavBtnState() {
+      const favId = `${activeCode}_${activeCityIndex}`;
+      const isFav = favoritesList.some(f => f.id === favId);
+
+      if (isFav) {
+        favToggleBtn.classList.add('active');
+        favBtnLabel.textContent = UI_TEXT[currentLang].removeFav;
+      } else {
+        favToggleBtn.classList.remove('active');
+        favBtnLabel.textContent = UI_TEXT[currentLang].addFav;
+      }
+    }
+
+    function openFavoritesModal() {
+      favList.innerHTML = "";
+      if (favoritesList.length === 0) {
+        favList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-sub);">${UI_TEXT[currentLang].noFav}</div>`;
+      } else {
+        favoritesList.forEach(fav => {
+          const card = document.createElement('div');
+          card.className = 'item-card';
+          card.innerHTML = `
+            <div class="item-info">
+              <div class="item-title">${fav.title}</div>
+              <div class="item-sub">${fav.prefName} ${fav.cityName}</div>
+            </div>
+            <button class="btn-play-mini" onclick="openModal('${fav.code}', ${fav.cityIndex}); closeFavModal();">
+              <span class="material-symbols-outlined" style="font-size:0.9rem;">volume_up</span> 聴く
+            </button>
+          `;
+          favList.appendChild(card);
+        });
+      }
+      favModal.classList.add('open');
+    }
+
+    function closeFavModal() { favModal.classList.remove('open'); }
+
+    /* 全問連続回答クイズ機能 */
+    function startQuiz() {
+      quizList = [];
+      Object.keys(PREFECTURE_DATA).forEach(code => {
+        const p = PREFECTURE_DATA[code];
+        if (p.cities && p.cities.length > 0) {
+          quizList.push({ code, prefName: p.nameJp, city: p.cities[0] });
+        }
+      });
+
+      if (quizList.length === 0) {
+        alert("音源データが登録されていません");
+        return;
+      }
+
+      quizList.sort(() => Math.random() - 0.5); // シャッフル
+      quizCurrentIdx = 0;
+
+      quizTotalText.textContent = quizList.length;
+      showQuizQuestion();
+      quizModal.classList.add('open');
+    }
+
+    function showQuizQuestion() {
+      btnNextQuiz.style.display = 'none';
+      quizResult.style.display = 'none';
+
+      const q = quizList[quizCurrentIdx];
+      quizIndexText.textContent = quizCurrentIdx + 1;
+      quizSoundTitle.textContent = q.city.title;
+
+      playSoundWithFade(q.city.audio);
+
+      // 4択作成
+      const options = [q.prefName];
+      const allNames = ["北海道", "青森県", "岩手県", "宮城県", "東京都", "神奈川県", "新潟県", "京都府", "徳島県", "沖縄県", "福岡県", "愛知県"];
+      
+      while (options.length < 4) {
+        const randName = allNames[Math.floor(Math.random() * allNames.length)];
+        if (!options.includes(randName)) options.push(randName);
+      }
+      options.sort(() => Math.random() - 0.5);
+
+      quizOptions.innerHTML = "";
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-btn';
+        btn.textContent = opt;
+        btn.onclick = () => checkQuizAnswer(opt, q.prefName);
+        quizOptions.appendChild(btn);
+      });
+    }
+
+    function checkQuizAnswer(selected, correct) {
+      quizResult.style.display = 'block';
+      if (selected === correct) {
+        quizResult.style.background = "#dcfce7";
+        quizResult.style.color = "#15803d";
+        quizResult.textContent = "🎉 正解！お見事！";
+      } else {
+        quizResult.style.background = "#fee2e2";
+        quizResult.style.color = "#b91c1c";
+        quizResult.textContent = `❌ 残念！正解は ${correct} でした。`;
+      }
+
+      if (quizCurrentIdx < quizList.length - 1) {
+        btnNextQuiz.style.display = 'block';
+        btnNextQuiz.textContent = "次の問題へ →";
+      } else {
+        btnNextQuiz.style.display = 'block';
+        btnNextQuiz.textContent = "全問終了！もう一度挑戦する";
+      }
+    }
+
+    function nextQuizQuestion() {
+      if (quizCurrentIdx < quizList.length - 1) {
+        quizCurrentIdx++;
+        showQuizQuestion();
+      } else {
+        startQuiz(); // 再チャレンジ
+      }
+    }
+
+    function closeQuizModal() {
+      quizModal.classList.remove('open');
+      stopSoundImmediate();
+    }
+
+    /* スライド式 チュートリアル */
+    function openTutorialModal() {
+      tutorialSlideIndex = 0;
+      updateTutorialSlideUI();
+      tutorialModal.classList.add('open');
+    }
+
+    function closeTutorialModal() { tutorialModal.classList.remove('open'); }
+
+    function moveTutorialSlide(dir) {
+      tutorialSlideIndex = Math.max(0, Math.min(3, tutorialSlideIndex + dir));
+      updateTutorialSlideUI();
+    }
+
+    function updateTutorialSlideUI() {
+      const wrapper = document.getElementById('tutorialSlidesWrapper');
+      wrapper.style.transform = `translateX(-${tutorialSlideIndex * 25}%)`;
+
+      document.getElementById('btnPrevSlide').disabled = (tutorialSlideIndex === 0);
+      
+      const btnNext = document.getElementById('btnNextSlide');
+      const btnComplete = document.getElementById('btnCompleteTutorial');
+
+      if (tutorialSlideIndex === 3) {
+        btnNext.style.display = 'none';
+        btnComplete.style.display = 'inline-flex';
+      } else {
+        btnNext.style.display = 'inline-flex';
+        btnComplete.style.display = 'none';
+      }
+
+      const dots = document.querySelectorAll('#dotsIndicator .dot');
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === tutorialSlideIndex);
+      });
+    }
+
+    /* 管理者設定モーダル (Pass: 1234) */
+    function promptAdminSettings() {
+      const pass = prompt("管理者パスワードを入力してください:");
+      if (pass === "1234") {
+        openSettingsModal();
+      } else if (pass !== null) {
+        alert("パスワードが正しくありません。");
+      }
+    }
+
+    function openSettingsModal() {
+      document.getElementById('cfgMode').value = appSettings.mode;
+      document.getElementById('cfgEnableIdle').checked = appSettings.enableIdleRedirect;
+      document.getElementById('cfgRedirectUrl').value = appSettings.redirectUrl;
+      document.getElementById('cfgAutoReset').checked = appSettings.autoResetOnLoad;
+
+      settingsModal.classList.add('open');
+    }
+
+    function saveSettingsFromUI() {
+      appSettings.mode = document.getElementById('cfgMode').value;
+      appSettings.enableIdleRedirect = document.getElementById('cfgEnableIdle').checked;
+      appSettings.redirectUrl = document.getElementById('cfgRedirectUrl').value;
+      appSettings.autoResetOnLoad = document.getElementById('cfgAutoReset').checked;
+
+      localStorage.setItem('soundmap_settings', JSON.stringify(appSettings));
+    }
+
+    function closeSettingsModal() { settingsModal.classList.remove('open'); }
+
+    function clearAllUserData() {
+      if (confirm("発見記録とお気に入りをすべて消去しますか？")) {
+        localStorage.removeItem('otomap_discovered');
+        localStorage.removeItem('otomap_favorites');
+        discoveredPrefSet.clear();
+        favoritesList = [];
+        updateProgressUI();
+        refreshMapPrefectures();
+        closeSettingsModal();
+        alert("データを消去しました。");
+      }
+    }
+
+    // 音声再生コントロール
+    function startLoopingAudio(audioUrl) {
+      stopSoundImmediate();
+      function playCycle() {
+        playSoundWithFade(audioUrl);
+        audioLoopTimer = setTimeout(() => { playCycle(); }, 24000);
+      }
+      playCycle();
+    }
+
+    function playSoundWithFade(audioUrl) {
+      if (audioUrl && audioUrl.trim() !== "") {
+        hiddenAudio.src = audioUrl;
+        hiddenAudio.currentTime = 0;
+        hiddenAudio.volume = 0;
+
+        hiddenAudio.play().then(() => {
+          soundIcon.style.display = 'inline-block';
+          const startTime = performance.now();
+
+          audioFadeInterval = setInterval(() => {
+            const elapsed = (performance.now() - startTime) / 1000;
+            if (elapsed <= 1.5) hiddenAudio.volume = Math.min(1.0, elapsed / 1.5);
+            else if (elapsed >= 18.0 && elapsed <= 20.0) hiddenAudio.volume = Math.max(0, (20.0 - elapsed) / 2.0);
+            else if (elapsed > 20.0) {
+              clearInterval(audioFadeInterval);
+              hiddenAudio.pause();
+              soundIcon.style.display = 'none';
+            } else hiddenAudio.volume = 1.0;
+          }, 50);
+        }).catch(() => { playWebAudioToneWithFade(); });
+      } else { playWebAudioToneWithFade(); }
+    }
+
+    function playWebAudioToneWithFade() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      soundIcon.style.display = 'inline-block';
+      const now = audioCtx.currentTime;
+      const masterGain = audioCtx.createGain();
+
+      masterGain.gain.setValueAtTime(0, now);
+      masterGain.gain.linearRampToValueAtTime(0.2, now + 1.5);
+      masterGain.gain.setValueAtTime(0.2, now + 18);
+      masterGain.gain.linearRampToValueAtTime(0.0001, now + 20);
+
+      masterGain.connect(audioCtx.destination);
+      currentWebAudioMasterGain = masterGain;
+
+      let step = 0;
+      const tones = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];
+
+      audioFadeInterval = setInterval(() => {
+        if (!audioCtx || audioCtx.state !== 'running') return;
+        const t = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const noteGain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(tones[step % tones.length], t);
+        noteGain.gain.setValueAtTime(0.15, t);
+        noteGain.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+
+        osc.connect(noteGain);
+        noteGain.connect(masterGain);
+        osc.start(t);
+        osc.stop(t + 1.2);
+        step++;
+      }, 550);
+
+      setTimeout(() => {
+        if (audioFadeInterval) clearInterval(audioFadeInterval);
+        if (soundIcon) soundIcon.style.display = 'none';
+      }, 20000);
+    }
+
+    function stopSoundImmediate() {
+      if (audioFadeInterval) clearInterval(audioFadeInterval);
+      if (audioLoopTimer) clearTimeout(audioLoopTimer);
+      if (hiddenAudio) { hiddenAudio.pause(); hiddenAudio.currentTime = 0; hiddenAudio.volume = 0; }
+      if (currentWebAudioMasterGain) {
+        try { currentWebAudioMasterGain.gain.cancelScheduledValues(0); currentWebAudioMasterGain.gain.value = 0; } catch(e){}
+        currentWebAudioMasterGain = null;
+      }
+      if (soundIcon) soundIcon.style.display = 'none';
     }
 
     function closeModal() {
       soundModal.classList.remove('open');
-      stopAudioTimerAndReset();
+      stopSoundImmediate();
     }
 
     function resetMapZoom() {
@@ -1151,11 +1598,42 @@
         mapContainer.querySelectorAll('.prefecture').forEach(p => p.classList.remove('active'));
         smoothAnimateViewBox(initialViewBox[0], initialViewBox[1], initialViewBox[2], initialViewBox[3], 800);
       }
-      if (cityMarkersGroup) {
-        cityMarkersGroup.innerHTML = "";
-      }
+      if (cityMarkersGroup) cityMarkersGroup.innerHTML = "";
+      
+      resetBtn.classList.remove('visible'); // 全国表示に戻ったらボタンを隠す
       closeModal();
       activeCode = null;
+    }
+
+    /* 展示用無操作タイマー */
+    function resetInactivityTimer(e) {
+      clearTimeout(inactivityTimer);
+      clearInterval(countdownInterval);
+      idleOverlay.classList.remove('active');
+
+      if (appSettings.enableIdleRedirect || appSettings.mode === 'exhibition') {
+        inactivityTimer = setTimeout(() => { startIdleCountdown(); }, (appSettings.idleTimeoutSec || 20) * 1000);
+      }
+    }
+
+    function startIdleCountdown() {
+      countdownSec = 10;
+      countdownSecEl.textContent = countdownSec;
+      idleOverlay.classList.add('active');
+
+      countdownInterval = setInterval(() => {
+        countdownSec--;
+        countdownSecEl.textContent = countdownSec;
+        if (countdownSec <= 0) {
+          clearInterval(countdownInterval);
+          window.location.href = appSettings.redirectUrl || "https://symphony100.github.io/symphony/soundmap/";
+        }
+      }, 1000);
+    }
+
+    function dismissIdleOverlay(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      resetInactivityTimer();
     }
   </script>
 </body>
