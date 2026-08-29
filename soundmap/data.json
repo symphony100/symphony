@@ -14,7 +14,7 @@
         "titleEn": "YOSAKOI Soran Festival Chants",
         "desc": "演舞に合わせて鳴らされる鳴子の心地よいカチカチ音と力強い掛け声です。",
         "descEn": "Rhythmic clack of Naruko clappers accompanied by energetic festival chants.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/sapporo.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/sapporo.mp3"
       },
       {
@@ -28,7 +28,7 @@
         "titleEn": "Noboribetsu Onsen Geyser Sounds",
         "desc": "地獄谷の吹き出し口からモコモコと音を立てて湧き出す熱湯の音です。",
         "descEn": "The bubbling sound of hot spring geysers emerging from Hell Valley.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/noboribetsu.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/noboribetsu.mp3"
       }
     ]
@@ -48,7 +48,7 @@
         "titleEn": "Aomori Nebuta Festival Chants",
         "desc": "「ラッセラー！」の威勢の良い掛け声とズシンと響く大太鼓の熱狂音です。",
         "descEn": "Exhilarating chants coupled with thunderous Taiko drums reverberating.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/aomori.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/aomori.mp3"
       },
       {
@@ -62,7 +62,7 @@
         "titleEn": "Tsugaru Shamisen Performance",
         "desc": "たたきつけるようなバチさばきが生み出す、津軽三味線の伝統の響きです。",
         "descEn": "The passionate plucking technique of traditional Tsugaru Shamisen.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/hirosaki.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/hirosaki.mp3"
       }
     ]
@@ -82,7 +82,7 @@
         "titleEn": "Nanbu Ironware Boiling Water",
         "desc": "伝統工芸・南部鉄器でお湯を沸かしたときに聞こえる温かい湯沸かし音です。",
         "descEn": "The soothing sound of water boiling gently inside Nanbu iron kettles.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/morioka.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/morioka.mp3"
       }
     ]
@@ -102,7 +102,7 @@
         "titleEn": "Sendai Tanabata Streamers Breeze",
         "desc": "大きな和紙飾りが夏の和やかな風にさらさらと擦れ合う風情ある音です。",
         "descEn": "Rustling sounds of giant paper decorations swaying in summer breeze.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/sendai.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/sendai.mp3"
       },
       {
@@ -116,7 +116,7 @@
         "titleEn": "Seagulls of Kesennuma Port",
         "desc": "港を行き交う漁船の傍らで鳴くウミネコたちの賑やかな鳴き声です。",
         "descEn": "Chirping seagulls flying over the bustling harbor.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/kesennuma.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/kesennuma.mp3"
       }
     ]
@@ -136,7 +136,7 @@
         "titleEn": "Akita Kanto Festival Chants",
         "desc": "重い竿燈を腰や額で支える妙技とともに響き渡る掛け声とお囃子です。",
         "descEn": "Energetic festival chants celebrating lantern balancing feats.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/akita.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/akita.mp3"
       },
       {
@@ -150,7 +150,7 @@
         "titleEn": "Namahage Door Thumping",
         "desc": "「泣く子はいねがー！」と扉を強く叩いて練り歩くなまはげの音です。",
         "descEn": "The menacing thumping on wooden doors by Namahage deities.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/oga.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/oga.mp3"
       }
     ]
@@ -170,7 +170,7 @@
         "titleEn": "Tendo Shogi Piece Sound",
         "desc": "将棋駒の街・天童。盤上に駒をピシッと指したときに響く高音です。",
         "descEn": "Crisp wooden click of placing Shogi chess pieces on the board.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/tendo.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/tendo.mp3"
       }
     ]
@@ -190,7 +190,7 @@
         "titleEn": "Fukushima Waraji Procession",
         "desc": "長さ12mの大わらじを担ぐ熱気とわらじ音頭の賑やかな音です。",
         "descEn": "Lively folk music accompanied by crowds carrying a giant straw sandal.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/fukushima.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/fukushima.mp3"
       },
       {
@@ -204,7 +204,7 @@
         "titleEn": "Spa Resort Hawaiians Ukulele",
         "desc": "ハワイアンズのトロピカルな雰囲気の中、フラガールが舞うウクレレ音です。",
         "descEn": "Bright ukulele tunes setting the tropical mood for Hula dancers.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/iwaki.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/iwaki.mp3"
       }
     ]
@@ -224,7 +224,7 @@
         "titleEn": "Kairakuen Plum Garden Breeze",
         "desc": "偕楽園の咲き誇る梅の花々を春風が優しく吹き抜ける爽やかな音です。",
         "descEn": "Gentle spring breeze whispering through blooming plum blossoms.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/mito.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/mito.mp3"
       },
       {
@@ -238,7 +238,7 @@
         "titleEn": "Yuki Tsumugi Silk Weaving",
         "desc": "無形文化遺産・結城紬。静かな工房に心地よく響く手織りの音です。",
         "descEn": "The rhythmic tapping of handlooms crafting Yuki Tsumugi silk.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/yuki.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/yuki.mp3"
       }
     ]
@@ -258,7 +258,7 @@
         "titleEn": "Nikko Toshogu Crying Dragon Echo",
         "desc": "薬師堂の天井画「鳴き龍」の下で拍子木を打つと長く響き渡ります。",
         "descEn": "The echoing reverberation under Crying Dragon ceiling painting.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/nikko.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/nikko.mp3"
       },
       {
@@ -272,7 +272,7 @@
         "titleEn": "Sizzling Utsunomiya Gyoza Dumplings",
         "desc": "名物・宇都宮餃子。熱々の鉄板で一気に香ばしく焼き上げる音です。",
         "descEn": "Sizzling steam sounds of Utsunomiya's crispy Gyoza dumplings.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/utsunomiya.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/utsunomiya.mp3"
       }
     ]
@@ -292,7 +292,7 @@
         "titleEn": "Kusatsu Onsen Yumomi Performance",
         "desc": "「草津良いとこ一度はおいで」の唄とともに木板で湯を揉む音です。",
         "descEn": "Traditional Yumomi performance splashing hot spring water.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/kusatsu.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/kusatsu.mp3"
       },
       {
@@ -306,7 +306,7 @@
         "titleEn": "Kiryu Textile Loom Clanking",
         "desc": "織物の街・桐生。規則正しく動く織機の迫力あるリズムです。",
         "descEn": "The mechanical clanking rhythm of traditional Kiryu textile looms.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/kiryu.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/kiryu.mp3"
       }
     ]
@@ -326,7 +326,7 @@
         "titleEn": "Kawagoe Bell of Time Chimes",
         "desc": "小江戸・川越の街に1日4回響き渡る温かく重厚な鐘の音色です。",
         "descEn": "The historic Toki no Kane bell ringing over Kawagoe streets.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/kawagoe.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/kawagoe.mp3"
       },
       {
@@ -340,7 +340,7 @@
         "titleEn": "Chichibu Night Festival Music",
         "desc": "豪快な屋台行事とともに打ち鳴らされる太鼓と笛のお囃子です。",
         "descEn": "Dynamic festival music accompanying float processions.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/chichibu.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/chichibu.mp3"
       },
       {
@@ -354,7 +354,7 @@
         "titleEn": "Paulownia Cabinet Planing Sound",
         "desc": "職人が桐の木肌を滑らかに削り出す静かなカンナ音です。",
         "descEn": "Master artisans planing paulownia wood for traditional cabinets.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/kasukabe.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/kasukabe.mp3"
       }
     ]
@@ -374,7 +374,7 @@
         "titleEn": "Naritasan Shinshoji Sacred Drums",
         "desc": "御護摩祈祷のなかで炎とともに打ち鳴らされる大太鼓の音です。",
         "descEn": "Solemn Taiko drums thunder during holy fire rituals.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/narita.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/narita.mp3"
       },
       {
@@ -388,7 +388,7 @@
         "titleEn": "Choshi Electric Railway Retro Train",
         "desc": "キャベツ畑の中をのんびりと走り抜けるレトロな電車の音です。",
         "descEn": "Chugging retro train sounds clattering gently through countryside.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/choshi.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/choshi.mp3"
       }
     ]
@@ -408,7 +408,7 @@
         "titleEn": "Sanja Matsuri Shrine Chants",
         "desc": "「ソイヤ！ソイヤ！」と浅草の街を揺らすお祭り音です。",
         "descEn": "Energetic 'Soiya!' chants carrying Mikoshi shrines in Asakusa.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/asakusa.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/asakusa.mp3"
       },
       {
@@ -422,7 +422,7 @@
         "titleEn": "Shibamata Candy Cutting Rhythm",
         "desc": "包丁をトントコトントンとリズム良く叩いて飴を切る音です。",
         "descEn": "Rhythmic candy cutting performance on Shibamata approach.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/shibamata.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/shibamata.mp3"
       }
     ]
@@ -442,7 +442,7 @@
         "titleEn": "Yokohama Port Ship Horn Whistles",
         "desc": "港に停泊する大型船が一斉にウーと深く響かせる汽笛音です。",
         "descEn": "Deep resounding ship horns echoing across Yokohama Harbor.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/yokohama.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/yokohama.mp3"
       },
       {
@@ -456,7 +456,7 @@
         "titleEn": "Kamakura Zen Temple Bell Chimes",
         "desc": "豊かな自然の中に静かに浸み渡る寺院の鐘の音色です。",
         "descEn": "Serene temple bell ringing through Kamakura mountain forests.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/kamakura.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/kamakura.mp3"
       }
     ]
@@ -476,7 +476,7 @@
         "titleEn": "Nagaoka Fireworks Explosions",
         "desc": "正三尺玉がお腹の底までドンと響き渡る大破裂音です。",
         "descEn": "Massive fireworks exploding high, echoing deep in your chest.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/nagaoka.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/nagaoka.mp3"
       },
       {
@@ -490,7 +490,7 @@
         "titleEn": "Tsuiki Copperware Hammering",
         "desc": "銅板を金槌で叩いて立体的な器具へ仕上げる打撃音です。",
         "descEn": "Master artisans hammering copper sheets into metalware.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/tsubame.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/tsubame.mp3"
       }
     ]
@@ -510,7 +510,7 @@
         "titleEn": "Kurobe Dam Water Discharge Roar",
         "desc": "毎秒数十トンもの水がダイナミックに吐き出される大轟音です。",
         "descEn": "Thunderous roar of millions of gallons gushing from Kurobe Dam.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/tateyama.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/tateyama.mp3"
       }
     ]
@@ -530,7 +530,7 @@
         "titleEn": "Kanazawa Gold Leaf Hammering",
         "desc": "1万分の1ミリまで箔を打ち伸ばす叩く音です。",
         "descEn": "Rhythmic tapping sound of pounding gold leaf to thin perfection.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/kanazawa.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/kanazawa.mp3"
       },
       {
@@ -544,7 +544,7 @@
         "titleEn": "Wajima Lacquerware Brush Strokes",
         "desc": "静かな漆室で刷毛を静かに滑らせる伝統の音です。",
         "descEn": "Silent precision of master painters applying coats of Wajima lacquer.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/wajima.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/wajima.mp3"
       }
     ]
@@ -564,7 +564,7 @@
         "titleEn": "Echizen Forged Cutlery Hammering",
         "desc": "鍛冶職人が熱い鉄を叩き伸ばす澄んだ「カン！カン！」という音です。",
         "descEn": "Clear ringing iron strikes of blacksmiths crafting Echizen cutlery.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/echizen.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/echizen.mp3"
       },
       {
@@ -578,7 +578,7 @@
         "titleEn": "Sabae Eyeglass Polishing Sounds",
         "desc": "樽の中でフレームがカラカラと磨かれる音です。",
         "descEn": "Clicking and clattering of spectacle frames being tumbled.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/sabae.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/sabae.mp3"
       }
     ]
@@ -598,7 +598,7 @@
         "titleEn": "Mt. Fuji Trail Breeze & Footsteps",
         "desc": "富士登山への期待を胸に秘めた登山者たちの足音と風の音です。",
         "descEn": "Trail footsteps and mountain wind at Mt. Fuji Yoshida route.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/fujiyoshida.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/fujiyoshida.mp3"
       }
     ]
@@ -618,7 +618,7 @@
         "titleEn": "Suwa Taisha Onbashira Kiyari Song",
         "desc": "大木を山から引き下ろす天下の奇祭。人々の心を一つにする唄です。",
         "descEn": "High-pitched traditional chants pulling giant logs during Onbashira.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/suwa.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/suwa.mp3"
       }
     ]
@@ -638,7 +638,7 @@
         "titleEn": "Nagara River Ukai Cormorant Fishing",
         "desc": "鵜匠が鵜を奮い立たせるために船端を打つ独特の音です。",
         "descEn": "Cormorant masters beating boat edges under flaming lanterns.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/gifu.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/gifu.mp3"
       }
     ]
@@ -658,7 +658,7 @@
         "titleEn": "Oigawa Railway Steam Locomotive",
         "desc": "蒸気機関車が白い蒸気を吐き出しながら進む郷愁の音です。",
         "descEn": "Nostalgic steam train chugging through lush tea hills.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/shimada.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/shimada.mp3"
       },
       {
@@ -672,7 +672,7 @@
         "titleEn": "Hamamatsu Piano Tuning Fork Tone",
         "desc": "基準音を響かせる音叉の美しい高音が静かに伸びていきます。",
         "descEn": "Pure vibrating tones of tuning forks in the City of Music.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/hamamatsu.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/hamamatsu.mp3"
       }
     ]
@@ -692,7 +692,7 @@
         "titleEn": "Mikawa Fireworks Testing Explosions",
         "desc": "伝統ある手筒花火の職人たちが打ち出す力強い試射音です。",
         "descEn": "Heavy explosive booms testing traditional Mikawa fireworks.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/okazaki.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/okazaki.mp3"
       }
     ]
@@ -712,7 +712,7 @@
         "titleEn": "Ama Diver Whistle Isobue",
         "desc": "素潜り漁を終えた海女さんが呼吸を整える際に吐くヒューという音です。",
         "descEn": "Poignantly beautiful whistling sound of Ama divers breathing.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/shima.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/shima.mp3"
       },
       {
@@ -726,7 +726,7 @@
         "titleEn": "Suzuka Circuit F1 Racing Engine",
         "desc": "超高回転のエンジン音がサーキットを激しく突き抜けます。",
         "descEn": "Screaming high-RPM F1 engine roars zooming past Suzuka Circuit.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/suzuka.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/suzuka.mp3"
       }
     ]
@@ -746,7 +746,7 @@
         "titleEn": "Mii-dera Temple Evening Bell Chime",
         "desc": "突いた後にどこまでも深く伸びてゆく鐘の豊かな余韻です。",
         "descEn": "Resonant, long-lasting bell reverberations of Mii-dera temple.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/otsu.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/otsu.mp3"
       },
       {
@@ -760,7 +760,7 @@
         "titleEn": "Omihachiman Canal Boat Reed Swish",
         "desc": "手漕ぎ舟がアシの茂みを優しくかき分ける水と葉の音です。",
         "descEn": "Peaceful water swishing as wooden canal boats glide through reeds.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/omihachiman.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/omihachiman.mp3"
       }
     ]
@@ -780,7 +780,7 @@
         "titleEn": "Kyoto Gion Festival Chimes",
         "desc": "鉦と太鼓、笛が織りなす京都の夏を象徴する風情あふれる音です。",
         "descEn": "Refining gong and bell chimes signifying Kyoto summer.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/kyoto.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/kyoto.mp3"
       },
       {
@@ -794,7 +794,7 @@
         "titleEn": "Uji Green Tea Leaf Harvesting",
         "desc": "茶摘み唄を聞きながら新芽を丁寧に摘み取る音です。",
         "descEn": "Snapping fresh green tea leaves during spring tea picking.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/uji.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/uji.mp3"
       }
     ]
@@ -814,7 +814,7 @@
         "titleEn": "Osaka Tenjin Festival Clapping",
         "desc": "「打ちましょ（タパン）もひとつセ（タパン）」の手締め音です。",
         "descEn": "Synchronized celebratory clapping rhythm during Tenjin Festival.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/osaka.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/osaka.mp3"
       }
     ]
@@ -834,7 +834,7 @@
         "titleEn": "Kinosaki Onsen Geta Clogs Clack",
         "desc": "浴衣姿の湯客が行き交う石畳を木製の下駄が鳴らします。",
         "descEn": "Rhythmic clacking of wooden clogs walking along stone pathways.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/toyooka.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/toyooka.mp3"
       }
     ]
@@ -854,7 +854,7 @@
         "titleEn": "Yoshino Cedar Tree Felling Crash",
         "desc": "きこりの声とともに巨木が大地へと倒れ込む重低音です。",
         "descEn": "Tremendous crashing boom of giant cedar trees harvested in woods.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/yoshino.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/yoshino.mp3"
       }
     ]
@@ -874,7 +874,7 @@
         "titleEn": "Koyasan Okunoin Chants & Bell",
         "desc": "杉木立が立ち並ぶ聖地で読経と澄んだ鈴が響きます。",
         "descEn": "Monk chants and bell ringing echoing through sacred Koyasan forests.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/koya.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/koya.mp3"
       },
       {
@@ -888,7 +888,7 @@
         "titleEn": "Nachi Falls Water Roar",
         "desc": "落差日本一の名瀑。水が落ちはじめる大迫力の自然音です。",
         "descEn": "Thunderous roaring cascades of Nachi Falls waterfall.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/nachikatsuura.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/nachikatsuura.mp3"
       }
     ]
@@ -908,7 +908,7 @@
         "titleEn": "Tottori Sand Dunes Wind Whispers",
         "desc": "風に吹かれて砂の風紋が形作られる静かな音です。",
         "descEn": "Soft shifting sand sounds created by wind over Tottori Sand Dunes.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/tottori.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/tottori.mp3"
       },
       {
@@ -922,7 +922,7 @@
         "titleEn": "Kurayoshi White Wall Storehouses Canal",
         "desc": "白壁土蔵群の傍らをゆったりと流れる清らかな水音です。",
         "descEn": "Tranquil water streams flowing past historical white-walled storehouses.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/kurayoshi.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/kurayoshi.mp3"
       }
     ]
@@ -942,7 +942,7 @@
         "titleEn": "Izumo Taisha Shrine Prayer Claps",
         "desc": "神話の故郷・出雲大社。参拝客が打つ深い拍手の音です。",
         "descEn": "Solemn prayer handclaps under giant sacred straw rope at Izumo Grand Shrine.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/izumo.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/izumo.mp3"
       }
     ]
@@ -962,7 +962,7 @@
         "titleEn": "Kurashiki Canal Boat Pole Splash",
         "desc": "美観地区。川舟の船頭が水面を漕ぎ進める水音です。",
         "descEn": "Gentle water splashes as wooden boats glide along historical canals.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/kurashiki.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/kurashiki.mp3"
       }
     ]
@@ -982,7 +982,7 @@
         "titleEn": "Hiroshima Peace Bell Deep Toll",
         "desc": "平和への祈りを込めて突かれる鐘の重厚な響きです。",
         "descEn": "Profound, lingering resonance of Peace Bell echoing in Peace Park.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/hiroshima.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/hiroshima.mp3"
       },
       {
@@ -996,7 +996,7 @@
         "titleEn": "Miyajima Floating Torii Waves",
         "desc": "満潮時に鳥居を洗う穏やかで神秘的な波の音です。",
         "descEn": "Gentle ocean waves washing around Miyajima's famous Floating Torii Gate.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/hatsukaichi.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/hatsukaichi.mp3"
       }
     ]
@@ -1016,7 +1016,7 @@
         "titleEn": "Karato Market Blowfish Auction",
         "desc": "活気溢れる早朝市場でセリ人の熱い声が飛び交います。",
         "descEn": "Lively morning fish auction chants for famous blowfish at Karato Market.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/shimonoseki.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/shimonoseki.mp3"
       }
     ]
@@ -1036,7 +1036,7 @@
         "titleEn": "Awa Odori Dance Zomeki Rhythm",
         "desc": "鉦、太鼓、笛が打ち鳴らされる、四百年続く情熱の祭り音です。",
         "descEn": "Bustling traditional festival music driving the 400-year-old Awa Dance.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/tokushima.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/tokushima.mp3"
       },
       {
@@ -1050,7 +1050,7 @@
         "titleEn": "Naruto Whirlpools Roaring Waves",
         "desc": "豪快な鳴門の渦潮が音を立てて渦を巻く潮騒の音です。",
         "descEn": "The deep oceanic roar of water forming giant Naruto Whirlpools.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/naruto.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/naruto.mp3"
       },
       {
@@ -1064,7 +1064,7 @@
         "titleEn": "Iya Kazurabashi Vine Bridge Creaks",
         "desc": "秘境・祖谷のカズラ橋。踏み出すたびに揺れる音です。",
         "descEn": "Suspenseful creaking of mountain vine bridge planks crossing deep gorges.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/miyoshi.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/miyoshi.mp3"
       }
     ]
@@ -1084,7 +1084,7 @@
         "titleEn": "Sanuki Udon Dough Kneading Slam",
         "desc": "職人が力強くうどん生地を台に叩きつける音です。",
         "descEn": "Rhythmic heavy slapping of wheat dough on wooden blocks by Udon masters.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/takamatsu.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/takamatsu.mp3"
       }
     ]
@@ -1104,7 +1104,7 @@
         "titleEn": "Dogo Onsen Shinrokaku Drum",
         "desc": "温泉街の刻を告げる太鼓の音。重々しく鳴り響きます。",
         "descEn": "Historic timekeeping drum strike ringing from Dogo Onsen rooftop tower.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/matsuyama.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/matsuyama.mp3"
       },
       {
@@ -1118,7 +1118,7 @@
         "titleEn": "Kurushima Kaikyo Bridge Winds",
         "desc": "風の唸り声と激しい潮流の音が混ざり合う自然音です。",
         "descEn": "Wind howling through giant suspension cables combined with ocean currents.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/imabari.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/imabari.mp3"
       }
     ]
@@ -1138,7 +1138,7 @@
         "titleEn": "Yosakoi Festival Naruko Clack",
         "desc": "木製の鳴子（なるこ）を鳴らしながら躍動する祭り音です。",
         "descEn": "Rhythmic wooden clack of Naruko held by energetic Yosakoi dancers.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/kochi.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/kochi.mp3"
       },
       {
@@ -1152,7 +1152,7 @@
         "titleEn": "Muroto Cape Pacific Ocean Waves",
         "desc": "豪快な荒波が奇岩にぶつかり白波を立てる重厚な音です。",
         "descEn": "Powerful crashing waves hitting dramatic coastal volcanic rocks.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/muroto.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/muroto.mp3"
       }
     ]
@@ -1172,7 +1172,7 @@
         "titleEn": "Hakata Gion Yamakasa Oisa Chants",
         "desc": "山笠を担ぎ街を全力で駆け抜ける山笠男たちの掛け声です。",
         "descEn": "Shouting 'Oisa!' as runners carry giant floats through Hakata streets.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/fukuoka.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/fukuoka.mp3"
       }
     ]
@@ -1192,7 +1192,7 @@
         "titleEn": "Karatsu Kunchi Enya Chants",
         "desc": "曳山（ひきやま）とともに響く「エンヤ！」の掛け声です。",
         "descEn": "Traditional 'Enya!' chants pulling elaborate float sculptures.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/karatsu.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/karatsu.mp3"
       },
       {
@@ -1206,7 +1206,7 @@
         "titleEn": "Imari Porcelain Wind Chimes",
         "desc": "重なり合わさる磁器の繊細で高音の鈴音です。",
         "descEn": "High delicate tinkle of fine Imari porcelain wind bells in summer breeze.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/imari.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/imari.mp3"
       }
     ]
@@ -1226,7 +1226,7 @@
         "titleEn": "Huis Ten Bosch Horse Carriage Hooves",
         "desc": "石畳の街並みを馬車が蹄（ひづめ）を鳴らして進む音です。",
         "descEn": "Rhythmic trotting horse hooves on cobblestone streets.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/sasebo.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/sasebo.mp3"
       }
     ]
@@ -1246,7 +1246,7 @@
         "titleEn": "Fujisaki Hachimangu Festival Chants",
         "desc": "飾馬が街を練り歩く活気溢れる掛け声とお囃子です。",
         "descEn": "Energetic 'Dokai!' chants following decorated horses through Kumamoto.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/kumamoto.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/kumamoto.mp3"
       },
       {
@@ -1260,7 +1260,7 @@
         "titleEn": "Mt. Aso Volcanic Rumble",
         "desc": "立ち上る噴煙と大地の底鳴りです。",
         "descEn": "Low rumbling seismic resonance from Mt. Aso volcanic crater.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/aso.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/aso.mp3"
       }
     ]
@@ -1280,7 +1280,7 @@
         "titleEn": "Beppu Hot Spring Steam Hiss",
         "desc": "あちこちから勢いよく噴き出す蒸気と温泉の音です。",
         "descEn": "Hissing steam vents billowing across Beppu hot spring town.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/beppu.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/beppu.mp3"
       },
       {
@@ -1294,7 +1294,7 @@
         "titleEn": "Lake Kinrin Morning Birds Chirping",
         "desc": "朝もやが立ち込める金鱗湖の鳥の声です。",
         "descEn": "Peaceful morning birdsong over misty Lake Kinrin in Yufuin.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/yufu.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/yufu.mp3"
       }
     ]
@@ -1314,7 +1314,7 @@
         "titleEn": "Devil's Washboard Ocean Waves",
         "desc": "鬼の洗濯板を太平洋の波が洗うダイナミックな音です。",
         "descEn": "Crashing ocean waves rolling over Devil's Washboard basalt rock.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/miyazaki.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/miyazaki.mp3"
       }
     ]
@@ -1334,7 +1334,7 @@
         "titleEn": "Ibusuki Sand Bath Waves",
         "desc": "温かい砂に包まれながら聴く海音です。",
         "descEn": "Soothing wave sounds while buried in warm geothermal beach sand.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/ibusuki.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/ibusuki.mp3"
       }
     ]
@@ -1354,7 +1354,7 @@
         "titleEn": "Kokusai Street Sanshin Music",
         "desc": "南国の温かい風に乗って聞こえてくる三線の音色です。",
         "descEn": "Melodic tropical tunes of Okinawan Sanshin lute echoing in Naha.",
-        "image": "",
+        "image": "https://symphony100.github.io/symphony/soundmap/naha.jpg",
         "audio": "https://symphony100.github.io/symphony/soundmap/naha.mp3"
       }
     ]
