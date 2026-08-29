@@ -5,20 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>さうんどまっぷ - Sound Map Japan</title>
   
-  <!-- Google Fonts: Noto Sans JP & Material Symbols Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
   <style>
-    /* ===================================================
-       1. マテリアル水色テーマ & 基本レイアウト
-       =================================================== */
     :root {
       --primary-blue: #0288d1;
       --primary-light: #e0f7fa;
-      --primary-hover: #03a9f4;
       --accent-amber: #ffc107;
       --bg-main: #f8fafc;
       --bg-card: #ffffff;
@@ -28,18 +23,12 @@
       --font-family: 'Noto Sans JP', sans-serif;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
       width: 100vw;
       height: 100vh;
       overflow: hidden;
-      margin: 0;
-      padding: 0;
     }
 
     body {
@@ -56,7 +45,6 @@
       user-select: none;
     }
 
-    /* ヘッダー */
     header {
       padding: 10px 20px;
       height: 60px;
@@ -70,12 +58,7 @@
       flex-shrink: 0;
     }
 
-    .header-logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
+    .header-logo { display: flex; align-items: center; gap: 8px; }
     .header-title {
       font-size: 1.25rem;
       font-weight: 900;
@@ -83,11 +66,7 @@
       letter-spacing: 0.5px;
     }
 
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .header-actions { display: flex; align-items: center; gap: 8px; }
 
     .btn-action {
       background: #ffffff;
@@ -143,7 +122,6 @@
       .btn-action span.label-text { display: none; }
     }
 
-    /* ダッシュボード（進捗バー） */
     .dashboard-bar {
       background: #ffffff;
       border-bottom: 1px solid var(--border-color);
@@ -178,7 +156,6 @@
       transition: width 0.4s ease;
     }
 
-    /* メインコンテナ */
     .main-container {
       flex: 1;
       display: flex;
@@ -204,14 +181,8 @@
       flex-direction: column;
     }
 
-    .map-controls {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      z-index: 20;
-    }
+    .map-controls { position: absolute; top: 12px; left: 12px; z-index: 20; }
 
-    /* 全国表示に戻るボタン（デフォルト非表示） */
     .reset-btn {
       background: #ffffff;
       border: 1px solid var(--primary-blue);
@@ -237,10 +208,7 @@
       pointer-events: auto;
     }
 
-    .reset-btn:hover {
-      background: var(--primary-blue);
-      color: #fff;
-    }
+    .reset-btn:hover { background: var(--primary-blue); color: #fff; }
 
     .map-viewport {
       flex: 1;
@@ -252,14 +220,10 @@
       padding: 10px;
       overflow: hidden;
       position: relative;
+      cursor: pointer;
     }
 
-    /* SVG日本地図（クリーンな統一カラー） */
-    .geolonia-svg-map {
-      width: 100%;
-      height: 100%;
-      max-height: 750px;
-    }
+    .geolonia-svg-map { width: 100%; height: 100%; max-height: 750px; }
 
     .geolonia-svg-map .prefecture {
       stroke: #ffffff;
@@ -268,23 +232,20 @@
       transition: fill 0.2s ease, opacity 0.2s ease;
     }
 
-    /* 発見済み県 */
-    .geolonia-svg-map .prefecture.discovered {
-      fill: #81d4fa !important;
+    .geolonia-svg-map .prefecture:hover {
+      stroke: var(--primary-blue);
+      opacity: 0.85;
     }
 
-    /* 選択中アクティブ県 */
+    .geolonia-svg-map .prefecture.discovered { fill: #81d4fa !important; }
     .geolonia-svg-map .prefecture.active {
       fill: var(--primary-blue) !important;
       stroke: #ffffff !important;
       stroke-width: 2 !important;
     }
 
-    .geolonia-svg-map.has-active .prefecture:not(.active) {
-      opacity: 0.35;
-    }
+    .geolonia-svg-map.has-active .prefecture:not(.active) { opacity: 0.35; }
 
-    /* 市町村ピン ＆ 引き出し線 */
     .city-marker-group { cursor: pointer; }
     .city-pin-dot { fill: var(--primary-blue); stroke: #ffffff; stroke-width: 1.5; }
     .city-line { stroke: var(--primary-blue); stroke-width: 1.2; stroke-dasharray: 2, 2; }
@@ -322,9 +283,6 @@
       transition: opacity 0.4s;
     }
 
-    /* ===================================================
-       2. モーダル共通
-       =================================================== */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -340,10 +298,7 @@
       transition: all 0.25s ease;
     }
 
-    .modal-overlay.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
 
     .modal-card {
       background: #ffffff;
@@ -371,12 +326,7 @@
       flex-shrink: 0;
     }
 
-    .modal-title-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
+    .modal-title-group { display: flex; align-items: center; gap: 8px; }
     .modal-pref-name { font-size: 1.2rem; font-weight: 900; color: var(--text-main); }
     .modal-city-name { font-size: 1rem; font-weight: 700; color: var(--primary-blue); }
 
@@ -416,10 +366,7 @@
       gap: 4px;
       align-self: flex-start;
     }
-    .favorite-btn.active {
-      background: var(--accent-amber);
-      color: #ffffff;
-    }
+    .favorite-btn.active { background: var(--accent-amber); color: #ffffff; }
 
     .modal-photo-container {
       width: 100%;
@@ -437,19 +384,9 @@
     }
 
     .modal-photo { width: 100%; height: 100%; object-fit: cover; }
-
-    .modal-sound-title {
-      font-size: 0.98rem;
-      font-weight: 700;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
+    .modal-sound-title { font-size: 0.98rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
     .modal-desc { font-size: 0.88rem; line-height: 1.6; color: var(--text-sub); }
 
-    /* リストカード */
     .item-card-list { display: flex; flex-direction: column; gap: 8px; }
     .item-card {
       background: #f8fafc;
@@ -477,7 +414,6 @@
       gap: 3px;
     }
 
-    /* 全問連続クイズ */
     .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
     .quiz-btn {
       background: #ffffff;
@@ -503,7 +439,6 @@
       width: 100%;
     }
 
-    /* スライド式チュートリアル */
     .tutorial-slider-container { width: 100%; overflow: hidden; }
     .tutorial-slides-wrapper { display: flex; width: 400%; transition: transform 0.35s ease; }
     .tutorial-slide-item {
@@ -552,13 +487,10 @@
     }
     .btn-slide-nav:disabled { background: #cbd5e1; cursor: not-allowed; }
 
-    /* ===================================================
-       3. Androidタブレット風 管理者設定モーダル (Pass: 1234)
-       =================================================== */
     .settings-card {
       background: #f1f5f9;
       border-radius: 16px;
-      max-width: 600px;
+      max-width: 500px;
     }
 
     .settings-group {
@@ -589,7 +521,6 @@
       width: 100%;
     }
 
-    /* 展示用 無操作カウントダウン黒フィルター */
     .idle-overlay {
       position: fixed;
       inset: 0;
@@ -626,7 +557,6 @@
 
 <body onclick="resetInactivityTimer(event)" ontouchstart="resetInactivityTimer(event)" onmousemove="resetInactivityTimer(event)">
 
-  <!-- ヘッダー -->
   <header>
     <div class="header-logo">
       <h1 class="header-title" id="headerTitle">さうんどまっぷ</h1>
@@ -648,13 +578,11 @@
         <span class="label-text" id="lblQuiz">音クイズ</span>
       </button>
 
-      <!-- 管理者設定ボタン -->
-      <button class="btn-action" onclick="promptAdminSettings()">
+      <button class="btn-action" onclick="openPassModal()">
         <span class="material-symbols-outlined">settings</span>
         <span class="label-text">管理者設定</span>
       </button>
 
-      <!-- 言語切替 -->
       <div class="lang-switch-container">
         <span class="switch-label" onclick="setLang('ja')">JP</span>
         <label class="switch-toggle">
@@ -666,7 +594,6 @@
     </div>
   </header>
 
-  <!-- サブヘッダー：制覇進捗ダッシュボード -->
   <div class="dashboard-bar">
     <div class="progress-group">
       <span class="progress-text" id="progressText">47都道府県中 0県を発見！ (0%)</span>
@@ -676,11 +603,9 @@
     </div>
   </div>
 
-  <!-- メインレイアウト -->
   <div class="main-container">
     <div class="map-card">
       <div class="map-controls">
-        <!-- 「全国表示に戻る」ボタン：ズーム時のみ自動表示 -->
         <button class="reset-btn" id="resetBtn" onclick="resetMapZoom()">
           <span class="material-symbols-outlined">refresh</span>
           <span id="resetBtnText">全国表示に戻る</span>
@@ -693,7 +618,7 @@
     </div>
   </div>
 
-  <!-- ① 音声・詳細モーダル -->
+  <!-- ① 音声詳細モーダル -->
   <div id="soundModal" class="modal-overlay" onclick="if(event.target===this) closeModal()">
     <div class="modal-card">
       <div class="modal-header">
@@ -713,13 +638,13 @@
         </button>
 
         <div class="modal-photo-container">
-          <img id="modalPhoto" class="modal-photo" src="" alt="写真" style="display:none;">
+          <img id="modalPhoto" class="modal-photo" src="" alt="写真" style="display:none;" onerror="this.style.display='none'; document.getElementById('photoPlaceholderText').style.display='block';">
           <span id="photoPlaceholderText">🎵 音と歴史の探訪</span>
         </div>
 
         <div class="modal-sound-title">
           <span class="material-symbols-outlined" id="soundIcon" style="color:var(--primary-blue); display:none;">equalizer</span>
-          <span id="modalSoundTitle">♪ 阿波踊りの賑やかな「ぞめき」囃子</span>
+          <span id="modalSoundTitle">♪ 阿波踊りの「ぞめき」囃子</span>
         </div>
         
         <p id="modalDesc" class="modal-desc"></p>
@@ -728,7 +653,7 @@
     </div>
   </div>
 
-  <!-- ② お気に入り一覧モーダル -->
+  <!-- ② お気に入りモーダル -->
   <div id="favModal" class="modal-overlay" onclick="if(event.target===this) closeFavModal()">
     <div class="modal-card">
       <div class="modal-header">
@@ -752,7 +677,7 @@
       <div class="modal-header">
         <div class="modal-title-group">
           <span class="material-symbols-outlined" style="color:var(--primary-blue);">quiz</span>
-          <span class="modal-pref-name">都道府県 音クイズ (<span id="quizIndexText">1</span>/<span id="quizTotalText">10</span>)</span>
+          <span class="modal-pref-name">音クイズ (<span id="quizIndexText">1</span>/<span id="quizTotalText">10</span>)</span>
         </div>
         <button class="modal-close-btn" onclick="closeQuizModal()">
           <span class="material-symbols-outlined">close</span>
@@ -767,7 +692,6 @@
         </div>
 
         <div id="quizOptions" class="quiz-options"></div>
-
         <div id="quizResult" style="display:none; text-align:center; padding:10px; font-weight:700; font-size:0.95rem; border-radius:10px; margin-top:8px;"></div>
         
         <button id="btnNextQuiz" class="quiz-next-btn" style="display:none;" onclick="nextQuizQuestion()">次の問題へ →</button>
@@ -775,7 +699,7 @@
     </div>
   </div>
 
-  <!-- ④ スライド式 チュートリアルモーダル（完了ボタン付き） -->
+  <!-- ④ スライド式 チュートリアルモーダル -->
   <div id="tutorialModal" class="modal-overlay" onclick="if(event.target===this) closeTutorialModal()">
     <div class="modal-card">
       <div class="modal-header">
@@ -790,7 +714,6 @@
       <div class="modal-body">
         <div class="tutorial-slider-container">
           <div class="tutorial-slides-wrapper" id="tutorialSlidesWrapper">
-            
             <div class="tutorial-slide-item">
               <div class="slide-icon-box"><span class="material-symbols-outlined">location_on</span></div>
               <div class="slide-title">1. 場所を選ぶ</div>
@@ -814,17 +737,14 @@
               <div class="slide-title">4. 記録・制覇！</div>
               <div class="slide-desc">音を聴いた場所は自動で記録。47都道府県の全制覇を目指そう！</div>
             </div>
-
           </div>
         </div>
 
         <div class="tutorial-controls">
           <button class="btn-slide-nav" id="btnPrevSlide" onclick="moveTutorialSlide(-1)">前へ</button>
-          
           <div class="dots-indicator" id="dotsIndicator">
             <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
           </div>
-
           <button class="btn-slide-nav" id="btnNextSlide" onclick="moveTutorialSlide(1)">次へ</button>
           <button class="btn-slide-nav" id="btnCompleteTutorial" style="display:none; background:var(--accent-amber); color:#000;" onclick="closeTutorialModal()">完了 (はじめる)</button>
         </div>
@@ -832,7 +752,28 @@
     </div>
   </div>
 
-  <!-- ⑤ Androidタブレット風 管理者設定モーダル (Pass: 1234) -->
+  <!-- ⑤ パスワード入力モーダル -->
+  <div id="passModal" class="modal-overlay" onclick="if(event.target===this) closePassModal()">
+    <div class="modal-card" style="max-width:380px;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="material-symbols-outlined" style="color:var(--primary-blue);">lock</span>
+          <span class="modal-pref-name">管理者確認</span>
+        </div>
+        <button class="modal-close-btn" onclick="closePassModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.85rem; color:var(--text-sub);">パスワードを入力してください (初期: 1234)</p>
+        <input type="password" id="adminPassInput" class="settings-input" placeholder="パスワード" style="font-size:1rem; padding:8px;">
+        <div id="passErrorMsg" style="display:none; color:#ef4444; font-size:0.8rem; font-weight:700;">パスワードが正しくありません</div>
+        <button class="quiz-next-btn" onclick="verifyAdminPassword()">管理者設定を開く</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑥ Androidタブレット風 管理者設定モーダル -->
   <div id="settingsModal" class="modal-overlay" onclick="if(event.target===this) closeSettingsModal()">
     <div class="modal-card settings-card">
       <div class="modal-header" style="background:#e2e8f0;">
@@ -846,8 +787,6 @@
       </div>
 
       <div class="modal-body">
-        
-        <!-- モード切替 -->
         <div class="settings-group">
           <div class="settings-row">
             <div>
@@ -861,7 +800,6 @@
           </div>
         </div>
 
-        <!-- 無操作リダイレクト -->
         <div class="settings-group">
           <div class="settings-row">
             <div>
@@ -879,7 +817,6 @@
           </div>
         </div>
 
-        <!-- 自動初期化 -->
         <div class="settings-group">
           <div class="settings-row">
             <div>
@@ -893,18 +830,16 @@
           </div>
         </div>
 
-        <!-- データクリア -->
         <div class="settings-group">
           <button class="reset-btn visible" style="border-color:#ef4444; color:#ef4444;" onclick="clearAllUserData()">
             <span class="material-symbols-outlined">delete</span> 発見記録・お気に入りを消去
           </button>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- 展示用 20秒無操作カウントダウン黒フィルター -->
+  <!-- ⑦ 展示用 無操作カウントダウン黒フィルター -->
   <div id="idleOverlay" class="idle-overlay" onclick="dismissIdleOverlay(event)">
     <div class="idle-card">
       <div class="idle-title">操作が確認されませんでした</div>
@@ -934,9 +869,8 @@
       }
     };
 
-    let PREFECTURE_DATA = {}; // data.json から取得
+    let PREFECTURE_DATA = {};
 
-    // 設定データ
     let appSettings = JSON.parse(localStorage.getItem('soundmap_settings') || JSON.stringify({
       mode: 'standard',
       enableIdleRedirect: false,
@@ -950,7 +884,6 @@
       return PREFECTURE_DATA[codeStr] || null;
     }
 
-    // DOM要素参照
     const headerTitle = document.getElementById('headerTitle');
     const resetBtn = document.getElementById('resetBtn');
     const resetBtnText = document.getElementById('resetBtnText');
@@ -972,7 +905,6 @@
     const favModal = document.getElementById('favModal');
     const favList = document.getElementById('favList');
     
-    // クイズ要素
     const quizModal = document.getElementById('quizModal');
     const quizIndexText = document.getElementById('quizIndexText');
     const quizTotalText = document.getElementById('quizTotalText');
@@ -981,15 +913,15 @@
     const quizResult = document.getElementById('quizResult');
     const btnNextQuiz = document.getElementById('btnNextQuiz');
 
-    // チュートリアル
     const tutorialModal = document.getElementById('tutorialModal');
     const progressText = document.getElementById('progressText');
     const progressBarFill = document.getElementById('progressBarFill');
 
-    // 設定
+    const passModal = document.getElementById('passModal');
+    const adminPassInput = document.getElementById('adminPassInput');
+    const passErrorMsg = document.getElementById('passErrorMsg');
     const settingsModal = document.getElementById('settingsModal');
 
-    // 展示タイマー
     const idleOverlay = document.getElementById('idleOverlay');
     const countdownSecEl = document.getElementById('countdownSec');
 
@@ -1000,7 +932,6 @@
     let initialViewBox = [0, 0, 1000, 1000];
     let animFrameId = null;
 
-    let audioFadeInterval = null;
     let audioLoopTimer = null;
     let audioCtx = null;
     let currentWebAudioMasterGain = null;
@@ -1010,9 +941,8 @@
     let countdownSec = 10;
     let tutorialSlideIndex = 0;
 
-    let debugModeShowAll = false; // 「1」キー全開放
+    let debugModeShowAll = false;
 
-    // クイズ状態
     let quizList = [];
     let quizCurrentIdx = 0;
 
@@ -1029,10 +959,10 @@
       updateProgressUI();
 
       try {
-        const dataRes = await fetch('data.json');
+        const dataRes = await fetch('https://symphony100.github.io/symphony/soundmap/data.json');
         PREFECTURE_DATA = await dataRes.json();
       } catch (err) {
-        console.warn("data.json の取得に失敗しました", err);
+        console.warn("data.json ロード失敗", err);
       }
 
       try {
@@ -1059,11 +989,10 @@
       }
     });
 
-    // キーボード「1」で全解放トグル
     window.addEventListener('keydown', (e) => {
       if (e.key === '1') {
         debugModeShowAll = !debugModeShowAll;
-        alert(debugModeShowAll ? "【動作確認モード】すべての都道府県を解放しました" : "【通常モード】に戻りました");
+        alert(debugModeShowAll ? "【動作確認モード】全都道府県を一時開放しました" : "【通常モード】に戻りました");
         refreshMapPrefectures();
       }
     });
@@ -1076,7 +1005,7 @@
         const data = getPrefData(code);
 
         if (data || debugModeShowAll) {
-          pref.style.fill = "#81d4fa"; // 音あり（水色）
+          pref.style.fill = "#81d4fa";
           pref.style.cursor = "pointer";
           if (discoveredPrefSet.has(code)) pref.classList.add('discovered');
 
@@ -1085,7 +1014,7 @@
             selectPrefecture(code, pref);
           };
         } else {
-          pref.style.fill = "#e2e8f0"; // 音なし（淡グレー）
+          pref.style.fill = "#e2e8f0";
           pref.style.cursor = "not-allowed";
           pref.onclick = null;
         }
@@ -1143,7 +1072,7 @@
       mapContainer.querySelectorAll('.prefecture').forEach(p => p.classList.remove('active'));
       element.classList.add('active');
 
-      resetBtn.classList.add('visible'); // 全国に戻るボタン表示
+      resetBtn.classList.add('visible');
       zoomToElementViewBox(element);
       renderCityMarkersOnMap(code, element);
     }
@@ -1261,9 +1190,15 @@
       modalPrefJp.textContent = currentLang === 'en' ? (prefData.nameEn || prefData.nameJp) : prefData.nameJp;
       modalCityName.textContent = currentLang === 'en' ? (city.cityNameEn || city.cityName) : city.cityName;
       
-      modalPhoto.src = "";
-      modalPhoto.style.display = 'none';
-      photoPlaceholderText.style.display = 'block';
+      if (city.image && city.image.trim() !== "") {
+        modalPhoto.src = city.image;
+        modalPhoto.style.display = 'block';
+        photoPlaceholderText.style.display = 'none';
+      } else {
+        modalPhoto.src = "";
+        modalPhoto.style.display = 'none';
+        photoPlaceholderText.style.display = 'block';
+      }
 
       modalSoundTitle.textContent = currentLang === 'en' ? (city.titleEn || city.title) : city.title;
       modalDesc.textContent = currentLang === 'en' ? (city.descEn || city.desc) : city.desc;
@@ -1331,8 +1266,9 @@
 
     function closeFavModal() { favModal.classList.remove('open'); }
 
-    /* 全問連続回答クイズ機能 */
+    /* 全問連続回答クイズ */
     function startQuiz() {
+      stopSoundImmediate();
       quizList = [];
       Object.keys(PREFECTURE_DATA).forEach(code => {
         const p = PREFECTURE_DATA[code];
@@ -1341,12 +1277,9 @@
         }
       });
 
-      if (quizList.length === 0) {
-        alert("音源データが登録されていません");
-        return;
-      }
+      if (quizList.length === 0) return;
 
-      quizList.sort(() => Math.random() - 0.5); // シャッフル
+      quizList.sort(() => Math.random() - 0.5);
       quizCurrentIdx = 0;
 
       quizTotalText.textContent = quizList.length;
@@ -1355,6 +1288,8 @@
     }
 
     function showQuizQuestion() {
+      stopSoundImmediate();
+
       btnNextQuiz.style.display = 'none';
       quizResult.style.display = 'none';
 
@@ -1364,7 +1299,6 @@
 
       playSoundWithFade(q.city.audio);
 
-      // 4択作成
       const options = [q.prefName];
       const allNames = ["北海道", "青森県", "岩手県", "宮城県", "東京都", "神奈川県", "新潟県", "京都府", "徳島県", "沖縄県", "福岡県", "愛知県"];
       
@@ -1385,23 +1319,24 @@
     }
 
     function checkQuizAnswer(selected, correct) {
+      stopSoundImmediate();
+
       quizResult.style.display = 'block';
       if (selected === correct) {
         quizResult.style.background = "#dcfce7";
         quizResult.style.color = "#15803d";
-        quizResult.textContent = "🎉 正解！お見事！";
+        quizResult.textContent = "正解！お見事！";
       } else {
         quizResult.style.background = "#fee2e2";
         quizResult.style.color = "#b91c1c";
-        quizResult.textContent = `❌ 残念！正解は ${correct} でした。`;
+        quizResult.textContent = `残念！正解は ${correct} でした。`;
       }
 
+      btnNextQuiz.style.display = 'block';
       if (quizCurrentIdx < quizList.length - 1) {
-        btnNextQuiz.style.display = 'block';
         btnNextQuiz.textContent = "次の問題へ →";
       } else {
-        btnNextQuiz.style.display = 'block';
-        btnNextQuiz.textContent = "全問終了！もう一度挑戦する";
+        btnNextQuiz.textContent = "全問終了！最初から挑戦する";
       }
     }
 
@@ -1410,7 +1345,7 @@
         quizCurrentIdx++;
         showQuizQuestion();
       } else {
-        startQuiz(); // 再チャレンジ
+        startQuiz();
       }
     }
 
@@ -1419,7 +1354,7 @@
       stopSoundImmediate();
     }
 
-    /* スライド式 チュートリアル */
+    /* スライド式チュートリアル */
     function openTutorialModal() {
       tutorialSlideIndex = 0;
       updateTutorialSlideUI();
@@ -1456,13 +1391,21 @@
       });
     }
 
-    /* 管理者設定モーダル (Pass: 1234) */
-    function promptAdminSettings() {
-      const pass = prompt("管理者パスワードを入力してください:");
-      if (pass === "1234") {
+    /* パスワードモーダル & 管理者設定モーダル (Pass: 1234) */
+    function openPassModal() {
+      adminPassInput.value = "";
+      passErrorMsg.style.display = 'none';
+      passModal.classList.add('open');
+    }
+
+    function closePassModal() { passModal.classList.remove('open'); }
+
+    function verifyAdminPassword() {
+      if (adminPassInput.value === "1234") {
+        closePassModal();
         openSettingsModal();
-      } else if (pass !== null) {
-        alert("パスワードが正しくありません。");
+      } else {
+        passErrorMsg.style.display = 'block';
       }
     }
 
@@ -1486,8 +1429,9 @@
 
     function closeSettingsModal() { settingsModal.classList.remove('open'); }
 
+    // 発見記録と削除の消去（管理者設定は絶対に保持）
     function clearAllUserData() {
-      if (confirm("発見記録とお気に入りをすべて消去しますか？")) {
+      if (confirm("発見記録とお気に入りを消去しますか？")) {
         localStorage.removeItem('otomap_discovered');
         localStorage.removeItem('otomap_favorites');
         discoveredPrefSet.clear();
@@ -1495,11 +1439,11 @@
         updateProgressUI();
         refreshMapPrefectures();
         closeSettingsModal();
-        alert("データを消去しました。");
+        alert("ユーザーデータを初期化しました（管理者設定は保持されます）。");
       }
     }
 
-    // 音声再生コントロール
+    // 音声コントロール（再生終了5秒前自動フェードアウト）
     function startLoopingAudio(audioUrl) {
       stopSoundImmediate();
       function playCycle() {
@@ -1517,18 +1461,27 @@
 
         hiddenAudio.play().then(() => {
           soundIcon.style.display = 'inline-block';
-          const startTime = performance.now();
 
-          audioFadeInterval = setInterval(() => {
-            const elapsed = (performance.now() - startTime) / 1000;
-            if (elapsed <= 1.5) hiddenAudio.volume = Math.min(1.0, elapsed / 1.5);
-            else if (elapsed >= 18.0 && elapsed <= 20.0) hiddenAudio.volume = Math.max(0, (20.0 - elapsed) / 2.0);
-            else if (elapsed > 20.0) {
-              clearInterval(audioFadeInterval);
-              hiddenAudio.pause();
-              soundIcon.style.display = 'none';
-            } else hiddenAudio.volume = 1.0;
-          }, 50);
+          const handleTimeUpdate = () => {
+            const duration = hiddenAudio.duration;
+            const currentTime = hiddenAudio.currentTime;
+
+            if (!duration || isNaN(duration)) return;
+
+            const remaining = duration - currentTime;
+
+            if (remaining <= 5 && remaining > 0) {
+              hiddenAudio.volume = Math.max(0, remaining / 5.0);
+            } else if (currentTime <= 1.5) {
+              hiddenAudio.volume = Math.min(1.0, currentTime / 1.5);
+            } else {
+              hiddenAudio.volume = 1.0;
+            }
+          };
+
+          hiddenAudio.removeEventListener('timeupdate', handleTimeUpdate);
+          hiddenAudio.addEventListener('timeupdate', handleTimeUpdate);
+
         }).catch(() => { playWebAudioToneWithFade(); });
       } else { playWebAudioToneWithFade(); }
     }
@@ -1543,7 +1496,7 @@
 
       masterGain.gain.setValueAtTime(0, now);
       masterGain.gain.linearRampToValueAtTime(0.2, now + 1.5);
-      masterGain.gain.setValueAtTime(0.2, now + 18);
+      masterGain.gain.setValueAtTime(0.2, now + 15);
       masterGain.gain.linearRampToValueAtTime(0.0001, now + 20);
 
       masterGain.connect(audioCtx.destination);
@@ -1579,7 +1532,11 @@
     function stopSoundImmediate() {
       if (audioFadeInterval) clearInterval(audioFadeInterval);
       if (audioLoopTimer) clearTimeout(audioLoopTimer);
-      if (hiddenAudio) { hiddenAudio.pause(); hiddenAudio.currentTime = 0; hiddenAudio.volume = 0; }
+      if (hiddenAudio) {
+        hiddenAudio.pause();
+        hiddenAudio.currentTime = 0;
+        hiddenAudio.volume = 0;
+      }
       if (currentWebAudioMasterGain) {
         try { currentWebAudioMasterGain.gain.cancelScheduledValues(0); currentWebAudioMasterGain.gain.value = 0; } catch(e){}
         currentWebAudioMasterGain = null;
@@ -1600,12 +1557,12 @@
       }
       if (cityMarkersGroup) cityMarkersGroup.innerHTML = "";
       
-      resetBtn.classList.remove('visible'); // 全国表示に戻ったらボタンを隠す
+      resetBtn.classList.remove('visible');
       closeModal();
       activeCode = null;
     }
 
-    /* 展示用無操作タイマー */
+    /* 展示用 無操作タイマー */
     function resetInactivityTimer(e) {
       clearTimeout(inactivityTimer);
       clearInterval(countdownInterval);
