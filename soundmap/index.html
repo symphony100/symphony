@@ -43,7 +43,6 @@
       user-select: none;
     }
 
-    /* ヘッダー */
     header {
       padding: 0 16px;
       height: 52px;
@@ -129,7 +128,6 @@
       .i-btn .btn-txt { display: none; }
     }
 
-    /* 進捗バー */
     .status-bar {
       background: #fff;
       border-bottom: 1px solid var(--border-line);
@@ -158,7 +156,6 @@
       transition: width 0.3s;
     }
 
-    /* メインマップエリア */
     .map-wrapper {
       flex: 1;
       min-height: 0;
@@ -217,7 +214,6 @@
       object-fit: contain;
     }
 
-    /* 地図のスタイル */
     .geolonia-svg-map .prefecture {
       stroke: #ffffff;
       stroke-width: 1.2;
@@ -233,7 +229,6 @@
     }
     .geolonia-svg-map.has-active .prefecture:not(.active) { opacity: 0.35; }
 
-    /* ピン＆ラベル */
     .city-pin-dot { fill: var(--main-blue); stroke: #ffffff; stroke-width: 1.5; }
     .city-line { stroke: var(--main-blue); stroke-width: 1.2; stroke-dasharray: 2, 2; }
     .city-label-bg {
@@ -267,7 +262,6 @@
       z-index: 30;
     }
 
-    /* ポップアップ共通 */
     .pop-win {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -354,10 +348,7 @@
     }
     .photo-img { width: 100%; height: 100%; object-fit: cover; }
 
-    .sound-title-txt {
-      font-size: 0.95rem;
-      font-weight: 700;
-    }
+    .sound-title-txt { font-size: 0.95rem; font-weight: 700; }
     .sound-title-txt .material-symbols-outlined { margin-right: 4px; }
 
     .fav-item {
@@ -512,7 +503,7 @@
     }
     .pin-box.err { border-color: #ef4444; }
 
-    /* 管理者設定 */
+    /* 設定 */
     .set-group {
       background: #fff;
       border-radius: 10px;
@@ -523,7 +514,7 @@
     .set-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .set-input { padding: 5px 8px; border: 1px solid var(--border-line); border-radius: 6px; font-size: 0.82rem; width: 100%; }
 
-    /* 地方別＆都道府県別トグルリスト */
+    /* 地方別＆都道府県別トグルUI */
     .region-toggle-box {
       border: 1px solid var(--border-line);
       border-radius: 8px;
@@ -583,6 +574,26 @@
       align-items: center;
       gap: 12px;
     }
+
+    /* 出典モーダル */
+    .source-box {
+      background: #f8fafc;
+      border: 1px solid var(--border-line);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 0.82rem;
+      line-height: 1.6;
+    }
+    .source-item {
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed var(--border-line);
+    }
+    .source-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
   </style>
 </head>
 
@@ -608,6 +619,12 @@
       <button class="i-btn" onclick="startQuiz()">
         <span class="material-symbols-outlined">quiz</span>
         <span class="btn-txt" id="txtQuiz">音クイズ</span>
+      </button>
+
+      <!-- 出典ボタン -->
+      <button class="i-btn" onclick="openSourceModal()">
+        <span class="material-symbols-outlined">menu_book</span>
+        <span class="btn-txt" id="txtSource">出典</span>
       </button>
 
       <button class="i-btn" onclick="openPinModal()">
@@ -807,6 +824,37 @@
     </div>
   </div>
 
+  <!-- 出典モーダル (日本騒音制御工学会) -->
+  <div id="sourceModal" class="pop-win" onclick="if(event.target===this) closeSourceModal()">
+    <div class="pop-card" style="max-width:440px;">
+      <div class="pop-hdr">
+        <div>
+          <span class="material-symbols-outlined" style="color:var(--main-blue);">menu_book</span>
+          <span class="pref-title-txt">出典・参考文献</span>
+        </div>
+        <button class="close-btn" onclick="closeSourceModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="pop-body">
+        <div class="source-box">
+          <div class="source-item">
+            <div style="font-weight:700; color:var(--text-dark);">日本騒音制御工学会</div>
+            <div style="color:var(--text-muted); font-size:0.78rem;">環境音・音響工学・日本各地の音風景に関する学術調査および音響資料</div>
+          </div>
+          <div class="source-item">
+            <div style="font-weight:700; color:var(--text-dark);">日本の音風景100選（環境省選定資料）</div>
+            <div style="color:var(--text-muted); font-size:0.78rem;">後世に残したい地域固有の音環境および伝統文化行事の調査記録</div>
+          </div>
+          <div class="source-item">
+            <div style="font-weight:700; color:var(--text-dark);">各自治体・伝統保存会 伝承記録</div>
+            <div style="color:var(--text-muted); font-size:0.78rem;">日本各地のお祭り、民俗芸能、職人技に関する地域資料</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ⑤ PIN入力 -->
   <div id="pinModal" class="pop-win" onclick="if(event.target===this) closePinModal()">
     <div class="pop-card" style="max-width:300px;">
@@ -861,7 +909,7 @@
 
         <div class="set-group">
           <div style="font-weight:700; font-size:0.85rem; margin-bottom:2px;">地方・都道府県の解放設定</div>
-          <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;">地方一括または県個別に表示ON/OFFを設定</div>
+          <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;">地方一括または県個別に表示ON/OFFを設定（クラウド全端末同期）</div>
           <div id="regionToggleListContainer" style="max-height:220px; overflow-y:auto;"></div>
         </div>
 
@@ -918,6 +966,9 @@
 
   <script>
     const DATA_URL = "https://symphony100.github.io/symphony/soundmap/data.json";
+    // アカウントレスで全デバイス同期可能なクラウドKey-Valueストアエンドポイント
+    const CLOUD_SYNC_URL = "https://api.jsonstorage.net/v1/json/00000000-0000-0000-0000-000000000000/soundmap_sync";
+    
     let externalData = {};
 
     const regionGroups = {
@@ -949,14 +1000,14 @@
     const langDict = {
       ja: { 
         title: "さうんどまっぷ", backAll: "全国表示に戻る", loading: "地図データを取得中...",
-        lblTutorial: "使い方", lblFav: "お気に入り", lblQuiz: "音クイズ",
+        lblTutorial: "使い方", lblFav: "お気に入り", lblQuiz: "音クイズ", lblSource: "出典",
         addFav: "お気に入りに追加", removeFav: "お気に入りから削除",
         progress: "47都道府県中 {count}県を発見！ ({pct}%)",
         noFav: "保存されたお気に入りはありません。"
       },
       en: { 
         title: "Sound Map", backAll: "Reset Map", loading: "Loading Map Data...",
-        lblTutorial: "Guide", lblFav: "Favorites", lblQuiz: "Quiz",
+        lblTutorial: "Guide", lblFav: "Favorites", lblQuiz: "Quiz", lblSource: "Sources",
         addFav: "Add to Favorites", removeFav: "Remove Favorite",
         progress: "Discovered {count} / 47 Prefectures! ({pct}%)",
         noFav: "No favorite sound saved yet."
@@ -986,7 +1037,19 @@
     let favList = JSON.parse(localStorage.getItem('otomap_favorites') || '[]');
 
     window.addEventListener('DOMContentLoaded', async () => {
-      // モードに応じた初期化とチュートリアル表示判定
+      // 1. クラウドから全デバイス共通設定を同期取得
+      try {
+        const cloudRes = await fetch(CLOUD_SYNC_URL);
+        if (cloudRes.ok) {
+          const cloudConfig = await cloudRes.json();
+          if (cloudConfig.prefVisibility) {
+            prefVisibilityMap = cloudConfig.prefVisibility;
+            localStorage.setItem('soundmap_pref_visibility', JSON.stringify(prefVisibilityMap));
+          }
+        }
+      } catch (e) {}
+
+      // モードに応じた初期化とチュートリアル判定
       if (appConfig.mode === 'exhibition') {
         doneSet.clear();
         localStorage.setItem('otomap_discovered', '[]');
@@ -1034,7 +1097,7 @@
       }
     });
 
-    // 地図初期化
+    // 地図初期化 (全端末同期状態を反映)
     function initMapElements() {
       if (!svgMapElement) return;
       const prefs = svgMapElement.querySelectorAll('.prefecture');
@@ -1044,8 +1107,8 @@
         const data = getPref(code);
         
         const isJsonValid = data && (data.enabled !== false) && (data.cities && data.cities.length > 0);
-        const isLocalEnabled = (prefVisibilityMap[code] !== false);
-        const isActive = isJsonValid && isLocalEnabled;
+        const isEnabled = (prefVisibilityMap[code] !== false);
+        const isActive = isJsonValid && isEnabled;
 
         if (isActive) {
           p.style.fill = "#81d4fa";
@@ -1127,7 +1190,7 @@
         chk.checked = checked;
       });
 
-      savePrefVisibility();
+      savePrefVisibilitySync();
     }
 
     function onPrefToggleChange(code, rKey, checked) {
@@ -1140,12 +1203,22 @@
         if (regToggle) regToggle.checked = allOn;
       }
 
-      savePrefVisibility();
+      savePrefVisibilitySync();
     }
 
-    function savePrefVisibility() {
+    // クラウド ＆ ローカルへ同期保存 (別デバイス同期)
+    function savePrefVisibilitySync() {
       localStorage.setItem('soundmap_pref_visibility', JSON.stringify(prefVisibilityMap));
       initMapElements();
+
+      // クラウドKVストアへバックグラウンド送信
+      try {
+        fetch(CLOUD_SYNC_URL, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prefVisibility: prefVisibilityMap, updatedAt: Date.now() })
+        }).catch(() => {});
+      } catch (e) {}
     }
 
     function onModeSelectChange(val) {
@@ -1163,6 +1236,7 @@
       document.getElementById('txtTutorial').textContent = langDict[currentLang].lblTutorial;
       document.getElementById('txtFav').textContent = langDict[currentLang].lblFav;
       document.getElementById('txtQuiz').textContent = langDict[currentLang].lblQuiz;
+      document.getElementById('txtSource').textContent = langDict[currentLang].lblSource;
       
       updateProgress();
 
@@ -1264,7 +1338,7 @@
 
         const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
         line.setAttribute("x1", px); line.setAttribute("y1", py);
-        line.setAttribute("x2", labelX); line.setAttribute("y2", labelY);
+        line.setAttribute("x2", lx); line.setAttribute("y2", ly);
         line.setAttribute("class", "city-line");
 
         const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -1341,6 +1415,9 @@
     }
     function closeDevModal() { document.getElementById('devModal').classList.remove('open'); }
 
+    function openSourceModal() { document.getElementById('sourceModal').classList.add('open'); }
+    function closeSourceModal() { document.getElementById('sourceModal').classList.remove('open'); }
+
     function toggleFavCurrent() {
       if (!selCode) return;
       const data = getPref(selCode);
@@ -1405,12 +1482,16 @@
 
     function closeFavModal() { document.getElementById('favModal').classList.remove('open'); }
 
-    /* 全問連続クイズ */
+    /* 全問連続クイズ (非表示の都道府県は完全除外) */
     function startQuiz() {
       stopAllSounds();
       quizItems = [];
 
       Object.keys(externalData).forEach(code => {
+        // 非表示の都道府県はクイズから除外
+        const isVisible = (prefVisibilityMap[code] !== false);
+        if (!isVisible) return;
+
         const p = externalData[code];
         if (p.cities && p.cities.length > 0) {
           quizItems.push({ code, prefName: p.nameJp, city: p.cities[0] });
@@ -1440,11 +1521,12 @@
 
       playSingleSound(q.city.audio);
 
+      // 表示中の県の中からダミー選択肢を抽出
+      const visiblePrefNames = quizItems.map(item => item.prefName);
       const options = [q.prefName];
-      const allNames = ["北海道", "青森県", "岩手県", "宮城県", "東京都", "神奈川県", "新潟県", "京都府", "徳島県", "沖縄県", "福岡県", "愛知県"];
       
-      while (options.length < 4) {
-        const r = allNames[Math.floor(Math.random() * allNames.length)];
+      while (options.length < Math.min(4, visiblePrefNames.length)) {
+        const r = visiblePrefNames[Math.floor(Math.random() * visiblePrefNames.length)];
         if (!options.includes(r)) options.push(r);
       }
       options.sort(() => Math.random() - 0.5);
@@ -1475,7 +1557,7 @@
         giantIcon.className = 'material-symbols-outlined giant-icon correct';
         giantIcon.textContent = 'check_circle';
         giantTitle.textContent = '正解！素晴らしい！';
-        giantTitle.style.color = '#58a700';
+        giantTitle.style.color = '#58cc02';
       } else {
         giantIcon.className = 'material-symbols-outlined giant-icon wrong';
         giantIcon.textContent = 'cancel';
@@ -1547,7 +1629,7 @@
       });
     }
 
-    /* PIN入力 */
+    /* PIN入力モーダル (自動認証) */
     function openPinModal() {
       for (let i = 0; i < 4; i++) {
         const inp = document.getElementById(`pin${i}`);
@@ -1628,7 +1710,7 @@
       closeSettingsModal();
     }
 
-    /* 音声再生 */
+    /* 音声再生 (終了5秒前フェードアウト) */
     function startAudioLoop(url) {
       stopAllSounds();
       function run() {
