@@ -43,6 +43,7 @@
       user-select: none;
     }
 
+    /* ヘッダー */
     header {
       padding: 0 16px;
       height: 52px;
@@ -128,11 +129,12 @@
       .i-btn .btn-txt { display: none; }
     }
 
+    /* 進捗バー */
     .status-bar {
       background: #fff;
       border-bottom: 1px solid var(--border-line);
       padding: 6px 16px;
-      height: 36px;
+      height: 34px;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -156,6 +158,7 @@
       transition: width 0.3s;
     }
 
+    /* メインマップエリア (完全画面内収まりレイアウト) */
     .map-wrapper {
       flex: 1;
       min-height: 0;
@@ -214,6 +217,7 @@
       object-fit: contain;
     }
 
+    /* 地図のスタイル (全県統一水色) */
     .geolonia-svg-map .prefecture {
       stroke: #ffffff;
       stroke-width: 1.2;
@@ -229,6 +233,7 @@
     }
     .geolonia-svg-map.has-active .prefecture:not(.active) { opacity: 0.35; }
 
+    /* ピン＆引き出し線 */
     .city-pin-dot { fill: var(--main-blue); stroke: #ffffff; stroke-width: 1.5; }
     .city-line { stroke: var(--main-blue); stroke-width: 1.2; stroke-dasharray: 2, 2; }
     .city-label-bg {
@@ -262,6 +267,7 @@
       z-index: 30;
     }
 
+    /* ポップアップ共通 */
     .pop-win {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -348,7 +354,10 @@
     }
     .photo-img { width: 100%; height: 100%; object-fit: cover; }
 
-    .sound-title-txt { font-size: 0.95rem; font-weight: 700; }
+    .sound-title-txt {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
     .sound-title-txt .material-symbols-outlined { margin-right: 4px; }
 
     .fav-item {
@@ -503,7 +512,7 @@
     }
     .pin-box.err { border-color: #ef4444; }
 
-    /* 設定 */
+    /* 管理者設定 */
     .set-group {
       background: #fff;
       border-radius: 10px;
@@ -621,7 +630,7 @@
         <span class="btn-txt" id="txtQuiz">音クイズ</span>
       </button>
 
-      <!-- 出典ボタン -->
+      <!-- 出典ボタン (日本騒音制御工学会) -->
       <button class="i-btn" onclick="openSourceModal()">
         <span class="material-symbols-outlined">menu_book</span>
         <span class="btn-txt" id="txtSource">出典</span>
@@ -966,8 +975,8 @@
 
   <script>
     const DATA_URL = "https://symphony100.github.io/symphony/soundmap/data.json";
-    // アカウントレスで全デバイス同期可能なクラウドKey-Valueストアエンドポイント
-    const CLOUD_SYNC_URL = "https://api.jsonstorage.net/v1/json/00000000-0000-0000-0000-000000000000/soundmap_sync";
+    // アカウントレスで全デバイス同期可能なクラウドKey-Valueストア
+    const SYNC_API_URL = "https://kvdb.io/symphony_soundmap_v1/app_settings";
     
     let externalData = {};
 
@@ -1007,7 +1016,8 @@
       },
       en: { 
         title: "Sound Map", backAll: "Reset Map", loading: "Loading Map Data...",
-        lblTutorial: "Guide", lblFav: "Favorites", lblQuiz: "Quiz", lblSource: "Sources",
+        lblTutorial: "Guide", lblFav: "Favorites", lblQuiz: "Quiz",
+        lblSource: "Sources",
         addFav: "Add to Favorites", removeFav: "Remove Favorite",
         progress: "Discovered {count} / 47 Prefectures! ({pct}%)",
         noFav: "No favorite sound saved yet."
@@ -1037,14 +1047,18 @@
     let favList = JSON.parse(localStorage.getItem('otomap_favorites') || '[]');
 
     window.addEventListener('DOMContentLoaded', async () => {
-      // 1. クラウドから全デバイス共通設定を同期取得
+      // 1. クラウドKVストアから全端末共通設定を取得・同期
       try {
-        const cloudRes = await fetch(CLOUD_SYNC_URL);
+        const cloudRes = await fetch(SYNC_API_URL);
         if (cloudRes.ok) {
-          const cloudConfig = await cloudRes.json();
-          if (cloudConfig.prefVisibility) {
-            prefVisibilityMap = cloudConfig.prefVisibility;
+          const remoteConfig = await cloudRes.json();
+          if (remoteConfig && remoteConfig.prefVisibility) {
+            prefVisibilityMap = remoteConfig.prefVisibility;
             localStorage.setItem('soundmap_pref_visibility', JSON.stringify(prefVisibilityMap));
+          }
+          if (remoteConfig && remoteConfig.mode) {
+            appConfig = Object.assign(appConfig, remoteConfig);
+            localStorage.setItem('soundmap_settings', JSON.stringify(appConfig));
           }
         }
       } catch (e) {}
@@ -1097,7 +1111,7 @@
       }
     });
 
-    // 地図初期化 (全端末同期状態を反映)
+    // 地図初期化 (全県統一水色 ＆ クラウド同期の解放状態を反映)
     function initMapElements() {
       if (!svgMapElement) return;
       const prefs = svgMapElement.querySelectorAll('.prefecture');
@@ -1111,6 +1125,7 @@
         const isActive = isJsonValid && isEnabled;
 
         if (isActive) {
+          // 有効な県はすべて同じ水色！
           p.style.fill = "#81d4fa";
           p.style.cursor = "pointer";
           if (doneSet.has(code)) p.classList.add('discovered');
@@ -1120,6 +1135,7 @@
             onSelectPref(code, p);
           };
         } else {
+          // 無効な県はすべて灰色
           p.style.fill = "#cbd5e1";
           p.style.cursor = "pointer";
           p.classList.remove('discovered');
@@ -1206,17 +1222,17 @@
       savePrefVisibilitySync();
     }
 
-    // クラウド ＆ ローカルへ同期保存 (別デバイス同期)
+    // クラウド ＆ ローカルへ同期保存
     function savePrefVisibilitySync() {
       localStorage.setItem('soundmap_pref_visibility', JSON.stringify(prefVisibilityMap));
+      appConfig.prefVisibility = prefVisibilityMap;
       initMapElements();
 
-      // クラウドKVストアへバックグラウンド送信
+      // クラウドKVストアへ非同期送信（全デバイス即時同期）
       try {
-        fetch(CLOUD_SYNC_URL, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prefVisibility: prefVisibilityMap, updatedAt: Date.now() })
+        fetch(SYNC_API_URL, {
+          method: 'POST',
+          body: JSON.stringify(appConfig)
         }).catch(() => {});
       } catch (e) {}
     }
@@ -1338,7 +1354,7 @@
 
         const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
         line.setAttribute("x1", px); line.setAttribute("y1", py);
-        line.setAttribute("x2", lx); line.setAttribute("y2", ly);
+        line.setAttribute("x2", labelX); line.setAttribute("y2", ly);
         line.setAttribute("class", "city-line");
 
         const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -1482,15 +1498,15 @@
 
     function closeFavModal() { document.getElementById('favModal').classList.remove('open'); }
 
-    /* 全問連続クイズ (非表示の都道府県は完全除外) */
+    /* 全問連続クイズ (非表示の県は出題・選択肢から完全除外) */
     function startQuiz() {
       stopAllSounds();
       quizItems = [];
 
       Object.keys(externalData).forEach(code => {
-        // 非表示の都道府県はクイズから除外
-        const isVisible = (prefVisibilityMap[code] !== false);
-        if (!isVisible) return;
+        // 非表示（OFF）に設定されている県は除外
+        const isEnabled = (prefVisibilityMap[code] !== false);
+        if (!isEnabled) return;
 
         const p = externalData[code];
         if (p.cities && p.cities.length > 0) {
@@ -1521,12 +1537,12 @@
 
       playSingleSound(q.city.audio);
 
-      // 表示中の県の中からダミー選択肢を抽出
-      const visiblePrefNames = quizItems.map(item => item.prefName);
+      // 表示中の県名リストから選択肢を作成
+      const visibleNames = quizItems.map(item => item.prefName);
       const options = [q.prefName];
       
-      while (options.length < Math.min(4, visiblePrefNames.length)) {
-        const r = visiblePrefNames[Math.floor(Math.random() * visiblePrefNames.length)];
+      while (options.length < Math.min(4, visibleNames.length)) {
+        const r = visibleNames[Math.floor(Math.random() * visibleNames.length)];
         if (!options.includes(r)) options.push(r);
       }
       options.sort(() => Math.random() - 0.5);
@@ -1629,7 +1645,7 @@
       });
     }
 
-    /* PIN入力モーダル (自動認証) */
+    /* PIN入力 */
     function openPinModal() {
       for (let i = 0; i < 4; i++) {
         const inp = document.getElementById(`pin${i}`);
@@ -1689,6 +1705,14 @@
       appConfig.autoResetOnLoad = document.getElementById('cfgAutoReset').checked;
 
       localStorage.setItem('soundmap_settings', JSON.stringify(appConfig));
+
+      // クラウドへも非同期保存
+      try {
+        fetch(SYNC_API_URL, {
+          method: 'POST',
+          body: JSON.stringify(appConfig)
+        }).catch(() => {});
+      } catch (e) {}
     }
 
     function closeSettingsModal() { document.getElementById('settingsModal').classList.remove('open'); }
