@@ -43,6 +43,7 @@
       user-select: none;
     }
 
+    /* ヘッダー */
     header {
       padding: 0 16px;
       height: 52px;
@@ -57,8 +58,8 @@
     }
 
     .app-icon {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       vertical-align: middle;
       margin-right: 6px;
     }
@@ -128,6 +129,7 @@
       .i-btn .btn-txt { display: none; }
     }
 
+    /* 進捗バー */
     .status-bar {
       background: #fff;
       border-bottom: 1px solid var(--border-line);
@@ -156,6 +158,7 @@
       transition: width 0.3s;
     }
 
+    /* メインマップエリア (完全画面内収まりレイアウト) */
     .map-wrapper {
       flex: 1;
       min-height: 0;
@@ -214,6 +217,7 @@
       object-fit: contain;
     }
 
+    /* 地図のスタイル (全県統一水色) */
     .geolonia-svg-map .prefecture {
       stroke: #ffffff;
       stroke-width: 1.2;
@@ -229,6 +233,7 @@
     }
     .geolonia-svg-map.has-active .prefecture:not(.active) { opacity: 0.35; }
 
+    /* ピン＆引き出し線 */
     .city-pin-dot { fill: var(--main-blue); stroke: #ffffff; stroke-width: 1.5; }
     .city-line { stroke: var(--main-blue); stroke-width: 1.2; stroke-dasharray: 2, 2; }
     .city-label-bg {
@@ -262,6 +267,7 @@
       z-index: 30;
     }
 
+    /* ポップアップ共通 */
     .pop-win {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -362,6 +368,7 @@
       margin-bottom: 8px;
     }
 
+    /* クイズ選択肢 */
     .quiz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
     .quiz-choice-btn {
       background: #fff;
@@ -374,6 +381,7 @@
       cursor: pointer;
     }
 
+    /* 巨大 〇・✕ アニメーション */
     @keyframes popMarkAnim {
       0% { transform: scale(0); opacity: 0; }
       60% { transform: scale(1.25); opacity: 1; }
@@ -430,6 +438,7 @@
       width: 100%;
     }
 
+    /* チュートリアル */
     .slide-outer { width: 100%; overflow: hidden; }
     .slide-track { display: flex; width: 400%; transition: transform 0.3s ease; }
     .slide-page {
@@ -476,6 +485,7 @@
     }
     .nav-ctrl-btn:disabled { background: #cbd5e1; }
 
+    /* PIN入力 */
     .pin-grid {
       display: flex;
       justify-content: center;
@@ -499,6 +509,7 @@
     }
     .pin-box.err { border-color: #ef4444; }
 
+    /* 設定 */
     .set-group {
       background: #fff;
       border-radius: 10px;
@@ -509,6 +520,7 @@
     .set-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .set-input { padding: 5px 8px; border: 1px solid var(--border-line); border-radius: 6px; font-size: 0.82rem; width: 100%; }
 
+    /* 地方別＆都道府県別トグルUI */
     .region-toggle-box {
       border: 1px solid var(--border-line);
       border-radius: 8px;
@@ -872,7 +884,7 @@
     </div>
   </div>
 
-  <!-- ⑥ Android風 設定 (全デバイス同期URL生成機能付き) -->
+  <!-- ⑥ Android風 設定 -->
   <div id="settingsModal" class="pop-win" onclick="if(event.target===this) closeSettingsModal()">
     <div class="pop-card" style="background:#f1f5f9; max-width:500px;">
       <div class="pop-hdr" style="background:#e2e8f0;">
@@ -904,7 +916,6 @@
           <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;">地方一括または県個別に表示ON/OFFを設定</div>
           <div id="regionToggleListContainer" style="max-height:200px; overflow-y:auto;"></div>
           
-          <!-- 全端末同期用URLコピー機能 -->
           <button class="i-btn" style="width:100%; margin-top:8px; justify-content:center; padding:6px; background:#e0f2fe; color:var(--main-blue); border-color:var(--main-blue);" onclick="copySyncedShareUrl()">
             <span class="material-symbols-outlined">share</span> このON/OFF設定を別端末へ同期するURLをコピー
           </button>
@@ -1092,7 +1103,7 @@
       },
       en: { 
         title: "Sound Map", backAll: "Reset Map", loading: "Loading Map Data...",
-        lblTutorial: "Guide", lblFav: "Favorites", lblQuiz: "Quiz", lblSource: "Sources",
+        lblTutorial: "Guide", lblFav: "Favorites", lblQuiz: "Quiz",
         addFav: "Add to Favorites", removeFav: "Remove Favorite",
         progress: "Discovered {count} / 47 Prefectures! ({pct}%)",
         noFav: "No favorite sound saved yet."
@@ -1563,7 +1574,7 @@
 
       Object.keys(externalData).forEach(code => {
         const isEnabled = (prefVisibilityMap[code] !== false);
-        if (!isEnabled) return; // 非表示県は除外
+        if (!isEnabled) return;
 
         const p = externalData[code];
         if (p.cities && p.cities.length > 0) {
