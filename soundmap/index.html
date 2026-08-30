@@ -58,8 +58,8 @@
     }
 
     .app-icon {
-      width: 26px;
-      height: 26px;
+      width: 28px;
+      height: 28px;
       vertical-align: middle;
       margin-right: 6px;
     }
@@ -158,7 +158,7 @@
       transition: width 0.3s;
     }
 
-    /* メインマップエリア (完全画面内収まりレイアウト) */
+    /* メインマップエリア */
     .map-wrapper {
       flex: 1;
       min-height: 0;
@@ -217,7 +217,7 @@
       object-fit: contain;
     }
 
-    /* 地図のスタイル (全県統一水色) */
+    /* 地図のスタイル (完全水色統一) */
     .geolonia-svg-map .prefecture {
       stroke: #ffffff;
       stroke-width: 1.2;
@@ -368,7 +368,7 @@
       margin-bottom: 8px;
     }
 
-    /* クイズ選択肢 */
+    /* クイズ */
     .quiz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
     .quiz-choice-btn {
       background: #fff;
@@ -509,7 +509,7 @@
     }
     .pin-box.err { border-color: #ef4444; }
 
-    /* 設定 */
+    /* 管理者設定 */
     .set-group {
       background: #fff;
       border-radius: 10px;
@@ -519,40 +519,6 @@
     }
     .set-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .set-input { padding: 5px 8px; border: 1px solid var(--border-line); border-radius: 6px; font-size: 0.82rem; width: 100%; }
-
-    /* 地方別＆都道府県別トグルUI */
-    .region-toggle-box {
-      border: 1px solid var(--border-line);
-      border-radius: 8px;
-      margin-bottom: 6px;
-      background: #f8fafc;
-      overflow: hidden;
-    }
-    .region-hdr {
-      padding: 6px 10px;
-      background: #e2e8f0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 700;
-      font-size: 0.8rem;
-    }
-    .region-prefs {
-      padding: 6px 10px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4px;
-    }
-    .pref-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.75rem;
-      background: #fff;
-      padding: 3px 6px;
-      border-radius: 4px;
-      border: 1px solid #e2e8f0;
-    }
 
     .idle-overlay {
       position: fixed;
@@ -581,6 +547,7 @@
       gap: 12px;
     }
 
+    /* 出典モーダル */
     .source-box {
       background: #f8fafc;
       border: 1px solid var(--border-line);
@@ -626,6 +593,7 @@
         <span class="btn-txt" id="txtQuiz">音クイズ</span>
       </button>
 
+      <!-- 出典ボタン -->
       <button class="i-btn" onclick="openSourceModal()">
         <span class="material-symbols-outlined">menu_book</span>
         <span class="btn-txt" id="txtSource">出典</span>
@@ -912,17 +880,6 @@
         </div>
 
         <div class="set-group">
-          <div style="font-weight:700; font-size:0.85rem; margin-bottom:2px;">地方・都道府県の解放設定</div>
-          <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;">地方一括または県個別に表示ON/OFFを設定</div>
-          <div id="regionToggleListContainer" style="max-height:200px; overflow-y:auto;"></div>
-          
-          <button class="i-btn" style="width:100%; margin-top:8px; justify-content:center; padding:6px; background:#e0f2fe; color:var(--main-blue); border-color:var(--main-blue);" onclick="copySyncedShareUrl()">
-            <span class="material-symbols-outlined">share</span> このON/OFF設定を別端末へ同期するURLをコピー
-          </button>
-          <div id="copyNoticeTxt" style="display:none; color:#15803d; font-size:0.75rem; text-align:center; margin-top:4px; font-weight:700;">同期URLをクリップボードにコピーしました！</div>
-        </div>
-
-        <div class="set-group">
           <div class="set-row">
             <div>
               <div style="font-weight:700; font-size:0.85rem;">無操作自動リダイレクト</div>
@@ -975,96 +932,7 @@
 
   <script>
     const DATA_URL = "https://symphony100.github.io/symphony/soundmap/data.json";
-    
-    // オフライン・初期ロード時用の完全内蔵データ（通信失敗時も100%安全動作）
-    const localFallbackData = {
-      "1": { nameJp: "北海道", nameEn: "Hokkaido", cities: [
-        { cityName: "札幌市", cityNameEn: "Sapporo City", relX: 0.35, relY: 0.65, dx: -45, dy: 10, title: "YOSAKOIソーラン祭りの鳴子と掛け声の音", titleEn: "YOSAKOI Soran Festival Chants", desc: "演舞に合わせて鳴らされる鳴子の心地よいカチカチ音と力強い掛け声です。", descEn: "Rhythmic clack of Naruko clappers accompanied by energetic festival chants.", image: "https://symphony100.github.io/symphony/soundmap/sapporo.jpg", audio: "https://symphony100.github.io/symphony/soundmap/sapporo.mp3" },
-        { cityName: "登別市", cityNameEn: "Noboribetsu City", relX: 0.42, relY: 0.78, dx: 45, dy: 15, title: "登別温泉 地獄谷の湧き出す源泉の音", titleEn: "Noboribetsu Onsen Geyser Sounds", desc: "地獄谷の吹き出し口からモコモコと音を立てて湧き出す熱湯の音です。", descEn: "The bubbling sound of hot spring geysers emerging from Hell Valley.", image: "https://symphony100.github.io/symphony/soundmap/noboribetsu.jpg", audio: "https://symphony100.github.io/symphony/soundmap/noboribetsu.mp3" }
-      ]},
-      "2": { nameJp: "青森県", nameEn: "Aomori", cities: [
-        { cityName: "青森市", cityNameEn: "Aomori City", relX: 0.5, relY: 0.35, dx: 40, dy: -10, title: "青森ねぶた祭の「ラッセラー！」の掛け声と大太鼓の音", titleEn: "Aomori Nebuta Festival Chants", desc: "「ラッセラー！」の威勢の良い掛け声とズシンと響く大太鼓の熱狂音です。", descEn: "Exhilarating chants coupled with thunderous Taiko drums reverberating.", image: "https://symphony100.github.io/symphony/soundmap/aomori.jpg", audio: "https://symphony100.github.io/symphony/soundmap/aomori.mp3" },
-        { cityName: "弘前市", cityNameEn: "Hirosaki City", relX: 0.35, relY: 0.55, dx: -45, dy: 10, title: "津軽三味線会館で弾かれる迫力ある津軽三味線の音", titleEn: "Tsugaru Shamisen Performance", desc: "たたきつけるようなバチさばきが生み出す、津軽三味線の伝統の響きです。", descEn: "The passionate plucking technique of traditional Tsugaru Shamisen.", image: "https://symphony100.github.io/symphony/soundmap/hirosaki.jpg", audio: "https://symphony100.github.io/symphony/soundmap/hirosaki.mp3" }
-      ]},
-      "3": { nameJp: "岩手県", nameEn: "Iwate", cities: [
-        { cityName: "盛岡市", cityNameEn: "Morioka City", relX: 0.5, relY: 0.4, dx: 45, dy: 0, title: "南部鉄器の鉄瓶でお湯が沸いたときのポコポコ音", titleEn: "Nanbu Ironware Boiling Water", desc: "伝統工芸・南部鉄器でお湯を沸かしたときに聞こえる温かい湯沸かし音です。", descEn: "The soothing sound of water boiling gently inside Nanbu iron kettles.", image: "https://symphony100.github.io/symphony/soundmap/morioka.jpg", audio: "https://symphony100.github.io/symphony/soundmap/morioka.mp3" }
-      ]},
-      "4": { nameJp: "宮城県", nameEn: "Miyagi", cities: [
-        { cityName: "仙台市", cityNameEn: "Sendai City", relX: 0.45, relY: 0.6, dx: -45, dy: 10, title: "仙台七夕まつりの笹飾りが風になびく音", titleEn: "Sendai Tanabata Streamers Breeze", desc: "大きな和紙飾りが夏の和やかな風にさらさらと擦れ合う風情ある音です。", descEn: "Rustling sounds of giant paper decorations swaying in summer breeze.", image: "https://symphony100.github.io/symphony/soundmap/sendai.jpg", audio: "https://symphony100.github.io/symphony/soundmap/sendai.mp3" },
-        { cityName: "気仙沼市", cityNameEn: "Kesennuma City", relX: 0.75, relY: 0.25, dx: 45, dy: -10, title: "鴎（ウミネコ）の鳴き声", titleEn: "Seagulls of Kesennuma Port", desc: "港を行き交う漁船の傍らで鳴くウミネコたちの賑やかな鳴き声です。", descEn: "Chirping seagulls flying over the bustling harbor.", image: "https://symphony100.github.io/symphony/soundmap/kesennuma.jpg", audio: "https://symphony100.github.io/symphony/soundmap/kesennuma.mp3" }
-      ]},
-      "5": { nameJp: "秋田県", nameEn: "Akita", cities: [
-        { cityName: "秋田市", cityNameEn: "Akita City", relX: 0.4, relY: 0.45, dx: -45, dy: -10, title: "秋田竿燈まつりの「ドッコイショー！」の掛け声", titleEn: "Akita Kanto Festival Chants", desc: "重い竿燈を腰や額で支える妙技とともに響き渡る掛け声とお囃子です。", descEn: "Energetic festival chants celebrating lantern balancing feats.", image: "https://symphony100.github.io/symphony/soundmap/akita.jpg", audio: "https://symphony100.github.io/symphony/soundmap/akita.mp3" },
-        { cityName: "男鹿市", cityNameEn: "Oga City", relX: 0.25, relY: 0.35, dx: -45, dy: 15, title: "なまはげがドアをドンドンと叩く音", titleEn: "Namahage Door Thumping", desc: "「泣く子はいねがー！」と扉を強く叩いて練り歩くなまはげの音です。", descEn: "The menacing thumping on wooden doors by Namahage deities.", image: "https://symphony100.github.io/symphony/soundmap/oga.jpg", audio: "https://symphony100.github.io/symphony/soundmap/oga.mp3" }
-      ]},
-      "6": { nameJp: "山形県", nameEn: "Yamagata", cities: [
-        { cityName: "天童市", cityNameEn: "Tendo City", relX: 0.55, relY: 0.5, dx: 45, dy: 0, title: "将棋駒を指すときの「ツォン！」という心地よい木音", titleEn: "Tendo Shogi Piece Sound", desc: "将棋駒の街・天童。盤上に駒をピシッと指したときに響く高音です。", descEn: "Crisp wooden click of placing Shogi chess pieces on the board.", image: "https://symphony100.github.io/symphony/soundmap/tendo.jpg", audio: "https://symphony100.github.io/symphony/soundmap/tendo.mp3" }
-      ]},
-      "7": { nameJp: "福島県", nameEn: "Fukushima", cities: [
-        { cityName: "福島市", cityNameEn: "Fukushima City", relX: 0.45, relY: 0.35, dx: -45, dy: -10, title: "わらじまつりの大わらじを練り歩く熱気あふれる音", titleEn: "Fukushima Waraji Procession", desc: "長さ12mの大わらじを担ぐ熱気とわらじ音頭の賑やかな音です。", descEn: "Lively folk music accompanied by crowds carrying a giant straw sandal.", image: "https://symphony100.github.io/symphony/soundmap/fukushima.jpg", audio: "https://symphony100.github.io/symphony/soundmap/fukushima.mp3" },
-        { cityName: "いわき市", cityNameEn: "Iwaki City", relX: 0.8, relY: 0.7, dx: 45, dy: 10, title: "スパリゾートハワイアンズのフラガールたちのウクレレ音", titleEn: "Spa Resort Hawaiians Ukulele", desc: "ハワイアンズのトロピカルな雰囲気の中、フラガールが舞うウクレレ音です。", descEn: "Bright ukulele tunes setting the tropical mood for Hula dancers.", image: "https://symphony100.github.io/symphony/soundmap/iwaki.jpg", audio: "https://symphony100.github.io/symphony/soundmap/iwaki.mp3" }
-      ]},
-      "8": { nameJp: "茨城県", nameEn: "Ibaraki", cities: [
-        { cityName: "水戸市", cityNameEn: "Mito City", relX: 0.5, relY: 0.45, dx: 45, dy: -10, title: "偕楽園の梅林で春風がそよぐ音", titleEn: "Kairakuen Plum Garden Breeze", desc: "偕楽園の咲き誇る梅の花々を春風が優しく吹き抜ける爽やかな音です。", descEn: "Gentle spring breeze whispering through blooming plum blossoms.", image: "https://symphony100.github.io/symphony/soundmap/mito.jpg", audio: "https://symphony100.github.io/symphony/soundmap/mito.mp3" }
-      ]},
-      "9": { nameJp: "栃木県", nameEn: "Tochigi", cities: [
-        { cityName: "日光市", cityNameEn: "Nikko City", relX: 0.35, relY: 0.35, dx: -45, dy: -10, title: "日光東照宮「鳴き龍」の下で手を打ったときの鳴響音", titleEn: "Nikko Toshogu Crying Dragon Echo", desc: "薬師堂の天井画「鳴き龍」の下で拍子木を打つと長く響き渡ります。", descEn: "The echoing reverberation under Crying Dragon ceiling painting.", image: "https://symphony100.github.io/symphony/soundmap/nikko.jpg", audio: "https://symphony100.github.io/symphony/soundmap/nikko.mp3" }
-      ]},
-      "10": { nameJp: "群馬県", nameEn: "Gunma", cities: [
-        { cityName: "草津町", cityNameEn: "Kusatsu Town", relX: 0.25, relY: 0.3, dx: -45, dy: -10, title: "草津温泉の「湯もみ」で板が湯を叩くバシャバシャ音", titleEn: "Kusatsu Onsen Yumomi Performance", desc: "「草津良いとこ一度はおいで」の唄とともに木板で湯を揉む音です。", descEn: "Traditional Yumomi performance splashing hot spring water.", image: "https://symphony100.github.io/symphony/soundmap/kusatsu.jpg", audio: "https://symphony100.github.io/symphony/soundmap/kusatsu.mp3" }
-      ]},
-      "11": { nameJp: "埼玉県", nameEn: "Saitama", cities: [
-        { cityName: "川越市", cityNameEn: "Kawagoe City", relX: 0.45, relY: 0.5, dx: -45, dy: -10, title: "小江戸の象徴「時の鐘」が街に響き渡る重厚な音", titleEn: "Kawagoe Bell of Time Chimes", desc: "小江戸・川越の街に1日4回響き渡る温かく重厚な鐘の音色です。", descEn: "The historic Toki no Kane bell ringing over Kawagoe streets.", image: "https://symphony100.github.io/symphony/soundmap/kawagoe.jpg", audio: "https://symphony100.github.io/symphony/soundmap/kawagoe.mp3" }
-      ]},
-      "12": { nameJp: "千葉県", nameEn: "Chiba", cities: [
-        { cityName: "銚子市", cityNameEn: "Choshi City", relX: 0.85, relY: 0.35, dx: 45, dy: 10, title: "銚子電鉄がカタトトと走るレトロな走行音", titleEn: "Choshi Electric Railway Retro Train", desc: "キャベツ畑の中をのんびりと走り抜けるレトロな電車の音です。", descEn: "Chugging retro train sounds clattering gently through countryside.", image: "https://symphony100.github.io/symphony/soundmap/choshi.jpg", audio: "https://symphony100.github.io/symphony/soundmap/choshi.mp3" }
-      ]},
-      "13": { nameJp: "東京都", nameEn: "Tokyo", cities: [
-        { cityName: "台東区（浅草）", cityNameEn: "Asakusa, Taito", relX: 0.7, relY: 0.35, dx: 45, dy: -10, title: "三社祭の熱気あふれる神輿の威勢の良い掛け声", titleEn: "Sanja Matsuri Shrine Chants", desc: "「ソイヤ！ソイヤ！」と浅草の街を揺らすお祭り音です。", descEn: "Energetic 'Soiya!' chants carrying Mikoshi shrines in Asakusa.", image: "https://symphony100.github.io/symphony/soundmap/asakusa.jpg", audio: "https://symphony100.github.io/symphony/soundmap/asakusa.mp3" }
-      ]},
-      "14": { nameJp: "神奈川県", nameEn: "Kanagawa", cities: [
-        { cityName: "横浜市", cityNameEn: "Yokohama City", relX: 0.65, relY: 0.35, dx: 45, dy: -10, title: "横浜港の船が一斉に鳴らす汽笛（ウーという長笛）の音", titleEn: "Yokohama Port Ship Horn Whistles", desc: "港に停泊する大型船が一斉にウーと深く響かせる汽笛音です。", descEn: "Deep resounding ship horns echoing across Yokohama Harbor.", image: "https://symphony100.github.io/symphony/soundmap/yokohama.jpg", audio: "https://symphony100.github.io/symphony/soundmap/yokohama.mp3" }
-      ]},
-      "15": { nameJp: "新潟県", nameEn: "Niigata", cities: [
-        { cityName: "長岡市", cityNameEn: "Nagaoka City", relX: 0.45, relY: 0.6, dx: -45, dy: 10, title: "長岡まつり大花火大会の「ドーン！」と腹に響く破裂音", titleEn: "Nagaoka Fireworks Explosions", desc: "正三尺玉がお腹の底までドンと響き渡る大破裂音です。", descEn: "Massive fireworks exploding high, echoing deep in your chest.", image: "https://symphony100.github.io/symphony/soundmap/nagaoka.jpg", audio: "https://symphony100.github.io/symphony/soundmap/nagaoka.mp3" }
-      ]},
-      "17": { nameJp: "石川県", nameEn: "Ishikawa", cities: [
-        { cityName: "金沢市", cityNameEn: "Kanazawa City", relX: 0.4, relY: 0.65, dx: -45, dy: 10, title: "金箔押し職人が木槌でポンポンと紙を叩く音", titleEn: "Kanazawa Gold Leaf Hammering", desc: "1万分の1ミリまで箔を打ち伸ばす叩く音です。", descEn: "Rhythmic tapping sound of pounding gold leaf to thin perfection.", image: "https://symphony100.github.io/symphony/soundmap/kanazawa.jpg", audio: "https://symphony100.github.io/symphony/soundmap/kanazawa.mp3" }
-      ]},
-      "18": { nameJp: "福井県", nameEn: "Fukui", cities: [
-        { cityName: "越前市", cityNameEn: "Echizen City", relX: 0.45, relY: 0.55, dx: 45, dy: -10, title: "越前打刃物の鍛冶場で金槌が鉄を打つ「カン！カン！」という音", titleEn: "Echizen Forged Cutlery Hammering", desc: "鍛冶職人が熱い鉄を叩き伸ばす澄んだ「カン！カン！」という音です。", descEn: "Clear ringing iron strikes of blacksmiths crafting Echizen cutlery.", image: "https://symphony100.github.io/symphony/soundmap/echizen.jpg", audio: "https://symphony100.github.io/symphony/soundmap/echizen.mp3" }
-      ]},
-      "22": { nameJp: "静岡県", nameEn: "Shizuoka", cities: [
-        { cityName: "島田市", cityNameEn: "Shimada City", relX: 0.45, relY: 0.45, dx: -45, dy: -10, title: "大井川鐵道のSLが「シュッシュッポッポ」と吐く蒸気音", titleEn: "Oigawa Railway Steam Locomotive", desc: "蒸気機関車が白い蒸気を吐き出しながら進む郷愁の音です。", descEn: "Nostalgic steam train chugging through lush tea hills.", image: "https://symphony100.github.io/symphony/soundmap/shimada.jpg", audio: "https://symphony100.github.io/symphony/soundmap/shimada.mp3" }
-      ]},
-      "26": { nameJp: "京都府", nameEn: "Kyoto", cities: [
-        { cityName: "京都市", cityNameEn: "Kyoto City", relX: 0.55, relY: 0.6, dx: 45, dy: 10, title: "祇園祭のコンチキチン（祇園囃子）の涼しげな音", titleEn: "Kyoto Gion Festival Chimes", desc: "鉦と太鼓、笛が織りなす京都の夏を象徴する風情あふれる音です。", descEn: "Refining gong and bell chimes signifying Kyoto summer.", image: "https://symphony100.github.io/symphony/soundmap/kyoto.jpg", audio: "https://symphony100.github.io/symphony/soundmap/kyoto.mp3" }
-      ]},
-      "27": { nameJp: "大阪府", nameEn: "Osaka", cities: [
-        { cityName: "大阪市", cityNameEn: "Osaka City", relX: 0.45, relY: 0.35, dx: -45, dy: 0, title: "天神祭の「打ちましょ（タパン）もひとつセ（タパン）」の手締め", titleEn: "Osaka Tenjin Festival Clapping", desc: "「打ちましょ（タパン）もひとつセ（タパン）」の手締め音です。", descEn: "Synchronized celebratory clapping rhythm during Tenjin Festival.", image: "https://symphony100.github.io/symphony/soundmap/osaka.jpg", audio: "https://symphony100.github.io/symphony/soundmap/osaka.mp3" }
-      ]},
-      "36": { nameJp: "徳島県", nameEn: "Tokushima", cities: [
-        { cityName: "徳島市", cityNameEn: "Tokushima City", relX: 0.7, relY: 0.45, dx: 45, dy: -10, title: "阿波踊りの賑やかな「ぞめき」囃子（鉦、太鼓、笛）", titleEn: "Awa Odori Dance Zomeki Rhythm", desc: "鉦、太鼓、笛が打ち鳴らされる、四百年続く情熱の祭り音です。", descEn: "Bustling traditional festival music driving the 400-year-old Awa Dance.", image: "https://symphony100.github.io/symphony/soundmap/tokushima.jpg", audio: "https://symphony100.github.io/symphony/soundmap/tokushima.mp3" }
-      ]},
-      "40": { nameJp: "福岡県", nameEn: "Fukuoka", cities: [
-        { cityName: "福岡市", cityNameEn: "Fukuoka City", relX: 0.35, relY: 0.45, dx: -45, dy: 0, title: "博多祇園山笠の「オイサ！オイサ！」という威勢の良い掛け声", titleEn: "Hakata Gion Yamakasa Oisa Chants", desc: "山笠を担ぎ街を全力で駆け抜ける山笠男たちの掛け声です。", descEn: "Shouting 'Oisa!' as runners carry giant floats through Hakata streets.", image: "https://symphony100.github.io/symphony/soundmap/fukuoka.jpg", audio: "https://symphony100.github.io/symphony/soundmap/fukuoka.mp3" }
-      ]},
-      "47": { nameJp: "沖縄県", nameEn: "Okinawa", cities: [
-        { cityName: "那覇市", cityNameEn: "Naha City", relX: 0.35, relY: 0.65, dx: 45, dy: 0, title: "国際通りや首里城周辺の三線「ツンツンテン」の音色", titleEn: "Kokusai Street Sanshin Music", desc: "南国の温かい風に乗って聞こえてくる三線の音色です。", descEn: "Melodic tropical tunes of Okinawan Sanshin lute echoing in Naha.", image: "https://symphony100.github.io/symphony/soundmap/naha.jpg", audio: "https://symphony100.github.io/symphony/soundmap/naha.mp3" }
-      ]}
-    };
-
-    let externalData = Object.assign({}, localFallbackData);
-
-    const regionGroups = {
-      hokkaido_tohoku: { name: "北海道・東北", codes: ["1","2","3","4","5","6","7"] },
-      kanto: { name: "関東地方", codes: ["8","9","10","11","12","13","14"] },
-      chubu: { name: "中部地方", codes: ["15","16","17","18","19","20","21","22","23"] },
-      kansai: { name: "近畿地方", codes: ["24","25","26","27","28","29","30"] },
-      chugoku: { name: "中国地方", codes: ["31","32","33","34","35"] },
-      shikoku: { name: "四国地方", codes: ["36","37","38","39"] },
-      kyushu_okinawa: { name: "九州・沖縄", codes: ["40","41","42","43","44","45","46","47"] }
-    };
+    let externalData = {};
 
     let appConfig = JSON.parse(localStorage.getItem('soundmap_settings') || JSON.stringify({
       mode: 'standard',
@@ -1073,19 +941,6 @@
       redirectUrl: 'https://symphony100.github.io/symphony/soundmap/',
       autoResetOnLoad: false
     }));
-
-    let prefVisibilityMap = JSON.parse(localStorage.getItem('soundmap_pref_visibility') || '{}');
-
-    // URLクエリパラメータによる同期チェック (?v=...)
-    const urlParams = new URLSearchParams(window.location.search);
-    const syncParam = urlParams.get('v');
-    if (syncParam) {
-      try {
-        const decoded = JSON.parse(decodeURIComponent(atob(syncParam)));
-        prefVisibilityMap = decoded;
-        localStorage.setItem('soundmap_pref_visibility', JSON.stringify(prefVisibilityMap));
-      } catch (e) {}
-    }
 
     function getPref(code) {
       const codeStr = String(parseInt(code, 10));
@@ -1103,7 +958,7 @@
       },
       en: { 
         title: "Sound Map", backAll: "Reset Map", loading: "Loading Map Data...",
-        lblTutorial: "Guide", lblFav: "Favorites", lblQuiz: "Quiz",
+        lblTutorial: "Guide", lblFav: "Favorites", lblQuiz: "Quiz", lblSource: "Sources",
         addFav: "Add to Favorites", removeFav: "Remove Favorite",
         progress: "Discovered {count} / 47 Prefectures! ({pct}%)",
         noFav: "No favorite sound saved yet."
@@ -1146,13 +1001,15 @@
 
       updateProgress();
 
+      // サーバー上の data.json からデータを自動同期取得
       try {
         const dataRes = await fetch(DATA_URL);
         if (dataRes.ok) {
-          const remoteJson = await dataRes.json();
-          externalData = Object.assign(localFallbackData, remoteJson);
+          externalData = await dataRes.json();
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn("data.json 取得エラー", e);
+      }
 
       try {
         const res = await fetch('https://cdn.jsdelivr.net/gh/geolonia/japanese-prefectures@master/map-polygon.svg');
@@ -1173,7 +1030,6 @@
         svgMapElement.appendChild(cityMarkersGroup);
 
         initMapElements();
-        buildRegionToggleListUI();
 
       } catch (e) {
         const loadingBox = document.getElementById('loadingBox');
@@ -1181,7 +1037,7 @@
       }
     });
 
-    // 地図初期化（全県統一水色）
+    // 地図初期化 (data.jsonの内容を自動判定して全デバイス完全同期)
     function initMapElements() {
       if (!svgMapElement) return;
       const prefs = svgMapElement.querySelectorAll('.prefecture');
@@ -1190,9 +1046,8 @@
         const code = p.getAttribute('data-code');
         const data = getPref(code);
         
-        const isDataValid = data && (data.enabled !== false) && (data.cities && data.cities.length > 0);
-        const isEnabled = (prefVisibilityMap[code] !== false);
-        const isActive = isDataValid && isEnabled;
+        // data.json にデータが存在し、enabled が false でない県を自動的に水色・有効化
+        const isActive = data && (data.enabled !== false) && (data.cities && data.cities.length > 0);
 
         if (isActive) {
           p.style.fill = "#81d4fa";
@@ -1213,96 +1068,6 @@
             openDevModal(p.getAttribute('data-name') || "都道府県");
           };
         }
-      });
-    }
-
-    function buildRegionToggleListUI() {
-      const container = document.getElementById('regionToggleListContainer');
-      container.innerHTML = "";
-
-      Object.keys(regionGroups).forEach(rKey => {
-        const rGroup = regionGroups[rKey];
-        const allOn = rGroup.codes.every(c => prefVisibilityMap[c] !== false);
-
-        const rBox = document.createElement('div');
-        rBox.className = 'region-toggle-box';
-
-        const rHdr = document.createElement('div');
-        rHdr.className = 'region-hdr';
-        rHdr.innerHTML = `
-          <span>${rGroup.name} (一括)</span>
-          <label class="toggle-ui">
-            <input type="checkbox" id="regToggle_${rKey}" ${allOn ? 'checked' : ''} onchange="onRegionToggleChange('${rKey}', this.checked)">
-            <span class="toggle-slider"></span>
-          </label>
-        `;
-        rBox.appendChild(rHdr);
-
-        const rPrefs = document.createElement('div');
-        rPrefs.className = 'region-prefs';
-
-        rGroup.codes.forEach(code => {
-          const pData = externalData[code] || { nameJp: `県コード ${code}` };
-          const isEnabled = (prefVisibilityMap[code] !== false);
-
-          const item = document.createElement('div');
-          item.className = 'pref-item';
-          item.innerHTML = `
-            <span>${pData.nameJp}</span>
-            <label class="toggle-ui">
-              <input type="checkbox" class="pref-chk-${rKey}" data-code="${code}" ${isEnabled ? 'checked' : ''} onchange="onPrefToggleChange('${code}', '${rKey}', this.checked)">
-              <span class="toggle-slider"></span>
-            </label>
-          `;
-          rPrefs.appendChild(item);
-        });
-
-        rBox.appendChild(rPrefs);
-        container.appendChild(rBox);
-      });
-    }
-
-    function onRegionToggleChange(rKey, checked) {
-      const rGroup = regionGroups[rKey];
-      if (!rGroup) return;
-
-      rGroup.codes.forEach(code => {
-        prefVisibilityMap[code] = checked;
-      });
-
-      document.querySelectorAll(`.pref-chk-${rKey}`).forEach(chk => {
-        chk.checked = checked;
-      });
-
-      savePrefVisibility();
-    }
-
-    function onPrefToggleChange(code, rKey, checked) {
-      prefVisibilityMap[code] = checked;
-      
-      const rGroup = regionGroups[rKey];
-      if (rGroup) {
-        const allOn = rGroup.codes.every(c => prefVisibilityMap[c] !== false);
-        const regToggle = document.getElementById(`regToggle_${rKey}`);
-        if (regToggle) regToggle.checked = allOn;
-      }
-
-      savePrefVisibility();
-    }
-
-    function savePrefVisibility() {
-      localStorage.setItem('soundmap_pref_visibility', JSON.stringify(prefVisibilityMap));
-      initMapElements();
-    }
-
-    // 全端末同期用URLのコピー
-    function copySyncedShareUrl() {
-      const b64 = btoa(encodeURIComponent(JSON.stringify(prefVisibilityMap)));
-      const shareUrl = `${window.location.origin}${window.location.pathname}?v=${b64}`;
-      navigator.clipboard.writeText(shareUrl).then(() => {
-        const notice = document.getElementById('copyNoticeTxt');
-        notice.style.display = 'block';
-        setTimeout(() => { notice.style.display = 'none'; }, 2500);
       });
     }
 
@@ -1573,13 +1338,11 @@
       quizItems = [];
 
       Object.keys(externalData).forEach(code => {
-        const isEnabled = (prefVisibilityMap[code] !== false);
-        if (!isEnabled) return;
-
         const p = externalData[code];
-        if (p.cities && p.cities.length > 0) {
-          quizItems.push({ code, prefName: p.nameJp, city: p.cities[0] });
-        }
+        const isEnabled = p && (p.enabled !== false) && (p.cities && p.cities.length > 0);
+        if (!isEnabled) return; // 非表示県は完全除外
+
+        quizItems.push({ code, prefName: p.nameJp, city: p.cities[0] });
       });
 
       if (quizItems.length === 0) return;
@@ -1712,7 +1475,7 @@
       });
     }
 
-    /* 4マスPIN入力 */
+    /* 4マスPIN入力 (1234 自動認証) */
     function openPinModal() {
       for (let i = 0; i < 4; i++) {
         const inp = document.getElementById(`pin${i}`);
