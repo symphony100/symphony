@@ -46,7 +46,7 @@
     /* ヘッダー */
     header {
       padding: 0 16px;
-      height: 54px;
+      height: 52px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -217,6 +217,7 @@
       object-fit: contain;
     }
 
+    /* 地図のスタイル */
     .geolonia-svg-map .prefecture {
       stroke: #ffffff;
       stroke-width: 1.2;
@@ -232,7 +233,7 @@
     }
     .geolonia-svg-map.has-active .prefecture:not(.active) { opacity: 0.35; }
 
-    /* ピン＆引き出し線 */
+    /* ピン＆ラベル */
     .city-pin-dot { fill: var(--main-blue); stroke: #ffffff; stroke-width: 1.5; }
     .city-line { stroke: var(--main-blue); stroke-width: 1.2; stroke-dasharray: 2, 2; }
     .city-label-bg {
@@ -522,7 +523,7 @@
     .set-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .set-input { padding: 5px 8px; border: 1px solid var(--border-line); border-radius: 6px; font-size: 0.82rem; width: 100%; }
 
-    /* 地方別＆都道府県別トグルUI */
+    /* 地方別＆都道府県別トグルリスト */
     .region-toggle-box {
       border: 1px solid var(--border-line);
       border-radius: 8px;
@@ -742,13 +743,11 @@
           <div id="quizChoiceGrid" class="quiz-grid"></div>
         </div>
 
-        <!-- 巨大エフェクト -->
         <div id="giantEffectBox" class="giant-effect-box">
           <span id="giantIcon" class="material-symbols-outlined giant-icon">check_circle</span>
           <div id="giantTitle" style="font-size:1.25rem; font-weight:900;"></div>
         </div>
 
-        <!-- 解説 -->
         <div id="quizExpBox" class="quiz-exp-box">
           <div style="font-weight:700; font-size:0.92rem; margin-bottom:2px;" id="quizExpTitle"></div>
           <div style="font-size:0.82rem; color:var(--text-muted); line-height:1.45;" id="quizExpDesc"></div>
@@ -860,7 +859,6 @@
           </div>
         </div>
 
-        <!-- 地方別一括 ＆ 都道府県別ON/OFFリスト -->
         <div class="set-group">
           <div style="font-weight:700; font-size:0.85rem; margin-bottom:2px;">地方・都道府県の解放設定</div>
           <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;">地方一括または県個別に表示ON/OFFを設定</div>
@@ -932,28 +930,6 @@
       kyushu_okinawa: { name: "九州・沖縄", codes: ["40","41","42","43","44","45","46","47"] }
     };
 
-    const regionColorMap = {
-      hokkaido_tohoku: "#e0f2fe",
-      kanto: "#e0f2fe",
-      chubu: "#e0f2fe",
-      kansai: "#e0f2fe",
-      chugoku: "#e0f2fe",
-      shikoku: "#e0f2fe",
-      kyushu_okinawa: "#e0f2fe"
-    };
-
-    function getRegionKey(codeStr) {
-      const code = parseInt(codeStr, 10);
-      if (code >= 1 && code <= 7) return "hokkaido_tohoku";
-      if (code >= 8 && code <= 14) return "kanto";
-      if (code >= 15 && code <= 23) return "chubu";
-      if (code >= 24 && code <= 30) return "kansai";
-      if (code >= 31 && code <= 35) return "chugoku";
-      if (code >= 36 && code <= 39) return "shikoku";
-      if (code >= 40 && code <= 47) return "kyushu_okinawa";
-      return "kanto";
-    }
-
     let appConfig = JSON.parse(localStorage.getItem('soundmap_settings') || JSON.stringify({
       mode: 'standard',
       enableIdleRedirect: false,
@@ -1010,13 +986,12 @@
     let favList = JSON.parse(localStorage.getItem('otomap_favorites') || '[]');
 
     window.addEventListener('DOMContentLoaded', async () => {
-      // 展示モード時はリロード時に毎回初期化＆チュートリアルを表示
+      // モードに応じた初期化とチュートリアル表示判定
       if (appConfig.mode === 'exhibition') {
         doneSet.clear();
         localStorage.setItem('otomap_discovered', '[]');
         setTimeout(() => openTutorial(), 350);
       } else {
-        // 通常モード時は一番最初のアクセス時のみ1回だけチュートリアル
         if (!localStorage.getItem('otomap_visited')) {
           setTimeout(() => openTutorial(), 350);
           localStorage.setItem('otomap_visited', 'true');
@@ -1029,7 +1004,7 @@
         const dataRes = await fetch(DATA_URL);
         externalData = await dataRes.json();
       } catch (e) {
-        console.warn("data.jsonの取得に失敗しました", e);
+        console.warn("data.json 取得エラー", e);
       }
 
       try {
@@ -1059,7 +1034,7 @@
       }
     });
 
-    // 地図初期化 (data.jsonを正として判定し全デバイス同期)
+    // 地図初期化
     function initMapElements() {
       if (!svgMapElement) return;
       const prefs = svgMapElement.querySelectorAll('.prefecture');
@@ -1068,10 +1043,9 @@
         const code = p.getAttribute('data-code');
         const data = getPref(code);
         
-        // data.json 内の設定(enabled !== false)を正として判定
-        const isJsonEnabled = data && (data.enabled !== false) && (data.cities && data.cities.length > 0);
+        const isJsonValid = data && (data.enabled !== false) && (data.cities && data.cities.length > 0);
         const isLocalEnabled = (prefVisibilityMap[code] !== false);
-        const isActive = isJsonEnabled && isLocalEnabled;
+        const isActive = isJsonValid && isLocalEnabled;
 
         if (isActive) {
           p.style.fill = "#81d4fa";
@@ -1290,7 +1264,7 @@
 
         const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
         line.setAttribute("x1", px); line.setAttribute("y1", py);
-        line.setAttribute("x2", lx); line.setAttribute("y2", ly);
+        line.setAttribute("x2", labelX); line.setAttribute("y2", labelY);
         line.setAttribute("class", "city-line");
 
         const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -1431,7 +1405,7 @@
 
     function closeFavModal() { document.getElementById('favModal').classList.remove('open'); }
 
-    /* 全問連続クイズ (巨大 〇・✕ エフェクト付き) */
+    /* 全問連続クイズ */
     function startQuiz() {
       stopAllSounds();
       quizItems = [];
@@ -1573,7 +1547,7 @@
       });
     }
 
-    /* PIN入力モーダル */
+    /* PIN入力 */
     function openPinModal() {
       for (let i = 0; i < 4; i++) {
         const inp = document.getElementById(`pin${i}`);
@@ -1654,7 +1628,7 @@
       closeSettingsModal();
     }
 
-    /* 音声再生 (終了5秒前フェードアウト) */
+    /* 音声再生 */
     function startAudioLoop(url) {
       stopAllSounds();
       function run() {
