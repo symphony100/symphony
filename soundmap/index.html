@@ -13,12 +13,13 @@
   <style>
     :root {
       --main-blue: #0288d1;
-      --blue-light: #e0f7fa;
-      --yellow-btn: #ffc107;
+      --active-blue: #81d4fa;
+      --light-blue: #e0f7fa;
+      --btn-amber: #ffc107;
       --bg-color: #f8fafc;
       --card-bg: #ffffff;
-      --text-color: #0f172a;
-      --sub-text: #64748b;
+      --text-dark: #0f172a;
+      --text-muted: #64748b;
       --border-line: #e2e8f0;
     }
 
@@ -30,7 +31,12 @@
       overflow: hidden;
       font-family: 'Noto Sans JP', sans-serif;
       background: var(--bg-color);
-      color: var(--text-color);
+      color: var(--text-dark);
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
     }
 
     .material-symbols-outlined {
@@ -39,10 +45,10 @@
       user-select: none;
     }
 
-    /* ヘッダー周り */
+    /* ヘッダー */
     header {
       padding: 0 16px;
-      height: 56px;
+      height: 52px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -53,41 +59,39 @@
       flex-shrink: 0;
     }
 
-    .app-logo-title {
-      font-size: 1.2rem;
+    .header-title {
+      font-size: 1.18rem;
       font-weight: 900;
       color: var(--main-blue);
       letter-spacing: 0.5px;
     }
 
-    .hdr-btns {
+    .hdr-actions {
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .btn-hdr {
+    .hdr-btn {
       background: #fff;
       border: 1px solid var(--border-line);
-      color: var(--text-color);
+      color: var(--text-dark);
       padding: 5px 10px;
       border-radius: 18px;
       font-size: 0.78rem;
-      font-family: inherit;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 3px;
-      transition: all 0.2s;
     }
-    .btn-hdr:hover {
-      background: var(--blue-light);
+    .hdr-btn:hover {
+      background: var(--light-blue);
       color: var(--main-blue);
       border-color: var(--main-blue);
     }
 
-    .lang-box {
+    .lang-wrap {
       display: flex;
       align-items: center;
       gap: 4px;
@@ -95,81 +99,85 @@
       font-weight: 700;
     }
 
-    .toggle-sw {
+    .toggle-ui {
       position: relative;
       display: inline-block;
       width: 36px;
       height: 18px;
     }
-    .toggle-sw input { opacity: 0; width: 0; height: 0; }
-    .sw-slider {
+    .toggle-ui input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
       position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-      background: #cbd5e1; transition: .25s; border-radius: 18px;
+      background: #cbd5e1; transition: .2s; border-radius: 18px;
     }
-    .sw-slider:before {
+    .toggle-slider:before {
       position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px;
-      background: #fff; transition: .25s; border-radius: 50%;
+      background: #fff; transition: .2s; border-radius: 50%;
     }
-    input:checked + .sw-slider { background: var(--main-blue); }
-    input:checked + .sw-slider:before { transform: translateX(18px); }
+    input:checked + .toggle-slider { background: var(--main-blue); }
+    input:checked + .toggle-slider:before { transform: translateX(18px); }
 
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       header { padding: 0 10px; }
-      .app-logo-title { font-size: 0.95rem; }
-      .btn-hdr { padding: 4px 6px; font-size: 0.72rem; }
-      .btn-hdr .btn-txt { display: none; }
+      .header-title { font-size: 0.98rem; }
+      .hdr-btn { padding: 4px 6px; }
+      .hdr-btn .btn-txt { display: none; }
     }
 
-    /* プログレスバー */
-    .top-dash {
+    /* 進捗バー */
+    .status-bar {
       background: #fff;
       border-bottom: 1px solid var(--border-line);
       padding: 6px 16px;
+      height: 36px;
       display: flex;
       align-items: center;
       gap: 12px;
       flex-shrink: 0;
     }
 
-    .p-text { font-size: 0.82rem; font-weight: 700; }
-    .p-bg {
+    .status-txt { font-size: 0.82rem; font-weight: 700; }
+    .bar-track {
       flex: 1;
-      max-width: 260px;
-      height: 7px;
+      max-width: 280px;
+      height: 8px;
       background: #e2e8f0;
       border-radius: 4px;
       overflow: hidden;
     }
-    .p-bar {
+    .bar-fill {
       width: 0%;
       height: 100%;
       background: var(--main-blue);
       border-radius: 4px;
-      transition: width 0.4s ease;
+      transition: width 0.3s;
     }
 
-    /* メイン要素 */
-    .main-area {
+    /* メインマップエリア (完全画面内収まりレイアウト) */
+    .map-wrapper {
       flex: 1;
+      min-height: 0;
       display: flex;
       flex-direction: column;
-      padding: 8px;
+      padding: 6px;
       max-width: 1400px;
       width: 100%;
       margin: 0 auto;
     }
 
-    .map-wrapper {
+    .map-card-box {
       position: relative;
       flex: 1;
+      height: 100%;
       background: var(--card-bg);
       border: 1px solid var(--border-line);
       border-radius: 14px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.03);
       overflow: hidden;
+      display: flex;
     }
 
-    .btn_reset {
+    .back-all-btn {
       position: absolute;
       top: 10px;
       left: 10px;
@@ -177,8 +185,8 @@
       background: #fff;
       border: 1px solid var(--main-blue);
       color: var(--main-blue);
-      padding: 5px 12px;
-      border-radius: 16px;
+      padding: 6px 12px;
+      border-radius: 18px;
       font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
@@ -187,26 +195,33 @@
       gap: 3px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
-    .btn_reset.visible { display: inline-flex; }
-    .btn_reset:hover { background: var(--main-blue); color: #fff; }
+    .back-all-btn.show { display: inline-flex; }
 
-    .map_viewport {
+    .svg-container {
       width: 100%;
       height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 8px;
+      padding: 6px;
     }
 
-    .geolonia-svg-map { width: 100%; height: 100%; max-height: 750px; }
+    .geolonia-svg-map {
+      width: 100%;
+      height: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    /* 地図の色分け (水色統一) */
     .geolonia-svg-map .prefecture {
       stroke: #ffffff;
       stroke-width: 1.2;
       stroke-linejoin: round;
       transition: fill 0.2s, opacity 0.2s;
     }
-    .geolonia-svg-map .prefecture.discovered { fill: #81d4fa !important; }
+    .geolonia-svg-map .prefecture:hover { opacity: 0.85; }
+    .geolonia-svg-map .prefecture.discovered { fill: #4fc3f7 !important; }
     .geolonia-svg-map .prefecture.active {
       fill: var(--main-blue) !important;
       stroke: #ffffff !important;
@@ -214,7 +229,7 @@
     }
     .geolonia-svg-map.has-active .prefecture:not(.active) { opacity: 0.35; }
 
-    /* ピン＆ライン */
+    /* ピン＆引き出し線 */
     .city-pin-dot { fill: var(--main-blue); stroke: #ffffff; stroke-width: 1.5; }
     .city-line { stroke: var(--main-blue); stroke-width: 1.2; stroke-dasharray: 2, 2; }
     .city-label-bg {
@@ -236,39 +251,38 @@
     }
     .city-marker-group:hover .city-label-text { fill: #ffffff; }
 
-    .loading-spin {
+    .loading-box {
       position: absolute;
-      inset: 0;
-      background: var(--bg-main);
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg-color);
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--main-blue);
       font-weight: 700;
-      font-size: 0.9rem;
       z-index: 30;
     }
 
-    /* ポップアップモーダル類 */
-    .mod_bg {
+    /* ポップアップ共通 */
+    .popup-bg {
       position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.4);
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.45);
       backdrop-filter: blur(4px);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 14px;
+      padding: 12px;
       z-index: 1000;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s;
     }
-    .mod_bg.open { opacity: 1; pointer-events: auto; }
+    .popup-bg.open { opacity: 1; pointer-events: auto; }
 
-    .mod-card {
+    .mdl-wrap {
       background: #ffffff;
-      border-radius: 14px;
+      border-radius: 16px;
       box-shadow: 0 16px 36px rgba(0,0,0,0.12);
       width: 100%;
       max-width: 500px;
@@ -276,9 +290,10 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      position: relative;
     }
 
-    .mod-hdr {
+    .mdl-hdr {
       padding: 12px 16px;
       border-bottom: 1px solid var(--border-line);
       background: #f8fafc;
@@ -287,34 +302,33 @@
       align-items: center;
     }
 
-    .mod-pref-title { font-size: 1.15rem; font-weight: 900; }
-    .mod-city-title { font-size: 0.95rem; font-weight: 700; color: var(--main-blue); }
+    .mdl-title-row { display: flex; align-items: center; gap: 8px; }
+    .mdl-pref { font-size: 1.15rem; font-weight: 900; }
+    .mdl-city { font-size: 0.95rem; font-weight: 700; color: var(--main-blue); }
 
-    .close-btn {
+    .close-icon-btn {
       background: transparent;
       border: none;
-      color: var(--sub-text);
+      color: var(--text-muted);
       cursor: pointer;
       width: 28px;
       height: 28px;
-      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .close-btn:hover { background: rgba(0,0,0,0.05); }
 
-    .mod-body {
+    .mdl-body {
       padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       overflow-y: auto;
     }
 
     .fav-btn {
       background: #fff8e1;
-      border: 1px solid var(--yellow-btn);
+      border: 1px solid var(--btn-amber);
       color: #b45309;
       padding: 4px 10px;
       border-radius: 16px;
@@ -326,24 +340,23 @@
       gap: 4px;
       align-self: flex-start;
     }
-    .fav-btn.active { background: var(--yellow-btn); color: #fff; }
+    .fav-btn.active { background: var(--btn-amber); color: #fff; }
 
-    .photo-frame {
+    .photo-area {
       width: 100%;
       height: 190px;
-      border-radius: 8px;
+      border-radius: 10px;
       overflow: hidden;
-      background: var(--blue-light);
+      background: var(--light-blue);
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--main-blue);
-      font-size: 0.85rem;
       font-weight: 700;
     }
     .photo-img { width: 100%; height: 100%; object-fit: cover; }
 
-    .sound-row {
+    .sound-name-box {
       font-size: 0.95rem;
       font-weight: 700;
       display: flex;
@@ -351,82 +364,94 @@
       gap: 6px;
     }
 
-    .item-list { display: flex; flex-direction: column; gap: 6px; }
-    .item-row {
+    .fav-card-list { display: flex; flex-direction: column; gap: 8px; }
+    .fav-card-item {
       background: #f8fafc;
       border: 1px solid var(--border-line);
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 8px 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    /* 4桁PINコード入力欄 */
-    .pin-container {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin: 12px 0;
-    }
-
-    .pin-box {
-      width: 46px;
-      height: 52px;
-      font-size: 1.5rem;
-      font-weight: 900;
-      text-align: center;
-      border: 2px solid var(--border-line);
+    /* クイズ選択肢 */
+    .quiz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+    .quiz-choice-btn {
+      background: #fff;
+      border: 2px solid var(--main-blue);
+      color: var(--main-blue);
+      padding: 12px 8px;
       border-radius: 10px;
-      background: #f8fafc;
-      color: var(--main-blue);
-      outline: none;
-    }
-    .pin-box:focus {
-      border-color: var(--main-blue);
-      background: #fff;
-    }
-
-    /* Duolingo風 クイズカード演出 */
-    .duo-card {
-      padding: 16px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 800;
-      font-size: 1rem;
-      animation: slideUp 0.3s ease-out;
-    }
-    .duo-card.correct { background: #dcfce7; color: #15803d; border: 2px solid #86efac; }
-    .duo-card.wrong { background: #fee2e2; color: #b91c1c; border: 2px solid #fca5a5; }
-
-    .duo-icon {
-      font-size: 2rem !important;
-    }
-
-    @keyframes slideUp {
-      from { transform: translateY(15px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    .quiz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
-    .quiz-btn {
-      background: #fff;
-      border: 1.5px solid var(--main-blue);
-      color: var(--main-blue);
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 0.88rem;
+      font-size: 0.92rem;
       font-weight: 700;
       cursor: pointer;
+      transition: all 0.1s;
     }
-    .quiz-btn:hover { background: var(--blue-light); }
+    .quiz-choice-btn:active { transform: scale(0.98); }
 
-    /* スライド式チュートリアル */
-    .slider-container { width: 100%; overflow: hidden; }
-    .slides-track { display: flex; width: 400%; transition: transform 0.3s ease; }
-    .slide-box {
+    /* 巨大 〇・✕ エフェクト */
+    @keyframes popMarkAnim {
+      0% { transform: scale(0); opacity: 0; }
+      60% { transform: scale(1.25); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes shakeMarkAnim {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-12px); }
+      40%, 80% { transform: translateX(12px); }
+    }
+
+    .giant-effect-box {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .giant-icon {
+      font-size: 5.5rem !important;
+      font-variation-settings: 'FILL' 1;
+      margin-bottom: 8px;
+    }
+    .giant-icon.correct {
+      color: #58cc02;
+      animation: popMarkAnim 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .giant-icon.wrong {
+      color: #ff4b4b;
+      animation: popMarkAnim 0.35s, shakeMarkAnim 0.4s 0.35s;
+    }
+
+    .quiz-explanation-box {
+      display: none;
+      animation: fadeIn 0.3s ease;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px solid var(--border-line);
+      padding: 12px 14px;
+      margin-top: 8px;
+    }
+
+    .quiz-next-action {
+      margin-top: 10px;
+      background: var(--main-blue);
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    /* チュートリアル */
+    .slide-outer { width: 100%; overflow: hidden; }
+    .slide-track { display: flex; width: 400%; transition: transform 0.3s ease; }
+    .slide-page {
       width: 25%;
       padding: 8px 4px;
       display: flex;
@@ -435,70 +460,116 @@
       text-align: center;
       gap: 10px;
     }
-    .slide-icon-circle {
-      width: 50px;
-      height: 50px;
+    .slide-round-icon {
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
-      background: var(--blue-light);
+      background: var(--light-blue);
       color: var(--main-blue);
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .slide-ctrls {
+    .slide-footer-nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 10px;
-      padding-top: 10px;
+      margin-top: 8px;
+      padding-top: 8px;
       border-top: 1px solid var(--border-line);
     }
-    .dot-box { display: flex; gap: 5px; }
-    .dot-item { width: 7px; height: 7px; border-radius: 50%; background: #cbd5e1; }
-    .dot-item.active { background: var(--main-blue); width: 16px; border-radius: 4px; }
+    .dots-box { display: flex; gap: 5px; }
+    .dot-node { width: 7px; height: 7px; border-radius: 50%; background: #cbd5e1; }
+    .dot-node.active { background: var(--main-blue); width: 16px; border-radius: 4px; }
 
-    .btn-slide-nav {
+    .nav-ctrl-btn {
       background: var(--main-blue);
       color: #fff;
       border: none;
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: 14px;
       font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
     }
-    .btn-slide-nav:disabled { background: #cbd5e1; }
+    .nav-ctrl-btn:disabled { background: #cbd5e1; }
+
+    /* PIN入力 */
+    .pin-grid {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 12px 0;
+    }
+    .pin-box {
+      width: 44px;
+      height: 48px;
+      border: 2px solid var(--border-line);
+      border-radius: 8px;
+      font-size: 1.5rem;
+      text-align: center;
+      font-weight: 900;
+      background: #fff;
+      outline: none;
+    }
+    .pin-box:focus {
+      border-color: var(--main-blue);
+      box-shadow: 0 0 6px rgba(2, 136, 209, 0.2);
+    }
+    .pin-box.err { border-color: #ef4444; }
 
     /* 設定 */
-    .settings-item {
+    .set-group {
       background: #fff;
       border-radius: 10px;
       border: 1px solid var(--border-line);
       padding: 10px 12px;
       margin-bottom: 8px;
     }
-    .settings-row { display: flex; justify-content: space-between; align-items: center; }
-    .settings-inp { padding: 5px 8px; border: 1px solid var(--border-line); border-radius: 6px; font-size: 0.82rem; width: 100%; }
+    .set-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .set-input { padding: 5px 8px; border: 1px solid var(--border-line); border-radius: 6px; font-size: 0.82rem; width: 100%; }
 
-    /* 無操作タイマー用黒フィルター */
+    .pref-toggle-list {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid var(--border-line);
+      border-radius: 8px;
+      padding: 6px 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: #f8fafc;
+    }
+    .pref-toggle-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 6px;
+      background: #fff;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
     .idle-overlay {
       position: fixed;
-      inset: 0;
+      top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(15, 23, 42, 0.92);
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(6px);
       z-index: 9999;
       display: flex;
       align-items: center;
       justify-content: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s;
+      transition: opacity 0.25s;
     }
     .idle-overlay.active { opacity: 1; pointer-events: auto; }
-    .idle-box {
+    .idle-card {
       background: #fff;
-      border-radius: 18px;
+      border-radius: 16px;
       padding: 24px 18px;
       text-align: center;
       max-width: 360px;
@@ -508,316 +579,346 @@
       align-items: center;
       gap: 12px;
     }
-    .count-num { font-size: 2.5rem; font-weight: 900; color: var(--main-blue); }
   </style>
 </head>
 
-<body onclick="onUserTouch(event)" ontouchstart="onUserTouch(event)" onmousemove="onUserTouch(event)">
+<body onclick="handleUserTouch(event)" ontouchstart="handleUserTouch(event)">
 
   <header>
     <div class="header-logo">
-      <h1 class="app-logo-title" id="appTitle">さうんどまっぷ</h1>
+      <h1 class="header-title" id="headerTitle">さうんどまっぷ</h1>
     </div>
 
-    <div class="hdr-btns">
-      <button class="btn-hdr" onclick="openTutorial()">
+    <div class="hdr-actions">
+      <button class="hdr-btn" onclick="openTutorial()">
         <span class="material-symbols-outlined">help</span>
-        <span class="btn-txt" id="lblTutorial">使い方</span>
+        <span class="btn-txt" id="txtTutorial">使い方</span>
       </button>
 
-      <button class="btn-hdr" onclick="openFavs()">
+      <button class="hdr-btn" onclick="openFavModal()">
         <span class="material-symbols-outlined">star</span>
-        <span class="btn-txt" id="lblFav">お気に入り</span>
+        <span class="btn-txt" id="txtFav">お気に入り</span>
       </button>
 
-      <button class="btn-hdr" onclick="startQuiz()">
+      <button class="hdr-btn" onclick="startQuiz()">
         <span class="material-symbols-outlined">quiz</span>
-        <span class="btn-txt" id="lblQuiz">音クイズ</span>
+        <span class="btn-txt" id="txtQuiz">音クイズ</span>
       </button>
 
-      <button class="btn-hdr" onclick="openPinModal()">
+      <button class="hdr-btn" onclick="openPinModal()">
         <span class="material-symbols-outlined">settings</span>
         <span class="btn-txt">管理者設定</span>
       </button>
 
-      <div class="lang-box">
+      <div class="lang-wrap">
         <span onclick="setLang('ja')" style="cursor:pointer;">JP</span>
-        <label class="toggle-sw">
-          <input type="checkbox" id="langToggle" onchange="toggleLanguage(this.checked)">
-          <span class="sw-slider"></span>
+        <label class="toggle-ui">
+          <input type="checkbox" id="langToggle" onchange="toggleLang(this.checked)">
+          <span class="toggle-slider"></span>
         </label>
         <span onclick="setLang('en')" style="cursor:pointer;">EN</span>
       </div>
     </div>
   </header>
 
-  <div class="top-dash">
-    <span class="p-text" id="progressText">47都道府県中 0県を発見！ (0%)</span>
-    <div class="p-bg">
-      <div id="progressFill" class="p-bar"></div>
+  <div class="status-bar">
+    <span class="status-txt" id="statusText">47都道府県中 0県を発見！ (0%)</span>
+    <div class="bar-track">
+      <div id="barFill" class="bar-fill"></div>
     </div>
   </div>
 
-  <div class="main-area">
-    <div class="map-wrapper">
-      <div class="map-controls">
-        <button class="btn_reset" id="resetBtn" onclick="resetZoom()">
-          <span class="material-symbols-outlined">refresh</span>
-          <span id="resetBtnText">全国表示に戻る</span>
-        </button>
-      </div>
+  <div class="map-wrapper">
+    <div class="map-card-box">
+      <button class="back-all-btn" id="btnBackAll" onclick="resetZoom()">
+        <span class="material-symbols-outlined">refresh</span>
+        <span id="txtBackAll">全国表示に戻る</span>
+      </button>
 
-      <div class="map_viewport" id="mapContainer" onclick="onBgClick(event)">
-        <div id="loading" class="loading-spin">日本地図を読み込み中...</div>
+      <div class="svg-container" id="mapContainer" onclick="onMapBgTap(event)">
+        <div id="loadingBox" class="loading-box">地図データを取得中...</div>
       </div>
     </div>
   </div>
 
-  <!-- ① 音声詳細モーダル -->
-  <div id="soundModal" class="mod_bg" onclick="if(event.target===this) closeModal()">
-    <div class="mod-card">
-      <div class="mod-hdr">
-        <div style="display:flex; align-items:center; gap:6px;">
-          <span id="modalPref" class="mod-pref-title">徳島県</span>
-          <span id="modalCity" class="mod-city-title">徳島市</span>
+  <!-- ① 詳細モーダル -->
+  <div id="soundModal" class="popup-bg" onclick="if(event.target===this) closeModal()">
+    <div class="mdl-wrap">
+      <div class="mdl-hdr">
+        <div class="mdl-title-row">
+          <span id="modalPref" class="mdl-pref">徳島県</span>
+          <span id="modalCity" class="mdl-city">徳島市</span>
         </div>
-        <button class="close-btn" onclick="closeModal()">
+        <button class="close-icon-btn" onclick="closeModal()">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
 
-      <div class="mod-body">
-        <button id="favBtn" class="fav-btn" onclick="toggleFav()">
+      <div class="mdl-body">
+        <button id="favBtn" class="fav-btn" onclick="toggleFavCurrent()">
           <span class="material-symbols-outlined">star</span>
-          <span id="favBtnLabel">お気に入りに追加</span>
+          <span id="favBtnTxt">お気に入りに追加</span>
         </button>
 
-        <div class="photo-frame">
-          <img id="modalPhoto" class="photo-img" src="" alt="写真" style="display:none;" onerror="this.style.display='none'; document.getElementById('photoFallback').style.display='block';">
-          <span id="photoFallback">🎵 音と歴史の探訪</span>
+        <div class="photo-area">
+          <img id="modalImg" class="photo-img" src="" alt="写真" style="display:none;" onerror="this.style.display='none'; document.getElementById('photoTxt').style.display='block';">
+          <span id="photoTxt">音と歴史の探訪</span>
         </div>
 
-        <div class="sound-row">
+        <div class="sound-name-box">
           <span class="material-symbols-outlined" id="soundIcon" style="color:var(--main-blue); display:none;">equalizer</span>
           <span id="modalSoundTitle">♪ 阿波踊りの「ぞめき」囃子</span>
         </div>
         
-        <p id="modalDesc" style="font-size:0.88rem; line-height:1.6; color:var(--sub-text);"></p>
+        <p id="modalDesc" style="font-size:0.86rem; line-height:1.55; color:var(--text-sub);"></p>
         <audio id="hiddenAudio" style="display:none;"></audio>
       </div>
     </div>
   </div>
 
-  <!-- ② お気に入りモーダル -->
-  <div id="favModal" class="mod_bg" onclick="if(event.target===this) closeFavs()">
-    <div class="mod-card">
-      <div class="mod-hdr">
-        <div style="display:flex; align-items:center; gap:6px;">
-          <span class="material-symbols-outlined" style="color:var(--yellow-btn);">star</span>
-          <span class="mod-pref-title">保存したお気に入り</span>
+  <!-- ①-B 開発中案内モーダル（灰色の県タップ時） -->
+  <div id="devModal" class="popup-bg" onclick="if(event.target===this) closeDevModal()">
+    <div class="mdl-wrap" style="max-width:380px;">
+      <div class="mdl-hdr">
+        <div class="mdl-title-row">
+          <span class="material-symbols-outlined" style="color:var(--main-blue);">construction</span>
+          <span id="devModalPref" class="mdl-pref">都道府県名</span>
         </div>
-        <button class="close-btn" onclick="closeFavs()">
+        <button class="close-icon-btn" onclick="closeDevModal()">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
-      <div class="mod-body">
-        <div id="favList" class="item-list"></div>
+      <div class="mdl-body" style="text-align:center; padding:20px;">
+        <div style="font-weight:900; font-size:1.05rem; margin-bottom:6px;">現在 準備中です</div>
+        <p style="font-size:0.85rem; color:var(--text-sub); line-height:1.6;">この地域の音源と歴史解説は現在開発・準備中です。今後のアップデートをお待ちください。</p>
       </div>
     </div>
   </div>
 
-  <!-- ③ 全問連続音クイズモーダル (Duolingo風演出) -->
-  <div id="quizModal" class="mod_bg" onclick="if(event.target===this) closeQuiz()">
-    <div class="mod-card">
-      <div class="mod-hdr">
-        <div style="display:flex; align-items:center; gap:6px;">
+  <!-- ② お気に入り一覧 -->
+  <div id="favModal" class="popup-bg" onclick="if(event.target===this) closeFavModal()">
+    <div class="mdl-wrap">
+      <div class="mdl-hdr">
+        <div class="mdl-title-row">
+          <span class="material-symbols-outlined" style="color:var(--btn-amber);">star</span>
+          <span class="mdl-pref">保存したお気に入り</span>
+        </div>
+        <button class="close-icon-btn" onclick="closeFavModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="mdl-body">
+        <div id="favListWrap" class="fav-card-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ 全問連続クイズ (巨大 〇・✕ エフェクト付き) -->
+  <div id="quizModal" class="popup-bg" onclick="if(event.target===this) closeQuizModal()">
+    <div class="mdl-wrap">
+      <div class="mdl-hdr">
+        <div class="mdl-title-row">
           <span class="material-symbols-outlined" style="color:var(--main-blue);">quiz</span>
-          <span class="mod-pref-title">音クイズ (<span id="quizIdx">1</span>/<span id="quizTotal">10</span>)</span>
+          <span class="mdl-pref">音クイズ (<span id="quizIndex">1</span>/<span id="quizTotal">10</span>)</span>
         </div>
-        <button class="close-btn" onclick="closeQuiz()">
+        <button class="close-icon-btn" onclick="closeQuizModal()">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
-      <div class="mod-body">
-        <p style="font-size:0.85rem; color:var(--sub-text);">流れている音を聴いて、正解の都道府県を選ぼう！</p>
-        
-        <div class="sound-row" style="margin-top:4px;">
-          <span class="material-symbols-outlined" style="color:var(--main-blue);">volume_up</span>
-          <span id="quizSoundTitle">♪ 再生中...</span>
+
+      <div class="mdl-body">
+        <div id="quizMainSection">
+          <p style="font-size:0.85rem; color:var(--text-sub);">流れている音を聴いて、正解の都道府県を選ぼう！</p>
+          
+          <div class="sound-name-box" style="margin-top:4px;">
+            <span class="material-symbols-outlined" style="color:var(--main-blue);">volume_up</span>
+            <span id="quizTitle">♪ 再生中...</span>
+          </div>
+
+          <div id="quizChoiceGrid" class="quiz-grid"></div>
         </div>
 
-        <div id="quizOptions" class="quiz-grid"></div>
-
-        <!-- Duolingo風カード -->
-        <div id="duoCard" class="duo-card" style="display:none;">
-          <span id="duoIcon" class="material-symbols-outlined duo-icon"></span>
-          <span id="duoText"></span>
+        <!-- 巨大 〇・✕ アニメーションボックス -->
+        <div id="giantEffectBox" class="giant-effect-box">
+          <span id="giantIcon" class="material-symbols-outlined giant-icon">check_circle</span>
+          <div id="giantTitle" style="font-size:1.3rem; font-weight:900;"></div>
         </div>
-        
-        <button id="btnNextQuiz" class="btn-slide-nav" style="display:none; width:100%; margin-top:8px; padding:10px;" onclick="nextQuiz()">次の問題へ →</button>
+
+        <!-- 結果解説ボックス -->
+        <div id="quizExplanationBox" class="quiz-explanation-box">
+          <div style="font-weight:700; font-size:0.95rem; margin-bottom:4px;" id="quizExpTitle"></div>
+          <div style="font-size:0.85rem; color:var(--text-sub); line-height:1.5;" id="quizExpDesc"></div>
+          <button id="btnNextQuiz" class="quiz-next-action" onclick="goNextQuiz()">次の問題へ →</button>
+        </div>
       </div>
+
     </div>
   </div>
 
-  <!-- ④ スライド式 チュートリアルモーダル -->
-  <div id="tutorialModal" class="mod_bg" onclick="if(event.target===this) closeTutorial()">
-    <div class="mod-card">
-      <div class="mod-hdr">
-        <div style="display:flex; align-items:center; gap:6px;">
+  <!-- ④ スライド式チュートリアル -->
+  <div id="tutorialModal" class="popup-bg" onclick="if(event.target===this) closeTutorial()">
+    <div class="mdl-wrap">
+      <div class="mdl-hdr">
+        <div class="mdl-title-row">
           <span class="material-symbols-outlined" style="color:var(--main-blue);">help</span>
-          <span class="mod-pref-title">使い方・遊び方</span>
+          <span class="mdl-pref">使い方・遊び方</span>
         </div>
-        <button class="close-btn" onclick="closeTutorial()">
+        <button class="close-icon-btn" onclick="closeTutorial()">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
-      <div class="mod-body">
-        <div class="slider-container">
-          <div class="slides-track" id="slidesTrack">
-            <div class="slide-box">
-              <div class="slide-icon-circle"><span class="material-symbols-outlined" style="font-size:2rem;">location_on</span></div>
-              <div class="slide-title">1. 場所を選ぶ</div>
-              <div class="slide-desc">地図上の都道府県や気になる市町村のピンをタップしよう。</div>
+      <div class="mdl-body">
+        <div class="slide-outer">
+          <div class="slide-track" id="slideTrack">
+            <div class="slide-page">
+              <div class="slide-round-icon"><span class="material-symbols-outlined" style="font-size:1.8rem;">location_on</span></div>
+              <div style="font-weight:900; font-size:1rem;">1. 場所を選ぶ</div>
+              <div style="font-size:0.82rem; color:var(--text-sub);">地図上の都道府県や気になる市町村のピンをタップしよう。</div>
             </div>
-            <div class="slide-box">
-              <div class="slide-icon-circle"><span class="material-symbols-outlined" style="font-size:2rem;">volume_up</span></div>
-              <div class="slide-title">2. 音を聴く</div>
-              <div class="slide-desc">伝統のお祭り、職人の技、大自然の音が自動で流れます。</div>
+            <div class="slide-page">
+              <div class="slide-round-icon"><span class="material-symbols-outlined" style="font-size:1.8rem;">volume_up</span></div>
+              <div style="font-weight:900; font-size:1rem;">2. 音を聴く</div>
+              <div style="font-size:0.82rem; color:var(--text-sub);">伝統のお祭り、職人の技、大自然の音が自動で流れます。</div>
             </div>
-            <div class="slide-box">
-              <div class="slide-icon-circle"><span class="material-symbols-outlined" style="font-size:2rem;">auto_stories</span></div>
-              <div class="slide-title">3. 歴史を知る</div>
-              <div class="slide-desc">その土地に伝わる歴史や文化の解説を読めます。</div>
+            <div class="slide-page">
+              <div class="slide-round-icon"><span class="material-symbols-outlined" style="font-size:1.8rem;">auto_stories</span></div>
+              <div style="font-weight:900; font-size:1rem;">3. 歴史を知る</div>
+              <div style="font-size:0.82rem; color:var(--text-sub);">その土地に伝わる歴史や文化の解説を読めます。</div>
             </div>
-            <div class="slide-box">
-              <div class="slide-icon-circle"><span class="material-symbols-outlined" style="font-size:2rem;">check_circle</span></div>
-              <div class="slide-title">4. 記録・制覇！</div>
-              <div class="slide-desc">音を聴いた場所は自動で記録。47都道府県の全制覇を目指そう！</div>
+            <div class="slide-page">
+              <div class="slide-round-icon"><span class="material-symbols-outlined" style="font-size:1.8rem;">check_circle</span></div>
+              <div style="font-weight:900; font-size:1rem;">4. 記録・制覇！</div>
+              <div style="font-size:0.82rem; color:var(--text-sub);">音を聴いた場所は自動で記録。47都道府県の全制覇を目指そう！</div>
             </div>
           </div>
         </div>
 
-        <div class="slide-ctrls">
-          <button class="btn-slide-nav" id="btnPrevSlide" onclick="moveSlide(-1)">前へ</button>
-          <div class="dot-box" id="dotsBox">
-            <div class="dot-item active"></div><div class="dot-item"></div><div class="dot-item"></div><div class="dot-item"></div>
+        <div class="slide-footer-nav">
+          <button class="nav-ctrl-btn" id="btnPrevSlide" onclick="stepSlide(-1)">前へ</button>
+          <div class="dots-box" id="dotsBox">
+            <div class="dot-node active"></div><div class="dot-node"></div><div class="dot-node"></div><div class="dot-node"></div>
           </div>
-          <button class="btn-slide-nav" id="btnNextSlide" onclick="moveSlide(1)">次へ</button>
-          <button class="btn-slide-nav" id="btnDoneSlide" style="display:none; background:var(--yellow-btn); color:#000;" onclick="closeTutorial()">完了 (はじめる)</button>
+          <button class="nav-ctrl-btn" id="btnNextSlide" onclick="stepSlide(1)">次へ</button>
+          <button class="nav-ctrl-btn" id="btnDoneSlide" style="display:none; background:var(--btn-amber); color:#000;" onclick="closeTutorial()">完了 (はじめる)</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ⑤ 4桁PINコード入力モーダル (▢ ▢ ▢ ▢) -->
-  <div id="passModal" class="mod_bg" onclick="if(event.target===this) closePassModal()">
-    <div class="mod-card" style="max-width:340px;">
-      <div class="mod-hdr">
-        <div style="display:flex; align-items:center; gap:6px;">
+  <!-- ⑤ PIN入力モーダル -->
+  <div id="pinModal" class="popup-bg" onclick="if(event.target===this) closePinModal()">
+    <div class="mdl-wrap" style="max-width:320px;">
+      <div class="mdl-hdr">
+        <div class="mdl-title-row">
           <span class="material-symbols-outlined" style="color:var(--main-blue);">lock</span>
-          <span class="mod-pref-title">管理者パスワード</span>
+          <span class="mdl-pref">管理者確認</span>
         </div>
-        <button class="close-btn" onclick="closePassModal()">
+        <button class="close-icon-btn" onclick="closePinModal()">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
-      <div class="mod-body" style="text-align:center;">
-        <p style="font-size:0.82rem; color:var(--sub-text);">4桁の暗証番号を入力 (初期: 1234)</p>
-        
-        <div class="pin-container">
-          <input type="password" maxlength="1" class="pin-box" id="pin1" oninput="onPinInput(1)" onkeydown="onPinKey(event, 1)">
-          <input type="password" maxlength="1" class="pin-box" id="pin2" oninput="onPinInput(2)" onkeydown="onPinKey(event, 2)">
-          <input type="password" maxlength="1" class="pin-box" id="pin3" oninput="onPinInput(3)" onkeydown="onPinKey(event, 3)">
-          <input type="password" maxlength="1" class="pin-box" id="pin4" oninput="onPinInput(4)" onkeydown="onPinKey(event, 4)">
+      <div class="mdl-body" style="text-align:center;">
+        <p style="font-size:0.82rem; color:var(--text-sub);">管理者パスワードを入力してください</p>
+        <div class="pin-grid">
+          <input type="password" maxlength="1" class="pin-box" id="pin0" inputmode="numeric" oninput="handlePinInput(0)">
+          <input type="password" maxlength="1" class="pin-box" id="pin1" inputmode="numeric" oninput="handlePinInput(1)">
+          <input type="password" maxlength="1" class="pin-box" id="pin2" inputmode="numeric" oninput="handlePinInput(2)">
+          <input type="password" maxlength="1" class="pin-box" id="pin3" inputmode="numeric" oninput="handlePinInput(3)">
         </div>
-
-        <div id="passErr" style="display:none; color:#ef4444; font-size:0.8rem; font-weight:700;">パスワードが間違っています</div>
+        <div id="pinErrMsg" style="display:none; color:#ef4444; font-size:0.78rem; font-weight:700;">パスワードが違います</div>
       </div>
     </div>
   </div>
 
-  <!-- ⑥ 管理者設定モーダル (全端末ON/OFF管理 & JSON出力) -->
-  <div id="settingsModal" class="mod_bg" onclick="if(event.target===this) closeSettings()">
-    <div class="mod-card" style="background:#f1f5f9; max-width:540px;">
-      <div class="mod-hdr" style="background:#e2e8f0;">
-        <div style="display:flex; align-items:center; gap:6px;">
+  <!-- ⑥ Android風 管理者設定 -->
+  <div id="settingsModal" class="popup-bg" onclick="if(event.target===this) closeSettingsModal()">
+    <div class="mdl-wrap" style="background:#f1f5f9; max-width:500px;">
+      <div class="mdl-hdr" style="background:#e2e8f0;">
+        <div class="mdl-title-row">
           <span class="material-symbols-outlined">settings</span>
-          <span class="mod-pref-name">管理者設定 (Android Settings)</span>
+          <span class="mdl-pref">管理者設定</span>
         </div>
-        <button class="close-btn" onclick="closeSettings()">
+        <button class="close-icon-btn" onclick="closeSettingsModal()">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
 
-      <div class="mod-body">
-        <div class="settings-item">
-          <div class="settings-row">
+      <div class="mdl-body">
+        <div class="set-group">
+          <div class="set-row">
             <div>
               <div style="font-weight:700; font-size:0.88rem;">動作モード</div>
-              <div style="font-size:0.75rem; color:var(--sub-text);">標準モード / 展示モード（サイネージ）</div>
+              <div style="font-size:0.75rem; color:var(--text-sub);">展示モードで自動リダイレクトが連動</div>
             </div>
-            <select id="cfgMode" class="settings-inp" style="width:110px;" onchange="saveConfig()">
+            <select id="cfgMode" class="set-input" style="width:110px;" onchange="onModeSelectChange(this.value)">
               <option value="standard">標準モード</option>
               <option value="exhibition">展示モード</option>
             </select>
           </div>
         </div>
 
-        <div class="settings-item">
-          <div class="settings-row">
+        <div class="set-group">
+          <div style="font-weight:700; font-size:0.88rem; margin-bottom:4px;">都道府県ごとの解放設定</div>
+          <div style="font-size:0.75rem; color:var(--text-sub); margin-bottom:8px;">地域ごとに表示・選択の有効化を個別設定</div>
+          <div class="pref-toggle-list" id="prefToggleListContainer"></div>
+        </div>
+
+        <div class="set-group">
+          <div class="set-row">
             <div>
               <div style="font-weight:700; font-size:0.88rem;">無操作自動リダイレクト</div>
-              <div style="font-size:0.75rem; color:var(--sub-text);">一定時間無操作で初期画面へ移動</div>
+              <div style="font-size:0.75rem; color:var(--text-sub);">20秒操作がない場合初期画面へ遷移</div>
             </div>
-            <label class="toggle-sw">
-              <input type="checkbox" id="cfgEnableIdle" onchange="saveConfig()">
-              <span class="sw-slider"></span>
+            <label class="toggle-ui">
+              <input type="checkbox" id="cfgEnableIdle" onchange="saveAppConfig()">
+              <span class="toggle-slider"></span>
             </label>
           </div>
           <div style="margin-top:6px;">
-            <div style="font-size:0.75rem; color:var(--sub-text);">リダイレクト先URL:</div>
-            <input type="text" id="cfgRedirectUrl" class="settings-inp" onchange="saveConfig()">
+            <div style="font-size:0.75rem; color:var(--text-sub);">遷移先URL:</div>
+            <input type="text" id="cfgRedirectUrl" class="set-input" onchange="saveAppConfig()">
           </div>
         </div>
 
-        <div class="settings-item">
-          <div class="settings-row">
+        <div class="set-group">
+          <div class="set-row">
             <div>
-              <div style="font-weight:700; font-size:0.88rem;">都道府県の個別ON/OFF設定</div>
-              <div style="font-size:0.75rem; color:var(--sub-text);">準備中などの地域をトグルで制御できます</div>
+              <div style="font-weight:700; font-size:0.88rem;">アクセス時自動初期化</div>
+              <div style="font-size:0.75rem; color:var(--text-sub);">ページ読み込み時に発見記録をリセット</div>
             </div>
-            <button class="btn-hdr" onclick="downloadUpdatedJson()" style="border-color:var(--main-blue); color:var(--main-blue);">
-              <span class="material-symbols-outlined">download</span> JSON出力
-            </button>
+            <label class="toggle-ui">
+              <input type="checkbox" id="cfgAutoReset" onchange="saveAppConfig()">
+              <span class="toggle-slider"></span>
+            </label>
           </div>
         </div>
 
-        <div class="settings-item">
-          <button class="btn_reset visible" style="border-color:#ef4444; color:#ef4444; width:100%; justify-content:center;" onclick="clearUserData()">
-            <span class="material-symbols-outlined">delete</span> 発見記録・お気に入りのみ初期化
+        <div class="set-group">
+          <div style="font-size:0.78rem; color:#ef4444; margin-bottom:6px; font-weight:700; display:none;" id="clearConfirmTxt"></div>
+          <button class="hdr-btn" style="border-color:#ef4444; color:#ef4444; width:100%; justify-content:center; padding:8px;" onclick="handleResetUserData()">
+            <span class="material-symbols-outlined">delete</span> 発見記録・お気に入りを初期化
           </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 展示用 無操作タイマー用黒フィルター -->
-  <div id="idleOverlay" class="idle-overlay" onclick="onIdleTouch(event)">
-    <div class="idle-box">
+  <!-- 展示用 20秒無操作黒フィルター -->
+  <div id="idleOverlay" class="idle-overlay" onclick="onIdleBoxTap(event)">
+    <div class="idle-card">
       <div style="font-size:1.05rem; font-weight:800;">操作が確認されませんでした</div>
-      <div style="font-size:0.92rem; color:var(--sub-text);">
-        あと <span id="countSec" class="count-num">10</span> 秒後に初期画面に戻ります。
+      <div style="font-size:0.9rem; color:var(--text-sub);">
+        あと <span id="countNum" class="countdown-num" style="font-size:2.2rem; font-weight:900; color:var(--main-blue);">10</span> 秒後に初期画面に戻ります。
       </div>
-      <div style="font-size:0.78rem; color:var(--main-blue); background:var(--blue-light); padding:6px 12px; border-radius:10px;">画面をタップすると操作を再開できます</div>
+      <div style="font-size:0.78rem; color:var(--main-blue); background:var(--light-blue); padding:6px 12px; border-radius:10px;">画面をタップすると操作を再開できます</div>
     </div>
   </div>
 
   <script>
-    var current_lang = 'ja';
-    var pref_data_map = {};
+    const DATA_URL = "https://symphony100.github.io/symphony/soundmap/data.json";
+    let externalData = {};
 
-    // 管理者設定（※初期化しても絶対削除されない保護設計）
-    var app_config = JSON.parse(localStorage.getItem('soundmap_settings') || JSON.stringify({
+    let appConfig = JSON.parse(localStorage.getItem('soundmap_settings') || JSON.stringify({
       mode: 'standard',
       enableIdleRedirect: false,
       idleTimeoutSec: 20,
@@ -825,205 +926,214 @@
       autoResetOnLoad: false
     }));
 
-    function getPrefData(code) {
+    let prefVisibilityMap = JSON.parse(localStorage.getItem('soundmap_pref_visibility') || '{}');
+
+    function getPref(code) {
       const codeStr = String(parseInt(code, 10));
-      return pref_data_map[codeStr] || null;
+      return externalData[codeStr] || null;
     }
 
-    // DOM要素
-    var headerTitle = document.getElementById('headerTitle');
-    var resetBtn = document.getElementById('resetBtn');
-    var mapContainer = document.getElementById('mapContainer');
-    var loadingSpin = document.getElementById('loading');
+    let currentLang = 'ja';
+    const langDict = {
+      ja: { 
+        title: "さうんどまっぷ", backAll: "全国表示に戻る", loading: "地図データを取得中...",
+        lblTutorial: "使い方", lblFav: "お気に入り", lblQuiz: "音クイズ",
+        addFav: "お気に入りに追加", removeFav: "お気に入りから削除",
+        progress: "47都道府県中 {count}県を発見！ ({pct}%)",
+        noFav: "保存されたお気に入りはありません。"
+      },
+      en: { 
+        title: "Sound Map", backAll: "Reset Map", loading: "Loading Map Data...",
+        lblTutorial: "Guide", lblFav: "Favorites", lblQuiz: "Quiz",
+        addFav: "Add to Favorites", removeFav: "Remove Favorite",
+        progress: "Discovered {count} / 47 Prefectures! ({pct}%)",
+        noFav: "No favorite sound saved yet."
+      }
+    };
 
-    var soundModal = document.getElementById('soundModal');
-    var modalPref = document.getElementById('modalPref');
-    var modalCity = document.getElementById('modalCity');
-    var modalPhoto = document.getElementById('modalPhoto');
-    var photoFallback = document.getElementById('photoFallback');
-    var modalSoundTitle = document.getElementById('modalSoundTitle');
-    var soundIcon = document.getElementById('soundIcon');
-    var modalDesc = document.getElementById('modalDesc');
-    var hiddenAudio = document.getElementById('hiddenAudio');
-    var langToggle = document.getElementById('langToggle');
+    let svgMapElement;
+    let cityMarkersGroup;
+    let active_code;
+    let currentCityIndex = 0;
+    let base_viewbox = [0, 0, 1000, 1000];
+    let animId;
 
-    var favBtn = document.getElementById('favBtn');
-    var favBtnLabel = document.getElementById('favBtnLabel');
-    var favModal = document.getElementById('favModal');
-    var favList = document.getElementById('favList');
+    let audioContext;
+    let masterGainNode;
+    let soundLoopTimer;
 
-    var quizModal = document.getElementById('quizModal');
-    var quizIdx = document.getElementById('quizIdx');
-    var quizTotal = document.getElementById('quizTotal');
-    var quizSoundTitle = document.getElementById('quizSoundTitle');
-    var quizOptions = document.getElementById('quizOptions');
-    var duoCard = document.getElementById('duoCard');
-    var duoIcon = document.getElementById('duoIcon');
-    var duoText = document.getElementById('duoText');
-    var btnNextQuiz = document.getElementById('btnNextQuiz');
+    let idle_timer;
+    let countdown_timer;
+    let count_down_sec = 10;
+    let tutorial_slide_idx = 0;
 
-    var tutorialModal = document.getElementById('tutorialModal');
-    var progressText = document.getElementById('progressText');
-    var progressFill = document.getElementById('progressFill');
+    let quizItems = [];
+    let quiz_current_idx = 0;
 
-    var passModal = document.getElementById('passModal');
-    var settingsModal = document.getElementById('settingsModal');
-
-    var idleOverlay = document.getElementById('idleOverlay');
-    var countSec = document.getElementById('countSec');
-
-    var svgMap, cityMarkersGroup;
-    var activePrefCode = null;
-    var cur_city_idx = 0;
-    var initViewBox = [0, 0, 1000, 1000];
-    var animFrame = null;
-
-    var audioLoopTimer = null;
-    var audioCtx = null;
-    var webAudioGain = null;
-
-    var idleTimer = null;
-    var countdownTimer = null;
-    var slide_idx = 0;
-    var debug_mode = false;
-
-    var quizList = [];
-    var quizCurIdx = 0;
-
-    var discoveredSet = new Set(JSON.parse(localStorage.getItem('otomap_discovered') || '[]'));
-    var favListArray = JSON.parse(localStorage.getItem('otomap_favorites') || '[]');
+    let discovered_set = new Set(JSON.parse(localStorage.getItem('otomap_discovered') || '[]'));
+    let fav_items = JSON.parse(localStorage.getItem('otomap_favorites') || '[]');
 
     window.addEventListener('DOMContentLoaded', async () => {
-      // 念のため初期化フラグ確認
-      if (app_config.autoResetOnLoad) {
-        discoveredSet.clear();
+      if (appConfig.autoResetOnLoad) {
+        discovered_set.clear();
         localStorage.setItem('otomap_discovered', '[]');
       }
 
       resetInactivityTimer();
       updateProgress();
 
-      // data.json ロード
       try {
-        const res = await fetch('https://symphony100.github.io/symphony/soundmap/data.json');
-        pref_data_map = await res.json();
+        const dataRes = await fetch(DATA_URL);
+        externalData = await dataRes.json();
       } catch (e) {
-        // ロード失敗時はフォールバック
-      } finally {
-        if (loadingSpin) loadingSpin.style.display = 'none';
+        console.warn("データ取得エラー", e);
       }
 
-      // SVGマップ ロード
       try {
         const res = await fetch('https://cdn.jsdelivr.net/gh/geolonia/japanese-prefectures@master/map-polygon.svg');
-        const text = await res.text();
+        const svgCode = await res.text();
         
-        mapContainer.innerHTML = text;
-        svgMap = mapContainer.querySelector('.geolonia-svg-map');
+        const mapContainer = document.getElementById('mapContainer');
+        mapContainer.innerHTML = svgCode;
+        
+        const loadingBox = document.getElementById('loadingBox');
+        if (loadingBox) loadingBox.remove();
 
-        const vb = svgMap.getAttribute('viewBox');
-        if (vb) initViewBox = vb.split(' ').map(Number);
+        svgMapElement = mapContainer.querySelector('.geolonia-svg-map');
+        const vb = svgMapElement.getAttribute('viewBox');
+        if (vb) base_viewbox = vb.split(' ').map(Number);
 
         cityMarkersGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
         cityMarkersGroup.setAttribute("id", "cityMarkersGroup");
-        svgMap.appendChild(cityMarkersGroup);
+        svgMapElement.appendChild(cityMarkersGroup);
 
-        refreshMap();
+        initMapElements();
+        buildPrefToggleListUI();
+
       } catch (e) {
-        console.warn("SVGロードエラー", e);
+        const loadingBox = document.getElementById('loadingBox');
+        if (loadingBox) loadingBox.textContent = '地図の読み込みに失敗しました。';
       }
     });
 
-    // キーボード「1」でデバッグ解放（※inputフォーカス中は不発動）
-    window.addEventListener('keydown', (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    // 地図の色分け (水色統一)
+    function initMapElements() {
+      if (!svgMapElement) return;
+      const prefs = svgMapElement.querySelectorAll('.prefecture');
+      
+      prefs.forEach(p => {
+        const code = p.getAttribute('data-code');
+        const data = getPref(code);
+        const isEnabled = (prefVisibilityMap[code] !== false);
 
-      if (e.key === '1') {
-        debug_mode = !debug_mode;
-        alert(debug_mode ? "動作確認モード: 未登録の都道府県も開放しました" : "通常モードに戻りました");
-        refreshMap();
-      }
-    });
+        if (data && isEnabled) {
+          // 音源準備済みの県（統一された爽やかな水色）
+          p.style.fill = "#81d4fa";
+          p.style.cursor = "pointer";
+          if (discovered_set.has(code)) p.classList.add('discovered');
 
-    function refreshMap() {
-      if (!svgMap) return;
-      const prefs = mapContainer.querySelectorAll('.geolonia-svg-map .prefecture');
-      prefs.forEach(pref => {
-        const code = pref.getAttribute('data-code');
-        const data = getPrefData(code);
-
-        // enabled フラグチェック
-        const isEnabled = data && (data.enabled !== false);
-
-        if (isEnabled || debug_mode) {
-          pref.style.fill = "#81d4fa";
-          pref.style.cursor = "pointer";
-          if (discoveredSet.has(code)) pref.classList.add('discovered');
-
-          pref.onclick = (e) => {
+          p.onclick = (e) => {
             e.stopPropagation();
-            selectPref(code, pref);
+            onSelectPref(code, p);
           };
         } else {
-          pref.style.fill = "#e2e8f0";
-          pref.style.cursor = "not-allowed";
-          pref.onclick = null;
+          // 音源未準備の県（灰色）
+          p.style.fill = "#cbd5e1";
+          p.style.cursor = "pointer";
+          p.classList.remove('discovered');
+
+          // 灰色タップ時は「開発中案内」モーダルを表示
+          p.onclick = (e) => {
+            e.stopPropagation();
+            openDevModal(p.getAttribute('data-name') || "都道府県");
+          };
         }
       });
     }
 
-    function toggleLanguage(isEn) {
-      current_lang = isEn ? 'en' : 'ja';
-      updateLangUI();
+    function buildPrefToggleListUI() {
+      const container = document.getElementById('prefToggleListContainer');
+      container.innerHTML = "";
+
+      Object.keys(externalData).forEach(code => {
+        const p = externalData[code];
+        const isEnabled = (prefVisibilityMap[code] !== false);
+
+        const item = document.createElement('div');
+        item.className = 'pref-toggle-item';
+        item.innerHTML = `
+          <span>${p.nameJp}</span>
+          <label class="toggle-ui">
+            <input type="checkbox" ${isEnabled ? 'checked' : ''} onchange="onPrefToggleChange('${code}', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        `;
+        container.appendChild(item);
+      });
     }
 
-    function setLang(lang) {
-      current_lang = lang;
-      langToggle.checked = (lang === 'en');
-      updateLangUI();
+    function onPrefToggleChange(code, checked) {
+      prefVisibilityMap[code] = checked;
+      localStorage.setItem('soundmap_pref_visibility', JSON.stringify(prefVisibilityMap));
+      initMapElements();
     }
 
-    function updateLangUI() {
-      headerTitle.textContent = UI_TEXT[current_lang].title;
-      document.getElementById('resetBtnText').textContent = UI_TEXT[current_lang].resetBtn;
-      document.getElementById('lblTutorial').textContent = UI_TEXT[current_lang].lblTutorial;
-      document.getElementById('lblFav').textContent = UI_TEXT[current_lang].lblFav;
-      document.getElementById('lblQuiz').textContent = UI_TEXT[current_lang].lblQuiz;
+    function onModeSelectChange(val) {
+      appConfig.mode = val;
+      const enableIdle = (val === 'exhibition');
+      appConfig.enableIdleRedirect = enableIdle;
+      document.getElementById('cfgEnableIdle').checked = enableIdle;
+      saveAppConfig();
+    }
+
+    function toggleLang(isEn) {
+      currentLang = isEn ? 'en' : 'ja';
+      document.getElementById('headerTitle').textContent = langDict[currentLang].title;
+      document.getElementById('txtBackAll').textContent = langDict[currentLang].backAll;
+      document.getElementById('txtTutorial').textContent = langDict[currentLang].lblTutorial;
+      document.getElementById('txtFav').textContent = langDict[currentLang].lblFav;
+      document.getElementById('txtQuiz').textContent = langDict[currentLang].lblQuiz;
       
       updateProgress();
 
-      if (activePrefCode) {
-        const elem = mapContainer.querySelector(`.prefecture[data-code="${activePrefCode}"]`);
-        if (elem) renderPins(activePrefCode, elem);
+      if (active_code) {
+        const elem = svgMapElement.querySelector(`.prefecture[data-code="${active_code}"]`);
+        if (elem) drawPins(active_code, elem);
       }
 
-      if (soundModal.classList.contains('open') && activePrefCode !== null) {
-        updateModal(activePrefCode, cur_city_idx);
+      if (document.getElementById('soundModal').classList.contains('open') && active_code) {
+        setModalContent(active_code, currentCityIndex);
       }
+    }
+
+    function setLang(lang) {
+      currentLang = lang;
+      document.getElementById('langToggle').checked = (lang === 'en');
+      toggleLang(lang === 'en');
     }
 
     function updateProgress() {
-      const cnt = discoveredSet.size;
-      const pct = Math.round((cnt / 47) * 100);
-      progressText.textContent = UI_TEXT[current_lang].progress.replace('{count}', cnt).replace('{pct}', pct);
-      progressFill.style.width = `${pct}%`;
+      const count = discovered_set.size;
+      const pct = Math.round((count / 47) * 100);
+      document.getElementById('statusText').textContent = langDict[currentLang].progress.replace('{count}', count).replace('{pct}', pct);
+      document.getElementById('barFill').style.width = `${pct}%`;
     }
 
-    function onBgClick(e) {
+    function onMapBgTap(e) {
       if (!e.target.classList.contains('prefecture') && !e.target.closest('.city-marker-group')) {
         resetZoom();
       }
     }
 
-    function selectPref(code, elem) {
-      activePrefCode = code;
-      svgMap.classList.add('has-active');
-      mapContainer.querySelectorAll('.prefecture').forEach(p => p.classList.remove('active'));
+    function onSelectPref(code, elem) {
+      active_code = code;
+      svgMapElement.classList.add('has-active');
+      svgMapElement.querySelectorAll('.prefecture').forEach(p => p.classList.remove('active'));
       elem.classList.add('active');
 
-      resetBtn.classList.add('visible');
+      document.getElementById('btnBackAll').classList.add('show');
       zoomToPref(elem);
-      renderPins(code, elem);
+      drawPins(code, elem);
     }
 
     function zoomToPref(elem) {
@@ -1035,34 +1145,34 @@
       const targetX = (bbox.x + bbox.width / 2) - (finalDim / 2);
       const targetY = (bbox.y + bbox.height / 2) - (finalDim / 2);
 
-      animateViewBox(targetX, targetY, finalDim, finalDim);
+      animateBox(targetX, targetY, finalDim, finalDim);
     }
 
-    function animateViewBox(tx, ty, tw, th) {
-      if (animFrame) cancelAnimationFrame(animFrame);
+    function animateBox(tx, ty, tw, th) {
+      if (animId) cancelAnimationFrame(animId);
 
-      const vb = svgMap.getAttribute('viewBox').split(' ').map(Number);
+      const vb = svgMapElement.getAttribute('viewBox').split(' ').map(Number);
       const sx = vb[0], sy = vb[1], sw = vb[2], sh = vb[3];
       const start = performance.now();
 
       function step(now) {
-        const progress = Math.min((now - start) / 800, 1);
-        const ease = 1 - Math.pow(1 - progress, 3);
+        const p = Math.min((now - start) / 750, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
 
         const cx = sx + (tx - sx) * ease;
         const cy = sy + (ty - sy) * ease;
         const cw = sw + (tw - sw) * ease;
         const ch = sh + (th - sh) * ease;
 
-        svgMap.setAttribute('viewBox', `${cx} ${cy} ${cw} ${ch}`);
-        if (progress < 1) animFrame = requestAnimationFrame(step);
+        svgMapElement.setAttribute('viewBox', `${cx} ${cy} ${cw} ${ch}`);
+        if (p < 1) animId = requestAnimationFrame(step);
       }
-      animFrame = requestAnimationFrame(step);
+      animId = requestAnimationFrame(step);
     }
 
-    function renderPins(code, prefElem) {
+    function drawPins(code, prefElem) {
       cityMarkersGroup.innerHTML = "";
-      const data = getPrefData(code);
+      const data = getPref(code);
       if (!data) return;
 
       const bbox = prefElem.getBBox();
@@ -1073,7 +1183,7 @@
         const lx = px + (city.dx || 35);
         const ly = py + (city.dy || -15);
 
-        const name = current_lang === 'en' ? (city.cityNameEn || city.cityName) : city.cityName;
+        const name = currentLang === 'en' ? (city.cityNameEn || city.cityName) : city.cityName;
         const rw = name.length * 9 + 16;
         const rh = 18;
 
@@ -1103,147 +1213,161 @@
 
         g.onclick = (e) => {
           e.stopPropagation();
-          openModal(code, idx, prefElem);
+          openDetailModal(code, idx, prefElem);
         };
 
         cityMarkersGroup.appendChild(g);
       });
     }
 
-    function openModal(code, idx, prefElem) {
-      activePrefCode = code;
-      cur_city_idx = idx;
-      updateModal(code, idx, prefElem);
-      soundModal.classList.add('open');
+    function openDetailModal(code, idx, prefElem) {
+      active_code = code;
+      currentCityIndex = idx;
+      setModalContent(code, idx);
+      document.getElementById('soundModal').classList.add('open');
 
-      discoveredSet.add(code);
-      localStorage.setItem('otomap_discovered', JSON.stringify([...discoveredSet]));
+      discovered_set.add(code);
+      localStorage.setItem('otomap_discovered', JSON.stringify([...discovered_set]));
       updateProgress();
 
       if (prefElem) prefElem.classList.add('discovered');
 
-      const data = getPrefData(code);
+      const data = getPref(code);
       const city = data?.cities[idx];
-      playLoopSound(city ? city.audio : "");
+      startAudioLoop(city ? city.audio : "");
     }
 
-    function updateModal(code, idx, prefElem) {
-      const data = getPrefData(code);
+    function setModalContent(code, idx) {
+      const data = getPref(code);
       const city = data?.cities[idx];
       if (!city) return;
 
-      modalPref.textContent = current_lang === 'en' ? (data.nameEn || data.nameJp) : data.nameJp;
-      modalCity.textContent = current_lang === 'en' ? (city.cityNameEn || city.cityName) : city.cityName;
+      document.getElementById('modalPref').textContent = currentLang === 'en' ? (data.nameEn || data.nameJp) : data.nameJp;
+      document.getElementById('modalCity').textContent = currentLang === 'en' ? (city.cityNameEn || city.cityName) : city.cityName;
       
+      const modalImg = document.getElementById('modalImg');
+      const photoTxt = document.getElementById('photoTxt');
       if (city.image && city.image.trim() !== "") {
-        modalPhoto.src = city.image;
-        modalPhoto.style.display = 'block';
-        photoFallback.style.display = 'none';
+        modalImg.src = city.image;
+        modalImg.style.display = 'block';
+        photoTxt.style.display = 'none';
       } else {
-        modalPhoto.src = "";
-        modalPhoto.style.display = 'none';
-        photoFallback.style.display = 'block';
+        modalImg.src = "";
+        modalImg.style.display = 'none';
+        photoTxt.style.display = 'block';
       }
 
-      modalSoundTitle.textContent = current_lang === 'en' ? (city.titleEn || city.title) : city.title;
-      modalDesc.textContent = current_lang === 'en' ? (city.descEn || city.desc) : city.desc;
+      document.getElementById('modalSoundTitle').textContent = currentLang === 'en' ? (city.titleEn || city.title) : city.title;
+      document.getElementById('modalDesc').textContent = currentLang === 'en' ? (city.descEn || city.desc) : city.desc;
 
-      updateFavBtn();
+      updateFavBtnState();
     }
 
-    function toggleFav() {
-      if (!activePrefCode) return;
-      const data = getPrefData(activePrefCode);
-      const city = data?.cities[cur_city_idx];
+    /* 開発中モーダル（灰色タップ時） */
+    function openDevModal(prefName) {
+      document.getElementById('devModalPref').textContent = prefName;
+      document.getElementById('devModal').classList.add('open');
+    }
+    function closeDevModal() { document.getElementById('devModal').classList.remove('open'); }
+
+    function toggleFavCurrent() {
+      if (!active_code) return;
+      const data = getPref(active_code);
+      const city = data?.cities[currentCityIndex];
       if (!city) return;
 
-      const favId = `${activePrefCode}_${cur_city_idx}`;
-      const idx = favListArray.findIndex(f => f.id === favId);
+      const favId = `${active_code}_${currentCityIndex}`;
+      const idx = fav_items.findIndex(f => f.id === favId);
 
       if (idx >= 0) {
-        favListArray.splice(idx, 1);
+        fav_items.splice(idx, 1);
       } else {
-        favListArray.push({
-          id: favId, code: activePrefCode, cityIdx: cur_city_idx,
+        fav_items.push({
+          id: favId, code: active_code, cityIdx: currentCityIndex,
           prefName: data.nameJp, cityName: city.cityName, title: city.title, audio: city.audio
         });
       }
 
-      localStorage.setItem('otomap_favorites', JSON.stringify(favListArray));
-      updateFavBtn();
+      localStorage.setItem('otomap_favorites', JSON.stringify(fav_items));
+      updateFavBtnState();
     }
 
-    function updateFavBtn() {
-      const favId = `${activePrefCode}_${cur_city_idx}`;
-      const isFav = favListArray.some(f => f.id === favId);
+    function updateFavBtnState() {
+      const favId = `${active_code}_${currentCityIndex}`;
+      const isFav = fav_items.some(f => f.id === favId);
+      const favBtn = document.getElementById('favBtn');
+      const favBtnTxt = document.getElementById('favBtnTxt');
 
       if (isFav) {
         favBtn.classList.add('active');
-        favBtnLabel.textContent = UI_TEXT[current_lang].removeFav;
+        favBtnTxt.textContent = langDict[currentLang].removeFav;
       } else {
         favBtn.classList.remove('active');
-        favBtnLabel.textContent = UI_TEXT[current_lang].addFav;
+        favBtnTxt.textContent = langDict[currentLang].addFav;
       }
     }
 
-    function openFavs() {
-      favList.innerHTML = "";
-      if (favListArray.length === 0) {
-        favList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--sub-text);">${UI_TEXT[current_lang].noFav}</div>`;
+    function openFavModal() {
+      const listWrap = document.getElementById('favListWrap');
+      listWrap.innerHTML = "";
+
+      if (fav_items.length === 0) {
+        listWrap.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-muted); font-size:0.85rem;">${langDict[currentLang].noFav}</div>`;
       } else {
-        favListArray.forEach(fav => {
-          const card = document.createElement('div');
-          card.className = 'item-row';
-          card.innerHTML = `
+        fav_items.forEach(fav => {
+          const item = document.createElement('div');
+          item.className = 'fav-card-item';
+          item.innerHTML = `
             <div>
-              <div style="font-weight:700; font-size:0.88rem;">${fav.title}</div>
-              <div style="font-size:0.75rem; color:var(--sub-text);">${fav.prefName} ${fav.cityName}</div>
+              <div style="font-weight:700; font-size:0.86rem;">${fav.title}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${fav.prefName} ${fav.cityName}</div>
             </div>
-            <button class="btn-action" onclick="openModal('${fav.code}', ${fav.cityIdx}); closeFavs();">
+            <button class="hdr-btn" onclick="openDetailModal('${fav.code}', ${fav.cityIdx}); closeFavModal();">
               <span class="material-symbols-outlined" style="font-size:0.9rem;">volume_up</span> 聴く
             </button>
           `;
-          favList.appendChild(card);
+          listWrap.appendChild(item);
         });
       }
-      favModal.classList.add('open');
+      document.getElementById('favModal').classList.add('open');
     }
 
-    function closeFavs() { favModal.classList.remove('open'); }
+    function closeFavModal() { document.getElementById('favModal').classList.remove('open'); }
 
-    /* 全問連続クイズ (Duolingo風演出) */
+    /* 全問連続クイズ (巨大 〇・✕ エフェクト付き) */
     function startQuiz() {
-      stopAllSounds(); // 音重なり防止
+      stopAllSounds();
+      quizItems = [];
 
-      quizList = [];
-      Object.keys(pref_data_map).forEach(code => {
-        const p = pref_data_map[code];
+      Object.keys(externalData).forEach(code => {
+        const p = externalData[code];
         if (p.cities && p.cities.length > 0) {
-          quizList.push({ code, prefName: p.nameJp, city: p.cities[0] });
+          quizItems.push({ code, prefName: p.nameJp, city: p.cities[0] });
         }
       });
 
-      if (quizList.length === 0) return;
+      if (quizItems.length === 0) return;
 
-      quizList.sort(() => Math.random() - 0.5);
-      quizCurIdx = 0;
+      quizItems.sort(() => Math.random() - 0.5);
+      quiz_current_idx = 0;
 
-      quizTotal.textContent = quizList.length;
-      showQuizStep();
-      quizModal.classList.add('open');
+      document.getElementById('quizTotal').textContent = quizItems.length;
+      showQuizQuestion();
+      document.getElementById('quizModal').classList.add('open');
     }
 
-    function showQuizStep() {
-      stopAllSounds(); // 前問題の音を消音
+    function showQuizQuestion() {
+      stopAllSounds();
 
-      btnNextQuiz.style.display = 'none';
-      duoCard.style.display = 'none';
+      document.getElementById('quizMainSection').style.display = 'block';
+      document.getElementById('giantEffectBox').style.display = 'none';
+      document.getElementById('quizExplanationBox').style.display = 'none';
 
-      const q = quizList[quizCurIdx];
-      quizIdx.textContent = quizCurIdx + 1;
-      quizSoundTitle.textContent = q.city.title;
+      const q = quizItems[quiz_current_idx];
+      document.getElementById('quizIndex').textContent = quiz_current_idx + 1;
+      document.getElementById('quizTitle').textContent = q.city.title;
 
-      playAudio(q.city.audio);
+      playSingleSound(q.city.audio);
 
       const options = [q.prefName];
       const allNames = ["北海道", "青森県", "岩手県", "宮城県", "東京都", "神奈川県", "新潟県", "京都府", "徳島県", "沖縄県", "福岡県", "愛知県"];
@@ -1254,74 +1378,93 @@
       }
       options.sort(() => Math.random() - 0.5);
 
-      quizOptions.innerHTML = "";
+      const grid = document.getElementById('quizChoiceGrid');
+      grid.innerHTML = "";
       options.forEach(opt => {
         const btn = document.createElement('button');
-        btn.className = 'quiz-btn';
+        btn.className = 'quiz-choice-btn';
         btn.textContent = opt;
-        btn.onclick = () => checkQuiz(opt, q.prefName);
-        quizOptions.appendChild(btn);
+        btn.onclick = () => answerQuiz(opt, q.prefName, q.city);
+        grid.appendChild(btn);
       });
     }
 
-    function checkQuiz(selected, correct) {
-      stopAllSounds(); // 回答即消音
+    function answerQuiz(selected, correct, city) {
+      stopAllSounds();
 
-      duoCard.style.display = 'flex';
-      if (selected === correct) {
-        duoCard.className = "duo-card correct";
-        duoIcon.textContent = "check_circle";
-        duoText.textContent = "正解！お見事です！";
+      document.getElementById('quizMainSection').style.display = 'none';
+      const giantBox = document.getElementById('giantEffectBox');
+      const giantIcon = document.getElementById('giantIcon');
+      const giantTitle = document.getElementById('giantTitle');
+
+      giantBox.style.display = 'flex';
+
+      const isCorrect = (selected === correct);
+      if (isCorrect) {
+        giantIcon.className = 'material-symbols-outlined giant-icon correct';
+        giantIcon.textContent = 'check_circle';
+        giantTitle.textContent = '正解！素晴らしい！';
+        giantTitle.style.color = '#58a700';
       } else {
-        duoCard.className = "duo-card wrong";
-        duoIcon.textContent = "cancel";
-        duoText.textContent = `残念！正解は ${correct} でした。`;
+        giantIcon.className = 'material-symbols-outlined giant-icon wrong';
+        giantIcon.textContent = 'cancel';
+        giantTitle.textContent = '残念！不正解';
+        giantTitle.style.color = '#ea2b2b';
       }
 
-      btnNextQuiz.style.display = 'block';
-      if (quizCurIdx < quizList.length - 1) {
-        btnNextQuiz.textContent = "次の問題へ →";
-      } else {
-        btnNextQuiz.textContent = "全問終了！最初から挑戦する";
-      }
+      // 0.6秒後に解説ボックスを表示
+      setTimeout(() => {
+        const expBox = document.getElementById('quizExplanationBox');
+        document.getElementById('quizExpTitle').textContent = `${correct} （${city.cityName}）`;
+        document.getElementById('quizExpDesc').textContent = city.desc;
+        
+        const btnNext = document.getElementById('btnNextQuiz');
+        if (quiz_current_idx < quizItems.length - 1) {
+          btnNext.textContent = "次の問題へ →";
+        } else {
+          btnNext.textContent = "全問終了！もう一度挑戦する";
+        }
+
+        expBox.style.display = 'block';
+      }, 600);
     }
 
-    function nextQuiz() {
-      if (quizCurIdx < quizList.length - 1) {
-        quizCurIdx++;
-        showQuizStep();
+    function goNextQuiz() {
+      if (quiz_current_idx < quizItems.length - 1) {
+        quiz_current_idx++;
+        showQuizQuestion();
       } else {
         startQuiz();
       }
     }
 
-    function closeQuiz() {
-      quizModal.classList.remove('open');
+    function closeQuizModal() {
+      document.getElementById('quizModal').classList.remove('open');
       stopAllSounds();
     }
 
     /* チュートリアル */
     function openTutorial() {
-      slide_idx = 0;
-      updateSlideUI();
-      tutorialModal.classList.add('open');
+      tutorial_slide_idx = 0;
+      updateSlideView();
+      document.getElementById('tutorialModal').classList.add('open');
     }
 
-    function closeTutorial() { tutorialModal.classList.remove('open'); }
+    function closeTutorial() { document.getElementById('tutorialModal').classList.remove('open'); }
 
-    function moveSlide(dir) {
-      slide_idx = Math.max(0, Math.min(3, slide_idx + dir));
-      updateSlideUI();
+    function stepSlide(dir) {
+      tutorial_slide_idx = Math.max(0, Math.min(3, tutorial_slide_idx + dir));
+      updateSlideView();
     }
 
-    function updateSlideUI() {
-      document.getElementById('slidesTrack').style.transform = `translateX(-${slide_idx * 25}%)`;
-      document.getElementById('btnPrevSlide').disabled = (slide_idx === 0);
+    function updateSlideView() {
+      document.getElementById('slideTrack').style.transform = `translateX(-${tutorial_slide_idx * 25}%)`;
+      document.getElementById('btnPrevSlide').disabled = (tutorial_slide_idx === 0);
       
       const btnNext = document.getElementById('btnNextSlide');
       const btnDone = document.getElementById('btnDoneSlide');
 
-      if (slide_idx === 3) {
+      if (tutorial_slide_idx === 3) {
         btnNext.style.display = 'none';
         btnDone.style.display = 'inline-flex';
       } else {
@@ -1329,109 +1472,105 @@
         btnDone.style.display = 'none';
       }
 
-      document.querySelectorAll('#dotsBox .dot-item').forEach((d, i) => {
-        d.classList.toggle('active', i === slide_idx);
+      document.querySelectorAll('#dotsBox .dot-node').forEach((d, i) => {
+        d.classList.toggle('active', i === tutorial_slide_idx);
       });
     }
 
-    /* 4桁PIN入力パスワードモーダル (▢ ▢ ▢ ▢) */
-    function openPassModal() {
-      document.querySelectorAll('.pin-box').forEach(b => b.value = "");
-      document.getElementById('passErr').style.display = 'none';
-      passModal.classList.add('open');
-      setTimeout(() => document.getElementById('pin1').focus(), 100);
+    /* PIN入力モーダル (1234 自動判定) */
+    function openPinModal() {
+      for (let i = 0; i < 4; i++) {
+        const inp = document.getElementById(`pin${i}`);
+        inp.value = "";
+        inp.classList.remove('err');
+      }
+      document.getElementById('pinErrMsg').style.display = 'none';
+      document.getElementById('pinModal').classList.add('open');
+      setTimeout(() => document.getElementById('pin0').focus(), 150);
     }
 
-    function closePassModal() { passModal.classList.remove('open'); }
+    function closePinModal() { document.getElementById('pinModal').classList.remove('open'); }
 
-    function onPinInput(step) {
-      const cur = document.getElementById(`pin${step}`);
-      if (cur.value.length >= 1) {
-        if (step < 4) {
-          document.getElementById(`pin${step + 1}`).focus();
+    function handlePinInput(idx) {
+      const cur = document.getElementById(`pin${idx}`);
+      if (cur.value.length === 1 && idx < 3) {
+        document.getElementById(`pin${idx + 1}`).focus();
+      }
+
+      let code = "";
+      for (let i = 0; i < 4; i++) code += document.getElementById(`pin${i}`).value;
+
+      if (code.length === 4) {
+        if (code === "1234") {
+          closePinModal();
+          openSettingsModal();
         } else {
-          // 4桁全入力完了時に自動検証（エンターキー不要）
-          verify4Pin();
+          document.getElementById('pinErrMsg').style.display = 'block';
+          for (let i = 0; i < 4; i++) document.getElementById(`pin${i}`).classList.add('err');
+          setTimeout(() => {
+            for (let i = 0; i < 4; i++) {
+              const inp = document.getElementById(`pin${i}`);
+              inp.value = "";
+              inp.classList.remove('err');
+            }
+            document.getElementById('pin0').focus();
+          }, 600);
         }
       }
     }
 
-    function onPinKey(e, step) {
-      if (e.key === 'Backspace' && !e.target.value && step > 1) {
-        document.getElementById(`pin${step - 1}`).focus();
+    /* 管理者設定画面 */
+    function openSettingsModal() {
+      document.getElementById('cfgMode').value = appConfig.mode;
+      document.getElementById('cfgEnableIdle').checked = appConfig.enableIdleRedirect;
+      document.getElementById('cfgRedirectUrl').value = appConfig.redirectUrl;
+      document.getElementById('cfgAutoReset').checked = appConfig.autoResetOnLoad;
+
+      document.getElementById('clearConfirmTxt').style.display = 'none';
+      document.getElementById('settingsModal').classList.add('open');
+    }
+
+    function saveAppConfig() {
+      appConfig.mode = document.getElementById('cfgMode').value;
+      appConfig.enableIdleRedirect = document.getElementById('cfgEnableIdle').checked;
+      appConfig.redirectUrl = document.getElementById('cfgRedirectUrl').value;
+      appConfig.autoResetOnLoad = document.getElementById('cfgAutoReset').checked;
+
+      localStorage.setItem('soundmap_settings', JSON.stringify(appConfig));
+    }
+
+    function closeSettingsModal() { document.getElementById('settingsModal').classList.remove('open'); }
+
+    function handleResetUserData() {
+      const confirmTxt = document.getElementById('clearConfirmTxt');
+      if (confirmTxt.style.display === 'none') {
+        confirmTxt.style.display = 'block';
+        confirmTxt.textContent = "もう一度タップすると初期化を実行します";
+        return;
       }
+
+      localStorage.removeItem('otomap_discovered');
+      localStorage.removeItem('otomap_favorites');
+      discovered_set.clear();
+      fav_items = [];
+      updateProgress();
+      initMapElements();
+      closeSettingsModal();
     }
 
-    function verify4Pin() {
-      const pin = [1,2,3,4].map(n => document.getElementById(`pin${n}`).value).join('');
-      if (pin === "1234") {
-        closePassModal();
-        openSettings();
-      } else {
-        document.getElementById('passErr').style.display = 'block';
-        document.querySelectorAll('.pin-box').forEach(b => b.value = "");
-        document.getElementById('pin1').focus();
-      }
-    }
-
-    /* 管理者設定 (※データ全消去時も設定値は絶対保護) */
-    function openSettings() {
-      document.getElementById('cfgMode').value = app_config.mode;
-      document.getElementById('cfgEnableIdle').checked = app_config.enableIdleRedirect;
-      document.getElementById('cfgRedirectUrl').value = app_config.redirectUrl;
-      document.getElementById('cfgAutoReset').checked = app_config.autoResetOnLoad;
-
-      settingsModal.classList.add('open');
-    }
-
-    function saveConfig() {
-      app_config.mode = document.getElementById('cfgMode').value;
-      app_config.enableIdleRedirect = document.getElementById('cfgEnableIdle').checked;
-      app_config.redirectUrl = document.getElementById('cfgRedirectUrl').value;
-      app_config.autoResetOnLoad = document.getElementById('cfgAutoReset').checked;
-
-      localStorage.setItem('soundmap_settings', JSON.stringify(app_config));
-    }
-
-    function closeSettings() { settingsModal.classList.remove('open'); }
-
-    function clearUserData() {
-      if (confirm("発見記録とお気に入りのみを初期化しますか？（管理者設定は保持されます）")) {
-        localStorage.removeItem('otomap_discovered');
-        localStorage.removeItem('otomap_favorites');
-        discoveredSet.clear();
-        favListArray = [];
-        updateProgress();
-        refreshMap();
-        closeSettings();
-        alert("ユーザー記録を初期化しました。");
-      }
-    }
-
-    // JSON出力機能
-    function downloadUpdatedJson() {
-      const jsonStr = JSON.stringify(pref_data_map, null, 2);
-      const blob = new Blob([jsonStr], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = "data.json";
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    /* 音声再生（終了5秒前からのフェードアウト） */
-    function playLoopSound(url) {
+    /* 音声再生 (終了5秒前フェードアウト) */
+    function startAudioLoop(url) {
       stopAllSounds();
-      function cycle() {
-        playAudio(url);
-        audioLoopTimer = setTimeout(cycle, 24000);
+      function run() {
+        playSingleSound(url);
+        soundLoopTimer = setTimeout(run, 24000);
       }
-      cycle();
+      run();
     }
 
-    function playAudio(url) {
+    function playSingleSound(url) {
       stopAllSounds();
+      const hiddenAudio = document.getElementById('hiddenAudio');
 
       if (url && url.trim() !== "") {
         hiddenAudio.src = url;
@@ -1439,7 +1578,7 @@
         hiddenAudio.volume = 0;
 
         hiddenAudio.play().then(() => {
-          soundIcon.style.display = 'inline-block';
+          document.getElementById('soundIcon').style.display = 'inline-block';
 
           hiddenAudio.ontimeupdate = () => {
             const dur = hiddenAudio.duration;
@@ -1450,43 +1589,43 @@
             if (cur <= 1.5) {
               hiddenAudio.volume = Math.min(1.0, cur / 1.5);
             } else if (rem <= 5.0 && rem > 0) {
-              hiddenAudio.volume = Math.max(0, rem / 5.0); // 5秒前フェードアウト
+              hiddenAudio.volume = Math.max(0, rem / 5.0);
             } else {
               hiddenAudio.volume = 1.0;
             }
           };
 
-        }).catch(() => { playWebAudioFallback(); });
-      } else { playWebAudioFallback(); }
+        }).catch(() => { playToneFallback(); });
+      } else { playToneFallback(); }
     }
 
-    function playWebAudioFallback() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
+    function playToneFallback() {
+      if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioContext.state === 'suspended') audioContext.resume();
 
-      soundIcon.style.display = 'inline-block';
-      const now = audioCtx.currentTime;
-      const gain = audioCtx.createGain();
+      document.getElementById('soundIcon').style.display = 'inline-block';
+      const now = audioContext.currentTime;
+      const gain = audioContext.createGain();
 
       gain.gain.setValueAtTime(0, now);
       gain.gain.linearRampToValueAtTime(0.2, now + 1.5);
       gain.gain.setValueAtTime(0.2, now + 15);
       gain.gain.linearRampToValueAtTime(0.0001, now + 20);
 
-      gain.connect(audioCtx.destination);
-      webAudioGain = gain;
+      gain.connect(audioContext.destination);
+      masterGainNode = gain;
 
       let step = 0;
-      const tones = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];
+      const notes = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];
 
-      const interval = setInterval(() => {
-        if (!audioCtx || audioCtx.state !== 'running') return;
-        const t = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const ng = audioCtx.createGain();
+      const toneInterval = setInterval(() => {
+        if (!audioContext || audioContext.state !== 'running') return;
+        const t = audioContext.currentTime;
+        const osc = audioContext.createOscillator();
+        const ng = audioContext.createGain();
 
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(tones[step % tones.length], t);
+        osc.frequency.setValueAtTime(notes[step % notes.length], t);
         ng.gain.setValueAtTime(0.15, t);
         ng.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
 
@@ -1498,78 +1637,83 @@
       }, 550);
 
       setTimeout(() => {
-        clearInterval(interval);
-        if (soundIcon) soundIcon.style.display = 'none';
+        clearInterval(toneInterval);
+        document.getElementById('soundIcon').style.display = 'none';
       }, 20000);
     }
 
     function stopAllSounds() {
-      if (audioLoopTimer) clearTimeout(audioLoopTimer);
+      if (soundLoopTimer) clearTimeout(soundLoopTimer);
+      const hiddenAudio = document.getElementById('hiddenAudio');
       if (hiddenAudio) {
         hiddenAudio.pause();
         hiddenAudio.currentTime = 0;
         hiddenAudio.volume = 0;
         hiddenAudio.ontimeupdate = null;
       }
-      if (webAudioGain) {
+      if (masterGainNode) {
         try {
-          webAudioGain.gain.cancelScheduledValues(0);
-          webAudioGain.gain.setValueAtTime(0, audioCtx ? audioCtx.currentTime : 0);
+          masterGainNode.gain.cancelScheduledValues(0);
+          masterGainNode.gain.setValueAtTime(0, audioContext ? audioContext.currentTime : 0);
         } catch(e){}
-        webAudioGain = null;
+        masterGainNode = null;
       }
-      if (soundIcon) soundIcon.style.display = 'none';
+      document.getElementById('soundIcon').style.display = 'none';
     }
 
     function closeModal() {
-      soundModal.classList.remove('open');
+      document.getElementById('soundModal').classList.remove('open');
       stopAllSounds();
     }
 
     function resetZoom() {
-      if (svgMap) {
-        svgMap.classList.remove('has-active');
-        mapContainer.querySelectorAll('.prefecture').forEach(p => p.classList.remove('active'));
-        animateViewBox(initViewBox[0], initViewBox[1], initViewBox[2], initViewBox[3]);
+      if (svgMapElement) {
+        svgMapElement.classList.remove('has-active');
+        svgMapElement.querySelectorAll('.prefecture').forEach(p => p.classList.remove('active'));
+        animateBox(base_viewbox[0], base_viewbox[1], base_viewbox[2], base_viewbox[3]);
       }
       if (cityMarkersGroup) cityMarkersGroup.innerHTML = "";
-      resetBtn.classList.remove('visible');
+      document.getElementById('btnBackAll').classList.remove('show');
       closeModal();
-      activePrefCode = null;
+      active_code = null;
     }
 
-    /* 展示用 無操作タイマー */
-    function onUserTouch(e) {
-      clearTimeout(idleTimer);
-      clearInterval(countdownTimer);
-      idleOverlay.classList.remove('active');
+    /* 無操作タイマー */
+    function handleUserTouch(e) {
+      resetInactivityTimer();
+    }
 
-      if (app_config.enableIdleRedirect || app_config.mode === 'exhibition') {
-        idleTimer = setTimeout(startCountdown, (app_config.idleTimeoutSec || 20) * 1000);
+    function resetInactivityTimer() {
+      clearTimeout(idle_timer);
+      clearInterval(countdown_timer);
+      document.getElementById('idleOverlay').classList.remove('active');
+
+      if (appConfig.enableIdleRedirect || appConfig.mode === 'exhibition') {
+        idle_timer = setTimeout(triggerIdleOverlay, (appConfig.idleTimeoutSec || 20) * 1000);
       }
     }
 
-    function startCountdown() {
-      let sec = 10;
-      countSec.textContent = sec;
-      idleOverlay.classList.add('active');
+    function triggerIdleOverlay() {
+      count_down_sec = 10;
+      document.getElementById('countNum').textContent = count_down_sec;
+      document.getElementById('idleOverlay').classList.add('active');
 
-      countdownTimer = setInterval(() => {
-        sec--;
-        countSec.textContent = sec;
-        if (sec <= 0) {
-          clearInterval(countdownTimer);
-          window.location.href = app_config.redirectUrl || "https://symphony100.github.io/symphony/soundmap/";
+      countdown_timer = setInterval(() => {
+        count_down_sec--;
+        document.getElementById('countNum').textContent = count_down_sec;
+        if (count_down_sec <= 0) {
+          clearInterval(countdown_timer);
+          window.location.href = appConfig.redirectUrl || "https://symphony100.github.io/symphony/soundmap/";
         }
       }, 1000);
     }
 
-    function onIdleTouch(e) {
+    function onIdleBoxTap(e) {
       if (e) {
         e.preventDefault();
-        e.stopPropagation(); // 割込みタップによるボタン押下防止
+        e.stopPropagation();
       }
-      onUserTouch();
+      resetInactivityTimer();
     }
   </script>
 </body>
