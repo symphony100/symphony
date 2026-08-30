@@ -15,7 +15,7 @@
       --main-blue: #0288d1;
       --active-blue: #81d4fa;
       --light-blue: #e0f7fa;
-      --btn-amber: #ffc107;
+      --yellow-btn: #ffc107;
       --bg-color: #f8fafc;
       --card-bg: #ffffff;
       --text-dark: #0f172a;
@@ -32,9 +32,6 @@
       font-family: 'Noto Sans JP', sans-serif;
       background: var(--bg-color);
       color: var(--text-dark);
-    }
-
-    body {
       display: flex;
       flex-direction: column;
     }
@@ -48,7 +45,7 @@
     /* ヘッダー */
     header {
       padding: 0 16px;
-      height: 52px;
+      height: 54px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -59,11 +56,19 @@
       flex-shrink: 0;
     }
 
+    .app-icon {
+      width: 28px;
+      height: 28px;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
     .header-title {
-      font-size: 1.18rem;
+      font-size: 1.15rem;
       font-weight: 900;
       color: var(--main-blue);
-      letter-spacing: 0.5px;
+      display: inline-block;
+      vertical-align: middle;
     }
 
     .hdr-actions {
@@ -72,7 +77,7 @@
       gap: 6px;
     }
 
-    .hdr-btn {
+    .i-btn {
       background: #fff;
       border: 1px solid var(--border-line);
       color: var(--text-dark);
@@ -81,22 +86,19 @@
       font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 3px;
     }
-    .hdr-btn:hover {
+    .i-btn:hover {
       background: var(--light-blue);
       color: var(--main-blue);
       border-color: var(--main-blue);
     }
+    .i-btn .material-symbols-outlined { margin-right: 2px; }
 
-    .lang-wrap {
-      display: flex;
-      align-items: center;
-      gap: 4px;
+    .lang-box {
+      display: inline-block;
       font-size: 0.78rem;
       font-weight: 700;
+      vertical-align: middle;
     }
 
     .toggle-ui {
@@ -104,6 +106,8 @@
       display: inline-block;
       width: 36px;
       height: 18px;
+      vertical-align: middle;
+      margin: 0 2px;
     }
     .toggle-ui input { opacity: 0; width: 0; height: 0; }
     .toggle-slider {
@@ -118,10 +122,10 @@
     input:checked + .toggle-slider:before { transform: translateX(18px); }
 
     @media (max-width: 768px) {
-      header { padding: 0 10px; }
-      .header-title { font-size: 0.98rem; }
-      .hdr-btn { padding: 4px 6px; }
-      .hdr-btn .btn-txt { display: none; }
+      header { padding: 0 8px; }
+      .header-title { font-size: 0.95rem; }
+      .i-btn { padding: 4px 6px; }
+      .i-btn .btn-txt { display: none; }
     }
 
     /* 進捗バー */
@@ -153,7 +157,7 @@
       transition: width 0.3s;
     }
 
-    /* メインマップエリア (完全画面内収まりレイアウト) */
+    /* メインマップエリア */
     .map-wrapper {
       flex: 1;
       min-height: 0;
@@ -191,11 +195,10 @@
       font-weight: 700;
       cursor: pointer;
       display: none;
-      align-items: center;
-      gap: 3px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
-    .back-all-btn.show { display: inline-flex; }
+    .back-all-btn.show { display: inline-block; }
+    .back-all-btn .material-symbols-outlined { vertical-align: middle; margin-right: 2px; }
 
     .svg-container {
       width: 100%;
@@ -213,7 +216,6 @@
       object-fit: contain;
     }
 
-    /* 地図の色分け (水色統一) */
     .geolonia-svg-map .prefecture {
       stroke: #ffffff;
       stroke-width: 1.2;
@@ -264,7 +266,7 @@
     }
 
     /* ポップアップ共通 */
-    .popup-bg {
+    .pop-win {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(15, 23, 42, 0.45);
@@ -278,9 +280,9 @@
       pointer-events: none;
       transition: opacity 0.2s;
     }
-    .popup-bg.open { opacity: 1; pointer-events: auto; }
+    .pop-win.open { opacity: 1; pointer-events: auto; }
 
-    .mdl-wrap {
+    .pop-card {
       background: #ffffff;
       border-radius: 16px;
       box-shadow: 0 16px 36px rgba(0,0,0,0.12);
@@ -293,7 +295,7 @@
       position: relative;
     }
 
-    .mdl-hdr {
+    .pop-hdr {
       padding: 12px 16px;
       border-bottom: 1px solid var(--border-line);
       background: #f8fafc;
@@ -302,23 +304,19 @@
       align-items: center;
     }
 
-    .mdl-title-row { display: flex; align-items: center; gap: 8px; }
-    .mdl-pref { font-size: 1.15rem; font-weight: 900; }
-    .mdl-city { font-size: 0.95rem; font-weight: 700; color: var(--main-blue); }
+    .pref-title-txt { font-size: 1.15rem; font-weight: 900; }
+    .city-title-txt { font-size: 0.95rem; font-weight: 700; color: var(--main-blue); margin-left: 6px; }
 
-    .close-icon-btn {
+    .close-btn {
       background: transparent;
       border: none;
       color: var(--text-muted);
       cursor: pointer;
       width: 28px;
       height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
-    .mdl-body {
+    .pop-body {
       padding: 16px;
       display: flex;
       flex-direction: column;
@@ -328,19 +326,17 @@
 
     .fav-btn {
       background: #fff8e1;
-      border: 1px solid var(--btn-amber);
+      border: 1px solid var(--yellow-btn);
       color: #b45309;
       padding: 4px 10px;
       border-radius: 16px;
       font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
       align-self: flex-start;
     }
-    .fav-btn.active { background: var(--btn-amber); color: #fff; }
+    .fav-btn.active { background: var(--yellow-btn); color: #fff; }
+    .fav-btn .material-symbols-outlined { margin-right: 2px; }
 
     .photo-area {
       width: 100%;
@@ -356,16 +352,13 @@
     }
     .photo-img { width: 100%; height: 100%; object-fit: cover; }
 
-    .sound-name-box {
+    .sound-title-txt {
       font-size: 0.95rem;
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
+    .sound-title-txt .material-symbols-outlined { margin-right: 4px; }
 
-    .fav-card-list { display: flex; flex-direction: column; gap: 8px; }
-    .fav-card-item {
+    .fav-item {
       background: #f8fafc;
       border: 1px solid var(--border-line);
       border-radius: 10px;
@@ -373,6 +366,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 8px;
     }
 
     /* クイズ選択肢 */
@@ -386,11 +380,9 @@
       font-size: 0.92rem;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.1s;
     }
-    .quiz-choice-btn:active { transform: scale(0.98); }
 
-    /* 巨大 〇・✕ エフェクト */
+    /* 巨大 〇・✕ アニメーション */
     @keyframes popMarkAnim {
       0% { transform: scale(0); opacity: 0; }
       60% { transform: scale(1.25); opacity: 1; }
@@ -426,9 +418,8 @@
       animation: popMarkAnim 0.35s, shakeMarkAnim 0.4s 0.35s;
     }
 
-    .quiz-explanation-box {
+    .quiz-exp-box {
       display: none;
-      animation: fadeIn 0.3s ease;
       background: #f8fafc;
       border-radius: 12px;
       border: 1px solid var(--border-line);
@@ -519,7 +510,7 @@
     }
     .pin-box.err { border-color: #ef4444; }
 
-    /* 設定 */
+    /* 管理者設定 */
     .set-group {
       background: #fff;
       border-radius: 10px;
@@ -530,27 +521,38 @@
     .set-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .set-input { padding: 5px 8px; border: 1px solid var(--border-line); border-radius: 6px; font-size: 0.82rem; width: 100%; }
 
-    .pref-toggle-list {
-      max-height: 200px;
-      overflow-y: auto;
+    /* 地方別＆都道府県別トグルUI */
+    .region-toggle-box {
       border: 1px solid var(--border-line);
       border-radius: 8px;
-      padding: 6px 10px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
+      margin-bottom: 6px;
       background: #f8fafc;
+      overflow: hidden;
     }
-    .pref-toggle-item {
+    .region-hdr {
+      padding: 6px 10px;
+      background: #e2e8f0;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 4px 6px;
-      background: #fff;
-      border-radius: 6px;
-      border: 1px solid #e2e8f0;
-      font-size: 0.78rem;
       font-weight: 700;
+      font-size: 0.8rem;
+    }
+    .region-prefs {
+      padding: 6px 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+    }
+    .pref-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      background: #fff;
+      padding: 3px 6px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
     }
 
     .idle-overlay {
@@ -585,32 +587,33 @@
 <body onclick="handleUserTouch(event)" ontouchstart="handleUserTouch(event)">
 
   <header>
-    <div class="header-logo">
+    <div>
+      <img src="https://symphony100.github.io/symphony/soundmap/icon.png" class="app-icon" alt="icon" onerror="this.style.display='none'">
       <h1 class="header-title" id="headerTitle">さうんどまっぷ</h1>
     </div>
 
     <div class="hdr-actions">
-      <button class="hdr-btn" onclick="openTutorial()">
+      <button class="i-btn" onclick="openTutorial()">
         <span class="material-symbols-outlined">help</span>
         <span class="btn-txt" id="txtTutorial">使い方</span>
       </button>
 
-      <button class="hdr-btn" onclick="openFavModal()">
+      <button class="i-btn" onclick="openFavModal()">
         <span class="material-symbols-outlined">star</span>
         <span class="btn-txt" id="txtFav">お気に入り</span>
       </button>
 
-      <button class="hdr-btn" onclick="startQuiz()">
+      <button class="i-btn" onclick="startQuiz()">
         <span class="material-symbols-outlined">quiz</span>
         <span class="btn-txt" id="txtQuiz">音クイズ</span>
       </button>
 
-      <button class="hdr-btn" onclick="openPinModal()">
+      <button class="i-btn" onclick="openPinModal()">
         <span class="material-symbols-outlined">settings</span>
         <span class="btn-txt">管理者設定</span>
       </button>
 
-      <div class="lang-wrap">
+      <div class="lang-box">
         <span onclick="setLang('ja')" style="cursor:pointer;">JP</span>
         <label class="toggle-ui">
           <input type="checkbox" id="langToggle" onchange="toggleLang(this.checked)">
@@ -641,20 +644,20 @@
     </div>
   </div>
 
-  <!-- ① 詳細モーダル -->
-  <div id="soundModal" class="popup-bg" onclick="if(event.target===this) closeModal()">
-    <div class="mdl-wrap">
-      <div class="mdl-hdr">
-        <div class="mdl-title-row">
-          <span id="modalPref" class="mdl-pref">徳島県</span>
-          <span id="modalCity" class="mdl-city">徳島市</span>
+  <!-- ① 詳細ポップアップ -->
+  <div id="soundModal" class="pop-win" onclick="if(event.target===this) closeModal()">
+    <div class="pop-card">
+      <div class="pop-hdr">
+        <div>
+          <span id="modalPref" class="pref-title-txt">徳島県</span>
+          <span id="modalCity" class="city-title-txt">徳島市</span>
         </div>
-        <button class="close-icon-btn" onclick="closeModal()">
+        <button class="close-btn" onclick="closeModal()">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
 
-      <div class="mdl-body">
+      <div class="pop-body">
         <button id="favBtn" class="fav-btn" onclick="toggleFavCurrent()">
           <span class="material-symbols-outlined">star</span>
           <span id="favBtnTxt">お気に入りに追加</span>
@@ -665,72 +668,72 @@
           <span id="photoTxt">音と歴史の探訪</span>
         </div>
 
-        <div class="sound-name-box">
+        <div class="sound-title-txt">
           <span class="material-symbols-outlined" id="soundIcon" style="color:var(--main-blue); display:none;">equalizer</span>
           <span id="modalSoundTitle">♪ 阿波踊りの「ぞめき」囃子</span>
         </div>
         
-        <p id="modalDesc" style="font-size:0.86rem; line-height:1.55; color:var(--text-sub);"></p>
+        <p id="modalDesc" style="font-size:0.86rem; line-height:1.55; color:var(--text-muted);"></p>
         <audio id="hiddenAudio" style="display:none;"></audio>
       </div>
     </div>
   </div>
 
-  <!-- ①-B 開発中案内モーダル（灰色の県タップ時） -->
-  <div id="devModal" class="popup-bg" onclick="if(event.target===this) closeDevModal()">
-    <div class="mdl-wrap" style="max-width:380px;">
-      <div class="mdl-hdr">
-        <div class="mdl-title-row">
+  <!-- ①-B 開発中案内（灰色タップ時） -->
+  <div id="devModal" class="pop-win" onclick="if(event.target===this) closeDevModal()">
+    <div class="pop-card" style="max-width:360px;">
+      <div class="pop-hdr">
+        <div>
           <span class="material-symbols-outlined" style="color:var(--main-blue);">construction</span>
-          <span id="devModalPref" class="mdl-pref">都道府県名</span>
+          <span id="devModalPref" class="pref-title-txt">都道府県名</span>
         </div>
-        <button class="close-icon-btn" onclick="closeDevModal()">
+        <button class="close-btn" onclick="closeDevModal()">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
-      <div class="mdl-body" style="text-align:center; padding:20px;">
-        <div style="font-weight:900; font-size:1.05rem; margin-bottom:6px;">現在 準備中です</div>
-        <p style="font-size:0.85rem; color:var(--text-sub); line-height:1.6;">この地域の音源と歴史解説は現在開発・準備中です。今後のアップデートをお待ちください。</p>
+      <div class="pop-body" style="text-align:center; padding:16px;">
+        <div style="font-weight:900; font-size:1rem; margin-bottom:4px;">現在 準備中です</div>
+        <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.5;">この地域の音源と歴史解説は現在開発・準備中です。今後のアップデートをお待ちください。</p>
       </div>
     </div>
   </div>
 
   <!-- ② お気に入り一覧 -->
-  <div id="favModal" class="popup-bg" onclick="if(event.target===this) closeFavModal()">
-    <div class="mdl-wrap">
-      <div class="mdl-hdr">
-        <div class="mdl-title-row">
-          <span class="material-symbols-outlined" style="color:var(--btn-amber);">star</span>
-          <span class="mdl-pref">保存したお気に入り</span>
+  <div id="favModal" class="pop-win" onclick="if(event.target===this) closeFavModal()">
+    <div class="pop-card">
+      <div class="pop-hdr">
+        <div>
+          <span class="material-symbols-outlined" style="color:var(--yellow-btn);">star</span>
+          <span class="pref-title-txt">保存したお気に入り</span>
         </div>
-        <button class="close-icon-btn" onclick="closeFavModal()">
+        <button class="close-btn" onclick="closeFavModal()">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
-      <div class="mdl-body">
-        <div id="favListWrap" class="fav-card-list"></div>
+      <div class="pop-body">
+        <div id="favListWrap"></div>
       </div>
     </div>
   </div>
 
-  <!-- ③ 全問連続クイズ (巨大 〇・✕ エフェクト付き) -->
-  <div id="quizModal" class="popup-bg" onclick="if(event.target===this) closeQuizModal()">
-    <div class="mdl-wrap">
-      <div class="mdl-hdr">
-        <div class="mdl-title-row">
+  <!-- ③ 全問連続クイズ (巨大 〇・✕ エフェクト) -->
+  <div id="quizModal" class="pop-win" onclick="if(event.target===this) closeQuizModal()">
+    <div class="pop-card">
+      <div class="pop-hdr">
+        <div>
           <span class="material-symbols-outlined" style="color:var(--main-blue);">quiz</span>
-          <span class="mdl-pref">音クイズ (<span id="quizIndex">1</span>/<span id="quizTotal">10</span>)</span>
+          <span class="pref-title-txt">音クイズ (<span id="quizIndex">1</span>/<span id="quizTotal">10</span>)</span>
         </div>
-        <button class="close-icon-btn" onclick="closeQuizModal()">
+        <button class="close-btn" onclick="closeQuizModal()">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
 
-      <div class="mdl-body">
+      <div class="pop-body">
         <div id="quizMainSection">
-          <p style="font-size:0.85rem; color:var(--text-sub);">流れている音を聴いて、正解の都道府県を選ぼう！</p>
+          <p style="font-size:0.85rem; color:var(--text-muted);">流れている音を聴いて、正解の都道府県を選ぼう！</p>
           
-          <div class="sound-name-box" style="margin-top:4px;">
+          <div class="sound-title-txt" style="margin-top:4px;">
             <span class="material-symbols-outlined" style="color:var(--main-blue);">volume_up</span>
             <span id="quizTitle">♪ 再生中...</span>
           </div>
@@ -738,57 +741,56 @@
           <div id="quizChoiceGrid" class="quiz-grid"></div>
         </div>
 
-        <!-- 巨大 〇・✕ アニメーションボックス -->
+        <!-- 巨大エフェクト -->
         <div id="giantEffectBox" class="giant-effect-box">
           <span id="giantIcon" class="material-symbols-outlined giant-icon">check_circle</span>
-          <div id="giantTitle" style="font-size:1.3rem; font-weight:900;"></div>
+          <div id="giantTitle" style="font-size:1.25rem; font-weight:900;"></div>
         </div>
 
-        <!-- 結果解説ボックス -->
-        <div id="quizExplanationBox" class="quiz-explanation-box">
-          <div style="font-weight:700; font-size:0.95rem; margin-bottom:4px;" id="quizExpTitle"></div>
-          <div style="font-size:0.85rem; color:var(--text-sub); line-height:1.5;" id="quizExpDesc"></div>
+        <!-- 解説 -->
+        <div id="quizExpBox" class="quiz-exp-box">
+          <div style="font-weight:700; font-size:0.92rem; margin-bottom:2px;" id="quizExpTitle"></div>
+          <div style="font-size:0.82rem; color:var(--text-muted); line-height:1.45;" id="quizExpDesc"></div>
           <button id="btnNextQuiz" class="quiz-next-action" onclick="goNextQuiz()">次の問題へ →</button>
         </div>
       </div>
-
     </div>
   </div>
 
-  <!-- ④ スライド式チュートリアル -->
-  <div id="tutorialModal" class="popup-bg" onclick="if(event.target===this) closeTutorial()">
-    <div class="mdl-wrap">
-      <div class="mdl-hdr">
-        <div class="mdl-title-row">
+  <!-- ④ スライドチュートリアル -->
+  <div id="tutorialModal" class="pop-win" onclick="if(event.target===this) closeTutorial()">
+    <div class="pop-card">
+      <div class="pop-hdr">
+        <div>
           <span class="material-symbols-outlined" style="color:var(--main-blue);">help</span>
-          <span class="mdl-pref">使い方・遊び方</span>
+          <span class="pref-title-txt">使い方・遊び方</span>
         </div>
-        <button class="close-icon-btn" onclick="closeTutorial()">
+        <button class="close-btn" onclick="closeTutorial()">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
-      <div class="mdl-body">
+      <div class="pop-body">
         <div class="slide-outer">
           <div class="slide-track" id="slideTrack">
             <div class="slide-page">
               <div class="slide-round-icon"><span class="material-symbols-outlined" style="font-size:1.8rem;">location_on</span></div>
-              <div style="font-weight:900; font-size:1rem;">1. 場所を選ぶ</div>
-              <div style="font-size:0.82rem; color:var(--text-sub);">地図上の都道府県や気になる市町村のピンをタップしよう。</div>
+              <div style="font-weight:900; font-size:0.95rem;">1. 場所を選ぶ</div>
+              <div style="font-size:0.82rem; color:var(--text-muted);">地図上の都道府県や気になる市町村のピンをタップしよう。</div>
             </div>
             <div class="slide-page">
               <div class="slide-round-icon"><span class="material-symbols-outlined" style="font-size:1.8rem;">volume_up</span></div>
-              <div style="font-weight:900; font-size:1rem;">2. 音を聴く</div>
-              <div style="font-size:0.82rem; color:var(--text-sub);">伝統のお祭り、職人の技、大自然の音が自動で流れます。</div>
+              <div style="font-weight:900; font-size:0.95rem;">2. 音を聴く</div>
+              <div style="font-size:0.82rem; color:var(--text-muted);">伝統のお祭り、職人の技、大自然の音が自動で流れます。</div>
             </div>
             <div class="slide-page">
               <div class="slide-round-icon"><span class="material-symbols-outlined" style="font-size:1.8rem;">auto_stories</span></div>
-              <div style="font-weight:900; font-size:1rem;">3. 歴史を知る</div>
-              <div style="font-size:0.82rem; color:var(--text-sub);">その土地に伝わる歴史や文化の解説を読めます。</div>
+              <div style="font-weight:900; font-size:0.95rem;">3. 歴史を知る</div>
+              <div style="font-size:0.82rem; color:var(--text-muted);">その土地に伝わる歴史や文化の解説を読めます。</div>
             </div>
             <div class="slide-page">
               <div class="slide-round-icon"><span class="material-symbols-outlined" style="font-size:1.8rem;">check_circle</span></div>
-              <div style="font-weight:900; font-size:1rem;">4. 記録・制覇！</div>
-              <div style="font-size:0.82rem; color:var(--text-sub);">音を聴いた場所は自動で記録。47都道府県の全制覇を目指そう！</div>
+              <div style="font-weight:900; font-size:0.95rem;">4. 記録・制覇！</div>
+              <div style="font-size:0.82rem; color:var(--text-muted);">音を聴いた場所は自動で記録。47都道府県の全制覇を目指そう！</div>
             </div>
           </div>
         </div>
@@ -799,56 +801,56 @@
             <div class="dot-node active"></div><div class="dot-node"></div><div class="dot-node"></div><div class="dot-node"></div>
           </div>
           <button class="nav-ctrl-btn" id="btnNextSlide" onclick="stepSlide(1)">次へ</button>
-          <button class="nav-ctrl-btn" id="btnDoneSlide" style="display:none; background:var(--btn-amber); color:#000;" onclick="closeTutorial()">完了 (はじめる)</button>
+          <button class="nav-ctrl-btn" id="btnDoneSlide" style="display:none; background:var(--yellow-btn); color:#000;" onclick="closeTutorial()">完了 (はじめる)</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ⑤ PIN入力モーダル -->
-  <div id="pinModal" class="popup-bg" onclick="if(event.target===this) closePinModal()">
-    <div class="mdl-wrap" style="max-width:320px;">
-      <div class="mdl-hdr">
-        <div class="mdl-title-row">
+  <!-- ⑤ PIN入力 -->
+  <div id="pinModal" class="pop-win" onclick="if(event.target===this) closePinModal()">
+    <div class="pop-card" style="max-width:300px;">
+      <div class="pop-hdr">
+        <div>
           <span class="material-symbols-outlined" style="color:var(--main-blue);">lock</span>
-          <span class="mdl-pref">管理者確認</span>
+          <span class="pref-title-txt">管理者確認</span>
         </div>
-        <button class="close-icon-btn" onclick="closePinModal()">
+        <button class="close-btn" onclick="closePinModal()">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
-      <div class="mdl-body" style="text-align:center;">
-        <p style="font-size:0.82rem; color:var(--text-sub);">管理者パスワードを入力してください</p>
+      <div class="pop-body" style="text-align:center;">
+        <p style="font-size:0.8rem; color:var(--text-muted);">管理者パスワードを入力してください</p>
         <div class="pin-grid">
           <input type="password" maxlength="1" class="pin-box" id="pin0" inputmode="numeric" oninput="handlePinInput(0)">
           <input type="password" maxlength="1" class="pin-box" id="pin1" inputmode="numeric" oninput="handlePinInput(1)">
           <input type="password" maxlength="1" class="pin-box" id="pin2" inputmode="numeric" oninput="handlePinInput(2)">
           <input type="password" maxlength="1" class="pin-box" id="pin3" inputmode="numeric" oninput="handlePinInput(3)">
         </div>
-        <div id="pinErrMsg" style="display:none; color:#ef4444; font-size:0.78rem; font-weight:700;">パスワードが違います</div>
+        <div id="pinErrMsg" style="display:none; color:#ef4444; font-size:0.75rem; font-weight:700;">パスワードが違います</div>
       </div>
     </div>
   </div>
 
-  <!-- ⑥ Android風 管理者設定 -->
-  <div id="settingsModal" class="popup-bg" onclick="if(event.target===this) closeSettingsModal()">
-    <div class="mdl-wrap" style="background:#f1f5f9; max-width:500px;">
-      <div class="mdl-hdr" style="background:#e2e8f0;">
-        <div class="mdl-title-row">
+  <!-- ⑥ Android風 設定 (地方別＆都道府県別トグル) -->
+  <div id="settingsModal" class="pop-win" onclick="if(event.target===this) closeSettingsModal()">
+    <div class="pop-card" style="background:#f1f5f9; max-width:500px;">
+      <div class="pop-hdr" style="background:#e2e8f0;">
+        <div>
           <span class="material-symbols-outlined">settings</span>
-          <span class="mdl-pref">管理者設定</span>
+          <span class="pref-title-txt">管理者設定</span>
         </div>
-        <button class="close-icon-btn" onclick="closeSettingsModal()">
+        <button class="close-btn" onclick="closeSettingsModal()">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
 
-      <div class="mdl-body">
+      <div class="pop-body">
         <div class="set-group">
           <div class="set-row">
             <div>
-              <div style="font-weight:700; font-size:0.88rem;">動作モード</div>
-              <div style="font-size:0.75rem; color:var(--text-sub);">展示モードで自動リダイレクトが連動</div>
+              <div style="font-weight:700; font-size:0.85rem;">動作モード</div>
+              <div style="font-size:0.72rem; color:var(--text-muted);">展示モードで自動リダイレクトが連動</div>
             </div>
             <select id="cfgMode" class="set-input" style="width:110px;" onchange="onModeSelectChange(this.value)">
               <option value="standard">標準モード</option>
@@ -857,25 +859,26 @@
           </div>
         </div>
 
+        <!-- 地方別一括 ＆ 都道府県別ON/OFFリスト -->
         <div class="set-group">
-          <div style="font-weight:700; font-size:0.88rem; margin-bottom:4px;">都道府県ごとの解放設定</div>
-          <div style="font-size:0.75rem; color:var(--text-sub); margin-bottom:8px;">地域ごとに表示・選択の有効化を個別設定</div>
-          <div class="pref-toggle-list" id="prefToggleListContainer"></div>
+          <div style="font-weight:700; font-size:0.85rem; margin-bottom:2px;">地方・都道府県の解放設定</div>
+          <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;">地方一括または県個別に表示ON/OFFを設定</div>
+          <div id="regionToggleListContainer" style="max-height:220px; overflow-y:auto;"></div>
         </div>
 
         <div class="set-group">
           <div class="set-row">
             <div>
-              <div style="font-weight:700; font-size:0.88rem;">無操作自動リダイレクト</div>
-              <div style="font-size:0.75rem; color:var(--text-sub);">20秒操作がない場合初期画面へ遷移</div>
+              <div style="font-weight:700; font-size:0.85rem;">無操作自動リダイレクト</div>
+              <div style="font-size:0.72rem; color:var(--text-muted);">30秒操作がない場合初期画面へ遷移</div>
             </div>
             <label class="toggle-ui">
               <input type="checkbox" id="cfgEnableIdle" onchange="saveAppConfig()">
               <span class="toggle-slider"></span>
             </label>
           </div>
-          <div style="margin-top:6px;">
-            <div style="font-size:0.75rem; color:var(--text-sub);">遷移先URL:</div>
+          <div style="margin-top:4px;">
+            <div style="font-size:0.72rem; color:var(--text-muted);">遷移先URL:</div>
             <input type="text" id="cfgRedirectUrl" class="set-input" onchange="saveAppConfig()">
           </div>
         </div>
@@ -883,8 +886,8 @@
         <div class="set-group">
           <div class="set-row">
             <div>
-              <div style="font-weight:700; font-size:0.88rem;">アクセス時自動初期化</div>
-              <div style="font-size:0.75rem; color:var(--text-sub);">ページ読み込み時に発見記録をリセット</div>
+              <div style="font-weight:700; font-size:0.85rem;">アクセス時自動初期化</div>
+              <div style="font-size:0.72rem; color:var(--text-muted);">ページ読み込み時に発見記録をリセット</div>
             </div>
             <label class="toggle-ui">
               <input type="checkbox" id="cfgAutoReset" onchange="saveAppConfig()">
@@ -894,8 +897,8 @@
         </div>
 
         <div class="set-group">
-          <div style="font-size:0.78rem; color:#ef4444; margin-bottom:6px; font-weight:700; display:none;" id="clearConfirmTxt"></div>
-          <button class="hdr-btn" style="border-color:#ef4444; color:#ef4444; width:100%; justify-content:center; padding:8px;" onclick="handleResetUserData()">
+          <div style="font-size:0.75rem; color:#ef4444; margin-bottom:4px; font-weight:700; display:none;" id="clearConfirmTxt"></div>
+          <button class="i-btn" style="border-color:#ef4444; color:#ef4444; width:100%; text-align:center; padding:6px;" onclick="handleResetUserData()">
             <span class="material-symbols-outlined">delete</span> 発見記録・お気に入りを初期化
           </button>
         </div>
@@ -903,14 +906,14 @@
     </div>
   </div>
 
-  <!-- 展示用 20秒無操作黒フィルター -->
+  <!-- 展示用 30秒無操作黒フィルター -->
   <div id="idleOverlay" class="idle-overlay" onclick="onIdleBoxTap(event)">
     <div class="idle-card">
-      <div style="font-size:1.05rem; font-weight:800;">操作が確認されませんでした</div>
-      <div style="font-size:0.9rem; color:var(--text-sub);">
-        あと <span id="countNum" class="countdown-num" style="font-size:2.2rem; font-weight:900; color:var(--main-blue);">10</span> 秒後に初期画面に戻ります。
+      <div style="font-size:1rem; font-weight:800;">操作が確認されませんでした</div>
+      <div style="font-size:0.85rem; color:var(--text-muted);">
+        あと <span id="countNum" style="font-size:2rem; font-weight:900; color:var(--main-blue);">10</span> 秒後に初期画面に戻ります。
       </div>
-      <div style="font-size:0.78rem; color:var(--main-blue); background:var(--light-blue); padding:6px 12px; border-radius:10px;">画面をタップすると操作を再開できます</div>
+      <div style="font-size:0.75rem; color:var(--main-blue); background:var(--light-blue); padding:4px 10px; border-radius:8px;">画面をタップすると操作を再開できます</div>
     </div>
   </div>
 
@@ -918,10 +921,45 @@
     const DATA_URL = "https://symphony100.github.io/symphony/soundmap/data.json";
     let externalData = {};
 
+    // 地方と都道府県コードの対応定義
+    const regionGroups = {
+      hokkaido_tohoku: { name: "北海道・東北", codes: ["1","2","3","4","5","6","7"] },
+      kanto: { name: "関東地方", codes: ["8","9","10","11","12","13","14"] },
+      chubu: { name: "中部地方", codes: ["15","16","17","18","19","20","21","22","23"] },
+      kansai: { name: "近畿地方", codes: ["24","25","26","27","28","29","30"] },
+      chugoku: { name: "中国地方", codes: ["31","32","33","34","35"] },
+      shikoku: { name: "四国地方", codes: ["36","37","38","39"] },
+      kyushu_okinawa: { name: "九州・沖縄", codes: ["40","41","42","43","44","45","46","47"] }
+    };
+
+    // 地方カラーパレット (全47都道府県水色系統一)
+    const regionColorMap = {
+      hokkaido_tohoku: "#e0f2fe",
+      kanto: "#e0f2fe",
+      chubu: "#e0f2fe",
+      kansai: "#e0f2fe",
+      chugoku: "#e0f2fe",
+      shikoku: "#e0f2fe",
+      kyushu_okinawa: "#e0f2fe"
+    };
+
+    function getRegionKey(codeStr) {
+      const code = parseInt(codeStr, 10);
+      if (code >= 1 && code <= 7) return "hokkaido_tohoku";
+      if (code >= 8 && code <= 14) return "kanto";
+      if (code >= 15 && code <= 23) return "chubu";
+      if (code >= 24 && code <= 30) return "kansai";
+      if (code >= 31 && code <= 35) return "chugoku";
+      if (code >= 36 && code <= 39) return "shikoku";
+      if (code >= 40 && code <= 47) return "kyushu_okinawa";
+      return "kanto";
+    }
+
+    // 設定保持
     let appConfig = JSON.parse(localStorage.getItem('soundmap_settings') || JSON.stringify({
       mode: 'standard',
       enableIdleRedirect: false,
-      idleTimeoutSec: 20,
+      idleTimeoutSec: 30,
       redirectUrl: 'https://symphony100.github.io/symphony/soundmap/',
       autoResetOnLoad: false
     }));
@@ -953,40 +991,39 @@
 
     let svgMapElement;
     let cityMarkersGroup;
-    let active_code;
-    let currentCityIndex = 0;
+    let selCode = null;
+    let cityIdx = 0;
     let base_viewbox = [0, 0, 1000, 1000];
     let animId;
 
-    let audioContext;
-    let masterGainNode;
+    let ctx;
+    let gainNode;
     let soundLoopTimer;
 
-    let idle_timer;
-    let countdown_timer;
-    let count_down_sec = 10;
-    let tutorial_slide_idx = 0;
+    let idleTimerId = null;
+    let countdownTimerId = null;
+    let countNumVal = 10;
+    let slideIdx = 0;
 
     let quizItems = [];
-    let quiz_current_idx = 0;
+    let nowIdx = 0;
 
-    let discovered_set = new Set(JSON.parse(localStorage.getItem('otomap_discovered') || '[]'));
-    let fav_items = JSON.parse(localStorage.getItem('otomap_favorites') || '[]');
+    let doneSet = new Set(JSON.parse(localStorage.getItem('otomap_discovered') || '[]'));
+    let favList = JSON.parse(localStorage.getItem('otomap_favorites') || '[]');
 
     window.addEventListener('DOMContentLoaded', async () => {
       if (appConfig.autoResetOnLoad) {
-        discovered_set.clear();
+        doneSet.clear();
         localStorage.setItem('otomap_discovered', '[]');
       }
 
-      resetInactivityTimer();
       updateProgress();
 
       try {
         const dataRes = await fetch(DATA_URL);
         externalData = await dataRes.json();
       } catch (e) {
-        console.warn("データ取得エラー", e);
+        console.warn("data.jsonの取得に失敗しました", e);
       }
 
       try {
@@ -1008,7 +1045,7 @@
         svgMapElement.appendChild(cityMarkersGroup);
 
         initMapElements();
-        buildPrefToggleListUI();
+        buildRegionToggleListUI();
 
       } catch (e) {
         const loadingBox = document.getElementById('loadingBox');
@@ -1016,7 +1053,7 @@
       }
     });
 
-    // 地図の色分け (水色統一)
+    // 地図初期化
     function initMapElements() {
       if (!svgMapElement) return;
       const prefs = svgMapElement.querySelectorAll('.prefecture');
@@ -1027,22 +1064,19 @@
         const isEnabled = (prefVisibilityMap[code] !== false);
 
         if (data && isEnabled) {
-          // 音源準備済みの県（統一された爽やかな水色）
           p.style.fill = "#81d4fa";
           p.style.cursor = "pointer";
-          if (discovered_set.has(code)) p.classList.add('discovered');
+          if (doneSet.has(code)) p.classList.add('discovered');
 
           p.onclick = (e) => {
             e.stopPropagation();
             onSelectPref(code, p);
           };
         } else {
-          // 音源未準備の県（灰色）
           p.style.fill = "#cbd5e1";
           p.style.cursor = "pointer";
           p.classList.remove('discovered');
 
-          // 灰色タップ時は「開発中案内」モーダルを表示
           p.onclick = (e) => {
             e.stopPropagation();
             openDevModal(p.getAttribute('data-name') || "都道府県");
@@ -1051,29 +1085,87 @@
       });
     }
 
-    function buildPrefToggleListUI() {
-      const container = document.getElementById('prefToggleListContainer');
+    // 地方別 ＆ 都道府県別 トグルUI構築
+    function buildRegionToggleListUI() {
+      const container = document.getElementById('regionToggleListContainer');
       container.innerHTML = "";
 
-      Object.keys(externalData).forEach(code => {
-        const p = externalData[code];
-        const isEnabled = (prefVisibilityMap[code] !== false);
+      Object.keys(regionGroups).forEach(rKey => {
+        const rGroup = regionGroups[rKey];
+        // 地方内が全ONか判定
+        const allOn = rGroup.codes.every(c => prefVisibilityMap[c] !== false);
 
-        const item = document.createElement('div');
-        item.className = 'pref-toggle-item';
-        item.innerHTML = `
-          <span>${p.nameJp}</span>
+        const rBox = document.createElement('div');
+        rBox.className = 'region-toggle-box';
+
+        const rHdr = document.createElement('div');
+        rHdr.className = 'region-hdr';
+        rHdr.innerHTML = `
+          <span>${rGroup.name} (一括)</span>
           <label class="toggle-ui">
-            <input type="checkbox" ${isEnabled ? 'checked' : ''} onchange="onPrefToggleChange('${code}', this.checked)">
+            <input type="checkbox" id="regToggle_${rKey}" ${allOn ? 'checked' : ''} onchange="onRegionToggleChange('${rKey}', this.checked)">
             <span class="toggle-slider"></span>
           </label>
         `;
-        container.appendChild(item);
+        rBox.appendChild(rHdr);
+
+        const rPrefs = document.createElement('div');
+        rPrefs.className = 'region-prefs';
+
+        rGroup.codes.forEach(code => {
+          const pData = externalData[code] || { nameJp: `県コード ${code}` };
+          const isEnabled = (prefVisibilityMap[code] !== false);
+
+          const item = document.createElement('div');
+          item.className = 'pref-item';
+          item.innerHTML = `
+            <span>${pData.nameJp}</span>
+            <label class="toggle-ui">
+              <input type="checkbox" class="pref-chk-${rKey}" data-code="${code}" ${isEnabled ? 'checked' : ''} onchange="onPrefToggleChange('${code}', '${rKey}', this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          `;
+          rPrefs.appendChild(item);
+        });
+
+        rBox.appendChild(rPrefs);
+        container.appendChild(rBox);
       });
     }
 
-    function onPrefToggleChange(code, checked) {
+    // 地方一括切替
+    function onRegionToggleChange(rKey, checked) {
+      const rGroup = regionGroups[rKey];
+      if (!rGroup) return;
+
+      rGroup.codes.forEach(code => {
+        prefVisibilityMap[code] = checked;
+      });
+
+      // UI反映
+      document.querySelectorAll(`.pref-chk-${rKey}`).forEach(chk => {
+        chk.checked = checked;
+      });
+
+      savePrefVisibility();
+    }
+
+    // 個別都道府県切替
+    function onPrefToggleChange(code, rKey, checked) {
       prefVisibilityMap[code] = checked;
+      
+      // 地方一括トグルの状態チェック
+      const rGroup = regionGroups[rKey];
+      if (rGroup) {
+        const allOn = rGroup.codes.every(c => prefVisibilityMap[c] !== false);
+        const regToggle = document.getElementById(`regToggle_${rKey}`);
+        if (regToggle) regToggle.checked = allOn;
+      }
+
+      savePrefVisibility();
+    }
+
+    function savePrefVisibility() {
       localStorage.setItem('soundmap_pref_visibility', JSON.stringify(prefVisibilityMap));
       initMapElements();
     }
@@ -1096,13 +1188,13 @@
       
       updateProgress();
 
-      if (active_code) {
-        const elem = svgMapElement.querySelector(`.prefecture[data-code="${active_code}"]`);
-        if (elem) drawPins(active_code, elem);
+      if (selCode) {
+        const elem = svgMapElement.querySelector(`.prefecture[data-code="${selCode}"]`);
+        if (elem) drawPins(selCode, elem);
       }
 
-      if (document.getElementById('soundModal').classList.contains('open') && active_code) {
-        setModalContent(active_code, currentCityIndex);
+      if (document.getElementById('soundModal').classList.contains('open') && selCode) {
+        setModalContent(selCode, cityIdx);
       }
     }
 
@@ -1113,7 +1205,7 @@
     }
 
     function updateProgress() {
-      const count = discovered_set.size;
+      const count = doneSet.size;
       const pct = Math.round((count / 47) * 100);
       document.getElementById('statusText').textContent = langDict[currentLang].progress.replace('{count}', count).replace('{pct}', pct);
       document.getElementById('barFill').style.width = `${pct}%`;
@@ -1126,7 +1218,7 @@
     }
 
     function onSelectPref(code, elem) {
-      active_code = code;
+      selCode = code;
       svgMapElement.classList.add('has-active');
       svgMapElement.querySelectorAll('.prefecture').forEach(p => p.classList.remove('active'));
       elem.classList.add('active');
@@ -1134,6 +1226,9 @@
       document.getElementById('btnBackAll').classList.add('show');
       zoomToPref(elem);
       drawPins(code, elem);
+
+      // 都道府県選択時は30秒無操作タイマーをスタート
+      resetInactivityTimer();
     }
 
     function zoomToPref(elem) {
@@ -1221,13 +1316,13 @@
     }
 
     function openDetailModal(code, idx, prefElem) {
-      active_code = code;
-      currentCityIndex = idx;
+      selCode = code;
+      cityIdx = idx;
       setModalContent(code, idx);
       document.getElementById('soundModal').classList.add('open');
 
-      discovered_set.add(code);
-      localStorage.setItem('otomap_discovered', JSON.stringify([...discovered_set]));
+      doneSet.add(code);
+      localStorage.setItem('otomap_discovered', JSON.stringify([...doneSet]));
       updateProgress();
 
       if (prefElem) prefElem.classList.add('discovered');
@@ -1263,7 +1358,6 @@
       updateFavBtnState();
     }
 
-    /* 開発中モーダル（灰色タップ時） */
     function openDevModal(prefName) {
       document.getElementById('devModalPref').textContent = prefName;
       document.getElementById('devModal').classList.add('open');
@@ -1271,30 +1365,30 @@
     function closeDevModal() { document.getElementById('devModal').classList.remove('open'); }
 
     function toggleFavCurrent() {
-      if (!active_code) return;
-      const data = getPref(active_code);
-      const city = data?.cities[currentCityIndex];
+      if (!selCode) return;
+      const data = getPref(selCode);
+      const city = data?.cities[cityIdx];
       if (!city) return;
 
-      const favId = `${active_code}_${currentCityIndex}`;
-      const idx = fav_items.findIndex(f => f.id === favId);
+      const favId = `${selCode}_${cityIdx}`;
+      const idx = favList.findIndex(f => f.id === favId);
 
       if (idx >= 0) {
-        fav_items.splice(idx, 1);
+        favList.splice(idx, 1);
       } else {
-        fav_items.push({
-          id: favId, code: active_code, cityIdx: currentCityIndex,
+        favList.push({
+          id: favId, code: selCode, cityIdx: cityIdx,
           prefName: data.nameJp, cityName: city.cityName, title: city.title, audio: city.audio
         });
       }
 
-      localStorage.setItem('otomap_favorites', JSON.stringify(fav_items));
+      localStorage.setItem('otomap_favorites', JSON.stringify(favList));
       updateFavBtnState();
     }
 
     function updateFavBtnState() {
-      const favId = `${active_code}_${currentCityIndex}`;
-      const isFav = fav_items.some(f => f.id === favId);
+      const favId = `${selCode}_${cityIdx}`;
+      const isFav = favList.some(f => f.id === favId);
       const favBtn = document.getElementById('favBtn');
       const favBtnTxt = document.getElementById('favBtnTxt');
 
@@ -1311,18 +1405,18 @@
       const listWrap = document.getElementById('favListWrap');
       listWrap.innerHTML = "";
 
-      if (fav_items.length === 0) {
+      if (favList.length === 0) {
         listWrap.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-muted); font-size:0.85rem;">${langDict[currentLang].noFav}</div>`;
       } else {
-        fav_items.forEach(fav => {
+        favList.forEach(fav => {
           const item = document.createElement('div');
-          item.className = 'fav-card-item';
+          item.className = 'fav-item';
           item.innerHTML = `
             <div>
               <div style="font-weight:700; font-size:0.86rem;">${fav.title}</div>
               <div style="font-size:0.75rem; color:var(--text-muted);">${fav.prefName} ${fav.cityName}</div>
             </div>
-            <button class="hdr-btn" onclick="openDetailModal('${fav.code}', ${fav.cityIdx}); closeFavModal();">
+            <button class="i-btn" onclick="openDetailModal('${fav.code}', ${fav.cityIdx}); closeFavModal();">
               <span class="material-symbols-outlined" style="font-size:0.9rem;">volume_up</span> 聴く
             </button>
           `;
@@ -1334,7 +1428,7 @@
 
     function closeFavModal() { document.getElementById('favModal').classList.remove('open'); }
 
-    /* 全問連続クイズ (巨大 〇・✕ エフェクト付き) */
+    /* 全問連続クイズ */
     function startQuiz() {
       stopAllSounds();
       quizItems = [];
@@ -1349,7 +1443,7 @@
       if (quizItems.length === 0) return;
 
       quizItems.sort(() => Math.random() - 0.5);
-      quiz_current_idx = 0;
+      nowIdx = 0;
 
       document.getElementById('quizTotal').textContent = quizItems.length;
       showQuizQuestion();
@@ -1361,10 +1455,10 @@
 
       document.getElementById('quizMainSection').style.display = 'block';
       document.getElementById('giantEffectBox').style.display = 'none';
-      document.getElementById('quizExplanationBox').style.display = 'none';
+      document.getElementById('quizExpBox').style.display = 'none';
 
-      const q = quizItems[quiz_current_idx];
-      document.getElementById('quizIndex').textContent = quiz_current_idx + 1;
+      const q = quizItems[nowIdx];
+      document.getElementById('quizIndex').textContent = nowIdx + 1;
       document.getElementById('quizTitle').textContent = q.city.title;
 
       playSingleSound(q.city.audio);
@@ -1412,14 +1506,13 @@
         giantTitle.style.color = '#ea2b2b';
       }
 
-      // 0.6秒後に解説ボックスを表示
       setTimeout(() => {
-        const expBox = document.getElementById('quizExplanationBox');
+        const expBox = document.getElementById('quizExpBox');
         document.getElementById('quizExpTitle').textContent = `${correct} （${city.cityName}）`;
         document.getElementById('quizExpDesc').textContent = city.desc;
         
         const btnNext = document.getElementById('btnNextQuiz');
-        if (quiz_current_idx < quizItems.length - 1) {
+        if (nowIdx < quizItems.length - 1) {
           btnNext.textContent = "次の問題へ →";
         } else {
           btnNext.textContent = "全問終了！もう一度挑戦する";
@@ -1430,8 +1523,8 @@
     }
 
     function goNextQuiz() {
-      if (quiz_current_idx < quizItems.length - 1) {
-        quiz_current_idx++;
+      if (nowIdx < quizItems.length - 1) {
+        nowIdx++;
         showQuizQuestion();
       } else {
         startQuiz();
@@ -1445,7 +1538,7 @@
 
     /* チュートリアル */
     function openTutorial() {
-      tutorial_slide_idx = 0;
+      slideIdx = 0;
       updateSlideView();
       document.getElementById('tutorialModal').classList.add('open');
     }
@@ -1453,18 +1546,18 @@
     function closeTutorial() { document.getElementById('tutorialModal').classList.remove('open'); }
 
     function stepSlide(dir) {
-      tutorial_slide_idx = Math.max(0, Math.min(3, tutorial_slide_idx + dir));
+      slideIdx = Math.max(0, Math.min(3, slideIdx + dir));
       updateSlideView();
     }
 
     function updateSlideView() {
-      document.getElementById('slideTrack').style.transform = `translateX(-${tutorial_slide_idx * 25}%)`;
-      document.getElementById('btnPrevSlide').disabled = (tutorial_slide_idx === 0);
+      document.getElementById('slideTrack').style.transform = `translateX(-${slideIdx * 25}%)`;
+      document.getElementById('btnPrevSlide').disabled = (slideIdx === 0);
       
       const btnNext = document.getElementById('btnNextSlide');
       const btnDone = document.getElementById('btnDoneSlide');
 
-      if (tutorial_slide_idx === 3) {
+      if (slideIdx === 3) {
         btnNext.style.display = 'none';
         btnDone.style.display = 'inline-flex';
       } else {
@@ -1473,11 +1566,11 @@
       }
 
       document.querySelectorAll('#dotsBox .dot-node').forEach((d, i) => {
-        d.classList.toggle('active', i === tutorial_slide_idx);
+        d.classList.toggle('active', i === slideIdx);
       });
     }
 
-    /* PIN入力モーダル (1234 自動判定) */
+    /* PIN入力モーダル */
     function openPinModal() {
       for (let i = 0; i < 4; i++) {
         const inp = document.getElementById(`pin${i}`);
@@ -1551,14 +1644,14 @@
 
       localStorage.removeItem('otomap_discovered');
       localStorage.removeItem('otomap_favorites');
-      discovered_set.clear();
-      fav_items = [];
+      doneSet.clear();
+      favList = [];
       updateProgress();
       initMapElements();
       closeSettingsModal();
     }
 
-    /* 音声再生 (終了5秒前フェードアウト) */
+    /* 音声再生 */
     function startAudioLoop(url) {
       stopAllSounds();
       function run() {
@@ -1600,29 +1693,29 @@
     }
 
     function playToneFallback() {
-      if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioContext.state === 'suspended') audioContext.resume();
+      if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state === 'suspended') ctx.resume();
 
       document.getElementById('soundIcon').style.display = 'inline-block';
-      const now = audioContext.currentTime;
-      const gain = audioContext.createGain();
+      const now = ctx.currentTime;
+      const gain = ctx.createGain();
 
       gain.gain.setValueAtTime(0, now);
       gain.gain.linearRampToValueAtTime(0.2, now + 1.5);
       gain.gain.setValueAtTime(0.2, now + 15);
       gain.gain.linearRampToValueAtTime(0.0001, now + 20);
 
-      gain.connect(audioContext.destination);
-      masterGainNode = gain;
+      gain.connect(ctx.destination);
+      gainNode = gain;
 
       let step = 0;
       const notes = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];
 
       const toneInterval = setInterval(() => {
-        if (!audioContext || audioContext.state !== 'running') return;
-        const t = audioContext.currentTime;
-        const osc = audioContext.createOscillator();
-        const ng = audioContext.createGain();
+        if (!ctx || ctx.state !== 'running') return;
+        const t = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const ng = ctx.createGain();
 
         osc.type = 'sine';
         osc.frequency.setValueAtTime(notes[step % notes.length], t);
@@ -1651,12 +1744,12 @@
         hiddenAudio.volume = 0;
         hiddenAudio.ontimeupdate = null;
       }
-      if (masterGainNode) {
+      if (gainNode) {
         try {
-          masterGainNode.gain.cancelScheduledValues(0);
-          masterGainNode.gain.setValueAtTime(0, audioContext ? audioContext.currentTime : 0);
+          gainNode.gain.cancelScheduledValues(0);
+          gainNode.gain.setValueAtTime(0, ctx ? ctx.currentTime : 0);
         } catch(e){}
-        masterGainNode = null;
+        gainNode = null;
       }
       document.getElementById('soundIcon').style.display = 'none';
     }
@@ -1675,34 +1768,44 @@
       if (cityMarkersGroup) cityMarkersGroup.innerHTML = "";
       document.getElementById('btnBackAll').classList.remove('show');
       closeModal();
-      active_code = null;
+      selCode = null;
+
+      // 全体表示時は無操作タイマーを解除（消えるのを防止）
+      stopInactivityTimer();
     }
 
-    /* 無操作タイマー */
+    /* 無操作タイマー (30秒・拡大時のみ作動) */
     function handleUserTouch(e) {
-      resetInactivityTimer();
+      if (selCode) {
+        resetInactivityTimer();
+      }
+    }
+
+    function stopInactivityTimer() {
+      clearTimeout(idleTimerId);
+      clearInterval(countdownTimerId);
+      document.getElementById('idleOverlay').classList.remove('active');
     }
 
     function resetInactivityTimer() {
-      clearTimeout(idle_timer);
-      clearInterval(countdown_timer);
-      document.getElementById('idleOverlay').classList.remove('active');
+      stopInactivityTimer();
 
-      if (appConfig.enableIdleRedirect || appConfig.mode === 'exhibition') {
-        idle_timer = setTimeout(triggerIdleOverlay, (appConfig.idleTimeoutSec || 20) * 1000);
+      // 都道府県を選択している時だけ30秒タイマーを作動
+      if (selCode && (appConfig.enableIdleRedirect || appConfig.mode === 'exhibition')) {
+        idleTimerId = setTimeout(triggerIdleOverlay, (appConfig.idleTimeoutSec || 30) * 1000);
       }
     }
 
     function triggerIdleOverlay() {
-      count_down_sec = 10;
-      document.getElementById('countNum').textContent = count_down_sec;
+      countNumVal = 10;
+      document.getElementById('countNum').textContent = countNumVal;
       document.getElementById('idleOverlay').classList.add('active');
 
-      countdown_timer = setInterval(() => {
-        count_down_sec--;
-        document.getElementById('countNum').textContent = count_down_sec;
-        if (count_down_sec <= 0) {
-          clearInterval(countdown_timer);
+      countdownTimerId = setInterval(() => {
+        countNumVal--;
+        document.getElementById('countNum').textContent = countNumVal;
+        if (countNumVal <= 0) {
+          clearInterval(countdownTimerId);
           window.location.href = appConfig.redirectUrl || "https://symphony100.github.io/symphony/soundmap/";
         }
       }, 1000);
