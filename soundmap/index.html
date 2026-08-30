@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>さうんどまっぷ - Sound Map Japan</title>
   
+  <link rel="icon" type="image/x-icon" href="https://symphony100.github.io/symphony/soundmap/icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -921,7 +922,6 @@
     const DATA_URL = "https://symphony100.github.io/symphony/soundmap/data.json";
     let externalData = {};
 
-    // 地方と都道府県コードの対応定義
     const regionGroups = {
       hokkaido_tohoku: { name: "北海道・東北", codes: ["1","2","3","4","5","6","7"] },
       kanto: { name: "関東地方", codes: ["8","9","10","11","12","13","14"] },
@@ -932,7 +932,6 @@
       kyushu_okinawa: { name: "九州・沖縄", codes: ["40","41","42","43","44","45","46","47"] }
     };
 
-    // 地方カラーパレット (全47都道府県水色系統一)
     const regionColorMap = {
       hokkaido_tohoku: "#e0f2fe",
       kanto: "#e0f2fe",
@@ -955,7 +954,6 @@
       return "kanto";
     }
 
-    // 設定保持
     let appConfig = JSON.parse(localStorage.getItem('soundmap_settings') || JSON.stringify({
       mode: 'standard',
       enableIdleRedirect: false,
@@ -1012,9 +1010,17 @@
     let favList = JSON.parse(localStorage.getItem('otomap_favorites') || '[]');
 
     window.addEventListener('DOMContentLoaded', async () => {
-      if (appConfig.autoResetOnLoad) {
+      // 展示モード時はリロード時に毎回初期化＆チュートリアルを表示
+      if (appConfig.mode === 'exhibition') {
         doneSet.clear();
         localStorage.setItem('otomap_discovered', '[]');
+        setTimeout(() => openTutorial(), 350);
+      } else {
+        // 通常モード時は一番最初のアクセス時のみ1回だけチュートリアル
+        if (!localStorage.getItem('otomap_visited')) {
+          setTimeout(() => openTutorial(), 350);
+          localStorage.setItem('otomap_visited', 'true');
+        }
       }
 
       updateProgress();
@@ -1053,7 +1059,7 @@
       }
     });
 
-    // 地図初期化
+    // 地図初期化 (data.jsonを正として判定し全デバイス同期)
     function initMapElements() {
       if (!svgMapElement) return;
       const prefs = svgMapElement.querySelectorAll('.prefecture');
@@ -1061,9 +1067,13 @@
       prefs.forEach(p => {
         const code = p.getAttribute('data-code');
         const data = getPref(code);
-        const isEnabled = (prefVisibilityMap[code] !== false);
+        
+        // data.json 内の設定(enabled !== false)を正として判定
+        const isJsonEnabled = data && (data.enabled !== false) && (data.cities && data.cities.length > 0);
+        const isLocalEnabled = (prefVisibilityMap[code] !== false);
+        const isActive = isJsonEnabled && isLocalEnabled;
 
-        if (data && isEnabled) {
+        if (isActive) {
           p.style.fill = "#81d4fa";
           p.style.cursor = "pointer";
           if (doneSet.has(code)) p.classList.add('discovered');
@@ -1085,14 +1095,12 @@
       });
     }
 
-    // 地方別 ＆ 都道府県別 トグルUI構築
     function buildRegionToggleListUI() {
       const container = document.getElementById('regionToggleListContainer');
       container.innerHTML = "";
 
       Object.keys(regionGroups).forEach(rKey => {
         const rGroup = regionGroups[rKey];
-        // 地方内が全ONか判定
         const allOn = rGroup.codes.every(c => prefVisibilityMap[c] !== false);
 
         const rBox = document.createElement('div');
@@ -1133,7 +1141,6 @@
       });
     }
 
-    // 地方一括切替
     function onRegionToggleChange(rKey, checked) {
       const rGroup = regionGroups[rKey];
       if (!rGroup) return;
@@ -1142,7 +1149,6 @@
         prefVisibilityMap[code] = checked;
       });
 
-      // UI反映
       document.querySelectorAll(`.pref-chk-${rKey}`).forEach(chk => {
         chk.checked = checked;
       });
@@ -1150,11 +1156,9 @@
       savePrefVisibility();
     }
 
-    // 個別都道府県切替
     function onPrefToggleChange(code, rKey, checked) {
       prefVisibilityMap[code] = checked;
       
-      // 地方一括トグルの状態チェック
       const rGroup = regionGroups[rKey];
       if (rGroup) {
         const allOn = rGroup.codes.every(c => prefVisibilityMap[c] !== false);
@@ -1227,7 +1231,6 @@
       zoomToPref(elem);
       drawPins(code, elem);
 
-      // 都道府県選択時は30秒無操作タイマーをスタート
       resetInactivityTimer();
     }
 
@@ -1428,7 +1431,7 @@
 
     function closeFavModal() { document.getElementById('favModal').classList.remove('open'); }
 
-    /* 全問連続クイズ */
+    /* 全問連続クイズ (巨大 〇・✕ エフェクト付き) */
     function startQuiz() {
       stopAllSounds();
       quizItems = [];
@@ -1651,7 +1654,7 @@
       closeSettingsModal();
     }
 
-    /* 音声再生 */
+    /* 音声再生 (終了5秒前フェードアウト) */
     function startAudioLoop(url) {
       stopAllSounds();
       function run() {
@@ -1770,11 +1773,10 @@
       closeModal();
       selCode = null;
 
-      // 全体表示時は無操作タイマーを解除（消えるのを防止）
       stopInactivityTimer();
     }
 
-    /* 無操作タイマー (30秒・拡大時のみ作動) */
+    /* 30秒無操作タイマー (拡大時のみ作動) */
     function handleUserTouch(e) {
       if (selCode) {
         resetInactivityTimer();
@@ -1790,7 +1792,6 @@
     function resetInactivityTimer() {
       stopInactivityTimer();
 
-      // 都道府県を選択している時だけ30秒タイマーを作動
       if (selCode && (appConfig.enableIdleRedirect || appConfig.mode === 'exhibition')) {
         idleTimerId = setTimeout(triggerIdleOverlay, (appConfig.idleTimeoutSec || 30) * 1000);
       }
