@@ -11,7 +11,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
-  <!-- リアルタイム自動同期用 WebSocket (MQTT) ライブラリ -->
   <script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
 
   <style>
@@ -25,7 +24,6 @@
       --text-dark: #0f172a;
       --text-muted: #64748b;
       --border-line: #e2e8f0;
-      --success-green: #10b981;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -515,7 +513,6 @@
     .set-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .set-input { padding: 5px 8px; border: 1px solid var(--border-line); border-radius: 6px; font-size: 0.82rem; width: 100%; }
 
-    /* 同期ステータスバー */
     .sync-status-card {
       display: flex;
       align-items: center;
@@ -525,21 +522,6 @@
       padding: 8px 12px;
       border-radius: 8px;
       margin-bottom: 8px;
-    }
-    .sync-status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #10b981;
-      display: inline-block;
-      margin-right: 6px;
-      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
-      animation: pulseDot 2s infinite;
-    }
-    @keyframes pulseDot {
-      0% { transform: scale(0.95); opacity: 0.8; }
-      50% { transform: scale(1.15); opacity: 1; }
-      100% { transform: scale(0.95); opacity: 0.8; }
     }
 
     .region-toggle-box {
@@ -931,7 +913,7 @@
     </div>
   </div>
 
-  <!-- ⑥ Android風 設定 (リアルタイム同期連動) -->
+  <!-- ⑥ Android風 設定 -->
   <div id="settingsModal" class="pop-win" onclick="if(event.target===this) closeSettingsModal()">
     <div class="pop-card" style="background:#f1f5f9; max-width:500px;">
       <div class="pop-hdr" style="background:#e2e8f0;">
@@ -945,14 +927,10 @@
       </div>
 
       <div class="pop-body">
-        <!-- リアルタイム自動同期インジケーター -->
         <div class="sync-status-card">
-          <div style="display:flex; align-items:center;">
-            <span class="sync-status-dot" id="syncStatusDot"></span>
-            <div>
-              <div style="font-weight:700; font-size:0.82rem; color:#065f46;" id="syncStatusTxt">全端末リアルタイム同期中</div>
-              <div style="font-size:0.7rem; color:#047857;">変更は全デバイスに即座に反映されます</div>
-            </div>
+          <div>
+            <div style="font-weight:700; font-size:0.82rem; color:#065f46;" id="syncStatusTxt">リアルタイム同期中</div>
+            <div style="font-size:0.7rem; color:#047857;">設定変更は他の端末へ即座に反映されます</div>
           </div>
           <span class="material-symbols-outlined" style="color:#059669;">cloud_sync</span>
         </div>
@@ -972,7 +950,7 @@
 
         <div class="set-group">
           <div style="font-weight:700; font-size:0.85rem; margin-bottom:2px;">地方・都道府県の解放設定</div>
-          <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;">チェックを切り替えると他の全端末も即座に同期されます</div>
+          <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;">チェックを切り替えると他の端末も即座に同期されます</div>
           <div id="regionToggleListContainer" style="max-height:220px; overflow-y:auto;"></div>
         </div>
 
@@ -1051,10 +1029,6 @@
 
     let prefVisibilityMap = JSON.parse(localStorage.getItem('soundmap_pref_visibility') || '{}');
 
-    /* ==========================================================
-       リアルタイム自動同期システム (WebSocket / MQTT 採用)
-       全端末間で設定変更を即時反映（URLコピー不要）
-    ========================================================== */
     const MQTT_BROKER = "wss://broker.emqx.io:8084/mqtt";
     const SYNC_TOPIC = "symphony/soundmap/live_sync_v2";
     const myClientId = "device_" + Math.random().toString(36).substring(2, 9);
@@ -1074,7 +1048,6 @@
         mqttClient.on('connect', () => {
           updateSyncUI(true);
           mqttClient.subscribe(SYNC_TOPIC, () => {
-            // 他の稼働中端末から最新の表示設定を取得
             broadcastSync({ type: 'GET_LATEST' });
           });
         });
@@ -1085,7 +1058,6 @@
             if (!payload || payload.sender === myClientId) return;
 
             if (payload.type === 'GET_LATEST') {
-              // 自身の持つ最新設定を新規参加端末へ返信
               if (Object.keys(prefVisibilityMap).length > 0) {
                 broadcastSync({ type: 'APPLY_CONFIG', data: prefVisibilityMap });
               }
@@ -1096,7 +1068,7 @@
                 
                 initMapElements();
                 buildRegionToggleListUI();
-                showToast("表示設定がリアルタイム同期されました");
+                showToast("表示設定が同期されました");
               }
             }
           } catch (e) {
@@ -1121,16 +1093,13 @@
     }
 
     function updateSyncUI(isConnected) {
-      const dot = document.getElementById('syncStatusDot');
       const txt = document.getElementById('syncStatusTxt');
-      if (!dot || !txt) return;
+      if (!txt) return;
 
       if (isConnected) {
-        dot.style.background = "#10b981";
-        txt.textContent = "全端末リアルタイム同期中";
+        txt.textContent = "リアルタイム同期中";
         txt.style.color = "#065f46";
       } else {
-        dot.style.background = "#f59e0b";
         txt.textContent = "再接続待機中...";
         txt.style.color = "#b45309";
       }
@@ -1206,7 +1175,6 @@
 
       updateProgress();
 
-      // 1. サーバーから音源・地域データを動的取得
       try {
         const dataRes = await fetch(DATA_URL);
         if (dataRes.ok) {
@@ -1216,7 +1184,6 @@
         console.error("データ取得エラー:", e);
       }
 
-      // 2. 地図ポリゴンSVGの取得
       try {
         const res = await fetch('https://cdn.jsdelivr.net/gh/geolonia/japanese-prefectures@master/map-polygon.svg');
         const svgCode = await res.text();
@@ -1237,8 +1204,6 @@
 
         initMapElements();
         buildRegionToggleListUI();
-
-        // 3. リアルタイム同期開始
         initRealtimeSync();
 
       } catch (e) {
@@ -1247,7 +1212,6 @@
       }
     });
 
-    // 地図初期化
     function initMapElements() {
       if (!svgMapElement) return;
       const prefs = svgMapElement.querySelectorAll('.prefecture');
@@ -1361,8 +1325,6 @@
     function savePrefVisibility() {
       localStorage.setItem('soundmap_pref_visibility', JSON.stringify(prefVisibilityMap));
       initMapElements();
-
-      // 全端末へリアルタイム配信
       broadcastSync({ type: 'APPLY_CONFIG', data: prefVisibilityMap });
     }
 
@@ -1627,7 +1589,6 @@
 
     function closeFavModal() { document.getElementById('favModal').classList.remove('open'); }
 
-    /* 全問連続クイズ */
     function startQuiz() {
       stopAllSounds();
       quizItems = [];
@@ -1738,7 +1699,6 @@
       stopAllSounds();
     }
 
-    /* チュートリアル */
     function openTutorial() {
       slideIdx = 0;
       updateSlideView();
@@ -1772,7 +1732,6 @@
       });
     }
 
-    /* 4マスPIN入力 */
     function openPinModal() {
       for (let i = 0; i < 4; i++) {
         const inp = document.getElementById(`pin${i}`);
@@ -1814,7 +1773,6 @@
       }
     }
 
-    /* 管理者設定画面 */
     function openSettingsModal() {
       document.getElementById('cfgMode').value = appConfig.mode;
       document.getElementById('cfgEnableIdle').checked = appConfig.enableIdleRedirect;
@@ -1853,7 +1811,6 @@
       closeSettingsModal();
     }
 
-    /* 音声再生 (フェードアウト付き) */
     function startAudioLoop(url) {
       stopAllSounds();
       function run() {
@@ -1975,7 +1932,6 @@
       stopInactivityTimer();
     }
 
-    /* 30秒無操作タイマー */
     function handleUserTouch(e) {
       if (selCode) {
         resetInactivityTimer();
