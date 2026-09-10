@@ -1,0 +1,15 @@
+{
+  "name": "Symphony",
+  "short_name": "Symphony",
+  "start_url": "https://symphony100.github.io/symphony/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "symphony.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ]
+}
