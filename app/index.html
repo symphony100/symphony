@@ -1,330 +1,2655 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>マチレポ</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <style>
-        :root { --brand: #1e293b; --accent: #4f46e5; --bg: #f8fafc; }
-        body { font-family: 'Noto Sans JP', sans-serif; background-color: #0f172a; margin: 0; overflow: hidden; height: 100vh; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>トクシェア A版 - 地域安売り共有・店舗ミッション＆クーポン</title>
 
-        .app-shell { 
-            max-width: 500px; margin: 0 auto; height: 100vh; 
-            background-color: var(--bg); position: relative; 
-            box-shadow: 0 0 100px rgba(0,0,0,0.8); overflow: hidden;
-        }
+  <!-- Google Fonts: Noto Sans JP -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 
-        /* 画面切り替えアニメーション */
-        .screen {
-            position: absolute; inset: 0; background: var(--bg); 
-            display: none; flex-direction: column; z-index: 10;
-            opacity: 0; transform: translateY(30px); 
-            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .screen.active { display: flex; opacity: 1; transform: translateY(0); z-index: 50; }
+  <!-- Material Symbols Outlined (絵文字は一切禁止・アイコン統一) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
-        /* 言語切り替え時のアニメーション */
-        .lang-fade { transition: opacity 0.3s ease, filter 0.3s ease; }
-        .lang-updating { opacity: 0; filter: blur(4px); }
+  <!-- Leaflet.js (地図コンポーネント) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-        /* 波紋アニメーション */
-        .pulse-wave {
-            position: absolute; width: 140px; height: 140px; border: 4px solid var(--accent); border-radius: 50%;
-            animation: wave-out 2s infinite;
-        }
-        @keyframes wave-out { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(2.5); opacity: 0; } }
+  <style>
+    /* ==========================================================================
+       Material Design 3 Design Tokens (カラー・余白・形状)
+       コンセプト: 節約・安心・信頼・地域循環
+       ========================================================================== */
+    :root {
+      --md-primary: #00685e;
+      --md-on-primary: #ffffff;
+      --md-primary-container: #9ef2e4;
+      --md-on-primary-container: #00201c;
 
-        /* 解決演出 */
-        #success-overlay {
-            position: absolute; inset: 0; background: rgba(255,255,255,0.95); z-index: 1000;
-            display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px);
-        }
+      --md-secondary: #4a635f;
+      --md-on-secondary: #ffffff;
+      --md-secondary-container: #cce8e3;
+      --md-on-secondary-container: #05201c;
 
-        .m-card { background: white; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.02); }
-        .m-card:active { transform: scale(0.96); background: #f1f5f9; }
-        
-        #map { height: 100%; width: 100%; z-index: 1; }
-        .nav-active { color: var(--accent) !important; font-variation-settings: 'FILL' 1; }
-        .font-black { font-weight: 900; }
-    </style>
+      --md-surface: #f4fbf8;
+      --md-on-surface: #161d1b;
+      --md-surface-lowest: #ffffff;
+      --md-surface-low: #eef5f2;
+      --md-surface-container: #e8efec;
+      --md-surface-high: #e2eae6;
+      --md-outline: #6f7976;
+      --md-outline-variant: #bfc9c5;
+
+      --md-coin: #8a6500;
+      --md-coin-container: #ffdf9c;
+      --md-on-coin-container: #2b1d00;
+
+      --md-admin-primary: #1e3a8a;
+      --md-admin-surface: #f8fafc;
+      --md-admin-card: #ffffff;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      --shadow-1: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-2: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --shadow-3: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+
+      --max-width: 1200px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background-color: var(--md-surface);
+      color: var(--md-on-surface);
+      line-height: 1.5;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* アイコン共通 */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      user-select: none;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1;
+    }
+
+    /* Top Universal Bar (ロール切替：ユーザー ⇄ 店舗管理) */
+    .role-switcher-bar {
+      height: 44px;
+      background-color: #0b1f1c;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 0.82rem;
+      z-index: 50;
+      flex-shrink: 0;
+    }
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+    .role-switch-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.2s;
+    }
+    .role-switch-btn:hover {
+      background: rgba(255, 255, 255, 0.28);
+    }
+
+    /* App Shell */
+    .app-root {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ==========================================================================
+       USER VIEW STYLES
+       ========================================================================== */
+    .view-container {
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: row;
+      overflow: hidden;
+    }
+    .view-container.active-mode {
+      display: flex;
+    }
+
+    /* Sidebar (Desktop) */
+    .desktop-sidebar {
+      width: 250px;
+      background-color: var(--md-surface-low);
+      border-right: 1px solid var(--md-outline-variant);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      padding: 20px 16px;
+    }
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--md-primary);
+      margin-bottom: 24px;
+      padding-left: 8px;
+    }
+    .sidebar-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-grow: 1;
+    }
+    .sidebar-menu-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 16px;
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-full);
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--md-on-surface);
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s;
+    }
+    .sidebar-menu-btn:hover {
+      background-color: var(--md-surface-high);
+    }
+    .sidebar-menu-btn.active {
+      background-color: var(--md-secondary-container);
+      color: var(--md-on-secondary-container);
+      font-weight: 700;
+    }
+
+    /* Main Viewport */
+    .content-viewport {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .mobile-header {
+      display: none;
+      height: 52px;
+      background: var(--md-surface-lowest);
+      border-bottom: 1px solid var(--md-outline-variant);
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      flex-shrink: 0;
+    }
+    .mobile-brand {
+      font-weight: 700;
+      color: var(--md-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 1.1rem;
+    }
+
+    .scroll-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      max-width: var(--max-width);
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Bottom Navigation (Mobile) */
+    .mobile-bottom-nav {
+      display: none;
+      height: 60px;
+      background-color: var(--md-surface-lowest);
+      border-top: 1px solid var(--md-outline-variant);
+      align-items: center;
+      justify-content: space-around;
+      flex-shrink: 0;
+      z-index: 40;
+    }
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      border: none;
+      background: transparent;
+      color: var(--md-outline);
+      font-size: 0.7rem;
+      cursor: pointer;
+      width: 16.6%;
+      height: 100%;
+    }
+    .nav-btn.active {
+      color: var(--md-primary);
+      font-weight: 700;
+    }
+    .nav-btn.fab-btn {
+      color: var(--md-primary);
+    }
+    .nav-btn.fab-btn .fab-icon-box {
+      width: 40px;
+      height: 40px;
+      background-color: var(--md-primary-container);
+      color: var(--md-on-primary-container);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-1);
+    }
+
+    /* Tab Panes */
+    .tab-screen {
+      display: none;
+    }
+    .tab-screen.active {
+      display: block;
+      animation: fadeIn 0.15s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards, Buttons & UI Primitives */
+    .card {
+      background-color: var(--md-surface-lowest);
+      border: 1px solid var(--md-outline-variant);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-1);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: var(--radius-full);
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background-color: var(--md-primary);
+      color: var(--md-on-primary);
+    }
+    .btn-primary:hover {
+      filter: brightness(1.08);
+      box-shadow: var(--shadow-1);
+    }
+    .btn-tonal {
+      background-color: var(--md-secondary-container);
+      color: var(--md-on-secondary-container);
+    }
+    .btn-outlined {
+      background-color: transparent;
+      border-color: var(--md-outline);
+      color: var(--md-primary);
+    }
+    .btn-danger {
+      background-color: #ba1a1a;
+      color: #fff;
+    }
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.78rem;
+    }
+
+    .coin-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background-color: var(--md-coin-container);
+      color: var(--md-on-coin-container);
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .chip-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+      scrollbar-width: none;
+    }
+    .chip-bar::-webkit-scrollbar { display: none; }
+    .chip {
+      padding: 6px 14px;
+      background-color: var(--md-surface-container);
+      border: 1px solid var(--md-outline-variant);
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .chip.active {
+      background-color: var(--md-primary);
+      color: var(--md-on-primary);
+      border-color: var(--md-primary);
+      font-weight: 500;
+    }
+
+    /* Grid Layouts */
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .deal-card {
+      background-color: var(--md-surface-lowest);
+      border: 1px solid var(--md-outline-variant);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .deal-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--md-shadow-2);
+    }
+    .deal-thumb {
+      height: 150px;
+      background-color: var(--md-surface-container);
+      position: relative;
+    }
+    .deal-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .deal-tag {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.65);
+      color: #fff;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .deal-info {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    /* Mission Card */
+    .mission-card {
+      border: 1px solid var(--md-outline-variant);
+      border-radius: var(--radius-lg);
+      background: var(--md-surface-lowest);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .mission-card.completed {
+      background: var(--md-surface-low);
+      opacity: 0.75;
+    }
+    .mission-reward-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      background: var(--md-coin-container);
+      color: var(--md-on-coin-container);
+      font-weight: 700;
+      font-size: 0.78rem;
+      border-radius: var(--radius-sm);
+      width: fit-content;
+      margin-bottom: 8px;
+    }
+
+    /* Coupon Card */
+    .coupon-card {
+      border: 1px solid var(--md-outline-variant);
+      border-left: 6px solid var(--md-primary);
+      border-radius: var(--radius-lg);
+      background: var(--md-surface-lowest);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .coupon-card.used {
+      border-left-color: var(--md-outline);
+      background: #f1f3f2;
+      opacity: 0.7;
+    }
+
+    /* Map Box */
+    #user-map-area {
+      width: 100%;
+      height: 440px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--md-outline-variant);
+      margin-bottom: 16px;
+      z-index: 1;
+    }
+
+    /* ==========================================================================
+       誤操作防止：SLIDE TO REDEEM COMPONENT (スライドして利用確定)
+       ========================================================================== */
+    .slide-redeem-container {
+      margin-top: 24px;
+      user-select: none;
+    }
+    .slide-track {
+      position: relative;
+      height: 56px;
+      background-color: var(--md-surface-container);
+      border-radius: var(--radius-full);
+      border: 1px solid var(--md-outline-variant);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .slide-text {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--md-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+    }
+    .slide-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0%;
+      background-color: var(--md-primary-container);
+      border-radius: var(--radius-full);
+      pointer-events: none;
+      transition: width 0.05s ease-out;
+    }
+    .slide-thumb {
+      position: absolute;
+      left: 4px;
+      top: 4px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: var(--md-primary);
+      color: var(--md-on-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      box-shadow: var(--shadow-2);
+      transition: transform 0.05s ease-out;
+      touch-action: pan-y;
+      z-index: 5;
+    }
+    .slide-thumb:active {
+      cursor: grabbing;
+      transform: scale(1.05);
+    }
+
+    /* ==========================================================================
+       STORE ADMIN STYLES (店舗管理画面)
+       ========================================================================== */
+    .admin-layout {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      background-color: var(--md-admin-surface);
+      overflow: hidden;
+    }
+    .admin-sidebar {
+      width: 250px;
+      background-color: #111827;
+      color: #f3f4f6;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 16px;
+      flex-shrink: 0;
+    }
+    .admin-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #93c5fd;
+      margin-bottom: 24px;
+    }
+    .admin-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-grow: 1;
+    }
+    .admin-menu-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-md);
+      color: #d1d5db;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+    }
+    .admin-menu-btn:hover {
+      background-color: #1f2937;
+      color: #fff;
+    }
+    .admin-menu-btn.active {
+      background-color: #2563eb;
+      color: #ffffff;
+      font-weight: 700;
+    }
+    .admin-viewport {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: auto;
+      padding: 24px;
+    }
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .admin-store-selector {
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--md-outline);
+      background: #fff;
+      font-size: 0.9rem;
+      font-weight: 700;
+      outline: none;
+    }
+
+    /* Admin KPIs */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-1);
+    }
+    .kpi-title {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+    .kpi-val {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #111827;
+      line-height: 1.1;
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--md-outline);
+      font-size: 0.92rem;
+      background: #fff;
+      font-family: inherit;
+      outline: none;
+    }
+    .form-control:focus {
+      border-color: var(--md-primary);
+      box-shadow: 0 0 0 2px var(--md-primary-container);
+    }
+
+    /* Modal / Dialog */
+    .dialog-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .dialog-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .dialog-panel {
+      background-color: #fff;
+      border-radius: var(--radius-lg);
+      max-width: 500px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-3);
+      padding: 24px;
+      position: relative;
+    }
+    .dialog-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--md-outline);
+    }
+
+    /* Snackbar */
+    .snackbar {
+      position: fixed;
+      bottom: 74px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background-color: #1e293b;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-3);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 200;
+      font-size: 0.88rem;
+      opacity: 0;
+      transition: transform 0.25s cubic-bezier(0, 0, 0.2, 1), opacity 0.25s;
+      pointer-events: none;
+    }
+    .snackbar.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .desktop-sidebar, .admin-sidebar {
+        display: none;
+      }
+      .mobile-header {
+        display: flex;
+      }
+      .mobile-bottom-nav {
+        display: flex;
+      }
+      .scroll-body {
+        padding: 14px;
+        padding-bottom: 70px;
+      }
+      .admin-viewport {
+        padding: 16px;
+        padding-bottom: 40px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <div class="app-shell lang-fade" id="main-content">
-        <!-- 言語切替（最上部） -->
-        <div class="absolute top-0 left-0 right-0 bg-white/90 backdrop-blur z-[100] flex justify-center gap-6 py-4 border-b border-slate-100">
-            <button onclick="changeLang('ja')" class="text-xs font-black text-slate-400 hover:text-indigo-600 transition">日本語</button>
-            <button onclick="changeLang('en')" class="text-xs font-black text-slate-400 hover:text-indigo-600 transition">EN</button>
-            <button onclick="changeLang('zh')" class="text-xs font-black text-slate-400 hover:text-indigo-600 transition">中文</button>
-            <button onclick="changeLang('ko')" class="text-xs font-black text-slate-400 hover:text-indigo-600 transition">한국어</button>
-        </div>
+  <!-- ========================================================================
+       TOP ROLE SWITCHER BAR (ユーザー側 ⇄ 店舗管理側の即時切替)
+       ======================================================================== -->
+  <header class="role-switcher-bar">
+    <div class="role-badge">
+      <span class="material-symbols-outlined" style="font-size: 18px;">tune</span>
+      <span id="current-mode-label">ユーザー体験モード</span>
+    </div>
+    <button class="role-switch-btn" id="btn-toggle-mode">
+      <span class="material-symbols-outlined" style="font-size: 16px;">swap_horiz</span>
+      <span id="btn-toggle-mode-text">店舗管理画面を開く</span>
+    </button>
+  </header>
 
-        <!-- 解決演出用 -->
-        <div id="success-overlay">
-            <div class="text-7xl font-black text-amber-500 mb-4 animate-bounce">+50 PTS</div>
-            <p id="t-solved-msg" class="text-2xl font-black text-slate-800 tracking-tight">解決しました！</p>
-        </div>
+  <div class="app-root">
 
-        <!-- 1. ゲート画面 -->
-        <div id="screen-gate" class="screen active justify-center items-center px-10 text-center">
-            <div class="mb-16 mt-8">
-                <div class="w-20 h-20 bg-slate-800 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-2xl">
-                    <span class="material-symbols-rounded text-white !text-5xl">handshake</span>
-                </div>
-                <h1 class="text-5xl font-black text-slate-800 mb-1 tracking-tighter">マチレポ</h1>
-                <p class="text-slate-400 font-bold text-[10px] tracking-[0.4em] uppercase">Street Repo Network</p>
-            </div>
-            <div class="w-full space-y-6">
-                <button onclick="showScreen('senior')" class="w-full m-card p-8 flex flex-col items-center">
-                    <span class="material-symbols-rounded !text-5xl mb-3 text-slate-700">accessibility_new</span>
-                    <span id="t-ask" class="text-xl font-black text-slate-800">おねがいする</span>
+    <!-- ======================================================================
+         1. ユーザー側 VIEW CONTAINER
+         ====================================================================== -->
+    <div class="view-container active-mode" id="user-view-container">
+
+      <!-- Desktop Sidebar -->
+      <aside class="desktop-sidebar">
+        <div class="sidebar-brand">
+          <span class="material-symbols-outlined" style="font-size: 30px;">storefront</span>
+          <span>トクシェア</span>
+        </div>
+        <ul class="sidebar-menu">
+          <li>
+            <button class="sidebar-menu-btn active" data-tab="home">
+              <span class="material-symbols-outlined">home</span>
+              <span>ホーム</span>
+            </button>
+          </li>
+          <li>
+            <button class="sidebar-menu-btn" data-tab="map">
+              <span class="material-symbols-outlined">map</span>
+              <span>マップ</span>
+            </button>
+          </li>
+          <li>
+            <button class="sidebar-menu-btn" data-tab="missions">
+              <span class="material-symbols-outlined">flag</span>
+              <span>店舗ミッション</span>
+            </button>
+          </li>
+          <li>
+            <button class="sidebar-menu-btn" data-tab="coupons">
+              <span class="material-symbols-outlined">confirmation_number</span>
+              <span>マイクーポン</span>
+            </button>
+          </li>
+          <li>
+            <button class="sidebar-menu-btn" data-tab="post">
+              <span class="material-symbols-outlined">add_circle</span>
+              <span>安売り投稿</span>
+            </button>
+          </li>
+          <li>
+            <button class="sidebar-menu-btn" data-tab="coins">
+              <span class="material-symbols-outlined">account_balance_wallet</span>
+              <span>コイン履歴</span>
+            </button>
+          </li>
+          <li>
+            <button class="sidebar-menu-btn" data-tab="profile">
+              <span class="material-symbols-outlined">person</span>
+              <span>マイページ</span>
+            </button>
+          </li>
+        </ul>
+        <div style="background:#fff; border:1px solid var(--md-outline-variant); border-radius:var(--radius-md); padding:14px; margin-top:auto;">
+          <div style="font-size:0.75rem; color:var(--md-outline);">利用可能コイン</div>
+          <div style="display:flex; align-items:baseline; gap:6px; margin-top:2px;">
+            <span class="material-symbols-outlined" style="color:var(--md-coin); font-size:20px;">monetization_on</span>
+            <span class="user-coin-num" style="font-size:1.4rem; font-weight:700; color:var(--md-primary);">1,250</span>
+            <span style="font-size:0.8rem;">コイン</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Viewport & Tabs -->
+      <main class="content-viewport">
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+          <div class="mobile-brand">
+            <span class="material-symbols-outlined">storefront</span>
+            <span>トクシェア</span>
+          </div>
+          <div class="coin-badge" id="mobile-coin-trigger" style="cursor:pointer;">
+            <span class="material-symbols-outlined" style="font-size:18px;">monetization_on</span>
+            <span class="user-coin-num">1,250</span>
+          </div>
+        </header>
+
+        <div class="scroll-body">
+
+          <!-- 1-1. HOME -->
+          <section id="tab-home" class="tab-screen active">
+            <!-- 循環コンセプトバナー -->
+            <div style="background:var(--md-primary-container); color:var(--md-on-primary-container); padding:16px; border-radius:var(--radius-lg); margin-bottom:18px;">
+              <h2 style="font-size:1.05rem; font-weight:700;">街へ行って、ミッション達成＆クーポン獲得</h2>
+              <p style="font-size:0.82rem; margin-top:4px; opacity:0.9;">
+                近所のお店にチェックインしてコインを貯め、お得なクーポンと交換しましょう。
+              </p>
+              <div style="display:flex; gap:10px; margin-top:12px;">
+                <button class="btn btn-sm btn-primary" onclick="app.switchUserTab('missions')">
+                  <span class="material-symbols-outlined">flag</span> ミッションを見る
                 </button>
-                <button onclick="openYouth()" class="w-full m-card p-8 flex flex-col items-center">
-                    <span class="material-symbols-rounded !text-5xl mb-3 text-indigo-600">volunteer_activism</span>
-                    <span id="t-find" class="text-xl font-black text-slate-800">クエストを探す</span>
+                <button class="btn btn-sm btn-tonal" onclick="app.switchUserTab('coupons')">
+                  <span class="material-symbols-outlined">confirmation_number</span> クーポン一覧
                 </button>
+              </div>
             </div>
-        </div>
 
-        <!-- 依頼 -->
-        <div id="screen-senior" class="screen">
-            <header class="p-6 pt-20 flex items-center border-b border-slate-100 bg-white">
-                <button onclick="showScreen('gate')" class="p-2 text-slate-400"><span class="material-symbols-rounded">arrow_back</span></button>
-                <h2 id="t-wrong" class="ml-4 text-xl font-black text-slate-800">どうしましたか？</h2>
-            </header>
-            <div class="p-6 space-y-4">
-                <div class="text-indigo-600 bg-indigo-50 p-4 rounded-xl font-bold text-xs flex items-center mb-2">
-                    <span class="material-symbols-rounded mr-2 text-lg">location_on</span>
-                    <span id="t-current-loc">麻布十番駅 付近</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <h3 style="font-size:1.15rem; font-weight:700;">近くの安売り情報</h3>
+              <span style="font-size:0.8rem; color:var(--md-outline);">桜が丘エリア</span>
+            </div>
+
+            <div class="chip-bar" id="category-filter-chips">
+              <button class="chip active" data-cat="ALL">すべて</button>
+              <button class="chip" data-cat="生鮮食品">生鮮食品</button>
+              <button class="chip" data-cat="食品">食品</button>
+              <button class="chip" data-cat="飲料">飲料</button>
+              <button class="chip" data-cat="日用品">日用品</button>
+              <button class="chip" data-cat="お菓子">お菓子</button>
+            </div>
+
+            <div class="grid-cards" id="home-deals-grid"></div>
+          </section>
+
+          <!-- 1-2. MAP -->
+          <section id="tab-map" class="tab-screen">
+            <h2 style="font-size:1.2rem; font-weight:700; margin-bottom:4px;">周辺マップ・店舗チェックイン</h2>
+            <p style="font-size:0.82rem; color:var(--md-outline); margin-bottom:14px;">店舗ピンをタップして店舗情報やチェックインミッションを確認できます</p>
+            <div id="user-map-area"></div>
+            <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:12px;">登録店舗一覧</h3>
+            <div class="grid-cards" id="map-stores-grid"></div>
+          </section>
+
+          <!-- 1-3. MISSIONS -->
+          <section id="tab-missions" class="tab-screen">
+            <div style="margin-bottom:16px;">
+              <h2 style="font-size:1.2rem; font-weight:700;">店舗ミッション</h2>
+              <p style="font-size:0.82rem; color:var(--md-outline);">お店に行ってチェックインや投稿を行い、コインや限定クーポンを獲得しよう</p>
+            </div>
+            <div class="grid-cards" id="missions-list-grid"></div>
+          </section>
+
+          <!-- 1-4. COUPONS -->
+          <section id="tab-coupons" class="tab-screen">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <div>
+                <h2 style="font-size:1.2rem; font-weight:700;">クーポン</h2>
+                <p style="font-size:0.82rem; color:var(--md-outline);">獲得したクーポンの利用や、コインでの引換が可能です</p>
+              </div>
+              <div class="coin-badge">
+                <span class="material-symbols-outlined" style="font-size:18px;">monetization_on</span>
+                <span>保有: <strong class="user-coin-num">1,250</strong></span>
+              </div>
+            </div>
+
+            <!-- クーポン切替タブ -->
+            <div style="display:flex; gap:8px; margin-bottom:16px;">
+              <button class="btn btn-sm btn-primary" id="btn-show-my-coupons" onclick="app.toggleCouponSubTab('my')">
+                <span class="material-symbols-outlined">receipt_long</span> マイクーポン (<span id="my-coupons-count">0</span>)
+              </button>
+              <button class="btn btn-sm btn-tonal" id="btn-show-exchange-coupons" onclick="app.toggleCouponSubTab('exchange')">
+                <span class="material-symbols-outlined">redeem</span> コインで交換
+              </button>
+            </div>
+
+            <div class="grid-cards" id="coupons-display-grid"></div>
+          </section>
+
+          <!-- 1-5. POST -->
+          <section id="tab-post" class="tab-screen">
+            <div class="card" style="max-width:600px; margin:0 auto;">
+              <h2 style="font-size:1.25rem; font-weight:700; margin-bottom:4px;">安売り情報を投稿する</h2>
+              <p style="font-size:0.82rem; color:var(--md-outline); margin-bottom:18px;">価格を共有してコインを獲得しましょう</p>
+              <form id="deal-post-form">
+                <div class="form-group">
+                  <label class="form-label">商品名 *</label>
+                  <input type="text" id="post-input-title" class="form-control" placeholder="例: 卵 10個入" required>
                 </div>
-                <button onclick="seniorCall('op_reg','#334155','point_of_sale')" class="w-full p-8 bg-slate-700 text-white rounded-[28px] flex items-center shadow-lg active:scale-95 transition">
-                    <span class="material-symbols-rounded !text-4xl">point_of_sale</span><span id="t-op-reg" class="text-2xl font-black ml-6">レジの操作</span>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                  <div class="form-group">
+                    <label class="form-label">価格 (税込) *</label>
+                    <input type="number" id="post-input-price" class="form-control" placeholder="198" min="1" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">カテゴリ *</label>
+                    <select id="post-input-cat" class="form-control" required>
+                      <option value="生鮮食品">生鮮食品</option>
+                      <option value="食品">食品</option>
+                      <option value="飲料">飲料</option>
+                      <option value="日用品">日用品</option>
+                      <option value="お菓子">お菓子</option>
+                      <option value="その他">その他</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">店舗 *</label>
+                  <select id="post-input-store" class="form-control" required></select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">商品・価格写真 (任意)</label>
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <input type="file" id="post-input-photo-file" accept="image/*" style="display:none;">
+                    <button type="button" class="btn btn-outlined btn-sm" onclick="document.getElementById('post-input-photo-file').click()">
+                      <span class="material-symbols-outlined">add_a_photo</span> 写真を選択 (+20コイン)
+                    </button>
+                    <span id="post-photo-status" style="font-size:0.8rem; color:var(--md-outline);">未選択</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">特売・タイムセール備考</label>
+                  <input type="text" id="post-input-notes" class="form-control" placeholder="例: お一人様2点限り、夕方特売">
+                </div>
+                <div style="background:var(--md-surface-low); padding:12px; border-radius:var(--radius-md); margin-bottom:18px; display:flex; justify-content:space-between; align-items:center;">
+                  <div>
+                    <div style="font-weight:700; font-size:0.85rem;">獲得予定コイン</div>
+                    <div style="font-size:0.75rem; color:var(--md-outline);" id="post-reward-breakdown">基本: 30コイン</div>
+                  </div>
+                  <div style="font-size:1.3rem; font-weight:700; color:var(--md-primary);" id="post-reward-total">+30 コイン</div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">
+                  <span class="material-symbols-outlined">send</span> 投稿してコインを獲得
                 </button>
-                <button onclick="seniorCall('op_bag','#e11d48','shopping_bag')" class="w-full p-8 bg-rose-600 text-white rounded-[28px] flex items-center shadow-lg active:scale-95 transition">
-                    <span class="material-symbols-rounded !text-4xl">shopping_bag</span><span id="t-op-bag" class="text-2xl font-black ml-6">重い荷物</span>
-                </button>
-                <button onclick="seniorCall('op_step','#059669','blind')" class="w-full p-8 bg-emerald-600 text-white rounded-[28px] flex items-center shadow-lg active:scale-95 transition">
-                    <span class="material-symbols-rounded !text-4xl">blind</span><span id="t-op-step" class="text-2xl font-black ml-6">段差・移動</span>
-                </button>
+              </form>
             </div>
+          </section>
+
+          <!-- 1-6. COINS -->
+          <section id="tab-coins" class="tab-screen">
+            <div class="card" style="text-align:center; padding:28px; background:linear-gradient(135deg, var(--md-primary-container), #fff);">
+              <div style="font-size:0.85rem; color:var(--md-outline);">保有コイン残高</div>
+              <div class="user-coin-num" style="font-size:3rem; font-weight:700; color:var(--md-primary); margin:6px 0;">1,250</div>
+              <div style="font-size:0.82rem; color:var(--md-outline);">街の提携店舗でのクーポン交換や特典に利用できます</div>
+            </div>
+            <div class="card">
+              <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:14px;">コイン履歴</h3>
+              <div id="user-coin-history-list"></div>
+            </div>
+          </section>
+
+          <!-- 1-7. PROFILE -->
+          <section id="tab-profile" class="tab-screen">
+            <div class="card" style="display:flex; align-items:center; gap:16px;">
+              <div style="width:60px; height:60px; border-radius:50%; background:var(--md-secondary-container); display:flex; align-items:center; justify-content:center;">
+                <span class="material-symbols-outlined" style="font-size:32px;">person</span>
+              </div>
+              <div>
+                <h3 style="font-size:1.15rem; font-weight:700;">地域レポーター</h3>
+                <div style="font-size:0.8rem; color:var(--md-outline);">ホームタウン: 桜が丘地区</div>
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px;">
+              <div class="card" style="text-align:center; padding:12px; margin:0;">
+                <div style="font-size:0.75rem; color:var(--md-outline);">投稿数</div>
+                <div style="font-size:1.5rem; font-weight:700; color:var(--md-primary);" id="stat-posts">3</div>
+              </div>
+              <div class="card" style="text-align:center; padding:12px; margin:0;">
+                <div style="font-size:0.75rem; color:var(--md-outline);">チェックイン</div>
+                <div style="font-size:1.5rem; font-weight:700; color:var(--md-primary);" id="stat-checkins">2</div>
+              </div>
+              <div class="card" style="text-align:center; padding:12px; margin:0;">
+                <div style="font-size:0.75rem; color:var(--md-outline);">獲得クーポン</div>
+                <div style="font-size:1.5rem; font-weight:700; color:var(--md-primary);" id="stat-coupons">1</div>
+              </div>
+            </div>
+          </section>
+
         </div>
 
-        <!-- 待機画面 -->
-        <div id="screen-waiting" class="screen items-center justify-center bg-white text-center px-12">
-            <div class="relative flex items-center justify-center mb-32">
-                <div class="pulse-wave"></div>
-                <div id="wait-circle" class="w-32 h-32 bg-slate-800 rounded-full flex items-center justify-center text-white z-10 shadow-2xl">
-                    <span id="wait-icon" class="material-symbols-rounded !text-6xl">campaign</span>
-                </div>
+        <!-- Mobile Bottom Nav -->
+        <nav class="mobile-bottom-nav">
+          <button class="nav-btn active" data-tab="home">
+            <span class="material-symbols-outlined">home</span>
+            <span>ホーム</span>
+          </button>
+          <button class="nav-btn" data-tab="map">
+            <span class="material-symbols-outlined">map</span>
+            <span>マップ</span>
+          </button>
+          <button class="nav-btn" data-tab="missions">
+            <span class="material-symbols-outlined">flag</span>
+            <span>ミッション</span>
+          </button>
+          <button class="nav-btn fab-btn" data-tab="post">
+            <div class="fab-icon-box">
+              <span class="material-symbols-outlined">add</span>
             </div>
-            <h2 id="wait-label" class="text-3xl font-black text-slate-800 mb-4 uppercase">Calling...</h2>
-            <p id="t-wait-msg" class="text-slate-500 font-bold mb-10 leading-relaxed px-4 text-center">近くのサポーターへ通知を送信しました。そのままお待ちください。</p>
-            <button onclick="showScreen('senior')" id="t-cancel" class="px-12 py-4 bg-slate-100 text-slate-400 rounded-full font-black text-lg">やめる</button>
-        </div>
-
-        <!-- リスト -->
-        <div id="screen-youth-list" class="screen bg-slate-50">
-            <header class="p-5 pt-20 bg-white border-b flex justify-between items-center sticky top-0 z-50">
-                <button onclick="showScreen('gate')" class="p-1 text-slate-400"><span class="material-symbols-rounded">arrow_back</span></button>
-                <span id="t-nearby" class="font-black text-slate-800 tracking-tight">近くのクエスト</span>
-                <div class="bg-amber-400 text-white px-3 py-1 rounded-full font-black text-xs shadow-sm"><span class="header-pts-val">7,000</span> PTS</div>
-            </header>
-            <div class="p-4 space-y-4 overflow-y-auto pb-24">
-                <div onclick="youthAccept('op_reg', '麻布十番 ピーコック')" class="m-card p-6 flex justify-between items-center border-l-8 border-slate-600">
-                    <div><p class="text-[10px] font-black text-slate-400 mb-1">AZABU JUBAN</p><h3 class="t-op-reg-val text-lg font-black text-slate-800">レジの操作</h3></div>
-                    <span class="bg-indigo-50 text-indigo-600 text-[10px] font-black px-4 py-2 rounded-full uppercase">Mission</span>
-                </div>
-                <div onclick="youthAccept('op_bag', '六本木ヒルズ 入口')" class="m-card p-6 flex justify-between items-center border-l-8 border-rose-600">
-                    <div><p class="text-[10px] font-black text-slate-400 mb-1">ROPPONGI HILLS</p><h3 class="t-op-bag-val text-lg font-black text-slate-800">重い荷物</h3></div>
-                    <span class="bg-indigo-50 text-indigo-600 text-[10px] font-black px-4 py-2 rounded-full uppercase">Mission</span>
-                </div>
-            </div>
-            <nav class="mt-auto bg-white/95 backdrop-blur-md border-t flex justify-around py-4 z-50 shadow-2xl">
-                <button onclick="changeTab('list')" class="nav-active"><span class="material-symbols-rounded">explore</span></button>
-                <button onclick="changeTab('map')" class="text-slate-300"><span class="material-symbols-rounded">map</span></button>
-                <button onclick="changeTab('mypage')" class="text-slate-300"><span class="material-symbols-rounded">person</span></button>
-            </nav>
-        </div>
-
-        <!-- マップ -->
-        <div id="screen-youth-map" class="screen">
-            <header class="p-4 pt-20 bg-white border-b flex items-center z-50">
-                <button onclick="showScreen('gate')" class="p-2 text-slate-400"><span class="material-symbols-rounded">arrow_back</span></button>
-                <span id="t-map-title" class="ml-4 font-black text-slate-800">周辺マップ</span>
-            </header>
-            <div class="flex-grow"><div id="map"></div></div>
-            <nav class="bg-white/95 border-t flex justify-around py-4 z-50 shadow-2xl">
-                <button onclick="changeTab('list')" class="text-slate-300"><span class="material-symbols-rounded">explore</span></button>
-                <button onclick="changeTab('map')" class="nav-active"><span class="material-symbols-rounded">map</span></button>
-                <button onclick="changeTab('mypage')" class="text-slate-300"><span class="material-symbols-rounded">person</span></button>
-            </nav>
-        </div>
-
-        <!-- マイページ -->
-        <div id="screen-youth-mypage" class="screen bg-slate-50">
-            <header class="p-4 pt-20 bg-white border-b flex items-center z-50">
-                <button onclick="showScreen('gate')" class="p-2 text-slate-400"><span class="material-symbols-rounded">arrow_back</span></button>
-                <span id="t-profile" class="ml-4 font-black text-slate-800">マイページ</span>
-            </header>
-            <div class="p-8 flex-grow overflow-y-auto">
-                <div class="bg-white rounded-[40px] p-8 text-center shadow-sm border border-slate-100 mb-8">
-                    <div class="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4 text-indigo-600">
-                        <span class="material-symbols-rounded !text-4xl">verified_user</span>
-                    </div>
-                    <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Supporter Level: Legend</p>
-                    <p id="u-pts" class="text-6xl font-black text-slate-900 tracking-tighter header-pts-val">7,000</p>
-                    <p id="t-pts-label" class="text-[10px] font-bold text-slate-400 uppercase">Total Points</p>
-                </div>
-                <h4 id="t-history" class="font-black text-slate-400 text-[10px] uppercase mb-4 px-2 tracking-widest">History</h4>
-                <div class="space-y-2">
-                    <div class="bg-white p-4 rounded-2xl flex justify-between shadow-sm border border-slate-50"><span class="font-black text-slate-800">Mission Clear</span><span class="text-xs font-bold text-indigo-400">2024.04.11</span></div>
-                </div>
-            </div>
-            <nav class="bg-white/95 border-t flex justify-around py-4 z-50 shadow-2xl">
-                <button onclick="changeTab('list')" class="text-slate-300"><span class="material-symbols-rounded">explore</span></button>
-                <button onclick="changeTab('map')" class="text-slate-300"><span class="material-symbols-rounded">map</span></button>
-                <button onclick="changeTab('mypage')" class="nav-active"><span class="material-symbols-rounded">person</span></button>
-            </nav>
-        </div>
-
-        <!-- 受注画面 -->
-        <div id="screen-youth-active" class="screen bg-white">
-            <header class="p-6 pt-20 border-b text-center"><h2 id="t-in-progress" class="text-lg font-black text-slate-800">ミッション進行中</h2></header>
-            <div class="flex-grow p-8 flex flex-col justify-between">
-                <div class="bg-indigo-50 p-10 rounded-[40px] text-center border border-indigo-100">
-                    <h3 id="active-task-type" class="text-4xl font-black text-slate-800 mb-8 tracking-tighter">---</h3>
-                    <p id="active-task-loc" class="text-lg font-bold text-slate-700 tracking-tight">---</p>
-                </div>
-                <div class="space-y-4">
-                    <button onclick="solveMission()" id="t-solve-btn" class="w-full p-8 bg-indigo-600 text-white rounded-[32px] shadow-xl text-xl font-black active:scale-95 transition">解決しました！</button>
-                    <button onclick="showScreen('youth-list')" id="t-stop" class="w-full py-4 text-slate-400 font-bold text-center">中止する</button>
-                </div>
-            </div>
-        </div>
+            <span>投稿</span>
+          </button>
+          <button class="nav-btn" data-tab="coupons">
+            <span class="material-symbols-outlined">confirmation_number</span>
+            <span>クーポン</span>
+          </button>
+          <button class="nav-btn" data-tab="profile">
+            <span class="material-symbols-outlined">person</span>
+            <span>マイ</span>
+          </button>
+        </nav>
+      </main>
     </div>
 
-    <script>
-        // 翻訳
-        const LANGS = {
-            ja: { ask:"おねがいする", find:"クエストを探す", wrong:"どうしましたか？", op_reg:"レジの操作", op_bag:"重い荷物", op_step:"段差・移動", wait_msg:"近くのサポーターへ通知を送信しました。<br>そのままお待ちください。", calling:"呼び出し中", cancel:"やめる", nearby:"近くのクエスト", in_progress:"ミッション進行中", solve:"解決しました！", stop:"中止する", solved_msg:"解決しました！", map_title:"周辺マップ", profile:"マイページ", history:"活動履歴", pts_label:"獲得ポイント", cur_loc:"麻布十番駅 付近" },
-            en: { ask:"Request Help", find:"Find Quests", wrong:"How can we help?", op_reg:"Checkout Help", op_bag:"Heavy Baggage", op_step:"Steps / Mobility", wait_msg:"Notified nearby supporters.<br>Please wait a moment.", calling:"Calling...", cancel:"Cancel", nearby:"Nearby Quests", in_progress:"Mission in Progress", solve:"Solved It!", stop:"Stop", solved_msg:"Well Done!", map_title:"Nearby Map", profile:"Profile", history:"History", pts_label:"Total Points", cur_loc:"Azabu-Juban Station" },
-            zh: { ask:"请求帮助", find:"寻找任务", wrong:"有什么可以帮您？", op_reg:"收银机操作", op_bag:"重型行李", op_step:"台阶/移动", wait_msg:"已通知附近的志愿者。<br>请在原地等候。", calling:"正在呼叫...", cancel:"取消", nearby:"附近任务", in_progress:"任务执行中", solve:"已解决！", stop:"取消", solved_msg:"太棒了！", map_title:"周边地图", profile:"个人主页", history:"历史记录", pts_label:"累计积分", cur_loc:"麻布十番站 附近" },
-            ko: { ask:"부탁하기", find:"퀘스트 찾기", wrong:"무슨 도움이 필요하세요?", op_reg:"계산대 조작", op_bag:"무거운 짐", op_step:"단차 / 이동 보조", wait_msg:"근처 서포터에게 알렸습니다.<br>잠시만 기다려주세요.", calling:"호출 중...", cancel:"취소", nearby:"근처 퀘スト", in_progress:"미션 진행 중", solve:"해결했습니다!", stop:"중단", solved_msg:"해결 완료!", map_title:"주변 지도", profile:"마이페이지", history:"활동 내역", pts_label:"누적 포인트", cur_loc:"아자부주반역 근처" }
+    <!-- ======================================================================
+         2. 店舗向け専用管理画面 VIEW CONTAINER (B2B STORE ADMIN)
+         ====================================================================== -->
+    <div class="view-container" id="admin-view-container">
+      <div class="admin-layout">
+
+        <!-- Admin Sidebar -->
+        <aside class="admin-sidebar">
+          <div class="admin-brand">
+            <span class="material-symbols-outlined" style="font-size: 28px;">store</span>
+            <span>店舗管理コンソール</span>
+          </div>
+          <ul class="admin-menu">
+            <li>
+              <button class="admin-menu-btn active" data-admin-tab="dashboard">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span>ダッシュボード</span>
+              </button>
+            </li>
+            <li>
+              <button class="admin-menu-btn" data-admin-tab="verify">
+                <span class="material-symbols-outlined">qr_code_scanner</span>
+                <span>クーポン利用確認</span>
+              </button>
+            </li>
+            <li>
+              <button class="admin-menu-btn" data-admin-tab="coupons">
+                <span class="material-symbols-outlined">confirmation_number</span>
+                <span>クーポン作成・管理</span>
+              </button>
+            </li>
+            <li>
+              <button class="admin-menu-btn" data-admin-tab="missions">
+                <span class="material-symbols-outlined">flag</span>
+                <span>ミッション作成・管理</span>
+              </button>
+            </li>
+            <li>
+              <button class="admin-menu-btn" data-admin-tab="profile">
+                <span class="material-symbols-outlined">edit_note</span>
+                <span>店舗情報・お知らせ</span>
+              </button>
+            </li>
+          </ul>
+        </aside>
+
+        <!-- Admin Viewport -->
+        <main class="admin-viewport">
+          <header class="admin-header">
+            <div>
+              <h1 style="font-size:1.4rem; font-weight:700;" id="admin-page-title">店舗ダッシュボード</h1>
+              <div style="font-size:0.85rem; color:#6b7280;">店舗側リアルタイム管理 & クーポン消し込み</div>
+            </div>
+            <!-- 管理対象店舗の切り替え -->
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:0.85rem; font-weight:700;">管理店舗:</span>
+              <select class="admin-store-selector" id="admin-store-switch"></select>
+            </div>
+          </header>
+
+          <!-- 2-1. ADMIN DASHBOARD -->
+          <div id="admin-tab-dashboard" class="admin-screen active">
+            <div class="kpi-row">
+              <div class="kpi-card">
+                <div class="kpi-title">本日のチェックイン数</div>
+                <div class="kpi-val" id="admin-kpi-checkins">0</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-title">本日のクーポン利用数</div>
+                <div class="kpi-val" id="admin-kpi-redemptions">0</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-title">ミッション達成数</div>
+                <div class="kpi-val" id="admin-kpi-missions">0</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-title">投稿された安売り情報</div>
+                <div class="kpi-val" id="admin-kpi-deals">0</div>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:20px;">
+              <div class="card" style="margin:0;">
+                <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:12px;">現在公開中のクーポン</h3>
+                <div id="admin-active-coupons-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+              </div>
+              <div class="card" style="margin:0;">
+                <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:12px;">現在開催中のミッション</h3>
+                <div id="admin-active-missions-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2-2. ADMIN VERIFY (クーポン利用確認・消し込み) -->
+          <div id="admin-tab-verify" class="admin-screen" style="display:none;">
+            <div class="card" style="max-width:560px; margin:0 auto;">
+              <h2 style="font-size:1.25rem; font-weight:700; margin-bottom:6px;">店頭クーポン確認・消し込み</h2>
+              <p style="font-size:0.85rem; color:#6b7280; margin-bottom:20px;">
+                お客様が提示した確認コード (例: CP-4819) を入力して利用処理を行ってください。
+              </p>
+              <div style="display:flex; gap:8px; margin-bottom:20px;">
+                <input type="text" id="admin-verify-code-input" class="form-control" placeholder="CP-XXXXX" style="text-transform:uppercase; font-size:1.1rem; font-weight:700; letter-spacing:0.05em;">
+                <button class="btn btn-primary" id="btn-admin-verify-search" style="white-space:nowrap;">
+                  <span class="material-symbols-outlined">search</span> 照合する
+                </button>
+              </div>
+
+              <!-- 照合結果表示エリア -->
+              <div id="admin-verify-result-box" style="display:none; padding:16px; border-radius:var(--radius-md); border:1px solid #e5e7eb; background:#f9fafb;">
+                <!-- Dynamically filled -->
+              </div>
+            </div>
+          </div>
+
+          <!-- 2-3. ADMIN CREATE / MANAGE COUPONS -->
+          <div id="admin-tab-coupons" class="admin-screen" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <h2 style="font-size:1.2rem; font-weight:700;">発行クーポン一覧</h2>
+              <button class="btn btn-primary btn-sm" onclick="app.openAdminCreateCouponModal()">
+                <span class="material-symbols-outlined">add</span> 新しいクーポンを作成
+              </button>
+            </div>
+            <div class="grid-cards" id="admin-manage-coupons-grid"></div>
+          </div>
+
+          <!-- 2-4. ADMIN CREATE / MANAGE MISSIONS -->
+          <div id="admin-tab-missions" class="admin-screen" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <h2 style="font-size:1.2rem; font-weight:700;">開催ミッション一覧</h2>
+              <button class="btn btn-primary btn-sm" onclick="app.openAdminCreateMissionModal()">
+                <span class="material-symbols-outlined">add</span> 新しいミッションを作成
+              </button>
+            </div>
+            <div class="grid-cards" id="admin-manage-missions-grid"></div>
+          </div>
+
+          <!-- 2-5. ADMIN PROFILE & NOTICE -->
+          <div id="admin-tab-profile" class="admin-screen" style="display:none;">
+            <div class="card" style="max-width:680px; margin:0 auto;">
+              <h2 style="font-size:1.2rem; font-weight:700; margin-bottom:16px;">店舗情報・お知らせ編集</h2>
+              <form id="admin-store-profile-form">
+                <div class="form-group">
+                  <label class="form-label">店舗名</label>
+                  <input type="text" id="admin-edit-name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">住所</label>
+                  <input type="text" id="admin-edit-address" class="form-control" required>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                  <div class="form-group">
+                    <label class="form-label">営業時間</label>
+                    <input type="text" id="admin-edit-hours" class="form-control" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">定休日</label>
+                    <input type="text" id="admin-edit-holiday" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">電話番号</label>
+                  <input type="text" id="admin-edit-tel" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">店舗の説明</label>
+                  <textarea id="admin-edit-desc" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="form-group" style="background:#eff6ff; padding:14px; border-radius:var(--radius-md); border:1px solid #bfdbfe;">
+                  <label class="form-label" style="color:#1e40af;">店頭・アプリに表示する「最新のお知らせ」</label>
+                  <input type="text" id="admin-edit-notice" class="form-control" placeholder="例: 本日17時よりタイムセール開催！">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">
+                  <span class="material-symbols-outlined">save</span> 店舗情報を更新する
+                </button>
+              </form>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========================================================================
+       MODALS & DIALOGS
+       ======================================================================== -->
+
+  <!-- 店舗詳細 ＆ チェックインモーダル -->
+  <div class="dialog-overlay" id="modal-store-detail">
+    <div class="dialog-panel">
+      <button class="dialog-close" onclick="app.closeAllModals()"><span class="material-symbols-outlined">close</span></button>
+      <div style="margin-bottom:16px;">
+        <span class="deal-tag" id="store-modal-category" style="position:static; margin-bottom:6px; display:inline-block;">スーパー</span>
+        <h2 style="font-size:1.3rem; font-weight:700;" id="store-modal-name">店舗名</h2>
+        <p style="font-size:0.85rem; color:var(--md-outline); margin-top:2px;" id="store-modal-address">住所</p>
+      </div>
+
+      <!-- 店舗からのお知らせバナー -->
+      <div id="store-modal-notice-box" style="display:none; background:#eff6ff; color:#1e3a8a; border:1px solid #bfdbfe; padding:12px; border-radius:var(--radius-md); font-size:0.85rem; margin-bottom:16px;">
+        <div style="display:flex; align-items:center; gap:6px; font-weight:700; margin-bottom:2px;">
+          <span class="material-symbols-outlined" style="font-size:18px;">campaign</span> 店舗からのお知らせ
+        </div>
+        <div id="store-modal-notice-text">お知らせ内容</div>
+      </div>
+
+      <!-- チェックインボタン（ミッション達成と連動） -->
+      <div style="background:var(--md-surface-low); border:1px solid var(--md-outline-variant); border-radius:var(--radius-md); padding:16px; margin-bottom:16px; text-align:center;">
+        <div style="font-weight:700; font-size:0.95rem; margin-bottom:4px;">店頭チェックイン</div>
+        <p style="font-size:0.8rem; color:var(--md-outline); margin-bottom:12px;">お店の近くに来たらタップしてミッション達成＆コイン獲得</p>
+        <button class="btn btn-primary" id="btn-perform-checkin" style="width:100%;">
+          <span class="material-symbols-outlined">pin_drop</span> チェックインする (+50コイン)
+        </button>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:8px;">現在この店舗で提供中のクーポン</h4>
+        <div id="store-modal-coupons-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+      </div>
+
+      <div>
+        <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:8px;">最近投稿された安売り情報</h4>
+        <div id="store-modal-deals-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- クーポン詳細 ＆ スライド利用確定モーダル (誤操作防止 Slide to Redeem) -->
+  <div class="dialog-overlay" id="modal-coupon-detail">
+    <div class="dialog-panel">
+      <button class="dialog-close" onclick="app.closeAllModals()"><span class="material-symbols-outlined">close</span></button>
+      <div style="text-align:center; padding:10px 0 16px;">
+        <div style="font-size:0.85rem; color:var(--md-outline);" id="coupon-modal-store-name">ベーカリー 麦のかおり</div>
+        <h2 style="font-size:1.4rem; font-weight:700; color:var(--md-primary); margin:6px 0;" id="coupon-modal-title">100円引きクーポン</h2>
+        <div style="font-size:0.95rem; color:var(--md-on-surface);" id="coupon-modal-benefit">全品100円引き</div>
+        <div style="font-size:0.8rem; color:var(--md-outline); margin-top:8px;">有効期限: <span id="coupon-modal-expire">2026/10/31</span></div>
+      </div>
+
+      <!-- 未使用時のスワイプ操作エリア -->
+      <div id="coupon-unredeemed-area">
+        <div style="background:var(--md-surface-low); padding:12px; border-radius:var(--radius-md); font-size:0.82rem; color:var(--md-outline); text-align:center;">
+          誤操作を防ぐため、お会計時にお店のスタッフの前で下のスライダーを右端まで動かしてください。
+        </div>
+
+        <!-- スライド利用確定コンポーネント (Slide to Redeem) -->
+        <div class="slide-redeem-container">
+          <div class="slide-track" id="slide-track">
+            <div class="slide-fill" id="slide-fill"></div>
+            <div class="slide-text">
+              <span>右にスライドして使用</span>
+              <span class="material-symbols-outlined" style="font-size:18px;">arrow_forward</span>
+            </div>
+            <div class="slide-thumb" id="slide-thumb">
+              <span class="material-symbols-outlined">swipe_right</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 使用済み／店頭提示コードエリア -->
+      <div id="coupon-redeemed-area" style="display:none; text-align:center; margin-top:16px;">
+        <div style="display:inline-flex; align-items:center; gap:6px; color:var(--md-primary); font-weight:700; margin-bottom:8px;">
+          <span class="material-symbols-outlined">check_circle</span> 使用中・確認済み
+        </div>
+        <p style="font-size:0.82rem; color:var(--md-outline);">店舗スタッフへ以下の確認コードをご提示ください</p>
+        <div style="font-family:monospace; font-size:1.8rem; font-weight:700; letter-spacing:0.1em; background:var(--md-surface-low); padding:12px; border-radius:var(--radius-md); margin:12px 0; border:2px dashed var(--md-primary);" id="coupon-modal-code">
+          CP-84920
+        </div>
+        <div style="font-size:0.75rem; color:var(--md-outline);" id="coupon-modal-used-time">2026/09/23 12:00 利用</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- クーポン交換確認モーダル (コイン消費) -->
+  <div class="dialog-overlay" id="modal-coupon-exchange-confirm">
+    <div class="dialog-panel" style="text-align:center;">
+      <h3 style="font-size:1.2rem; font-weight:700; margin-bottom:12px;">クーポンの交換確認</h3>
+      <div style="font-size:0.9rem; color:var(--md-outline);" id="exchange-modal-store">店舗名</div>
+      <div style="font-size:1.3rem; font-weight:700; color:var(--md-primary); margin:8px 0;" id="exchange-modal-title">クーポン名</div>
+      <div style="background:var(--md-surface-low); padding:12px; border-radius:var(--radius-md); margin:16px 0;">
+        必要コイン: <strong style="font-size:1.2rem; color:var(--md-coin);" id="exchange-modal-coins">300</strong> コイン
+      </div>
+      <div style="display:flex; justify-content:center; gap:12px;">
+        <button class="btn btn-outlined" onclick="app.closeAllModals()">キャンセル</button>
+        <button class="btn btn-primary" id="btn-confirm-exchange-exec">
+          <span class="material-symbols-outlined">redeem</span> 交換する
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 店舗側：クーポン作成モーダル -->
+  <div class="dialog-overlay" id="modal-admin-create-coupon">
+    <div class="dialog-panel">
+      <button class="dialog-close" onclick="app.closeAllModals()"><span class="material-symbols-outlined">close</span></button>
+      <h3 style="font-size:1.2rem; font-weight:700; margin-bottom:16px;">新規クーポンの作成</h3>
+      <form id="admin-create-coupon-form">
+        <div class="form-group">
+          <label class="form-label">クーポン名 *</label>
+          <input type="text" id="coupon-create-title" class="form-control" placeholder="例: パン1個無料、100円引き" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">特典内容 *</label>
+          <input type="text" id="coupon-create-benefit" class="form-control" placeholder="例: お会計から100円OFF" required>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label class="form-label">必要コイン *</label>
+            <input type="number" id="coupon-create-coins" class="form-control" value="300" min="0" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">有効期限 *</label>
+            <input type="date" id="coupon-create-expire" class="form-control" value="2026-10-31" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">利用可能回数 (1人あたり)</label>
+          <input type="number" id="coupon-create-limit" class="form-control" value="1" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">説明・利用条件</label>
+          <textarea id="coupon-create-desc" class="form-control" rows="2" placeholder="例: 500円以上のお買い上げで利用可能"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">
+          <span class="material-symbols-outlined">add</span> クーポンを発行する
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 店舗側：ミッション作成モーダル -->
+  <div class="dialog-overlay" id="modal-admin-create-mission">
+    <div class="dialog-panel">
+      <button class="dialog-close" onclick="app.closeAllModals()"><span class="material-symbols-outlined">close</span></button>
+      <h3 style="font-size:1.2rem; font-weight:700; margin-bottom:16px;">新規ミッションの作成</h3>
+      <form id="admin-create-mission-form">
+        <div class="form-group">
+          <label class="form-label">ミッション名 *</label>
+          <input type="text" id="mission-create-title" class="form-control" placeholder="例: お店に来てチェックイン！" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">内容・達成条件 *</label>
+          <input type="text" id="mission-create-desc" class="form-control" placeholder="例: 店舗詳細からチェックインボタンを押す" required>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label class="form-label">報酬種別</label>
+            <select id="mission-create-reward-type" class="form-control">
+              <option value="coin">コイン</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">報酬コイン数 *</label>
+            <input type="number" id="mission-create-reward-val" class="form-control" value="50" min="10" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">アクション種別</label>
+          <select id="mission-create-action-type" class="form-control">
+            <option value="checkin">店舗チェックイン</option>
+            <option value="post">商品価格の投稿</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">
+          <span class="material-symbols-outlined">flag</span> ミッションを公開する
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- グローバル Snackbar -->
+  <div class="snackbar" id="app-snackbar">
+    <span class="material-symbols-outlined" id="snack-icon">info</span>
+    <span id="snack-msg">処理が完了しました</span>
+  </div>
+
+  <!-- ========================================================================
+       APPLICATION LOGIC & CORE ARCHITECTURE
+       ======================================================================== -->
+  <script>
+    /**
+     * データストア初期データ (A版用完全シード)
+     */
+    const INITIAL_DATA = {
+      stores: [
+        {
+          id: 's_bakery',
+          name: 'ベーカリー 麦のかおり',
+          address: '桜が丘1-5-3',
+          hours: '8:00 - 19:00',
+          holiday: '火曜日',
+          tel: '03-1234-5678',
+          category: 'ベーカリー',
+          description: '毎朝手作りの国産小麦パンと焼き立てバゲットが自慢のお店です。',
+          notice: '本日15時より焼き立てフランスパンが店頭に並びます！',
+          lat: 35.6572,
+          lng: 139.7025,
+          distance: '徒歩4分'
+        },
+        {
+          id: 's_greenmart',
+          name: 'グリーンマート 桜が丘店',
+          address: '桜が丘2-14-5',
+          hours: '9:00 - 22:00',
+          holiday: '年中無休',
+          tel: '03-2345-6789',
+          category: 'スーパー',
+          description: '新鮮野菜と日用品が地域最安値。タイムセールも毎日開催。',
+          notice: '夕方特売：国産牛切り落としが半額セール！',
+          lat: 35.6580,
+          lng: 139.7016,
+          distance: '徒歩5分'
+        },
+        {
+          id: 's_cafe',
+          name: '喫茶 ロンド',
+          address: '桜が丘3-11-9',
+          hours: '9:00 - 21:00',
+          holiday: '水曜日',
+          tel: '03-3456-7890',
+          category: 'カフェ',
+          description: '落ち着いた音楽とネルドリップ珈琲が楽しめる街の喫茶店です。',
+          notice: '季節限定：自家製モンブランがスタートしました。',
+          lat: 35.6602,
+          lng: 139.7005,
+          distance: '徒歩8分'
+        }
+      ],
+
+      deals: [
+        {
+          id: 'd1',
+          storeId: 's_greenmart',
+          productName: '卵 10個入 (L玉)',
+          price: 198,
+          category: '生鮮食品',
+          image: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=500&auto=format&fit=crop&q=60',
+          userId: 'u_demo1',
+          createdAt: Date.now() - 1000 * 60 * 120,
+          confirmedCount: 6,
+          confirmedUsers: ['u_demo1'],
+          notes: '本日特売。お一人様2点限り'
+        },
+        {
+          id: 'd2',
+          storeId: 's_bakery',
+          productName: '国産小麦の角食パン 1斤',
+          price: 240,
+          category: '食品',
+          image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&auto=format&fit=crop&q=60',
+          userId: 'u_demo2',
+          createdAt: Date.now() - 1000 * 60 * 180,
+          confirmedCount: 4,
+          confirmedUsers: [],
+          notes: '焼き立てでふわふわです'
+        }
+      ],
+
+      missions: [
+        {
+          id: 'm1',
+          storeId: 's_bakery',
+          title: '麦のかおりへ行ってみよう',
+          description: '店舗詳細からチェックインを行う',
+          rewardType: 'coin',
+          rewardVal: 50,
+          actionType: 'checkin',
+          isPublic: true
+        },
+        {
+          id: 'm2',
+          storeId: 's_greenmart',
+          title: 'グリーンマートで安売り発見',
+          description: 'グリーンマートの商品情報を1件投稿する',
+          rewardType: 'coin',
+          rewardVal: 80,
+          actionType: 'post',
+          isPublic: true
+        },
+        {
+          id: 'm3',
+          storeId: 's_cafe',
+          title: '喫茶ロンドでほっと一息',
+          description: '喫茶ロンドへチェックインする',
+          rewardType: 'coin',
+          rewardVal: 50,
+          actionType: 'checkin',
+          isPublic: true
+        }
+      ],
+
+      coupons: [
+        {
+          id: 'c1',
+          storeId: 's_bakery',
+          title: 'パン100円引きクーポン',
+          benefit: '全品100円引き',
+          requiredCoins: 300,
+          expireDate: '2026/10/31',
+          description: 'お会計時にご提示ください。',
+          isPublic: true
+        },
+        {
+          id: 'c2',
+          storeId: 's_cafe',
+          title: '自家製ブレンド珈琲 1杯無料',
+          benefit: 'ドリンク1杯無料',
+          requiredCoins: 500,
+          expireDate: '2026/11/15',
+          description: 'フードまたはスイーツご注文時に利用可能。',
+          isPublic: true
+        },
+        {
+          id: 'c3',
+          storeId: 's_greenmart',
+          title: 'お会計から5%OFFクーポン',
+          benefit: 'レジ合計から5%OFF',
+          requiredCoins: 400,
+          expireDate: '2026/10/31',
+          description: '1,000円以上のお買い上げでご利用可能。',
+          isPublic: true
+        }
+      ],
+
+      userCoupons: [
+        {
+          id: 'uc_demo1',
+          couponId: 'c1',
+          code: 'CP-4819',
+          status: 'active', // active | used
+          acquiredAt: Date.now() - 1000 * 60 * 60 * 24,
+          usedAt: null
+        }
+      ],
+
+      checkIns: [
+        { id: 'chk_1', storeId: 's_bakery', timestamp: Date.now() - 1000 * 60 * 60 * 5 }
+      ],
+
+      histories: [
+        { id: 'h1', amount: 1000, type: 'gain', description: '初期参加ボーナス', createdAt: Date.now() - 1000 * 60 * 60 * 48 },
+        { id: 'h2', amount: 50, type: 'gain', description: '店舗チェックインボーナス (ベーカリー 麦のかおり)', createdAt: Date.now() - 1000 * 60 * 60 * 5 },
+        { id: 'h3', amount: 200, type: 'gain', description: '安売り情報の投稿ボーナス', createdAt: Date.now() - 1000 * 60 * 60 * 2 }
+      ]
+    };
+
+    /**
+     * アプリケーションステート管理
+     */
+    class StoreApp {
+      constructor() {
+        this.mode = 'user'; // 'user' | 'admin'
+        this.activeUserTab = 'home';
+        this.activeAdminTab = 'dashboard';
+        this.activeCouponSubTab = 'my'; // 'my' | 'exchange'
+        this.activeCategory = 'ALL';
+        this.selectedAdminStoreId = 's_bakery';
+
+        // 永続化データの読み込み
+        this.loadStorage();
+
+        // 一時選択オブジェクト
+        this.selectedStore = null;
+        this.selectedUserCoupon = null;
+        this.selectedExchangeCoupon = null;
+        this.leafletMap = null;
+        this.markers = [];
+      }
+
+      loadStorage() {
+        this.coins = parseInt(localStorage.getItem('ts_coins') || '1250', 10);
+        this.stores = JSON.parse(localStorage.getItem('ts_stores') || JSON.stringify(INITIAL_DATA.stores));
+        this.deals = JSON.parse(localStorage.getItem('ts_deals') || JSON.stringify(INITIAL_DATA.deals));
+        this.missions = JSON.parse(localStorage.getItem('ts_missions') || JSON.stringify(INITIAL_DATA.missions));
+        this.coupons = JSON.parse(localStorage.getItem('ts_coupons') || JSON.stringify(INITIAL_DATA.coupons));
+        this.userCoupons = JSON.parse(localStorage.getItem('ts_user_coupons') || JSON.stringify(INITIAL_DATA.userCoupons));
+        this.checkIns = JSON.parse(localStorage.getItem('ts_checkins') || JSON.stringify(INITIAL_DATA.checkIns));
+        this.histories = JSON.parse(localStorage.getItem('ts_histories') || JSON.stringify(INITIAL_DATA.histories));
+        this.completedMissions = JSON.parse(localStorage.getItem('ts_completed_missions') || '["m1"]');
+      }
+
+      saveStorage() {
+        localStorage.setItem('ts_coins', this.coins.toString());
+        localStorage.setItem('ts_stores', JSON.stringify(this.stores));
+        localStorage.setItem('ts_deals', JSON.stringify(this.deals));
+        localStorage.setItem('ts_missions', JSON.stringify(this.missions));
+        localStorage.setItem('ts_coupons', JSON.stringify(this.coupons));
+        localStorage.setItem('ts_user_coupons', JSON.stringify(this.userCoupons));
+        localStorage.setItem('ts_checkins', JSON.stringify(this.checkIns));
+        localStorage.setItem('ts_histories', JSON.stringify(this.histories));
+        localStorage.setItem('ts_completed_missions', JSON.stringify(this.completedMissions));
+      }
+
+      addCoins(amount, desc) {
+        this.coins += amount;
+        this.histories.unshift({
+          id: 'h_' + Date.now(),
+          amount: amount,
+          type: 'gain',
+          description: desc,
+          createdAt: Date.now()
+        });
+        this.saveStorage();
+        this.updateCoinUI();
+      }
+
+      spendCoins(amount, desc) {
+        if (this.coins < amount) return false;
+        this.coins -= amount;
+        this.histories.unshift({
+          id: 'h_' + Date.now(),
+          amount: -amount,
+          type: 'loss',
+          description: desc,
+          createdAt: Date.now()
+        });
+        this.saveStorage();
+        this.updateCoinUI();
+        return true;
+      }
+
+      updateCoinUI() {
+        document.querySelectorAll('.user-coin-num').forEach(el => {
+          el.textContent = this.coins.toLocaleString();
+        });
+      }
+    }
+
+    const state = new StoreApp();
+
+    /**
+     * コントローラー & イベントリスナー
+     */
+    const app = {
+      init() {
+        this.setupRoleSwitcher();
+        this.setupNavigation();
+        this.setupSlideToRedeem();
+        this.setupForms();
+        this.renderAll();
+        this.initMap();
+      },
+
+      // モード切替（ユーザー体験 ⇄ 店舗管理）
+      setupRoleSwitcher() {
+        const toggleBtn = document.getElementById('btn-toggle-mode');
+        const modeLabel = document.getElementById('current-mode-label');
+        const toggleText = document.getElementById('btn-toggle-mode-text');
+        const userView = document.getElementById('user-view-container');
+        const adminView = document.getElementById('admin-view-container');
+
+        toggleBtn.addEventListener('click', () => {
+          if (state.mode === 'user') {
+            state.mode = 'admin';
+            userView.classList.remove('active-mode');
+            adminView.classList.add('active-mode');
+            modeLabel.textContent = '店舗管理モード (B2Bコンソール)';
+            toggleText.textContent = 'ユーザー画面へ戻る';
+            this.renderAdminView();
+          } else {
+            state.mode = 'user';
+            adminView.classList.remove('active-mode');
+            userView.classList.add('active-mode');
+            modeLabel.textContent = 'ユーザー体験モード';
+            toggleText.textContent = '店舗管理画面を開く';
+            this.renderAll();
+          }
+        });
+      },
+
+      // ナビゲーションバインド
+      setupNavigation() {
+        // ユーザーナビ
+        document.querySelectorAll('[data-tab]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const tab = btn.getAttribute('data-tab');
+            this.switchUserTab(tab);
+          });
+        });
+
+        // 店舗管理ナビ
+        document.querySelectorAll('[data-admin-tab]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const tab = btn.getAttribute('data-admin-tab');
+            this.switchAdminTab(tab);
+          });
+        });
+
+        // 店舗切り替えセレクト (Admin)
+        const storeSwitch = document.getElementById('admin-store-switch');
+        storeSwitch.addEventListener('change', (e) => {
+          state.selectedAdminStoreId = e.target.value;
+          this.renderAdminView();
+        });
+
+        // カテゴリフィルター (User Home)
+        document.querySelectorAll('#category-filter-chips .chip').forEach(c => {
+          c.addEventListener('click', () => {
+            document.querySelectorAll('#category-filter-chips .chip').forEach(x => x.classList.remove('active'));
+            c.classList.add('active');
+            state.activeCategory = c.getAttribute('data-cat');
+            this.renderDeals();
+          });
+        });
+
+        // チェックインボタン
+        document.getElementById('btn-perform-checkin').addEventListener('click', () => {
+          this.handleCheckInAction();
+        });
+
+        // クーポン交換確定ボタン
+        document.getElementById('btn-confirm-exchange-exec').addEventListener('click', () => {
+          this.handleExchangeCouponExec();
+        });
+
+        // 店舗消し込み検索ボタン
+        document.getElementById('btn-admin-verify-search').addEventListener('click', () => {
+          this.handleAdminVerifySearch();
+        });
+      },
+
+      switchUserTab(tabName) {
+        state.activeUserTab = tabName;
+        document.querySelectorAll('[data-tab]').forEach(b => {
+          if (b.getAttribute('data-tab') === tabName) b.classList.add('active');
+          else b.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-screen').forEach(scr => scr.classList.remove('active'));
+        const target = document.getElementById(`tab-${tabName}`);
+        if (target) target.classList.add('active');
+
+        if (tabName === 'map' && state.leafletMap) {
+          setTimeout(() => state.leafletMap.invalidateSize(), 200);
+        }
+      },
+
+      switchAdminTab(tabName) {
+        state.activeAdminTab = tabName;
+        document.querySelectorAll('[data-admin-tab]').forEach(b => {
+          if (b.getAttribute('data-admin-tab') === tabName) b.classList.add('active');
+          else b.classList.remove('active');
+        });
+        document.querySelectorAll('.admin-screen').forEach(scr => scr.style.display = 'none');
+        const target = document.getElementById(`admin-tab-${tabName}`);
+        if (target) target.style.display = 'block';
+
+        const titles = {
+          dashboard: '店舗ダッシュボード',
+          verify: 'クーポン利用確認・消し込み',
+          coupons: 'クーポン作成・管理',
+          missions: 'ミッション作成・管理',
+          profile: '店舗情報・お知らせ編集'
+        };
+        document.getElementById('admin-page-title').textContent = titles[tabName] || '管理コンソール';
+
+        if (tabName === 'profile') {
+          this.populateAdminProfileForm();
+        }
+      },
+
+      toggleCouponSubTab(type) {
+        state.activeCouponSubTab = type;
+        const myBtn = document.getElementById('btn-show-my-coupons');
+        const exBtn = document.getElementById('btn-show-exchange-coupons');
+        if (type === 'my') {
+          myBtn.className = 'btn btn-sm btn-primary';
+          exBtn.className = 'btn btn-sm btn-tonal';
+        } else {
+          myBtn.className = 'btn btn-sm btn-tonal';
+          exBtn.className = 'btn btn-sm btn-primary';
+        }
+        this.renderCouponsView();
+      },
+
+      // ======================================================================
+      // 誤操作防止: スライドして利用確定 (Slide to Redeem) コンポーネント実装
+      // ======================================================================
+      setupSlideToRedeem() {
+        const track = document.getElementById('slide-track');
+        const thumb = document.getElementById('slide-thumb');
+        const fill = document.getElementById('slide-fill');
+
+        let isDragging = false;
+        let startX = 0;
+        let maxDrag = 0;
+
+        const onStart = (clientX) => {
+          if (!state.selectedUserCoupon || state.selectedUserCoupon.status === 'used') return;
+          isDragging = true;
+          startX = clientX;
+          maxDrag = track.clientWidth - thumb.clientWidth - 8;
         };
 
-        let currentLang = 'ja';
-        let map = null;
+        const onMove = (clientX) => {
+          if (!isDragging) return;
+          const deltaX = clientX - startX;
+          let currentX = Math.max(0, Math.min(deltaX, maxDrag));
+          thumb.style.transform = `translateX(${currentX}px)`;
+          fill.style.width = `${(currentX / maxDrag) * 100}%`;
 
-        // 言語変更
-        function changeLang(l) {
-            const shell = document.getElementById('main-content');
-            shell.classList.add('lang-updating');
-            
-            setTimeout(() => {
-                currentLang = l;
-                const t = LANGS[l];
-                document.getElementById('t-ask').innerText = t.ask;
-                document.getElementById('t-find').innerText = t.find;
-                document.getElementById('t-wrong').innerText = t.wrong;
-                document.getElementById('t-op-reg').innerText = t.op_reg;
-                document.getElementById('t-op-bag').innerText = t.op_bag;
-                document.getElementById('t-op-step').innerText = t.op_step;
-                document.getElementById('t-wait-msg').innerHTML = t.wait_msg;
-                document.getElementById('wait-label').innerText = t.calling.toUpperCase();
-                document.getElementById('t-cancel').innerText = t.cancel;
-                document.getElementById('t-nearby').innerText = t.nearby;
-                document.getElementById('t-in-progress').innerText = t.in_progress;
-                document.getElementById('t-solve-btn').innerText = t.solve;
-                document.getElementById('t-stop').innerText = t.stop;
-                document.getElementById('t-solved-msg').innerText = t.solved_msg;
-                document.getElementById('t-map-title').innerText = t.map_title;
-                document.getElementById('t-profile').innerText = t.profile;
-                document.getElementById('t-history').innerText = t.history;
-                document.getElementById('t-pts-label').innerText = t.pts_label;
-                document.getElementById('t-current-loc').innerText = t.cur_loc;
+          // 右端 (85%以上) 到達判定
+          if (currentX >= maxDrag * 0.88) {
+            isDragging = false;
+            thumb.style.transform = `translateX(${maxDrag}px)`;
+            fill.style.width = '100%';
+            this.handleCouponSlideSuccess();
+          }
+        };
 
-                // 共通クラスの値を更新
-                document.querySelectorAll('.t-op-reg-val').forEach(el => el.innerText = t.op_reg);
-                document.querySelectorAll('.t-op-bag-val').forEach(el => el.innerText = t.op_bag);
+        const onEnd = () => {
+          if (!isDragging) return;
+          isDragging = false;
+          // 途中キャンセルの場合は元の位置へバウンス
+          thumb.style.transform = 'translateX(0px)';
+          fill.style.width = '0%';
+        };
 
-                shell.classList.remove('lang-updating');
-            }, 300);
-        }
+        // タッチイベント
+        thumb.addEventListener('touchstart', (e) => onStart(e.touches[0].clientX));
+        window.addEventListener('touchmove', (e) => onMove(e.touches[0].clientX));
+        window.addEventListener('touchend', onEnd);
 
-        // 画面切り替え
-        function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => {
-                s.style.display = 'none';
-                s.classList.remove('active');
-            });
-            const target = document.getElementById('screen-' + id);
-            target.style.display = 'flex';
-            setTimeout(() => target.classList.add('active'), 10);
-        }
+        // マウスイベント (PC対応)
+        thumb.addEventListener('mousedown', (e) => onStart(e.clientX));
+        window.addEventListener('mousemove', (e) => onMove(e.clientX));
+        window.addEventListener('mouseup', onEnd);
+      },
 
-        // モードの初期化
-        function openYouth() {
-            showScreen('youth-list');
-            initMap();
-        }
+      // スライド成功時の状態更新
+      handleCouponSlideSuccess() {
+        if (!state.selectedUserCoupon) return;
+        const uc = state.selectedUserCoupon;
+        uc.status = 'used';
+        uc.usedAt = Date.now();
+        state.saveStorage();
 
-        function changeTab(tab) {
-            showScreen('youth-' + tab);
-            if(tab === 'map') {
-                setTimeout(() => map.invalidateSize(), 400);
+        this.showSnackbar('クーポンを利用開始しました！確認コードを提示してください', 'check_circle');
+
+        // UIを提示コード表示へ切り替え
+        document.getElementById('coupon-unredeemed-area').style.display = 'none';
+        const redeemedArea = document.getElementById('coupon-redeemed-area');
+        redeemedArea.style.display = 'block';
+        document.getElementById('coupon-modal-code').textContent = uc.code;
+        document.getElementById('coupon-modal-used-time').textContent = new Date(uc.usedAt).toLocaleString('ja-JP') + ' 利用';
+
+        this.renderCouponsView();
+        this.renderAdminView();
+      },
+
+      // ======================================================================
+      // ユーザー側 レンダリング & アクション
+      // ======================================================================
+      renderAll() {
+        state.updateCoinUI();
+        this.renderDeals();
+        this.renderMissions();
+        this.renderCouponsView();
+        this.renderMapStores();
+        this.renderCoinHistories();
+        this.renderProfileStats();
+        this.populatePostStoreSelect();
+      },
+
+      renderDeals() {
+        const grid = document.getElementById('home-deals-grid');
+        grid.innerHTML = '';
+        const filtered = state.deals.filter(d => state.activeCategory === 'ALL' || d.category === state.activeCategory);
+
+        filtered.forEach(deal => {
+          const store = state.stores.find(s => s.id === deal.storeId) || { name: '店舗' };
+          const card = document.createElement('div');
+          card.className = 'deal-card';
+          card.innerHTML = `
+            <div class="deal-thumb">
+              <img src="${deal.image}" alt="${deal.productName}" loading="lazy">
+              <span class="deal-tag">${deal.category}</span>
+            </div>
+            <div class="deal-info">
+              <h4 style="font-size:1.05rem; font-weight:700;">${deal.productName}</h4>
+              <div style="font-size:1.6rem; font-weight:700; color:var(--md-primary); margin:2px 0;">
+                ${deal.price.toLocaleString()}<span style="font-size:0.85rem; font-weight:400; color:var(--md-outline);"> 円 (税込)</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:4px; font-size:0.82rem; color:var(--md-outline); margin-top:auto;">
+                <span class="material-symbols-outlined" style="font-size:16px;">store</span>
+                <span>${store.name}</span>
+              </div>
+            </div>
+          `;
+          card.addEventListener('click', () => this.openStoreModal(store));
+          grid.appendChild(card);
+        });
+      },
+
+      renderMissions() {
+        const grid = document.getElementById('missions-list-grid');
+        grid.innerHTML = '';
+
+        state.missions.forEach(m => {
+          const store = state.stores.find(s => s.id === m.storeId) || { name: '対象店舗' };
+          const isDone = state.completedMissions.includes(m.id);
+
+          const card = document.createElement('div');
+          card.className = `mission-card ${isDone ? 'completed' : ''}`;
+          card.innerHTML = `
+            <div>
+              <div class="mission-reward-tag">
+                <span class="material-symbols-outlined" style="font-size:16px;">monetization_on</span>
+                <span>報酬: +${m.rewardVal} コイン</span>
+              </div>
+              <h4 style="font-size:1.05rem; font-weight:700; margin-bottom:4px;">${m.title}</h4>
+              <p style="font-size:0.82rem; color:var(--md-outline); margin-bottom:12px;">${m.description}</p>
+              <div style="display:flex; align-items:center; gap:4px; font-size:0.8rem; color:var(--md-outline); margin-bottom:14px;">
+                <span class="material-symbols-outlined" style="font-size:16px;">location_on</span>
+                <span>${store.name}</span>
+              </div>
+            </div>
+            <div>
+              <button class="btn ${isDone ? 'btn-tonal' : 'btn-primary'} btn-sm" style="width:100%;" ${isDone ? 'disabled' : ''}>
+                <span class="material-symbols-outlined">${isDone ? 'check' : 'near_me'}</span>
+                ${isDone ? '達成済み' : '店舗詳細へ行って達成'}
+              </button>
+            </div>
+          `;
+          if (!isDone) {
+            card.querySelector('button').addEventListener('click', () => this.openStoreModal(store));
+          }
+          grid.appendChild(card);
+        });
+      },
+
+      renderCouponsView() {
+        const grid = document.getElementById('coupons-display-grid');
+        grid.innerHTML = '';
+
+        // マイクーポン件数バッジ
+        const activeCount = state.userCoupons.filter(uc => uc.status === 'active').length;
+        document.getElementById('my-coupons-count').textContent = activeCount;
+
+        if (state.activeCouponSubTab === 'my') {
+          // 獲得済みマイクーポン表示
+          if (state.userCoupons.length === 0) {
+            grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding:30px; color:var(--md-outline);">まだ獲得したクーポンはありません。</p>';
+            return;
+          }
+
+          state.userCoupons.forEach(uc => {
+            const master = state.coupons.find(c => c.id === uc.couponId) || { title: 'クーポン', benefit: '', expireDate: '2026/10/31' };
+            const store = state.stores.find(s => s.id === master.storeId) || { name: '提携店舗' };
+            const isUsed = uc.status === 'used';
+
+            const card = document.createElement('div');
+            card.className = `coupon-card ${isUsed ? 'used' : ''}`;
+            card.innerHTML = `
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <span style="font-size:0.78rem; color:var(--md-outline);">${store.name}</span>
+                  <span style="font-size:0.75rem; font-weight:700; color:${isUsed ? 'var(--md-outline)' : 'var(--md-primary)'};">${isUsed ? '使用済み' : '利用可能'}</span>
+                </div>
+                <h4 style="font-size:1.1rem; font-weight:700; margin-bottom:4px;">${master.title}</h4>
+                <div style="font-size:0.9rem; color:var(--md-primary); font-weight:700; margin-bottom:8px;">${master.benefit}</div>
+                <div style="font-size:0.75rem; color:var(--md-outline); margin-bottom:12px;">有効期限: ${master.expireDate}</div>
+              </div>
+              <button class="btn ${isUsed ? 'btn-tonal' : 'btn-primary'} btn-sm" style="width:100%;">
+                <span class="material-symbols-outlined">${isUsed ? 'receipt' : 'touch_app'}</span>
+                ${isUsed ? '利用済み確認' : 'クーポンを使う (スライド)'}
+              </button>
+            `;
+            card.querySelector('button').addEventListener('click', () => this.openCouponRedeemModal(uc, master, store));
+            grid.appendChild(card);
+          });
+
+        } else {
+          // コイン交換可能クーポン表示
+          state.coupons.forEach(c => {
+            const store = state.stores.find(s => s.id === c.storeId) || { name: '提携店' };
+            const canAfford = state.coins >= c.requiredCoins;
+
+            const card = document.createElement('div');
+            card.className = 'coupon-card';
+            card.innerHTML = `
+              <div>
+                <div style="font-size:0.78rem; color:var(--md-outline); margin-bottom:4px;">${store.name}</div>
+                <h4 style="font-size:1.1rem; font-weight:700; margin-bottom:4px;">${c.title}</h4>
+                <div style="font-size:0.9rem; color:var(--md-primary); font-weight:700; margin-bottom:6px;">${c.benefit}</div>
+                <p style="font-size:0.8rem; color:var(--md-outline); margin-bottom:12px;">${c.description}</p>
+                <div style="background:var(--md-surface-low); padding:6px 10px; border-radius:var(--radius-sm); font-size:0.82rem; margin-bottom:14px;">
+                  必要: <strong style="color:var(--md-coin);">${c.requiredCoins}</strong> コイン
+                </div>
+              </div>
+              <button class="btn ${canAfford ? 'btn-primary' : 'btn-tonal'} btn-sm" style="width:100%;" ${canAfford ? '' : 'disabled'}>
+                <span class="material-symbols-outlined">redeem</span>
+                ${canAfford ? 'コインで交換する' : 'コインが不足しています'}
+              </button>
+            `;
+            if (canAfford) {
+              card.querySelector('button').addEventListener('click', () => this.openExchangeConfirmModal(c, store));
             }
+            grid.appendChild(card);
+          });
+        }
+      },
+
+      // クーポン利用モーダルを開く
+      openCouponRedeemModal(userCoupon, master, store) {
+        state.selectedUserCoupon = userCoupon;
+
+        document.getElementById('coupon-modal-store-name').textContent = store.name;
+        document.getElementById('coupon-modal-title').textContent = master.title;
+        document.getElementById('coupon-modal-benefit').textContent = master.benefit;
+        document.getElementById('coupon-modal-expire').textContent = master.expireDate;
+
+        const unredeemedArea = document.getElementById('coupon-unredeemed-area');
+        const redeemedArea = document.getElementById('coupon-redeemed-area');
+        const thumb = document.getElementById('slide-thumb');
+        const fill = document.getElementById('slide-fill');
+
+        thumb.style.transform = 'translateX(0px)';
+        fill.style.width = '0%';
+
+        if (userCoupon.status === 'used') {
+          unredeemedArea.style.display = 'none';
+          redeemedArea.style.display = 'block';
+          document.getElementById('coupon-modal-code').textContent = userCoupon.code;
+          document.getElementById('coupon-modal-used-time').textContent = new Date(userCoupon.usedAt).toLocaleString('ja-JP') + ' 利用済み';
+        } else {
+          unredeemedArea.style.display = 'block';
+          redeemedArea.style.display = 'none';
         }
 
-        // 地図の初期化（麻布十番駅）
-        function initMap() {
-            if (map) return;
-            const azabu = [35.6548, 139.7348];
-            map = L.map('map', { zoomControl: false }).setView(azabu, 16);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
-            
-            // 自分（麻布十番駅）
-            L.circleMarker(azabu, { radius: 10, fillColor: "#4f46e5", color: "#fff", weight: 3, fillOpacity: 1 }).addTo(map);
-            
-            // クエスト位置
-            L.circle([35.6560, 139.7360], { color: '#334155', radius: 40 }).addTo(map).bindPopup("レジの操作");
-            L.circle([35.6535, 139.7350], { color: '#e11d48', radius: 40 }).addTo(map).bindPopup("重い荷物");
+        document.getElementById('modal-coupon-detail').classList.add('open');
+      },
+
+      openExchangeConfirmModal(coupon, store) {
+        state.selectedExchangeCoupon = coupon;
+        document.getElementById('exchange-modal-store').textContent = store.name;
+        document.getElementById('exchange-modal-title').textContent = coupon.title;
+        document.getElementById('exchange-modal-coins').textContent = coupon.requiredCoins;
+        document.getElementById('modal-coupon-exchange-confirm').classList.add('open');
+      },
+
+      handleExchangeCouponExec() {
+        if (!state.selectedExchangeCoupon) return;
+        const c = state.selectedExchangeCoupon;
+        const success = state.spendCoins(c.requiredCoins, `クーポン交換 (${c.title})`);
+        if (!success) {
+          this.showSnackbar('コインが不足しています', 'error');
+          this.closeAllModals();
+          return;
         }
 
-        // 呼び出し
-        function seniorCall(typeKey, color, icon) {
-            document.getElementById('wait-label').innerText = LANGS[currentLang][typeKey].toUpperCase();
-            document.getElementById('wait-icon').innerText = icon;
-            document.getElementById('wait-circle').style.backgroundColor = color;
-            showScreen('waiting');
+        // マイクーポンへ追加
+        const newCode = 'CP-' + Math.floor(1000 + Math.random() * 9000);
+        state.userCoupons.unshift({
+          id: 'uc_' + Date.now(),
+          couponId: c.id,
+          code: newCode,
+          status: 'active',
+          acquiredAt: Date.now(),
+          usedAt: null
+        });
+        state.saveStorage();
+
+        this.closeAllModals();
+        this.renderCouponsView();
+        this.renderAdminView();
+        this.showSnackbar(`交換完了！マイクーポンに追加されました (コード: ${newCode})`, 'confirmation_number');
+      },
+
+      // 店舗詳細モーダル
+      openStoreModal(store) {
+        state.selectedStore = store;
+        document.getElementById('store-modal-name').textContent = store.name;
+        document.getElementById('store-modal-category').textContent = store.category;
+        document.getElementById('store-modal-address').textContent = `${store.address} (${store.hours})`;
+
+        // 店舗お知らせ
+        const noticeBox = document.getElementById('store-modal-notice-box');
+        if (store.notice) {
+          noticeBox.style.display = 'block';
+          document.getElementById('store-modal-notice-text').textContent = store.notice;
+        } else {
+          noticeBox.style.display = 'none';
         }
 
-        // 受注
-        function youthAccept(typeKey, loc) {
-            document.getElementById('active-task-type').innerText = LANGS[currentLang][typeKey];
-            document.getElementById('active-task-loc').innerText = loc;
-            showScreen('youth-active');
+        // 店舗のクーポン一覧
+        const couponList = document.getElementById('store-modal-coupons-list');
+        couponList.innerHTML = '';
+        const storeCoupons = state.coupons.filter(c => c.storeId === store.id);
+        if (storeCoupons.length === 0) {
+          couponList.innerHTML = '<span style="font-size:0.8rem; color:var(--md-outline);">現在提供中のクーポンはありません</span>';
+        } else {
+          storeCoupons.forEach(c => {
+            const item = document.createElement('div');
+            item.style.cssText = 'padding:8px 12px; background:var(--md-surface-low); border-radius:6px; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center;';
+            item.innerHTML = `<strong>${c.title}</strong><span style="color:var(--md-coin); font-weight:700;">${c.requiredCoins}コイン</span>`;
+            couponList.appendChild(item);
+          });
         }
 
-        // 解決（クラッカー！）
-        function solveMission() {
-            const overlay = document.getElementById('success-overlay');
-            overlay.style.display = 'flex';
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 2000 });
-
-            setTimeout(() => {
-                overlay.style.display = 'none';
-                changeTab('mypage');
-            }, 2200);
+        // 店舗の安売り一覧
+        const dealsList = document.getElementById('store-modal-deals-list');
+        dealsList.innerHTML = '';
+        const storeDeals = state.deals.filter(d => d.storeId === store.id);
+        if (storeDeals.length === 0) {
+          dealsList.innerHTML = '<span style="font-size:0.8rem; color:var(--md-outline);">登録された安売り情報はありません</span>';
+        } else {
+          storeDeals.forEach(d => {
+            const item = document.createElement('div');
+            item.style.cssText = 'padding:8px 12px; background:var(--md-surface-low); border-radius:6px; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center;';
+            item.innerHTML = `<span>${d.productName}</span><strong style="color:var(--md-primary);">${d.price}円</strong>`;
+            dealsList.appendChild(item);
+          });
         }
 
-        // 初期設定
-        changeLang('ja');
-    </script>
+        document.getElementById('modal-store-detail').classList.add('open');
+      },
+
+      // チェックイン処理（ミッション達成判定・コイン付与・連続防止）
+      handleCheckInAction() {
+        if (!state.selectedStore) return;
+        const store = state.selectedStore;
+        const now = Date.now();
+
+        // 1日以内の同一店舗チェックイン制限
+        const recentCheckin = state.checkIns.find(c => c.storeId === store.id && (now - c.timestamp) < 1000 * 60 * 60 * 24);
+        if (recentCheckin) {
+          this.showSnackbar('本日はすでにこの店舗へチェックイン済みです (1日1回まで)', 'warning');
+          return;
+        }
+
+        // チェックイン記録
+        state.checkIns.unshift({ id: 'chk_' + now, storeId: store.id, timestamp: now });
+        state.addCoins(50, `店舗チェックイン (${store.name})`);
+
+        // チェックイン系ミッションの達成判定
+        state.missions.forEach(m => {
+          if (m.storeId === store.id && m.actionType === 'checkin' && !state.completedMissions.includes(m.id)) {
+            state.completedMissions.push(m.id);
+          }
+        });
+        state.saveStorage();
+
+        this.closeAllModals();
+        this.renderMissions();
+        this.renderProfileStats();
+        this.renderAdminView();
+        this.showSnackbar(`【チェックイン達成】${store.name} で50コインを獲得しました！`, 'pin_drop');
+      },
+
+      renderMapStores() {
+        const grid = document.getElementById('map-stores-grid');
+        grid.innerHTML = '';
+        state.stores.forEach(s => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.style.margin = '0';
+          card.style.cursor = 'pointer';
+          card.innerHTML = `
+            <div style="font-weight:700; font-size:1.05rem;">${s.name}</div>
+            <div style="font-size:0.8rem; color:var(--md-outline); margin:4px 0;">${s.address}・${s.hours}</div>
+            <div style="font-size:0.82rem; color:var(--md-primary); display:flex; align-items:center; justify-content:space-between; margin-top:8px;">
+              <span>詳細・チェックイン</span>
+              <span class="material-symbols-outlined">chevron_right</span>
+            </div>
+          `;
+          card.addEventListener('click', () => this.openStoreModal(s));
+          grid.appendChild(card);
+        });
+      },
+
+      renderCoinHistories() {
+        const list = document.getElementById('user-coin-history-list');
+        list.innerHTML = '';
+        state.histories.forEach(h => {
+          const isGain = h.type === 'gain';
+          const item = document.createElement('div');
+          item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--md-outline-variant);';
+          item.innerHTML = `
+            <div>
+              <div style="font-weight:500; font-size:0.9rem;">${h.description}</div>
+              <div style="font-size:0.75rem; color:var(--md-outline);">${new Date(h.createdAt).toLocaleString('ja-JP')}</div>
+            </div>
+            <div style="font-weight:700; font-size:1.05rem; color:${isGain ? 'var(--md-primary)' : '#ba1a1a'};">
+              ${isGain ? '+' : ''}${h.amount}
+            </div>
+          `;
+          list.appendChild(item);
+        });
+      },
+
+      renderProfileStats() {
+        document.getElementById('stat-posts').textContent = state.deals.length;
+        document.getElementById('stat-checkins').textContent = state.checkIns.length;
+        document.getElementById('stat-coupons').textContent = state.userCoupons.length;
+      },
+
+      populatePostStoreSelect() {
+        const sel = document.getElementById('post-input-store');
+        sel.innerHTML = '';
+        state.stores.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s.id;
+          opt.textContent = s.name;
+          sel.appendChild(opt);
+        });
+      },
+
+      setupForms() {
+        // 投稿フォーム
+        const postForm = document.getElementById('deal-post-form');
+        postForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const title = document.getElementById('post-input-title').value.trim();
+          const price = parseInt(document.getElementById('post-input-price').value, 10);
+          const cat = document.getElementById('post-input-cat').value;
+          const storeId = document.getElementById('post-input-store').value;
+          const notes = document.getElementById('post-input-notes').value.trim();
+
+          const newDeal = {
+            id: 'd_' + Date.now(),
+            storeId: storeId,
+            productName: title,
+            price: price,
+            category: cat,
+            image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=500',
+            userId: 'u_me',
+            createdAt: Date.now(),
+            confirmedCount: 1,
+            confirmedUsers: ['u_me'],
+            notes: notes
+          };
+
+          state.deals.unshift(newDeal);
+          state.addCoins(30, `安売り情報投稿 (${title})`);
+
+          // 投稿系ミッションの達成チェック
+          state.missions.forEach(m => {
+            if (m.storeId === storeId && m.actionType === 'post' && !state.completedMissions.includes(m.id)) {
+              state.completedMissions.push(m.id);
+            }
+          });
+
+          state.saveStorage();
+          postForm.reset();
+          this.showSnackbar('安売り情報を投稿しました！(+30コイン獲得)', 'add_circle');
+          this.switchUserTab('home');
+          this.renderAll();
+        });
+
+        // 店舗管理：クーポン作成フォーム
+        const createCouponForm = document.getElementById('admin-create-coupon-form');
+        createCouponForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const title = document.getElementById('coupon-create-title').value.trim();
+          const benefit = document.getElementById('coupon-create-benefit').value.trim();
+          const coins = parseInt(document.getElementById('coupon-create-coins').value, 10);
+          const expire = document.getElementById('coupon-create-expire').value;
+          const desc = document.getElementById('coupon-create-desc').value.trim();
+
+          const newCoupon = {
+            id: 'c_' + Date.now(),
+            storeId: state.selectedAdminStoreId,
+            title: title,
+            benefit: benefit,
+            requiredCoins: coins,
+            expireDate: expire,
+            description: desc,
+            isPublic: true
+          };
+
+          state.coupons.unshift(newCoupon);
+          state.saveStorage();
+          this.closeAllModals();
+          this.renderAdminView();
+          this.renderCouponsView();
+          this.showSnackbar('新しいクーポンを発行・公開しました！', 'confirmation_number');
+        });
+
+        // 店舗管理：ミッション作成フォーム
+        const createMissionForm = document.getElementById('admin-create-mission-form');
+        createMissionForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const title = document.getElementById('mission-create-title').value.trim();
+          const desc = document.getElementById('mission-create-desc').value.trim();
+          const val = parseInt(document.getElementById('mission-create-reward-val').value, 10);
+          const action = document.getElementById('mission-create-action-type').value;
+
+          const newMission = {
+            id: 'm_' + Date.now(),
+            storeId: state.selectedAdminStoreId,
+            title: title,
+            description: desc,
+            rewardType: 'coin',
+            rewardVal: val,
+            actionType: action,
+            isPublic: true
+          };
+
+          state.missions.unshift(newMission);
+          state.saveStorage();
+          this.closeAllModals();
+          this.renderAdminView();
+          this.renderMissions();
+          this.showSnackbar('新しい店舗ミッションを公開しました！', 'flag');
+        });
+
+        // 店舗管理：店舗情報・お知らせ更新フォーム
+        const adminProfileForm = document.getElementById('admin-store-profile-form');
+        adminProfileForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const store = state.stores.find(s => s.id === state.selectedAdminStoreId);
+          if (!store) return;
+
+          store.name = document.getElementById('admin-edit-name').value.trim();
+          store.address = document.getElementById('admin-edit-address').value.trim();
+          store.hours = document.getElementById('admin-edit-hours').value.trim();
+          store.holiday = document.getElementById('admin-edit-holiday').value.trim();
+          store.tel = document.getElementById('admin-edit-tel').value.trim();
+          store.description = document.getElementById('admin-edit-desc').value.trim();
+          store.notice = document.getElementById('admin-edit-notice').value.trim();
+
+          state.saveStorage();
+          this.showSnackbar('店舗情報とお知らせを更新しました！', 'save');
+          this.renderAll();
+          this.renderAdminView();
+        });
+      },
+
+      // ======================================================================
+      // 店舗向け管理画面 (B2B STORE ADMIN) レンダリング
+      // ======================================================================
+      renderAdminView() {
+        const storeSwitch = document.getElementById('admin-store-switch');
+        storeSwitch.innerHTML = '';
+        state.stores.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s.id;
+          opt.textContent = s.name;
+          if (s.id === state.selectedAdminStoreId) opt.selected = true;
+          storeSwitch.appendChild(opt);
+        });
+
+        const storeId = state.selectedAdminStoreId;
+        const currentStore = state.stores.find(s => s.id === storeId);
+
+        // KPI集計
+        const storeCheckins = state.checkIns.filter(c => c.storeId === storeId).length;
+        const storeRedemptions = state.userCoupons.filter(uc => {
+          const master = state.coupons.find(c => c.id === uc.couponId);
+          return master && master.storeId === storeId && uc.status === 'used';
+        }).length;
+        const storeMissionsCompleted = state.missions.filter(m => m.storeId === storeId && state.completedMissions.includes(m.id)).length;
+        const storeDealsCount = state.deals.filter(d => d.storeId === storeId).length;
+
+        document.getElementById('admin-kpi-checkins').textContent = storeCheckins;
+        document.getElementById('admin-kpi-redemptions').textContent = storeRedemptions;
+        document.getElementById('admin-kpi-missions').textContent = storeMissionsCompleted;
+        document.getElementById('admin-kpi-deals').textContent = storeDealsCount;
+
+        // ダッシュボード内 リスト
+        const activeCouponsEl = document.getElementById('admin-active-coupons-list');
+        activeCouponsEl.innerHTML = '';
+        const storeCoupons = state.coupons.filter(c => c.storeId === storeId);
+        if (storeCoupons.length === 0) {
+          activeCouponsEl.innerHTML = '<span style="font-size:0.85rem; color:#6b7280;">公開中のクーポンはありません</span>';
+        } else {
+          storeCoupons.forEach(c => {
+            const item = document.createElement('div');
+            item.style.cssText = 'padding:10px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center;';
+            item.innerHTML = `<strong>${c.title}</strong><span style="color:#2563eb; font-weight:700;">${c.requiredCoins}コイン</span>`;
+            activeCouponsEl.appendChild(item);
+          });
+        }
+
+        const activeMissionsEl = document.getElementById('admin-active-missions-list');
+        activeMissionsEl.innerHTML = '';
+        const storeMissions = state.missions.filter(m => m.storeId === storeId);
+        if (storeMissions.length === 0) {
+          activeMissionsEl.innerHTML = '<span style="font-size:0.85rem; color:#6b7280;">開催中のミッションはありません</span>';
+        } else {
+          storeMissions.forEach(m => {
+            const item = document.createElement('div');
+            item.style.cssText = 'padding:10px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center;';
+            item.innerHTML = `<strong>${m.title}</strong><span style="color:#059669; font-weight:700;">+${m.rewardVal}コイン</span>`;
+            activeMissionsEl.appendChild(item);
+          });
+        }
+
+        // クーポン管理タブ
+        const manageCouponsGrid = document.getElementById('admin-manage-coupons-grid');
+        manageCouponsGrid.innerHTML = '';
+        storeCoupons.forEach(c => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.style.margin = '0';
+          card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:6px;">
+              <h4 style="font-size:1.05rem; font-weight:700;">${c.title}</h4>
+              <span style="font-size:0.75rem; background:#dbeafe; color:#1e40af; padding:2px 8px; border-radius:4px; font-weight:700;">公開中</span>
+            </div>
+            <div style="font-size:0.88rem; color:#2563eb; font-weight:700; margin-bottom:4px;">${c.benefit}</div>
+            <div style="font-size:0.8rem; color:#6b7280; margin-bottom:8px;">必要コイン: ${c.requiredCoins} / 期限: ${c.expireDate}</div>
+            <p style="font-size:0.8rem; color:#374151;">${c.description}</p>
+          `;
+          manageCouponsGrid.appendChild(card);
+        });
+
+        // ミッション管理タブ
+        const manageMissionsGrid = document.getElementById('admin-manage-missions-grid');
+        manageMissionsGrid.innerHTML = '';
+        storeMissions.forEach(m => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.style.margin = '0';
+          card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:6px;">
+              <h4 style="font-size:1.05rem; font-weight:700;">${m.title}</h4>
+              <span style="font-size:0.75rem; background:#dcfce7; color:#166534; padding:2px 8px; border-radius:4px; font-weight:700;">開催中</span>
+            </div>
+            <div style="font-size:0.85rem; color:#6b7280; margin-bottom:6px;">条件: ${m.description}</div>
+            <div style="font-size:0.85rem; font-weight:700; color:#059669;">報酬: +${m.rewardVal} コイン</div>
+          `;
+          manageMissionsGrid.appendChild(card);
+        });
+      },
+
+      // クーポンコード照合・消し込み処理 (店頭スタッフ操作)
+      handleAdminVerifySearch() {
+        const input = document.getElementById('admin-verify-code-input').value.trim().toUpperCase();
+        const resultBox = document.getElementById('admin-verify-result-box');
+        resultBox.style.display = 'block';
+
+        if (!input) {
+          resultBox.innerHTML = '<span style="color:#dc2626; font-size:0.9rem;">確認コードを入力してください</span>';
+          return;
+        }
+
+        const foundUserCoupon = state.userCoupons.find(uc => uc.code === input);
+        if (!foundUserCoupon) {
+          resultBox.innerHTML = `
+            <div style="display:flex; align-items:center; gap:8px; color:#dc2626; font-weight:700;">
+              <span class="material-symbols-outlined">cancel</span> 該当するクーポンが存在しません
+            </div>
+            <p style="font-size:0.82rem; color:#6b7280; margin-top:4px;">コードに誤りがないかご確認ください。</p>
+          `;
+          return;
+        }
+
+        const master = state.coupons.find(c => c.id === foundUserCoupon.couponId) || { title: 'クーポン', benefit: '', storeId: '' };
+        const isTargetStore = master.storeId === state.selectedAdminStoreId;
+
+        if (!isTargetStore) {
+          resultBox.innerHTML = `
+            <div style="color:#d97706; font-weight:700; display:flex; align-items:center; gap:6px;">
+              <span class="material-symbols-outlined">warning</span> 他店舗のクーポンです
+            </div>
+            <p style="font-size:0.82rem; color:#6b7280; margin-top:4px;">このクーポンは別のお店で発行されたものです。</p>
+          `;
+          return;
+        }
+
+        if (foundUserCoupon.status === 'used') {
+          resultBox.innerHTML = `
+            <div style="color:#dc2626; font-weight:700; display:flex; align-items:center; gap:6px;">
+              <span class="material-symbols-outlined">history</span> すでに使用済みのクーポンです
+            </div>
+            <div style="font-size:0.85rem; margin-top:6px;"><strong>${master.title}</strong> (${master.benefit})</div>
+            <div style="font-size:0.75rem; color:#6b7280; margin-top:2px;">消し込み日時: ${new Date(foundUserCoupon.usedAt).toLocaleString('ja-JP')}</div>
+          `;
+          return;
+        }
+
+        // 利用可能状態
+        resultBox.innerHTML = `
+          <div style="color:#059669; font-weight:700; display:flex; align-items:center; gap:6px;">
+            <span class="material-symbols-outlined">verified</span> 利用可能なクーポンです
+          </div>
+          <div style="font-size:1.1rem; font-weight:700; margin:6px 0;">${master.title}</div>
+          <div style="font-size:0.95rem; color:#2563eb; font-weight:700; margin-bottom:8px;">特典: ${master.benefit}</div>
+          <div style="font-size:0.8rem; color:#6b7280; margin-bottom:14px;">有効期限: ${master.expireDate}</div>
+          <button class="btn btn-primary" style="width:100%;" id="btn-admin-consume-exec">
+            <span class="material-symbols-outlined">check</span> このクーポンの利用を確定する (消し込み)
+          </button>
+        `;
+
+        document.getElementById('btn-admin-consume-exec').addEventListener('click', () => {
+          foundUserCoupon.status = 'used';
+          foundUserCoupon.usedAt = Date.now();
+          state.saveStorage();
+          this.showSnackbar('クーポンの利用確定（消し込み）が完了しました！', 'check_circle');
+          this.handleAdminVerifySearch();
+          this.renderAdminView();
+        });
+      },
+
+      populateAdminProfileForm() {
+        const store = state.stores.find(s => s.id === state.selectedAdminStoreId);
+        if (!store) return;
+        document.getElementById('admin-edit-name').value = store.name || '';
+        document.getElementById('admin-edit-address').value = store.address || '';
+        document.getElementById('admin-edit-hours').value = store.hours || '';
+        document.getElementById('admin-edit-holiday').value = store.holiday || '';
+        document.getElementById('admin-edit-tel').value = store.tel || '';
+        document.getElementById('admin-edit-desc').value = store.description || '';
+        document.getElementById('admin-edit-notice').value = store.notice || '';
+      },
+
+      openAdminCreateCouponModal() {
+        document.getElementById('modal-admin-create-coupon').classList.add('open');
+      },
+
+      openAdminCreateMissionModal() {
+        document.getElementById('modal-admin-create-mission').classList.add('open');
+      },
+
+      // 地図初期化
+      initMap() {
+        const map = L.map('user-map-area').setView([35.6580, 139.7016], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        state.leafletMap = map;
+
+        state.stores.forEach(s => {
+          const m = L.marker([s.lat, s.lng]).addTo(map);
+          m.bindPopup(`
+            <div style="font-family:'Noto Sans JP',sans-serif;">
+              <strong>${s.name}</strong><br>
+              <span style="font-size:0.8rem; color:#666;">${s.category}・${s.distance}</span><br>
+              <button style="margin-top:6px; background:#00685e; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer;" onclick="app.openStoreById('${s.id}')">
+                詳細・チェックイン
+              </button>
+            </div>
+          `);
+          state.markers.push(m);
+        });
+      },
+
+      openStoreById(storeId) {
+        const s = state.stores.find(x => x.id === storeId);
+        if (s) this.openStoreModal(s);
+      },
+
+      closeAllModals() {
+        document.querySelectorAll('.dialog-overlay').forEach(d => d.classList.remove('open'));
+      },
+
+      showSnackbar(msg, iconName = 'info') {
+        const bar = document.getElementById('app-snackbar');
+        document.getElementById('snack-msg').textContent = msg;
+        document.getElementById('snack-icon').textContent = iconName;
+        bar.classList.add('show');
+        if (this._snackTimer) clearTimeout(this._snackTimer);
+        this._snackTimer = setTimeout(() => bar.classList.remove('show'), 3400);
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      app.init();
+    });
+  </script>
+
 </body>
 </html>
