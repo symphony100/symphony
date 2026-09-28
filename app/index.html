@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>トクシェア β版 - 地域安売り共有・店舗ミッション＆クーポン</title>
+  <title>トクシェア A版 - キャンペーン別ゴールドポイント管理</title>
 
   <!-- Google Fonts: Noto Sans JP -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -41,9 +41,17 @@
       --md-outline: #6f7976;
       --md-outline-variant: #bfc9c5;
 
+      /* 通常コイン: アプリ共通の通常ポイント (エメラルド/コインイエロー) */
       --md-coin: #8a6500;
       --md-coin-container: #ffdf9c;
       --md-on-coin-container: #2b1d00;
+
+      /* ゴールドポイント: キャンペーン固有・期間限定ポイント (上品なアンバーゴールド) */
+      --md-gold: #b45309;
+      --md-gold-container: #fef3c7;
+      --md-on-gold-container: #451a03;
+      --md-gold-track: #e2e8f0;
+      --md-gold-fill: #d97706;
 
       --radius-sm: 8px;
       --radius-md: 12px;
@@ -89,7 +97,7 @@
     }
 
     /* ==========================================================================
-       Top Universal Role Switcher Bar (スマホでも圧迫しないスリムUI)
+       Top Universal Role Switcher Bar (モード切替)
        ========================================================================== */
     .role-switcher-bar {
       height: 34px;
@@ -108,7 +116,6 @@
       align-items: center;
       gap: 5px;
       font-weight: 500;
-      letter-spacing: -0.01em;
     }
     .role-switch-btn {
       background: rgba(255, 255, 255, 0.16);
@@ -203,6 +210,15 @@
       font-weight: 700;
     }
 
+    /* 通常コインのみ表示 (合算Gは絶対に表示しない) */
+    .sidebar-coin-box {
+      background: #fff;
+      border: 1px solid var(--md-outline-variant);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-top: auto;
+    }
+
     /* User Content Viewport */
     .content-viewport {
       flex: 1;
@@ -214,7 +230,7 @@
       width: 100%;
     }
 
-    /* Mobile Header (App-like Sticky Header) */
+    /* Mobile Header */
     .mobile-header {
       display: none;
       height: 54px;
@@ -248,7 +264,7 @@
       -webkit-overflow-scrolling: touch;
     }
 
-    /* Mobile Bottom Navigation (Native App feel) */
+    /* Mobile Bottom Navigation */
     .mobile-bottom-nav {
       display: none;
       height: 64px;
@@ -368,6 +384,7 @@
       min-height: 32px;
     }
 
+    /* 通常コインバッジ (アプリ内共通残高) */
     .coin-badge {
       display: inline-flex;
       align-items: center;
@@ -381,7 +398,22 @@
       white-space: nowrap;
     }
 
-    /* Horizontal Category Chips (Touch Scrollable) */
+    /* キャンペーン固有のゴールドポイントバッジ */
+    .campaign-gold-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background-color: var(--md-gold-container);
+      color: var(--md-on-gold-container);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      border: 1px solid rgba(180, 83, 9, 0.2);
+    }
+
+    /* Horizontal Category Chips */
     .chip-bar {
       display: flex;
       gap: 8px;
@@ -417,6 +449,75 @@
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 16px;
       width: 100%;
+    }
+
+    /* ==========================================================================
+       CAMPAIGN CARD & PROGRESS STYLES (キャンペーン別ゴールドポイント表示)
+       ========================================================================== */
+    .campaign-card {
+      background-color: var(--md-surface-lowest);
+      border: 1px solid var(--md-outline-variant);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .campaign-card:hover {
+      box-shadow: var(--shadow-2);
+    }
+    .campaign-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .campaign-organizer-tag {
+      font-size: 0.72rem;
+      color: var(--md-outline);
+      font-weight: 500;
+    }
+    .campaign-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--md-on-surface);
+      line-height: 1.35;
+      margin-top: 2px;
+    }
+    .campaign-progress-box {
+      background-color: var(--md-surface-low);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin: 12px 0 14px;
+    }
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.78rem;
+      margin-bottom: 6px;
+    }
+    .progress-bar-track {
+      width: 100%;
+      height: 8px;
+      background-color: var(--md-gold-track);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background-color: var(--md-gold-fill);
+      border-radius: var(--radius-full);
+      transition: width 0.3s ease-out;
+    }
+    .progress-remaining-text {
+      font-size: 0.75rem;
+      color: var(--md-gold);
+      font-weight: 700;
+      margin-top: 6px;
+      text-align: right;
     }
 
     /* Deal Card */
@@ -511,8 +612,21 @@
       background: #f1f3f2;
       opacity: 0.7;
     }
+    .coupon-campaign-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.72rem;
+      background: var(--md-gold-container);
+      color: var(--md-on-gold-container);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      width: fit-content;
+      margin-bottom: 6px;
+    }
 
-    /* Map Box (PC default) */
+    /* Map Box */
     #user-map-area {
       width: 100%;
       height: 440px;
@@ -523,7 +637,7 @@
     }
 
     /* ==========================================================================
-       SLIDE TO REDEEM COMPONENT (スライドして利用確定)
+       SLIDE TO REDEEM COMPONENT
        ========================================================================== */
     .slide-redeem-container {
       margin-top: 20px;
@@ -648,7 +762,6 @@
       font-weight: 700;
     }
 
-    /* スマホ専用の店舗管理ヘッダーナビゲーション (デフォルト非表示) */
     .admin-mobile-nav {
       display: none;
       overflow-x: auto;
@@ -710,7 +823,6 @@
       max-width: 100%;
     }
 
-    /* Admin KPIs */
     .kpi-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -736,7 +848,6 @@
       line-height: 1.1;
     }
 
-    /* Form Fields (iOS自動ズームを防ぐため font-size: 16px) */
     .form-group {
       margin-bottom: 16px;
       width: 100%;
@@ -752,7 +863,7 @@
       padding: 11px 14px;
       border-radius: var(--radius-md);
       border: 1px solid var(--md-outline);
-      font-size: 16px; /* スマホでフォーカス時のズーム防止 */
+      font-size: 16px;
       background: #fff;
       font-family: inherit;
       outline: none;
@@ -786,7 +897,7 @@
     .dialog-panel {
       background-color: #fff;
       border-radius: var(--radius-lg);
-      max-width: 500px;
+      max-width: 520px;
       width: 100%;
       max-height: 85vh;
       overflow-y: auto;
@@ -810,6 +921,18 @@
       align-items: center;
       justify-content: center;
       border-radius: 50%;
+    }
+
+    /* 特典カード (キャンペーン詳細モーダル内) */
+    .reward-item-box {
+      border: 1px solid var(--md-outline-variant);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      background-color: var(--md-surface-low);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
     }
 
     /* Snackbar */
@@ -844,7 +967,6 @@
 
     /* ==========================================================================
        SMARTPHONE OPTIMIZATION (max-width: 768px & max-width: 480px)
-       ネイティブアプリとしてのUI/UX設計
        ========================================================================== */
     @media (max-width: 768px) {
       .desktop-sidebar, .admin-sidebar {
@@ -860,35 +982,30 @@
         display: flex;
       }
 
-      /* スクロール領域のパディング */
       .scroll-body {
         padding: 14px 16px;
-        padding-bottom: 84px; /* ボトムナビ分 */
+        padding-bottom: 84px;
       }
       .admin-viewport {
         padding: 14px 16px;
         padding-bottom: 60px;
       }
 
-      /* グリッドを完全1列へ */
       .grid-cards {
         grid-template-columns: 1fr;
         gap: 14px;
       }
 
-      /* マップのスマホ高さ最適化 */
       #user-map-area {
         height: min(42vh, 320px);
         margin-bottom: 14px;
       }
 
-      /* 投稿フォーム等をスマホでは縦1列（1項目1行）に */
       .form-grid-2col {
         grid-template-columns: 1fr !important;
         gap: 0 !important;
       }
 
-      /* 店舗管理ダッシュボードKPIを2列グリッドへ */
       .kpi-row {
         grid-template-columns: 1fr 1fr;
         gap: 10px;
@@ -901,7 +1018,6 @@
         font-size: 1.6rem;
       }
 
-      /* プロフィール統計を3等分最適化 */
       .profile-stats-grid {
         grid-template-columns: 1fr 1fr 1fr;
         gap: 8px;
@@ -913,32 +1029,14 @@
         font-size: 1.3rem !important;
       }
 
-      /* モーダルのスマホ画面幅最適化 */
       .dialog-panel {
         max-width: calc(100vw - 28px);
         padding: 20px 16px;
         border-radius: var(--radius-lg);
       }
 
-      /* スナックバーのスマホ位置 */
       .snackbar {
         bottom: 80px;
-      }
-    }
-
-    @media (max-width: 400px) {
-      .mobile-brand span:last-child {
-        font-size: 1rem;
-      }
-      .coin-badge {
-        padding: 4px 8px;
-        font-size: 0.78rem;
-      }
-      .nav-btn {
-        font-size: 0.65rem;
-      }
-      .nav-btn .material-symbols-outlined {
-        font-size: 20px;
       }
     }
   </style>
@@ -946,7 +1044,7 @@
 <body>
 
   <!-- ========================================================================
-       TOP ROLE SWITCHER BAR (スマホでも邪魔にならないスリムなモード切替)
+       TOP ROLE SWITCHER BAR (ユーザー体験 ⇄ 店舗管理)
        ======================================================================== -->
   <header class="role-switcher-bar">
     <div class="role-badge">
@@ -1016,20 +1114,23 @@
             </button>
           </li>
         </ul>
-        <div style="background:#fff; border:1px solid var(--md-outline-variant); border-radius:var(--radius-md); padding:14px; margin-top:auto;">
-          <div style="font-size:0.75rem; color:var(--md-outline);">利用可能コイン</div>
+
+        <!-- 通常コインのみ表示 (合算Gは絶対に表示しない) -->
+        <div class="sidebar-coin-box">
+          <div style="font-size:0.75rem; color:var(--md-outline);">通常コイン残高</div>
           <div style="display:flex; align-items:baseline; gap:6px; margin-top:2px;">
             <span class="material-symbols-outlined" style="color:var(--md-coin); font-size:20px;">monetization_on</span>
             <span class="user-coin-num" style="font-size:1.4rem; font-weight:700; color:var(--md-primary);">1,250</span>
             <span style="font-size:0.8rem;">コイン</span>
           </div>
+          <div style="font-size:0.7rem; color:var(--md-outline); margin-top:4px;">※ゴールドポイントは各キャンペーンで管理</div>
         </div>
       </aside>
 
       <!-- Main Content Viewport -->
       <main class="content-viewport">
 
-        <!-- Mobile Header (スマホ固定ヘッダー) -->
+        <!-- Mobile Header (通常コインのみ表示) -->
         <header class="mobile-header">
           <div class="mobile-brand">
             <span class="material-symbols-outlined">storefront</span>
@@ -1046,28 +1147,25 @@
 
           <!-- 1-1. HOME SCREEN -->
           <section id="tab-home" class="tab-screen active">
-            <!-- コンセプトバナー -->
-            <div style="background:var(--md-primary-container); color:var(--md-on-primary-container); padding:14px 16px; border-radius:var(--radius-lg); margin-bottom:16px;">
-              <h2 style="font-size:1rem; font-weight:700;">街へ行って、ミッション達成＆クーポン獲得</h2>
-              <p style="font-size:0.8rem; margin-top:3px; opacity:0.9;">
-                近所のお店にチェックインしてコインを貯め、お得なクーポンと交換しよう。
-              </p>
-              <div style="display:flex; gap:8px; margin-top:10px;">
-                <button class="btn btn-sm btn-primary" onclick="app.switchUserTab('missions')">
-                  <span class="material-symbols-outlined" style="font-size:16px;">flag</span> ミッションを見る
-                </button>
-                <button class="btn btn-sm btn-tonal" onclick="app.switchUserTab('coupons')">
-                  <span class="material-symbols-outlined" style="font-size:16px;">confirmation_number</span> クーポン一覧
-                </button>
+
+            <!-- 開催中のキャンペーンセクション (キャンペーン別ゴールドポイント表示) -->
+            <div style="margin-bottom: 24px;">
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px;">
+                <h2 style="font-size:1.15rem; font-weight:700;">開催中のキャンペーン</h2>
+                <span style="font-size:0.78rem; color:var(--md-outline);">期間限定ゴールドポイント</span>
+              </div>
+              <div class="grid-cards" id="campaigns-feed-grid">
+                <!-- キャンペーンカードが動的に挿入されます -->
               </div>
             </div>
 
+            <!-- 安売り情報タイムライン -->
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
               <h3 style="font-size:1.1rem; font-weight:700;">近くの安売り情報</h3>
               <span style="font-size:0.78rem; color:var(--md-outline);">桜が丘エリア</span>
             </div>
 
-            <!-- 横スワイプ可能なカテゴリーチップ -->
+            <!-- カテゴリーチップ -->
             <div class="chip-bar" id="category-filter-chips">
               <button class="chip active" data-cat="ALL">すべて</button>
               <button class="chip" data-cat="生鮮食品">生鮮食品</button>
@@ -1077,7 +1175,6 @@
               <button class="chip" data-cat="お菓子">お菓子</button>
             </div>
 
-            <!-- スマホでは1列カード表示 -->
             <div class="grid-cards" id="home-deals-grid"></div>
           </section>
 
@@ -1108,11 +1205,10 @@
               </div>
               <div class="coin-badge">
                 <span class="material-symbols-outlined" style="font-size:16px;">monetization_on</span>
-                <span>保有: <strong class="user-coin-num">1,250</strong></span>
+                <span>通常コイン: <strong class="user-coin-num">1,250</strong></span>
               </div>
             </div>
 
-            <!-- クーポン切替タブ (スマホでも押しやすいセグメントUI) -->
             <div style="display:flex; gap:8px; margin-bottom:14px;">
               <button class="btn btn-sm btn-primary" id="btn-show-my-coupons" style="flex:1;" onclick="app.toggleCouponSubTab('my')">
                 <span class="material-symbols-outlined" style="font-size:16px;">receipt_long</span> マイクーポン (<span id="my-coupons-count">0</span>)
@@ -1125,7 +1221,7 @@
             <div class="grid-cards" id="coupons-display-grid"></div>
           </section>
 
-          <!-- 1-5. POST SCREEN (スマホ最適化：縦1列レイアウト) -->
+          <!-- 1-5. POST SCREEN -->
           <section id="tab-post" class="tab-screen">
             <div class="card" style="max-width:600px; margin:0 auto;">
               <h2 style="font-size:1.2rem; font-weight:700; margin-bottom:4px;">安売り情報を投稿する</h2>
@@ -1137,7 +1233,6 @@
                   <input type="text" id="post-input-title" class="form-control" placeholder="例: 卵 10個入" required>
                 </div>
 
-                <!-- スマホでは縦1列になるグリッド -->
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;" class="form-grid-2col">
                   <div class="form-group">
                     <label class="form-label">価格 (税込) *</label>
@@ -1180,7 +1275,7 @@
                 <div style="background:var(--md-surface-low); padding:12px; border-radius:var(--radius-md); margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
                   <div>
                     <div style="font-weight:700; font-size:0.85rem;">獲得予定コイン</div>
-                    <div style="font-size:0.75rem; color:var(--md-outline);" id="post-reward-breakdown">基本: 30コイン</div>
+                    <div style="font-size:0.75rem; color:var(--md-outline);" id="post-reward-breakdown">基本: 30 通常コイン</div>
                   </div>
                   <div style="font-size:1.25rem; font-weight:700; color:var(--md-primary);" id="post-reward-total">+30 コイン</div>
                 </div>
@@ -1192,15 +1287,15 @@
             </div>
           </section>
 
-          <!-- 1-6. COINS SCREEN -->
+          <!-- 1-6. COINS SCREEN (通常コイン履歴のみ表示) -->
           <section id="tab-coins" class="tab-screen">
             <div class="card" style="text-align:center; padding:24px 16px; background:linear-gradient(135deg, var(--md-primary-container), #fff);">
-              <div style="font-size:0.8rem; color:var(--md-outline);">保有コイン残高</div>
+              <div style="font-size:0.8rem; color:var(--md-outline);">通常コイン残高</div>
               <div class="user-coin-num" style="font-size:2.8rem; font-weight:700; color:var(--md-primary); margin:4px 0; line-height:1.1;">1,250</div>
-              <div style="font-size:0.78rem; color:var(--md-outline);">街の提携店舗でのクーポン交換に利用できます</div>
+              <div style="font-size:0.78rem; color:var(--md-outline);">アプリ内のクーポン交換や特典に利用できます</div>
             </div>
             <div class="card">
-              <h3 style="font-size:1rem; font-weight:700; margin-bottom:12px;">コイン履歴</h3>
+              <h3 style="font-size:1rem; font-weight:700; margin-bottom:12px;">通常コイン履歴</h3>
               <div id="user-coin-history-list"></div>
             </div>
           </section>
@@ -1217,7 +1312,6 @@
               </div>
             </div>
 
-            <!-- スマホ対応 3等分統計 -->
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:14px;" class="profile-stats-grid">
               <div class="card profile-stat-box" style="text-align:center; padding:12px 6px; margin:0;">
                 <div style="font-size:0.72rem; color:var(--md-outline);">投稿数</div>
@@ -1244,7 +1338,7 @@
 
         </div>
 
-        <!-- Mobile Bottom Navigation (6項目均等配分 & Safe Area対応) -->
+        <!-- Mobile Bottom Navigation -->
         <nav class="mobile-bottom-nav">
           <button class="nav-btn active" data-tab="home">
             <span class="material-symbols-outlined">home</span>
@@ -1282,7 +1376,6 @@
     <div class="view-container" id="admin-view-container">
       <div class="admin-layout" style="flex-direction:column; width:100%; height:100%;">
 
-        <!-- スマホ専用：店舗管理ヘッダーナビゲーション (メニュー消失問題を完全解決) -->
         <nav class="admin-mobile-nav">
           <button class="admin-mobile-nav-btn active" data-admin-tab="dashboard">
             <span class="material-symbols-outlined" style="font-size:16px;">dashboard</span> ダッシュボード
@@ -1302,7 +1395,7 @@
         </nav>
 
         <div style="display:flex; flex:1; overflow:hidden; width:100%;">
-          <!-- Admin Sidebar (PCのみ表示) -->
+          <!-- Admin Sidebar (PC) -->
           <aside class="admin-sidebar">
             <div class="admin-brand">
               <span class="material-symbols-outlined" style="font-size: 28px;">store</span>
@@ -1355,7 +1448,7 @@
               </div>
             </header>
 
-            <!-- 2-1. ADMIN DASHBOARD (スマホ2列グリッド対応) -->
+            <!-- 2-1. ADMIN DASHBOARD -->
             <div id="admin-tab-dashboard" class="admin-screen active" style="width:100%;">
               <div class="kpi-row">
                 <div class="kpi-card">
@@ -1477,8 +1570,58 @@
   </div>
 
   <!-- ========================================================================
-       MODALS & DIALOGS (スマホ最適化済み)
+       MODALS & DIALOGS
        ======================================================================== -->
+
+  <!-- キャンペーン詳細モーダル (複数特典・専用G表示) -->
+  <div class="dialog-overlay" id="modal-campaign-detail">
+    <div class="dialog-panel">
+      <button class="dialog-close" onclick="app.closeAllModals()"><span class="material-symbols-outlined">close</span></button>
+      
+      <div style="margin-bottom:14px;">
+        <span class="campaign-organizer-tag" id="cmp-modal-organizer">主催者</span>
+        <h2 style="font-size:1.25rem; font-weight:700; margin:2px 0 4px;" id="cmp-modal-title">キャンペーン名</h2>
+        <div style="font-size:0.75rem; color:var(--md-outline);" id="cmp-modal-period">期間: 2026/09/01 - 2026/10/31</div>
+      </div>
+
+      <div style="font-size:0.82rem; color:var(--md-on-surface-variant); margin-bottom:14px;" id="cmp-modal-desc">
+        キャンペーン説明文
+      </div>
+
+      <!-- このキャンペーン固有のゴールドポイント進行状況 -->
+      <div class="campaign-progress-box" style="margin-top:0;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-size:0.8rem; font-weight:700;">キャンペーン限定G残高</span>
+          <div class="campaign-gold-badge">
+            <span class="material-symbols-outlined" style="font-size:16px;">workspace_premium</span>
+            <strong id="cmp-modal-gold-val" style="font-size:1.05rem;">0</strong> G
+          </div>
+        </div>
+        <div class="progress-labels">
+          <span>進捗状況</span>
+          <strong id="cmp-modal-progress-label">0G / 500G</strong>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="cmp-modal-progress-fill" style="width: 0%;"></div>
+        </div>
+        <div class="progress-remaining-text" id="cmp-modal-remaining-label">あと 0G で次の特典達成</div>
+      </div>
+
+      <!-- 特典一覧 (複数特典の選択・引き換え) -->
+      <div style="margin-bottom:16px;">
+        <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:8px;">獲得可能な特典一覧</h4>
+        <div id="cmp-modal-rewards-list" style="display:flex; flex-direction:column; gap:8px;">
+          <!-- 特典ボックスが動的に挿入されます -->
+        </div>
+      </div>
+
+      <!-- 対象店舗一覧 -->
+      <div>
+        <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:8px;">ゴールドポイントが貯まる対象店舗</h4>
+        <div id="cmp-modal-stores-list" style="display:flex; flex-direction:column; gap:6px;"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- 店舗詳細 ＆ チェックインモーダル -->
   <div class="dialog-overlay" id="modal-store-detail">
@@ -1490,7 +1633,6 @@
         <p style="font-size:0.8rem; color:var(--md-outline); margin-top:2px;" id="store-modal-address">住所</p>
       </div>
 
-      <!-- 店舗からのお知らせバナー -->
       <div id="store-modal-notice-box" style="display:none; background:#eff6ff; color:#1e3a8a; border:1px solid #bfdbfe; padding:10px 12px; border-radius:var(--radius-md); font-size:0.82rem; margin-bottom:14px;">
         <div style="display:flex; align-items:center; gap:6px; font-weight:700; margin-bottom:2px;">
           <span class="material-symbols-outlined" style="font-size:18px;">campaign</span> 店舗からのお知らせ
@@ -1498,10 +1640,10 @@
         <div id="store-modal-notice-text">お知らせ内容</div>
       </div>
 
-      <!-- チェックインボタン -->
+      <!-- チェックインボタン (通常コイン + 参加中キャンペーンGの獲得) -->
       <div style="background:var(--md-surface-low); border:1px solid var(--md-outline-variant); border-radius:var(--radius-md); padding:14px; margin-bottom:14px; text-align:center;">
         <div style="font-weight:700; font-size:0.9rem; margin-bottom:3px;">店頭チェックイン</div>
-        <p style="font-size:0.75rem; color:var(--md-outline); margin-bottom:10px;">お店の近くに来たらタップしてミッション達成＆コイン獲得</p>
+        <p style="font-size:0.75rem; color:var(--md-outline); margin-bottom:10px;">お店に来たらタップ！通常コイン &amp; キャンペーンGを獲得</p>
         <button class="btn btn-primary" id="btn-perform-checkin" style="width:100%;">
           <span class="material-symbols-outlined">pin_drop</span> チェックインする (+50コイン)
         </button>
@@ -1524,19 +1666,18 @@
     <div class="dialog-panel">
       <button class="dialog-close" onclick="app.closeAllModals()"><span class="material-symbols-outlined">close</span></button>
       <div style="text-align:center; padding:6px 0 12px;">
-        <div style="font-size:0.8rem; color:var(--md-outline);" id="coupon-modal-store-name">ベーカリー 麦のかおり</div>
-        <h2 style="font-size:1.3rem; font-weight:700; color:var(--md-primary); margin:4px 0;" id="coupon-modal-title">100円引きクーポン</h2>
-        <div style="font-size:0.9rem; color:var(--md-on-surface);" id="coupon-modal-benefit">全品100円引き</div>
+        <div id="coupon-modal-campaign-badge" style="display:none; margin-bottom:4px;"></div>
+        <div style="font-size:0.8rem; color:var(--md-outline);" id="coupon-modal-store-name">店舗名</div>
+        <h2 style="font-size:1.3rem; font-weight:700; color:var(--md-primary); margin:4px 0;" id="coupon-modal-title">クーポン名</h2>
+        <div style="font-size:0.9rem; color:var(--md-on-surface);" id="coupon-modal-benefit">特典内容</div>
         <div style="font-size:0.75rem; color:var(--md-outline); margin-top:6px;">有効期限: <span id="coupon-modal-expire">2026/10/31</span></div>
       </div>
 
-      <!-- 未使用時のスワイプ操作エリア -->
       <div id="coupon-unredeemed-area">
         <div style="background:var(--md-surface-low); padding:10px; border-radius:var(--radius-md); font-size:0.78rem; color:var(--md-outline); text-align:center;">
           誤操作を防ぐため、お会計時にお店のスタッフの前で下のスライダーを右端まで動かしてください。
         </div>
 
-        <!-- スライド利用確定コンポーネント (Slide to Redeem) -->
         <div class="slide-redeem-container">
           <div class="slide-track" id="slide-track">
             <div class="slide-fill" id="slide-fill"></div>
@@ -1551,7 +1692,6 @@
         </div>
       </div>
 
-      <!-- 使用済み／店頭提示コードエリア -->
       <div id="coupon-redeemed-area" style="display:none; text-align:center; margin-top:14px;">
         <div style="display:inline-flex; align-items:center; gap:6px; color:var(--md-primary); font-weight:700; margin-bottom:6px;">
           <span class="material-symbols-outlined">check_circle</span> 使用中・確認済み
@@ -1565,14 +1705,14 @@
     </div>
   </div>
 
-  <!-- クーポン交換確認モーダル -->
+  <!-- 通常コインでのクーポン交換確認モーダル -->
   <div class="dialog-overlay" id="modal-coupon-exchange-confirm">
     <div class="dialog-panel" style="text-align:center;">
       <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:10px;">クーポンの交換確認</h3>
       <div style="font-size:0.85rem; color:var(--md-outline);" id="exchange-modal-store">店舗名</div>
       <div style="font-size:1.2rem; font-weight:700; color:var(--md-primary); margin:6px 0;" id="exchange-modal-title">クーポン名</div>
       <div style="background:var(--md-surface-low); padding:12px; border-radius:var(--radius-md); margin:14px 0;">
-        必要コイン: <strong style="font-size:1.2rem; color:var(--md-coin);" id="exchange-modal-coins">300</strong> コイン
+        消費コイン: <strong style="font-size:1.2rem; color:var(--md-coin);" id="exchange-modal-coins">300</strong> コイン
       </div>
       <div style="display:flex; justify-content:center; gap:10px;">
         <button class="btn btn-outlined btn-sm" onclick="app.closeAllModals()">キャンセル</button>
@@ -1640,7 +1780,7 @@
           <div class="form-group">
             <label class="form-label">報酬種別</label>
             <select id="mission-create-reward-type" class="form-control">
-              <option value="coin">コイン</option>
+              <option value="coin">通常コイン</option>
             </select>
           </div>
           <div class="form-group">
@@ -1673,9 +1813,94 @@
        ======================================================================== -->
   <script>
     /**
-     * データストア初期データ
+     * データストア初期データ (キャンペーン別ゴールドポイント構造)
      */
     const INITIAL_DATA = {
+      // 開催中のキャンペーン一覧 (ゴールドポイントはここで完全分離管理)
+      campaigns: [
+        {
+          campaignId: 'cmp_yokohama',
+          campaignName: '横浜市 地域応援キャンペーン',
+          organizerName: '横浜市 経済局',
+          organizerType: '自治体',
+          goldCoins: 320, // このキャンペーン固有のゴールドポイント
+          goldTarget: 500, // 代表・最大目標
+          startDate: '2026-09-01',
+          endDate: '2026-10-31',
+          status: 'active',
+          eligibleStores: ['s_bakery', 's_greenmart'],
+          description: '横浜市内の対象店舗でお買い物やチェックインをしてゴールドポイントを獲得！貯めたGで加盟店限定クーポンを獲得できます。',
+          rewards: [
+            {
+              rewardId: 'rw_yokohama_1',
+              title: 'パン100円OFFクーポン',
+              benefit: '全品100円引き',
+              storeId: 's_bakery',
+              requiredGold: 300,
+              stockLimit: 150,
+              claimedCount: 42
+            },
+            {
+              rewardId: 'rw_yokohama_2',
+              title: 'お買い物200円OFFクーポン',
+              benefit: '1,000円以上のお会計で200円引',
+              storeId: 's_greenmart',
+              requiredGold: 500,
+              stockLimit: 80,
+              claimedCount: 29
+            }
+          ]
+        },
+        {
+          campaignId: 'cmp_shibuya',
+          campaignName: '渋谷区 お店めぐりキャンペーン',
+          organizerName: '渋谷区 産業観光課',
+          organizerType: '自治体',
+          goldCoins: 250, // 独立したG
+          goldTarget: 300,
+          startDate: '2026-09-15',
+          endDate: '2026-11-15',
+          status: 'active',
+          eligibleStores: ['s_cafe'],
+          description: '渋谷区の個人カフェや喫茶店を応援！ゴールドポイントを貯めて限定珈琲チケットを手に入れよう。',
+          rewards: [
+            {
+              rewardId: 'rw_shibuya_1',
+              title: '自家製ブレンド珈琲 1杯無料',
+              benefit: 'ドリンク1杯無料',
+              storeId: 's_cafe',
+              requiredGold: 300,
+              stockLimit: 100,
+              claimedCount: 31
+            }
+          ]
+        },
+        {
+          campaignId: 'cmp_sakuragaoka',
+          campaignName: '桜が丘商店街 秋の収穫祭',
+          organizerName: '桜が丘商店振興組合',
+          organizerType: '商店街',
+          goldCoins: 80, // 独立したG
+          goldTarget: 200,
+          startDate: '2026-09-20',
+          endDate: '2026-10-25',
+          status: 'active',
+          eligibleStores: ['s_bakery', 's_greenmart', 's_cafe'],
+          description: '商店街加盟店でのお買い物や投稿でゴールドポイントが貯まる秋の限定企画です。',
+          rewards: [
+            {
+              rewardId: 'rw_sakura_1',
+              title: '商店街共通 100円お買い物券',
+              benefit: '加盟店全店で100円引き',
+              storeId: 's_bakery',
+              requiredGold: 200,
+              stockLimit: 200,
+              claimedCount: 14
+            }
+          ]
+        }
+      ],
+
       stores: [
         {
           id: 's_bakery',
@@ -1783,45 +2008,42 @@
         }
       ],
 
+      // 通常コインで交換できる店舗クーポンマスタ
       coupons: [
         {
           id: 'c1',
           storeId: 's_bakery',
-          title: 'パン100円引きクーポン',
+          title: '通常：パン100円引きクーポン',
           benefit: '全品100円引き',
           requiredCoins: 300,
           expireDate: '2026/10/31',
-          description: 'お会計時にご提示ください。',
+          description: '通常コイン300枚で引き換え可能。お会計時にご提示ください。',
           isPublic: true
         },
         {
           id: 'c2',
           storeId: 's_cafe',
-          title: '自家製ブレンド珈琲 1杯無料',
+          title: '通常：ブレンド珈琲 1杯無料',
           benefit: 'ドリンク1杯無料',
           requiredCoins: 500,
           expireDate: '2026/11/15',
-          description: 'フードまたはスイーツご注文時に利用可能。',
-          isPublic: true
-        },
-        {
-          id: 'c3',
-          storeId: 's_greenmart',
-          title: 'お会計から5%OFFクーポン',
-          benefit: 'レジ合計から5%OFF',
-          requiredCoins: 400,
-          expireDate: '2026/10/31',
-          description: '1,000円以上のお買い上げでご利用可能。',
+          description: '通常コイン500枚で引き換え可能。フードご注文時に利用可能。',
           isPublic: true
         }
       ],
 
+      // ユーザー保有のマイクーポン
       userCoupons: [
         {
           id: 'uc_demo1',
           couponId: 'c1',
+          title: 'パン100円引きクーポン',
+          benefit: '全品100円引き',
+          storeId: 's_bakery',
+          expireDate: '2026/10/31',
           code: 'CP-4819',
           status: 'active',
+          campaignName: null,
           acquiredAt: Date.now() - 1000 * 60 * 60 * 24,
           usedAt: null
         }
@@ -1832,8 +2054,8 @@
       ],
 
       histories: [
-        { id: 'h1', amount: 1000, type: 'gain', description: '初期参加ボーナス', createdAt: Date.now() - 1000 * 60 * 60 * 48 },
-        { id: 'h2', amount: 50, type: 'gain', description: '店舗チェックインボーナス (ベーカリー 麦のかおり)', createdAt: Date.now() - 1000 * 60 * 60 * 5 },
+        { id: 'h1', amount: 1000, type: 'gain', description: '初期参加ボーナス (通常コイン)', createdAt: Date.now() - 1000 * 60 * 60 * 48 },
+        { id: 'h2', amount: 50, type: 'gain', description: '店舗チェックインボーナス', createdAt: Date.now() - 1000 * 60 * 60 * 5 },
         { id: 'h3', amount: 200, type: 'gain', description: '安売り情報の投稿ボーナス', createdAt: Date.now() - 1000 * 60 * 60 * 2 }
       ]
     };
@@ -1843,7 +2065,7 @@
      */
     class StoreApp {
       constructor() {
-        this.mode = 'user'; // 'user' | 'admin'
+        this.mode = 'user';
         this.activeUserTab = 'home';
         this.activeAdminTab = 'dashboard';
         this.activeCouponSubTab = 'my';
@@ -1855,12 +2077,14 @@
         this.selectedStore = null;
         this.selectedUserCoupon = null;
         this.selectedExchangeCoupon = null;
+        this.selectedCampaign = null;
         this.leafletMap = null;
         this.markers = [];
       }
 
       loadStorage() {
         this.coins = parseInt(localStorage.getItem('ts_coins') || '1250', 10);
+        this.campaigns = JSON.parse(localStorage.getItem('ts_campaigns') || JSON.stringify(INITIAL_DATA.campaigns));
         this.stores = JSON.parse(localStorage.getItem('ts_stores') || JSON.stringify(INITIAL_DATA.stores));
         this.deals = JSON.parse(localStorage.getItem('ts_deals') || JSON.stringify(INITIAL_DATA.deals));
         this.missions = JSON.parse(localStorage.getItem('ts_missions') || JSON.stringify(INITIAL_DATA.missions));
@@ -1873,6 +2097,7 @@
 
       saveStorage() {
         localStorage.setItem('ts_coins', this.coins.toString());
+        localStorage.setItem('ts_campaigns', JSON.stringify(this.campaigns));
         localStorage.setItem('ts_stores', JSON.stringify(this.stores));
         localStorage.setItem('ts_deals', JSON.stringify(this.deals));
         localStorage.setItem('ts_missions', JSON.stringify(this.missions));
@@ -1911,6 +2136,60 @@
         return true;
       }
 
+      // キャンペーン固有のゴールドポイントを加算 (合算しない)
+      addGoldToCampaign(campaignId, amount) {
+        const cmp = this.campaigns.find(c => c.campaignId === campaignId);
+        if (cmp && cmp.status === 'active') {
+          cmp.goldCoins += amount;
+          this.saveStorage();
+          return cmp;
+        }
+        return null;
+      }
+
+      // キャンペーン固有のゴールドポイントを消費して特典獲得
+      claimCampaignReward(campaignId, rewardId) {
+        const cmp = this.campaigns.find(c => c.campaignId === campaignId);
+        if (!cmp || cmp.status !== 'active') return { success: false, reason: 'キャンペーンが終了または無効です' };
+
+        const reward = cmp.rewards.find(r => r.rewardId === rewardId);
+        if (!reward) return { success: false, reason: '特典が存在しません' };
+
+        if (cmp.goldCoins < reward.requiredGold) {
+          return { success: false, reason: `ゴールドポイントが不足しています (あと ${reward.requiredGold - cmp.goldCoins}G 必要)` };
+        }
+
+        if (reward.claimedCount >= reward.stockLimit) {
+          return { success: false, reason: 'この特典は利用上限に達したため配布終了しました' };
+        }
+
+        // ゴールドポイントを消費
+        cmp.goldCoins -= reward.requiredGold;
+        reward.claimedCount += 1;
+
+        // クーポンシステムへ追加
+        const store = this.stores.find(s => s.id === reward.storeId) || { name: '対象加盟店' };
+        const newCode = 'CP-' + Math.floor(1000 + Math.random() * 9000);
+        const newUserCoupon = {
+          id: 'uc_' + Date.now(),
+          couponId: reward.rewardId,
+          title: reward.title,
+          benefit: reward.benefit,
+          storeId: reward.storeId,
+          expireDate: cmp.endDate.replace(/-/g, '/'),
+          code: newCode,
+          status: 'active',
+          campaignName: cmp.campaignName,
+          acquiredAt: Date.now(),
+          usedAt: null
+        };
+
+        this.userCoupons.unshift(newUserCoupon);
+        this.saveStorage();
+
+        return { success: true, coupon: newUserCoupon, remainingGold: cmp.goldCoins };
+      }
+
       updateCoinUI() {
         document.querySelectorAll('.user-coin-num').forEach(el => {
           el.textContent = this.coins.toLocaleString();
@@ -1933,7 +2212,6 @@
         this.initMap();
       },
 
-      // モード切替（ユーザー体験 ⇄ 店舗管理）
       setupRoleSwitcher() {
         const toggleBtn = document.getElementById('btn-toggle-mode');
         const modeLabel = document.getElementById('current-mode-label');
@@ -1960,9 +2238,7 @@
         });
       },
 
-      // ナビゲーションバインド
       setupNavigation() {
-        // ユーザーナビ（サイドバー & ボトムナビ共通）
         document.querySelectorAll('[data-tab]').forEach(btn => {
           btn.addEventListener('click', () => {
             const tab = btn.getAttribute('data-tab');
@@ -1970,7 +2246,6 @@
           });
         });
 
-        // 店舗管理ナビ（PCサイドバー & スマホ上部バー共通）
         document.querySelectorAll('[data-admin-tab]').forEach(btn => {
           btn.addEventListener('click', () => {
             const tab = btn.getAttribute('data-admin-tab');
@@ -1978,14 +2253,12 @@
           });
         });
 
-        // 店舗切り替えセレクト (Admin)
         const storeSwitch = document.getElementById('admin-store-switch');
         storeSwitch.addEventListener('change', (e) => {
           state.selectedAdminStoreId = e.target.value;
           this.renderAdminView();
         });
 
-        // カテゴリフィルター (User Home)
         document.querySelectorAll('#category-filter-chips .chip').forEach(c => {
           c.addEventListener('click', () => {
             document.querySelectorAll('#category-filter-chips .chip').forEach(x => x.classList.remove('active'));
@@ -1995,17 +2268,14 @@
           });
         });
 
-        // チェックインボタン
         document.getElementById('btn-perform-checkin').addEventListener('click', () => {
           this.handleCheckInAction();
         });
 
-        // クーポン交換確定ボタン
         document.getElementById('btn-confirm-exchange-exec').addEventListener('click', () => {
           this.handleExchangeCouponExec();
         });
 
-        // 店舗消し込み検索ボタン
         document.getElementById('btn-admin-verify-search').addEventListener('click', () => {
           this.handleAdminVerifySearch();
         });
@@ -2021,7 +2291,6 @@
         const target = document.getElementById(`tab-${tabName}`);
         if (target) target.classList.add('active');
 
-        // マップ画面のリサイズ対応
         if (tabName === 'map' && state.leafletMap) {
           setTimeout(() => state.leafletMap.invalidateSize(), 200);
         }
@@ -2066,7 +2335,159 @@
       },
 
       // ======================================================================
-      // スライドして利用確定 (Slide to Redeem) タッチ/マウス完全対応
+      // キャンペーンカード一覧描画 (合算せず、キャンペーンごとにGを表示)
+      // ======================================================================
+      renderCampaigns() {
+        const container = document.getElementById('campaigns-feed-grid');
+        container.innerHTML = '';
+
+        state.campaigns.forEach(cmp => {
+          const targetG = cmp.goldTarget || 500;
+          const currentG = cmp.goldCoins;
+          const progressPercent = Math.min(100, Math.round((currentG / targetG) * 100));
+
+          // 次の未達成特典までの必要Gを算出
+          const nextReward = cmp.rewards
+            .filter(r => r.requiredGold > currentG)
+            .sort((a, b) => a.requiredGold - b.requiredGold)[0];
+          
+          let remainingMsg = '';
+          if (nextReward) {
+            remainingMsg = `あと ${nextReward.requiredGold - currentG}G で「${nextReward.title}」獲得！`;
+          } else {
+            remainingMsg = '全特典の必要ゴールドポイントに到達中！';
+          }
+
+          const card = document.createElement('div');
+          card.className = 'campaign-card';
+          card.innerHTML = `
+            <div class="campaign-header">
+              <div>
+                <span class="campaign-organizer-tag">${cmp.organizerName} (${cmp.organizerType})</span>
+                <h3 class="campaign-title">${cmp.campaignName}</h3>
+              </div>
+              <div class="campaign-gold-badge">
+                <span class="material-symbols-outlined" style="font-size:16px;">workspace_premium</span>
+                <span>G <strong>${currentG}</strong></span>
+              </div>
+            </div>
+
+            <!-- プログレスバー & あと何G -->
+            <div class="campaign-progress-box">
+              <div class="progress-labels">
+                <span>進行状況</span>
+                <strong>${currentG}G / ${targetG}G</strong>
+              </div>
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill" style="width: ${progressPercent}%;"></div>
+              </div>
+              <div class="progress-remaining-text">${remainingMsg}</div>
+            </div>
+
+            <button class="btn btn-outlined btn-sm" style="width:100%; margin-top:auto;" onclick="app.openCampaignModalById('${cmp.campaignId}')">
+              <span class="material-symbols-outlined" style="font-size:16px;">visibility</span> キャンペーンを見る
+            </button>
+          `;
+          container.appendChild(card);
+        });
+      },
+
+      // キャンペーン詳細モーダルを開く (複数特典・専用G表示)
+      openCampaignModalById(campaignId) {
+        const cmp = state.campaigns.find(c => c.campaignId === campaignId);
+        if (!cmp) return;
+        state.selectedCampaign = cmp;
+
+        document.getElementById('cmp-modal-organizer').textContent = `${cmp.organizerName} (${cmp.organizerType})`;
+        document.getElementById('cmp-modal-title').textContent = cmp.campaignName;
+        document.getElementById('cmp-modal-period').textContent = `開催期間: ${cmp.startDate.replace(/-/g, '/')} - ${cmp.endDate.replace(/-/g, '/')}`;
+        document.getElementById('cmp-modal-desc').textContent = cmp.description;
+
+        // このキャンペーン専用のゴールドポイントを表示
+        document.getElementById('cmp-modal-gold-val').textContent = cmp.goldCoins;
+        
+        const targetG = cmp.goldTarget || 500;
+        const currentG = cmp.goldCoins;
+        const progressPercent = Math.min(100, Math.round((currentG / targetG) * 100));
+
+        document.getElementById('cmp-modal-progress-label').textContent = `${currentG}G / ${targetG}G`;
+        document.getElementById('cmp-modal-progress-fill').style.width = `${progressPercent}%`;
+
+        const nextReward = cmp.rewards
+          .filter(r => r.requiredGold > currentG)
+          .sort((a, b) => a.requiredGold - b.requiredGold)[0];
+        document.getElementById('cmp-modal-remaining-label').textContent = nextReward
+          ? `あと ${nextReward.requiredGold - currentG}G で「${nextReward.title}」引き換え可能`
+          : 'すべての特典必要ゴールドポイントに到達中！';
+
+        // 複数特典のリストアップ
+        const rewardsContainer = document.getElementById('cmp-modal-rewards-list');
+        rewardsContainer.innerHTML = '';
+        cmp.rewards.forEach(r => {
+          const store = state.stores.find(s => s.id === r.storeId) || { name: '対象加盟店' };
+          const canClaim = currentG >= r.requiredGold;
+          const isSoldOut = r.claimedCount >= r.stockLimit;
+
+          const box = document.createElement('div');
+          box.className = 'reward-item-box';
+          box.innerHTML = `
+            <div style="flex:1;">
+              <div style="font-size:0.75rem; color:var(--md-outline);">${store.name}</div>
+              <div style="font-weight:700; font-size:0.95rem; margin:1px 0;">${r.title}</div>
+              <div style="font-size:0.78rem; color:var(--md-primary); font-weight:700;">特典: ${r.benefit}</div>
+              <div style="font-size:0.75rem; color:var(--md-gold); font-weight:700; margin-top:2px;">
+                必要: ${r.requiredGold} G ${!canClaim ? `(あと ${r.requiredGold - currentG}G)` : ''}
+              </div>
+            </div>
+            <div>
+              <button class="btn ${canClaim && !isSoldOut ? 'btn-primary' : 'btn-tonal'} btn-sm" 
+                ${!canClaim || isSoldOut ? 'disabled' : ''} 
+                onclick="app.handleClaimCampaignReward('${cmp.campaignId}', '${r.rewardId}')">
+                <span class="material-symbols-outlined" style="font-size:16px;">${isSoldOut ? 'block' : (canClaim ? 'check' : 'lock')}</span>
+                ${isSoldOut ? '上限終了' : (canClaim ? '獲得する' : `あと${r.requiredGold - currentG}G`)}
+              </button>
+            </div>
+          `;
+          rewardsContainer.appendChild(box);
+        });
+
+        // 対象店舗リスト
+        const storesContainer = document.getElementById('cmp-modal-stores-list');
+        storesContainer.innerHTML = '';
+        cmp.eligibleStores.forEach(sId => {
+          const s = state.stores.find(x => x.id === sId);
+          if (s) {
+            const item = document.createElement('div');
+            item.style.cssText = 'padding:6px 10px; background:var(--md-surface-low); border-radius:6px; font-size:0.8rem; display:flex; justify-content:space-between; align-items:center; cursor:pointer;';
+            item.innerHTML = `<span><strong>${s.name}</strong> (${s.category})</span><span style="color:var(--md-primary); font-size:0.75rem;">店舗詳細 <span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle;">chevron_right</span></span>`;
+            item.addEventListener('click', () => {
+              app.closeAllModals();
+              app.openStoreModal(s);
+            });
+            storesContainer.appendChild(item);
+          }
+        });
+
+        document.getElementById('modal-campaign-detail').classList.add('open');
+      },
+
+      // キャンペーン特典クーポンを獲得
+      handleClaimCampaignReward(campaignId, rewardId) {
+        const res = state.claimCampaignReward(campaignId, rewardId);
+        if (!res.success) {
+          this.showSnackbar(res.reason, 'error');
+          return;
+        }
+
+        this.showSnackbar(`特典を獲得しました！マイクーポンに追加されました (コード: ${res.coupon.code})`, 'verified');
+        this.openCampaignModalById(campaignId);
+        this.renderCampaigns();
+        this.renderCouponsView();
+        this.renderProfileStats();
+      },
+
+      // ======================================================================
+      // スライドして利用確定 (Slide to Redeem) タッチ/マウス対応
       // ======================================================================
       setupSlideToRedeem() {
         const track = document.getElementById('slide-track');
@@ -2091,7 +2512,6 @@
           thumb.style.transform = `translateX(${currentX}px)`;
           fill.style.width = `${(currentX / maxDrag) * 100}%`;
 
-          // 85%以上到達で利用確定
           if (currentX >= maxDrag * 0.85) {
             isDragging = false;
             thumb.style.transform = `translateX(${maxDrag}px)`;
@@ -2107,14 +2527,12 @@
           fill.style.width = '0%';
         };
 
-        // タッチ
         thumb.addEventListener('touchstart', (e) => onStart(e.touches[0].clientX), { passive: true });
         window.addEventListener('touchmove', (e) => {
           if (isDragging) onMove(e.touches[0].clientX);
         }, { passive: true });
         window.addEventListener('touchend', onEnd);
 
-        // マウス
         thumb.addEventListener('mousedown', (e) => onStart(e.clientX));
         window.addEventListener('mousemove', (e) => onMove(e.clientX));
         window.addEventListener('mouseup', onEnd);
@@ -2144,6 +2562,7 @@
       // ======================================================================
       renderAll() {
         state.updateCoinUI();
+        this.renderCampaigns();
         this.renderDeals();
         this.renderMissions();
         this.renderCouponsView();
@@ -2197,7 +2616,7 @@
             <div>
               <div class="mission-reward-tag">
                 <span class="material-symbols-outlined" style="font-size:15px;">monetization_on</span>
-                <span>報酬: +${m.rewardVal} コイン</span>
+                <span>報酬: +${m.rewardVal} 通常コイン</span>
               </div>
               <h4 style="font-size:1.05rem; font-weight:700; margin-bottom:4px;">${m.title}</h4>
               <p style="font-size:0.8rem; color:var(--md-outline); margin-bottom:10px;">${m.description}</p>
@@ -2234,32 +2653,33 @@
           }
 
           state.userCoupons.forEach(uc => {
-            const master = state.coupons.find(c => c.id === uc.couponId) || { title: 'クーポン', benefit: '', expireDate: '2026/10/31' };
-            const store = state.stores.find(s => s.id === master.storeId) || { name: '提携店舗' };
+            const store = state.stores.find(s => s.id === uc.storeId) || { name: '提携店舗' };
             const isUsed = uc.status === 'used';
 
             const card = document.createElement('div');
             card.className = `coupon-card ${isUsed ? 'used' : ''}`;
             card.innerHTML = `
               <div>
+                ${uc.campaignName ? `<div class="coupon-campaign-tag"><span class="material-symbols-outlined" style="font-size:13px;">workspace_premium</span> ${uc.campaignName} 特典</div>` : ''}
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                   <span style="font-size:0.75rem; color:var(--md-outline);">${store.name}</span>
                   <span style="font-size:0.72rem; font-weight:700; color:${isUsed ? 'var(--md-outline)' : 'var(--md-primary)'};">${isUsed ? '使用済み' : '利用可能'}</span>
                 </div>
-                <h4 style="font-size:1.05rem; font-weight:700; margin-bottom:4px;">${master.title}</h4>
-                <div style="font-size:0.88rem; color:var(--md-primary); font-weight:700; margin-bottom:6px;">${master.benefit}</div>
-                <div style="font-size:0.75rem; color:var(--md-outline); margin-bottom:12px;">有効期限: ${master.expireDate}</div>
+                <h4 style="font-size:1.05rem; font-weight:700; margin-bottom:4px;">${uc.title}</h4>
+                <div style="font-size:0.88rem; color:var(--md-primary); font-weight:700; margin-bottom:6px;">${uc.benefit}</div>
+                <div style="font-size:0.75rem; color:var(--md-outline); margin-bottom:12px;">有効期限: ${uc.expireDate}</div>
               </div>
               <button class="btn ${isUsed ? 'btn-tonal' : 'btn-primary'} btn-sm" style="width:100%;">
                 <span class="material-symbols-outlined" style="font-size:16px;">${isUsed ? 'receipt' : 'touch_app'}</span>
                 ${isUsed ? '利用済み確認' : 'クーポンを使う (スライド)'}
               </button>
             `;
-            card.querySelector('button').addEventListener('click', () => this.openCouponRedeemModal(uc, master, store));
+            card.querySelector('button').addEventListener('click', () => this.openCouponRedeemModal(uc, store));
             grid.appendChild(card);
           });
 
         } else {
+          // 通常コイン交換可能クーポン一覧
           state.coupons.forEach(c => {
             const store = state.stores.find(s => s.id === c.storeId) || { name: '提携店' };
             const canAfford = state.coins >= c.requiredCoins;
@@ -2273,7 +2693,7 @@
                 <div style="font-size:0.88rem; color:var(--md-primary); font-weight:700; margin-bottom:6px;">${c.benefit}</div>
                 <p style="font-size:0.78rem; color:var(--md-outline); margin-bottom:10px;">${c.description}</p>
                 <div style="background:var(--md-surface-low); padding:6px 10px; border-radius:var(--radius-sm); font-size:0.8rem; margin-bottom:12px;">
-                  必要: <strong style="color:var(--md-coin);">${c.requiredCoins}</strong> コイン
+                  必要: <strong style="color:var(--md-coin);">${c.requiredCoins}</strong> 通常コイン
                 </div>
               </div>
               <button class="btn ${canAfford ? 'btn-primary' : 'btn-tonal'} btn-sm" style="width:100%;" ${canAfford ? '' : 'disabled'}>
@@ -2289,13 +2709,21 @@
         }
       },
 
-      openCouponRedeemModal(userCoupon, master, store) {
+      openCouponRedeemModal(userCoupon, store) {
         state.selectedUserCoupon = userCoupon;
 
+        const badgeEl = document.getElementById('coupon-modal-campaign-badge');
+        if (userCoupon.campaignName) {
+          badgeEl.style.display = 'inline-block';
+          badgeEl.innerHTML = `<span class="coupon-campaign-tag"><span class="material-symbols-outlined" style="font-size:13px;">workspace_premium</span> ${userCoupon.campaignName}</span>`;
+        } else {
+          badgeEl.style.display = 'none';
+        }
+
         document.getElementById('coupon-modal-store-name').textContent = store.name;
-        document.getElementById('coupon-modal-title').textContent = master.title;
-        document.getElementById('coupon-modal-benefit').textContent = master.benefit;
-        document.getElementById('coupon-modal-expire').textContent = master.expireDate;
+        document.getElementById('coupon-modal-title').textContent = userCoupon.title;
+        document.getElementById('coupon-modal-benefit').textContent = userCoupon.benefit;
+        document.getElementById('coupon-modal-expire').textContent = userCoupon.expireDate;
 
         const unredeemedArea = document.getElementById('coupon-unredeemed-area');
         const redeemedArea = document.getElementById('coupon-redeemed-area');
@@ -2329,9 +2757,9 @@
       handleExchangeCouponExec() {
         if (!state.selectedExchangeCoupon) return;
         const c = state.selectedExchangeCoupon;
-        const success = state.spendCoins(c.requiredCoins, `クーポン交換 (${c.title})`);
+        const success = state.spendCoins(c.requiredCoins, `通常クーポン交換 (${c.title})`);
         if (!success) {
-          this.showSnackbar('コインが不足しています', 'error');
+          this.showSnackbar('通常コインが不足しています', 'error');
           this.closeAllModals();
           return;
         }
@@ -2340,8 +2768,13 @@
         state.userCoupons.unshift({
           id: 'uc_' + Date.now(),
           couponId: c.id,
+          title: c.title,
+          benefit: c.benefit,
+          storeId: c.storeId,
+          expireDate: c.expireDate,
           code: newCode,
           status: 'active',
+          campaignName: null,
           acquiredAt: Date.now(),
           usedAt: null
         });
@@ -2398,6 +2831,7 @@
         document.getElementById('modal-store-detail').classList.add('open');
       },
 
+      // チェックイン処理 (通常コイン + 対象キャンペーンGの獲得)
       handleCheckInAction() {
         if (!state.selectedStore) return;
         const store = state.selectedStore;
@@ -2412,6 +2846,15 @@
         state.checkIns.unshift({ id: 'chk_' + now, storeId: store.id, timestamp: now });
         state.addCoins(50, `店舗チェックイン (${store.name})`);
 
+        // 対象店舗を含むキャンペーンに専用ゴールドポイント (+30G) を加算
+        let goldGainedMsgs = [];
+        state.campaigns.forEach(cmp => {
+          if (cmp.status === 'active' && cmp.eligibleStores.includes(store.id)) {
+            cmp.goldCoins += 30;
+            goldGainedMsgs.push(`${cmp.campaignName} +30G`);
+          }
+        });
+
         state.missions.forEach(m => {
           if (m.storeId === store.id && m.actionType === 'checkin' && !state.completedMissions.includes(m.id)) {
             state.completedMissions.push(m.id);
@@ -2420,10 +2863,16 @@
         state.saveStorage();
 
         this.closeAllModals();
+        this.renderCampaigns();
         this.renderMissions();
         this.renderProfileStats();
         this.renderAdminView();
-        this.showSnackbar(`【チェックイン達成】${store.name} で50コインを獲得！`, 'pin_drop');
+
+        let msg = `チェックイン達成！通常コイン +50獲得！`;
+        if (goldGainedMsgs.length > 0) {
+          msg += ` (${goldGainedMsgs.join(' / ')})`;
+        }
+        this.showSnackbar(msg, 'pin_drop');
       },
 
       renderMapStores() {
@@ -2519,7 +2968,7 @@
 
           state.saveStorage();
           postForm.reset();
-          this.showSnackbar('安売り情報を投稿しました！(+30コイン)', 'add_circle');
+          this.showSnackbar('安売り情報を投稿しました！(+30 通常コイン)', 'add_circle');
           this.switchUserTab('home');
           this.renderAll();
         });
@@ -2618,8 +3067,7 @@
 
         const storeCheckins = state.checkIns.filter(c => c.storeId === storeId).length;
         const storeRedemptions = state.userCoupons.filter(uc => {
-          const master = state.coupons.find(c => c.id === uc.couponId);
-          return master && master.storeId === storeId && uc.status === 'used';
+          return uc.storeId === storeId && uc.status === 'used';
         }).length;
         const storeMissionsCompleted = state.missions.filter(m => m.storeId === storeId && state.completedMissions.includes(m.id)).length;
         const storeDealsCount = state.deals.filter(d => d.storeId === storeId).length;
@@ -2714,8 +3162,7 @@
           return;
         }
 
-        const master = state.coupons.find(c => c.id === foundUserCoupon.couponId) || { title: 'クーポン', benefit: '', storeId: '' };
-        const isTargetStore = master.storeId === state.selectedAdminStoreId;
+        const isTargetStore = foundUserCoupon.storeId === state.selectedAdminStoreId;
 
         if (!isTargetStore) {
           resultBox.innerHTML = `
@@ -2732,7 +3179,7 @@
             <div style="color:#dc2626; font-weight:700; display:flex; align-items:center; gap:6px; font-size:0.9rem;">
               <span class="material-symbols-outlined">history</span> すでに使用済みのクーポンです
             </div>
-            <div style="font-size:0.85rem; margin-top:4px;"><strong>${master.title}</strong> (${master.benefit})</div>
+            <div style="font-size:0.85rem; margin-top:4px;"><strong>${foundUserCoupon.title}</strong> (${foundUserCoupon.benefit})</div>
             <div style="font-size:0.72rem; color:#6b7280; margin-top:2px;">消し込み日時: ${new Date(foundUserCoupon.usedAt).toLocaleString('ja-JP')}</div>
           `;
           return;
@@ -2742,9 +3189,10 @@
           <div style="color:#059669; font-weight:700; display:flex; align-items:center; gap:6px; font-size:0.9rem;">
             <span class="material-symbols-outlined">verified</span> 利用可能なクーポンです
           </div>
-          <div style="font-size:1.05rem; font-weight:700; margin:4px 0;">${master.title}</div>
-          <div style="font-size:0.9rem; color:#2563eb; font-weight:700; margin-bottom:6px;">特典: ${master.benefit}</div>
-          <div style="font-size:0.75rem; color:#6b7280; margin-bottom:12px;">有効期限: ${master.expireDate}</div>
+          ${foundUserCoupon.campaignName ? `<div style="font-size:0.75rem; color:var(--md-gold); font-weight:700; margin-top:2px;">【${foundUserCoupon.campaignName} 特典】</div>` : ''}
+          <div style="font-size:1.05rem; font-weight:700; margin:4px 0;">${foundUserCoupon.title}</div>
+          <div style="font-size:0.9rem; color:#2563eb; font-weight:700; margin-bottom:6px;">特典: ${foundUserCoupon.benefit}</div>
+          <div style="font-size:0.75rem; color:#6b7280; margin-bottom:12px;">有効期限: ${foundUserCoupon.expireDate}</div>
           <button class="btn btn-primary btn-sm" style="width:100%;" id="btn-admin-consume-exec">
             <span class="material-symbols-outlined">check</span> このクーポンの利用を確定 (消し込み)
           </button>
