@@ -20,7 +20,6 @@
       --md-sys-color-primary-container: #d3e3fd;
       --md-sys-color-on-primary-container: #041e49;
       --md-sys-color-error: #ba1a1a;
-      --md-sys-color-error-container: #ffdad6;
       --md-sys-color-on-error: #ffffff;
 
       --elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.06), 0px 1px 2px 0px rgba(0, 0, 0, 0.04);
@@ -105,7 +104,7 @@
       align-items: center;
       padding: 16px 20px 80px;
       width: 100%;
-      max-width: 680px;
+      max-width: 760px;
       margin: 0 auto;
     }
 
@@ -115,7 +114,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 5vh;
+      margin-top: 4vh;
       margin-bottom: 28px;
     }
 
@@ -134,6 +133,7 @@
 
     .search-form {
       width: 100%;
+      max-width: 640px;
       position: relative;
     }
 
@@ -172,14 +172,15 @@
       align-items: center;
     }
 
-    /* アプリランチャー型 お気に入りショートカット */
+    /* アプリランチャー型 お気に入り */
     .launcher-container {
       width: 100%;
+      max-width: 640px;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
       gap: 12px 8px;
       justify-items: center;
-      margin-bottom: 48px;
+      margin-bottom: 44px;
       user-select: none;
     }
 
@@ -261,7 +262,6 @@
       line-height: 1.3;
     }
 
-    /* 追加タイル専用 */
     .launcher-add-btn {
       background: none;
       border: none;
@@ -287,7 +287,6 @@
       background-color: var(--md-sys-color-surface-container);
     }
 
-    /* タイル個別メニューボタン (ホバー時に表示) */
     .tile-menu-btn {
       position: absolute;
       top: 2px;
@@ -307,47 +306,6 @@
 
     .launcher-tile:hover .tile-menu-btn {
       display: flex;
-    }
-
-    .tile-menu-btn:hover {
-      background: var(--md-sys-color-outline-variant);
-      color: var(--md-sys-color-on-surface);
-    }
-
-    /* コンテキストポップアップメニュー */
-    .context-menu {
-      position: fixed;
-      background: var(--md-sys-color-surface);
-      border: 1px solid var(--md-sys-color-outline-variant);
-      border-radius: var(--radius-sm);
-      box-shadow: var(--elevation-2);
-      padding: 6px 0;
-      z-index: 150;
-      min-width: 120px;
-      display: none;
-    }
-
-    .context-menu.active {
-      display: block;
-    }
-
-    .context-menu-item {
-      padding: 8px 16px;
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--md-sys-color-on-surface);
-      cursor: pointer;
-      transition: background 0.15s ease;
-    }
-
-    .context-menu-item:hover {
-      background: var(--md-sys-color-surface-container);
-    }
-
-    .context-menu-item.danger {
-      color: var(--md-sys-color-error);
     }
 
     /* 今日の情報エリア */
@@ -449,72 +407,207 @@
     .news-group-header {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 13.5px;
-      font-weight: 600;
-      color: var(--md-sys-color-on-surface);
-      margin-bottom: 12px;
-      padding-left: 2px;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      padding: 0 2px;
     }
 
-    .news-group-header svg {
+    .news-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .news-header-left svg {
       color: var(--md-sys-color-primary);
     }
 
-    .news-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    .news-refresh-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      border: none;
+      background: transparent;
+      color: var(--md-sys-color-outline);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
     }
 
+    .news-refresh-btn:hover {
+      background: var(--md-sys-color-surface-container);
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .news-refresh-btn.spinning svg {
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* PC 2列 グリッド / モバイル 1列 */
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    @media (max-width: 640px) {
+      .news-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ニュースカード (全体がリンク) */
     .news-card {
       background: var(--md-sys-color-surface);
       border: 1px solid var(--md-sys-color-outline-variant);
       border-radius: var(--radius-md);
       padding: 16px 18px;
-      display: block;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       text-decoration: none;
       color: inherit;
       box-shadow: var(--elevation-1);
       transition: var(--transition);
+      cursor: pointer;
+      height: 100%;
     }
 
     .news-card:hover {
       box-shadow: var(--elevation-2);
-      border-color: rgba(0, 0, 0, 0.16);
-      transform: translateY(-1px);
+      border-color: rgba(0, 0, 0, 0.18);
+      transform: translateY(-2px);
+      background-color: var(--md-sys-color-surface-container);
+    }
+
+    .news-card:active {
+      transform: translateY(0);
     }
 
     .news-title {
-      font-size: 15px;
+      font-size: 14.5px;
       font-weight: 600;
       line-height: 1.45;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       color: var(--md-sys-color-on-surface);
-    }
-
-    .news-desc {
-      font-size: 13px;
-      color: var(--md-sys-color-on-surface-variant);
-      line-height: 1.5;
-      margin-bottom: 10px;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
 
+    .news-desc {
+      font-size: 13px;
+      color: var(--md-sys-color-on-surface-variant);
+      line-height: 1.5;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      flex-grow: 1;
+    }
+
     .news-footer {
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
       font-size: 12px;
       color: var(--md-sys-color-outline);
+      margin-top: auto;
+      padding-top: 6px;
+    }
+
+    .news-footer-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .news-tag {
       font-weight: 500;
       color: var(--md-sys-color-primary);
+    }
+
+    .news-time {
+      color: var(--md-sys-color-outline);
+      font-size: 11.5px;
+    }
+
+    /* もっと見るボタン */
+    .news-more-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 14px;
+    }
+
+    .news-more-btn {
+      height: 36px;
+      padding: 0 20px;
+      border-radius: var(--radius-full);
+      background-color: var(--md-sys-color-surface-container);
+      color: var(--md-sys-color-on-surface);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .news-more-btn:hover {
+      background-color: var(--md-sys-color-surface-container-high);
+      border-color: rgba(0,0,0,0.2);
+    }
+
+    /* コンテキストポップアップメニュー */
+    .context-menu {
+      position: fixed;
+      background: var(--md-sys-color-surface);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--elevation-2);
+      padding: 6px 0;
+      z-index: 150;
+      min-width: 120px;
+      display: none;
+    }
+
+    .context-menu.active {
+      display: block;
+    }
+
+    .context-menu-item {
+      padding: 8px 16px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--md-sys-color-on-surface);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .context-menu-item:hover {
+      background: var(--md-sys-color-surface-container);
+    }
+
+    .context-menu-item.danger {
+      color: var(--md-sys-color-error);
     }
 
     /* 設定ドロワー */
@@ -604,7 +697,7 @@
       margin-top: 2px;
     }
 
-    /* スイッチ (MD3) */
+    /* スイッチ */
     .switch {
       position: relative;
       display: inline-block;
@@ -673,7 +766,7 @@
       border-color: var(--md-sys-color-primary);
     }
 
-    /* モーダルダイアログ */
+    /* モーダル */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -758,7 +851,7 @@
       color: var(--md-sys-color-on-error);
     }
 
-    /* レスポンシブ */
+    /* レスポンシブ調整 */
     @media (max-width: 600px) {
       .logo {
         font-size: 34px;
@@ -802,7 +895,7 @@
 
   <!-- メインエリア -->
   <main>
-    <!-- 1. ロゴ & 2. 検索ボックス -->
+    <!-- 検索セクション -->
     <section class="search-section">
       <div class="logo">
         Portal<span>.</span>
@@ -825,24 +918,20 @@
       </form>
     </section>
 
-    <!-- 3. アプリランチャー型 お気に入りショートカット -->
-    <div id="launcherContainer" class="launcher-container">
-      <!-- JSでタイル生成 -->
-    </div>
+    <!-- アプリランチャー型 お気に入り -->
+    <div id="launcherContainer" class="launcher-container"></div>
 
-    <!-- 4. 今日の情報 -->
+    <!-- 今日の情報 -->
     <section id="infoSection" class="info-section">
       <div class="section-divider">
         <span>今日の情報</span>
       </div>
 
-      <!-- 5. 天気カード -->
+      <!-- 天気カード -->
       <div id="weatherBlock">
         <div class="weather-card">
           <div class="weather-main">
-            <div id="weatherIcon" class="weather-icon-svg">
-              <!-- SVG天気アイコンをJS注入 -->
-            </div>
+            <div id="weatherIcon" class="weather-icon-svg"></div>
             <div>
               <div class="weather-temp"><span id="weatherTemp">--</span>°C</div>
               <div id="weatherDesc" class="weather-condition">読込中</div>
@@ -855,28 +944,60 @@
         </div>
       </div>
 
-      <!-- 6. 地域ニュース & 7. 全国ニュース -->
+      <!-- ニュースコンテナ -->
       <div id="newsBlock">
-        <!-- 地域ニュース -->
+        <!-- 1. 地域ニュース -->
         <div id="localNewsGroup" class="news-group">
           <div class="news-group-header">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/>
-            </svg>
-            <span id="localNewsTitle">地域ニュース</span>
+            <div class="news-header-left">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/>
+              </svg>
+              <span id="localNewsTitle">地域ニュース</span>
+            </div>
+            <button id="refreshNewsBtn" class="news-refresh-btn" aria-label="ニュースを更新" title="ニュースを更新">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+              </svg>
+            </button>
           </div>
           <div id="localNewsList" class="news-grid"></div>
         </div>
 
-        <!-- 全国ニュース -->
+        <!-- 2. パーソナライズ・関心ニュース -->
+        <div id="personalizedNewsGroup" class="news-group" style="display: none;">
+          <div class="news-group-header">
+            <div class="news-header-left">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3zm5 15h-2v-6H9v6H7v-7.81l5-4.5 5 4.5V18z"/>
+              </svg>
+              <span>あなた向けのニュース</span>
+            </div>
+          </div>
+          <div id="personalizedNewsList" class="news-grid"></div>
+        </div>
+
+        <!-- 3. 全国ニュース / 一般トピックス -->
         <div id="nationalNewsGroup" class="news-group">
           <div class="news-group-header">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 14H4v-4h11v4zm0-5H4V9h11v4zm5 5h-4V9h4v9z"/>
-            </svg>
-            <span>全国ニュース</span>
+            <div class="news-header-left">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 14H4v-4h11v4zm0-5H4V9h11v4zm5 5h-4V9h4v9z"/>
+              </svg>
+              <span id="nationalNewsTitle">全国ニュース</span>
+            </div>
           </div>
           <div id="nationalNewsList" class="news-grid"></div>
+        </div>
+
+        <!-- もっと見るボタン -->
+        <div id="newsMoreContainer" class="news-more-container">
+          <button id="newsMoreBtn" class="news-more-btn">
+            <span>もっと見る</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+            </svg>
+          </button>
         </div>
       </div>
     </section>
@@ -966,6 +1087,17 @@
             <span class="slider"></span>
           </label>
         </div>
+
+        <div class="setting-item">
+          <div>
+            <div class="setting-item-label">パーソナライズされたニュース</div>
+            <div class="setting-item-sub">閲覧傾向に合わせてトピックを最適化</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="togglePersonalized">
+            <span class="slider"></span>
+          </label>
+        </div>
       </div>
 
       <!-- 地域設定 -->
@@ -983,7 +1115,7 @@
         </div>
 
         <div id="manualRegionContainer" style="margin-top: 14px;">
-          <div class="setting-item-sub" id="regionSelectSubText">地域を手動選択</div>
+          <div class="setting-item-sub">地域を手動選択</div>
           <select id="manualPrefSelect" class="select-input"></select>
         </div>
       </div>
@@ -991,7 +1123,7 @@
   </aside>
 
   <script>
-    /* 47都道府県データベース（県庁所在地座標・完全ローカル判定用） */
+    /* 47都道府県リスト（完全ブラウザ内処理） */
     const PREFECTURES = [
       { id: "hokkaido", name: "北海道", lat: 43.0642, lon: 141.3469 },
       { id: "aomori", name: "青森県", lat: 40.8244, lon: 140.7400 },
@@ -1042,7 +1174,7 @@
       { id: "okinawa", name: "沖縄県", lat: 26.2125, lon: 127.6811 }
     ];
 
-    /* 初期ショートカットデータ */
+    /* 初期ショートカット */
     const DEFAULT_SHORTCUTS = [
       { id: "sc_1", title: "Gemini", url: "https://gemini.google.com/" },
       { id: "sc_2", title: "GitHub", url: "https://github.com/" },
@@ -1051,92 +1183,168 @@
       { id: "sc_5", title: "X", url: "https://x.com/" }
     ];
 
-    /* 地域ニュースデータ（サンプル） */
-    const LOCAL_NEWS_DB = {
+    /* 各種ニュースマスタ（固有のID、URL、公開日時を保持） */
+    const NOW = Date.now();
+    const H = 60 * 60 * 1000;
+
+    const REGIONAL_NEWS_DATA = {
       "山梨県": [
         {
-          title: "県内ワイナリーで今年の新酒醸造が本格化 芳醇な香りに期待",
-          desc: "好天に恵まれた今年の甲州ぶどうの仕込みがピークを迎えています。生産者は仕上がりに手応えを示しています。",
-          source: "山梨日報ジャーナル",
-          time: "2時間前"
+          id: "news_ym_1",
+          title: "リニア中央新幹線の実験線にて次世代超電導車両の走行試験を一般公開",
+          description: "空力抵抗の低減と車内快適性を追求した新仕様の走行テストが実施され、多くの見学者が訪れました。",
+          source: "甲信交通タイムス",
+          publishedAt: new Date(NOW - 1.2 * H).toISOString(),
+          url: "https://news.google.com/search?q=リニア中央新幹線+山梨実験線",
+          category: "railway"
         },
         {
-          title: "富士山麓エリアの周遊観光に向けた新たな低炭素バスの実証運行が開始",
-          desc: "自然環境保全と利便性向上を目指した電動モビリティの導入実験が今週よりスタートしました。",
-          source: "甲信地域経済",
-          time: "4時間前"
+          id: "news_ym_2",
+          title: "県産ぶどうの新酒ワイン仕込みが本格化 糖度・芳香ともに上質な仕上がりに",
+          description: "好天に恵まれた今年の甲州ぶどうの収穫が順調に進み、県内ワイナリーでは仕込みが最盛期を迎えています。",
+          source: "山梨地域経済新報",
+          publishedAt: new Date(NOW - 3.5 * H).toISOString(),
+          url: "https://news.google.com/search?q=山梨+甲州ワイン+仕込み",
+          category: "business"
+        },
+        {
+          id: "news_ym_3",
+          title: "富士北麓エリアで電動コミュニティバスの実証運行が開始 観光回遊性を向上",
+          description: "自然環境保全と渋滞緩和を両立させる低炭素モビリティの導入に向け、周遊ルートの検証が行われます。",
+          source: "富士ニュース",
+          publishedAt: new Date(NOW - 9.0 * H).toISOString(),
+          url: "https://news.google.com/search?q=富士北麓+コミュニティバス",
+          category: "railway"
         }
       ],
       "東京都": [
         {
-          title: "都心部の再開発エリアで環境配慮型コミュニティスペースがオープン",
-          desc: "歩行者優先道路と緑地を組み合わせた新たな都市空間が公開され、賑わいを見せています。",
+          id: "news_tk_1",
+          title: "都心部の再開発地区で先端AIを活用した都市エネルギー管理システムが稼働",
+          description: "気象予測と人流データをもとに冷暖房消費電力を自動制御し、CO2排出量の大幅削減を目指します。",
           source: "東京メトロプレス",
-          time: "1時間前"
+          publishedAt: new Date(NOW - 0.8 * H).toISOString(),
+          url: "https://news.google.com/search?q=東京+スマートシティ+エネルギー管理",
+          category: "ai_tech"
         },
         {
-          title: "都内スタートアップ育成に向けた新インキュベーション拠点が開設",
-          desc: "国内外の研究機関と連携し、ディープテック分野の支援を拡充する方針が発表されました。",
-          source: "首都圏経済ニュース",
-          time: "3時間前"
+          id: "news_tk_2",
+          title: "山手線主要駅におけるホームドア増設と多言語AI案内サイネージの実証運用",
+          description: "視認性を高めたデジタルサイネージの導入により、インバウンド対応と混雑緩和を図る取り組みが始まります。",
+          source: "首都圏交通情報",
+          publishedAt: new Date(NOW - 2.5 * H).toISOString(),
+          url: "https://news.google.com/search?q=山手線+ホームドア+サイネージ",
+          category: "railway"
         }
       ],
       "大阪府": [
         {
-          title: "中之島水辺エリアのライトアップ事業がリニューアル 歴史的建造物を彩る",
-          desc: "水都大阪の魅力を高める夜間景観整備が完了し、観光船からの鑑賞イベントも始まります。",
+          id: "news_os_1",
+          title: "中之島水辺エリアで電動推進クルーズ船が就航 歴史的建造物の夜間鑑賞ツアー開始",
+          description: "水都大阪の新たな観光資源として、静粛性に優れたEV船によるライトアップ回遊便の運航がスタートしました。",
           source: "関西タイムス",
-          time: "2時間前"
-        },
-        {
-          title: "府内ものづくり企業による合同イノベーション展がインテックスで開催",
-          desc: "精密金属加工や新素材開発を手掛ける中小企業が技術を披露し、多くの商談が行われています。",
-          source: "浪速産業新報",
-          time: "5時間前"
+          publishedAt: new Date(NOW - 1.5 * H).toISOString(),
+          url: "https://news.google.com/search?q=中之島+クルーズ船+運航",
+          category: "business"
         }
       ]
     };
 
-    /* 全国ニュースデータ */
     const NATIONAL_NEWS_DATA = [
       {
-        title: "国内各地で次世代交通システムの自動運転テストが加速",
-        desc: "地域交通の維持とドライバー不足の解決に向け、各自治体での実証実験が順調に進展しています。",
-        source: "総合ニュース",
-        time: "1時間前"
+        id: "news_nat_1",
+        title: "自律型エージェントAIの業務導入が国内企業で拡大 複数タスクの連携処理が進展",
+        description: "コード生成からデータ解析までを自律的に遂行する新アーキテクチャの導入事例が相次いで報告されています。",
+        source: "テッククランチ・リポート",
+        publishedAt: new Date(NOW - 0.5 * H).toISOString(),
+        url: "https://news.google.com/search?q=自律型AIエージェント+業務効率化",
+        category: "ai_tech"
       },
       {
-        title: "週末にかけて穏やかな秋晴れの予報 過ごしやすい気温が続く見込み",
-        desc: "移動性高気圧に覆われ、全国的に安定した気候となる見込みです。朝夕の寒暖差には注意が必要です。",
-        source: "気象報道",
-        time: "3時間前"
+        id: "news_nat_2",
+        title: "新幹線の新型高速試験車両が夜間走行試験を公開 騒音低減と省エネ性能の両立を検証",
+        description: "空力設計の最適化とパンタグラフの改良により、トンネル突入時の微気圧波低減と消費エネルギー削減を確認しました。",
+        source: "鉄道総合ファン",
+        publishedAt: new Date(NOW - 1.8 * H).toISOString(),
+        url: "https://news.google.com/search?q=新幹線+新型試験車両+走行試験",
+        category: "railway"
       },
       {
-        title: "伝統工芸とデジタル技術の融合 地域ブランドの海外発信プログラムが始動",
-        desc: "全国の特産品をグローバル市場へ展開するための公的支援プラットフォームが立ち上がりました。",
-        source: "経済トピックス",
-        time: "6時間前"
+        id: "news_nat_3",
+        title: "オープンワールドRPGの最新大型アップデートが配信開始 フォトリアル描画が話題",
+        description: "最新のレンダリング技術と物理シミュレーションを組み合わせた拡張コンテンツが配信され、世界中で好調な推移です。",
+        source: "ゲームインサイダー",
+        publishedAt: new Date(NOW - 3.2 * H).toISOString(),
+        url: "https://news.google.com/search?q=ゲーム+最新作+アップデート",
+        category: "game"
+      },
+      {
+        id: "news_nat_4",
+        title: "オープンソースの大規模言語モデルが小型・高効率化 スマホ等の端末内推論が現実的に",
+        description: "パラメータ量子化技術の進展により、クラウドを介さずセキュアにデバイス上で動作するモデルが脚光を浴びています。",
+        source: "AIフロンティア",
+        publishedAt: new Date(NOW - 4.5 * H).toISOString(),
+        url: "https://news.google.com/search?q=オンデバイスAI+オープンソースLLM",
+        category: "ai_tech"
+      },
+      {
+        id: "news_nat_5",
+        title: "全国の地方鉄道でバッテリー電車や燃料電池車両の導入計画が加速 脱炭素を推進",
+        description: "非電化路線のクリーン化を目指す新型車両の開発が進展し、持続可能な地域公共交通のモデルケースとして注目されています。",
+        source: "交通総合ダイジェスト",
+        publishedAt: new Date(NOW - 6.0 * H).toISOString(),
+        url: "https://news.google.com/search?q=地方鉄道+ハイブリッド車両+脱炭素",
+        category: "railway"
+      },
+      {
+        id: "news_nat_6",
+        title: "グローバルeスポーツ競技大会の日本代表選考会が盛況 ライブ配信の視聴者数が過去最多",
+        description: "若年層を中心に高い熱気を見せるチーム対戦タイトルの国内決勝が行われ、高い戦術レベルの激闘が繰り広げられました。",
+        source: "eスポーツ速報",
+        publishedAt: new Date(NOW - 8.5 * H).toISOString(),
+        url: "https://news.google.com/search?q=eスポーツ+日本代表選考会",
+        category: "game"
+      },
+      {
+        id: "news_nat_7",
+        title: "国内クリーンテック分野への投資が活発化 次世代電池・水素技術の開発が本格化",
+        description: "脱炭素社会の実現に向け、独自技術を有するスタートアップと大手製造業との協業プロジェクトが相次いでいます。",
+        source: "経済ビジネスダイジェスト",
+        publishedAt: new Date(NOW - 12.0 * H).toISOString(),
+        url: "https://news.google.com/search?q=クリーンテック+スタートアップ+投資",
+        category: "business"
+      },
+      {
+        id: "news_nat_8",
+        title: "国内深海探査プロジェクトが新種の好熱性微生物を発見 有用酵素の産業応用に期待",
+        description: "海底熱水鉱床周辺の極限環境で採取された微生物のゲノム解析が進められ、生化学分野での新展開が注目されています。",
+        source: "サイエンスニュース",
+        publishedAt: new Date(NOW - 16.0 * H).toISOString(),
+        url: "https://news.google.com/search?q=深海探査+新種生物+酵素",
+        category: "science"
       }
     ];
 
-    /* SVG天気アイコンジェネレーター（絵文字完全排除） */
+    /* 天気SVG（絵文字完全禁止） */
     const WEATHER_SVGS = {
       clear: `<svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 00-1.41-1.41l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 00-1.41-1.41l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>`,
       partlyCloudy: `<svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/></svg>`,
       cloudy: `<svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>`,
       rain: `<svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM7 22h2v-2H7v2zm4 0h2v-2h-2v2zm4 0h2v-2h-2v2z"/></svg>`,
-      snow: `<svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4c-2.89 0-5.4 1.64-6.65 4.04C2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM8 22h2v-2H8v2zm6 0h2v-2h-2v2zm-3-1h2v-2h-2v2z"/></svg>`,
+      snow: `<svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM8 22h2v-2H8v2zm6 0h2v-2h-2v2zm-3-1h2v-2h-2v2z"/></svg>`,
       thunder: `<svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM11 23l3.5-6h-3l2.5-5h-4l-1 6h3l-1 5z"/></svg>`
     };
 
-    /* 永続化ストレージキー */
-    const STORAGE_KEY_SETTINGS = "portal_settings_v3";
-    const STORAGE_KEY_SHORTCUTS = "portal_shortcuts_v3";
+    /* 永続化キー */
+    const STORAGE_KEY_SETTINGS = "portal_settings_v5";
+    const STORAGE_KEY_SHORTCUTS = "portal_shortcuts_v5";
+    const STORAGE_KEY_INTERESTS = "portal_news_interests_v2";
 
     /* アプリ状態 */
     let settings = {
       showWeather: true,
       showNews: true,
+      personalizeNews: true,
       useGeolocation: true,
       manualPrefId: "yamanashi"
     };
@@ -1145,19 +1353,28 @@
     let currentPref = PREFECTURES.find(p => p.id === "yamanashi");
     let activeTargetShortcut = null;
     let draggedTileIndex = null;
+    let interestLogs = [];
 
-    /* 初期化 */
+    /* ニュース表示件数制御（もっと見る対応） */
+    let visibleNationalCount = 4;
+    const PAGE_SIZE = 4;
+
     function init() {
       populatePrefectureSelect();
       loadSettings();
       loadShortcuts();
+      loadInterests();
       setupEventListeners();
       renderShortcuts();
       applySettingsToUI();
       resolveLocationAndRefresh();
+
+      // 定期自動更新（15分間隔）
+      setInterval(() => {
+        refreshNewsData(false);
+      }, 15 * 60 * 1000);
     }
 
-    /* 47都道府県セレクトボックスの生成 */
     function populatePrefectureSelect() {
       const select = document.getElementById("manualPrefSelect");
       select.innerHTML = "";
@@ -1169,22 +1386,17 @@
       });
     }
 
-    /* 設定・ストレージ制御 */
     function loadSettings() {
       try {
         const stored = localStorage.getItem(STORAGE_KEY_SETTINGS);
         if (stored) settings = { ...settings, ...JSON.parse(stored) };
-      } catch (e) {
-        console.warn("Storage load failed", e);
-      }
+      } catch (e) {}
     }
 
     function saveSettings() {
       try {
         localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
-      } catch (e) {
-        console.warn("Storage save failed", e);
-      }
+      } catch (e) {}
       applySettingsToUI();
     }
 
@@ -1200,13 +1412,65 @@
     function saveShortcuts() {
       try {
         localStorage.setItem(STORAGE_KEY_SHORTCUTS, JSON.stringify(shortcuts));
-      } catch (e) {
-        console.warn("Shortcuts save failed", e);
-      }
+      } catch (e) {}
       renderShortcuts();
     }
 
-    /* ブラウザ内での最寄り都道府県判定（プライバシー安全） */
+    function loadInterests() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY_INTERESTS);
+        interestLogs = stored ? JSON.parse(stored) : [];
+      } catch (e) {
+        interestLogs = [];
+      }
+    }
+
+    function recordNewsClick(article) {
+      if (!article || !article.category) return;
+      interestLogs.push({
+        id: article.id,
+        category: article.category,
+        timestamp: Date.now()
+      });
+
+      if (interestLogs.length > 50) interestLogs = interestLogs.slice(-50);
+
+      try {
+        localStorage.setItem(STORAGE_KEY_INTERESTS, JSON.stringify(interestLogs));
+      } catch (e) {}
+
+      // 次回再訪時・更新時に最適化
+    }
+
+    function calculateCategoryScores() {
+      const scores = {};
+      const now = Date.now();
+      const halfLifeMs = 7 * 24 * 60 * 60 * 1000;
+
+      interestLogs.forEach(log => {
+        const age = Math.max(0, now - log.timestamp);
+        const weight = Math.pow(0.5, age / halfLifeMs);
+        scores[log.category] = (scores[log.category] || 0) + weight;
+      });
+
+      return scores;
+    }
+
+    /* 相対時間の計算 */
+    function formatTimeAgo(isoString) {
+      const diffMs = Date.now() - new Date(isoString).getTime();
+      const diffMin = Math.floor(diffMs / (60 * 1000));
+      const diffHour = Math.floor(diffMin / 60);
+      const diffDay = Math.floor(diffHour / 24);
+
+      if (diffMin < 1) return "たった今";
+      if (diffMin < 60) return `${diffMin}分前`;
+      if (diffHour < 24) return `${diffHour}時間前`;
+      if (diffDay < 7) return `${diffDay}日前`;
+      return new Date(isoString).toLocaleDateString("ja-JP");
+    }
+
+    /* 最寄り都道府県判定（外部送信なし） */
     function findNearestPrefecture(lat, lon) {
       let nearest = PREFECTURES[0];
       let minDistance = Infinity;
@@ -1223,23 +1487,19 @@
       return nearest;
     }
 
-    /* 位置情報・地域確定処理 */
     function resolveLocationAndRefresh() {
       const badge = document.getElementById("badgeLocationText");
 
       if (settings.useGeolocation && navigator.geolocation) {
-        badge.textContent = "現在地を判定中";
+        badge.textContent = "判定中";
         navigator.geolocation.getCurrentPosition(
           (pos) => {
-            const userLat = pos.coords.latitude;
-            const userLon = pos.coords.longitude;
-            currentPref = findNearestPrefecture(userLat, userLon);
+            currentPref = findNearestPrefecture(pos.coords.latitude, pos.coords.longitude);
             badge.textContent = currentPref.name;
-            fetchWeather(userLat, userLon, currentPref.name);
+            fetchWeather(pos.coords.latitude, pos.coords.longitude, currentPref.name);
             renderNews(currentPref.name);
           },
-          (err) => {
-            console.info("Geolocation unavailable, fallback to manual selection", err.message);
+          () => {
             applyManualPrefecture();
           },
           { timeout: 7000 }
@@ -1257,7 +1517,6 @@
       renderNews(target.name);
     }
 
-    /* 天気情報API (Open-Meteo) */
     async function fetchWeather(lat, lon, prefName) {
       const tempEl = document.getElementById("weatherTemp");
       const descEl = document.getElementById("weatherDesc");
@@ -1270,7 +1529,7 @@
       try {
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo`;
         const res = await fetch(url);
-        if (!res.ok) throw new Error("Weather fetch error");
+        if (!res.ok) throw new Error("API error");
 
         const data = await res.json();
         const cur = data.current_weather;
@@ -1304,51 +1563,149 @@
       return { desc: "晴れ", svg: WEATHER_SVGS.clear };
     }
 
-    /* ニュースの描画（都道府県優先＋全国） */
+    /* ニュースの取得・ソート・描画（重複排除・新しい順優先） */
     function renderNews(prefName) {
       const localContainer = document.getElementById("localNewsList");
-      const nationalContainer = document.getElementById("nationalNewsList");
       const localGroup = document.getElementById("localNewsGroup");
       const localTitle = document.getElementById("localNewsTitle");
 
+      const personalizedContainer = document.getElementById("personalizedNewsList");
+      const personalizedGroup = document.getElementById("personalizedNewsGroup");
+
+      const nationalContainer = document.getElementById("nationalNewsList");
+      const nationalGroup = document.getElementById("nationalNewsGroup");
+      const moreBtnContainer = document.getElementById("newsMoreContainer");
+
       localContainer.innerHTML = "";
+      personalizedContainer.innerHTML = "";
       nationalContainer.innerHTML = "";
 
-      const localItems = LOCAL_NEWS_DB[prefName] || [];
+      // 既出IDトラッカー（重複排除用）
+      const seenIds = new Set();
+      const seenUrls = new Set();
 
-      if (localItems.length > 0) {
+      function deduplicate(list) {
+        return list.filter(item => {
+          if (!item.id || !item.url) return false;
+          if (seenIds.has(item.id) || seenUrls.has(item.url)) return false;
+          seenIds.add(item.id);
+          seenUrls.add(item.url);
+          return true;
+        });
+      }
+
+      // 1. 地域ニュース（新しい順にソート）
+      const rawLocal = REGIONAL_NEWS_DATA[prefName] || [];
+      const sortedLocal = deduplicate([...rawLocal].sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)));
+
+      if (sortedLocal.length > 0) {
         localGroup.style.display = "block";
         localTitle.textContent = `${prefName}のニュース`;
-
-        localItems.forEach(item => {
+        sortedLocal.slice(0, 2).forEach(item => {
           localContainer.appendChild(createNewsCard(item));
         });
       } else {
-        // 対象地域の独自サンプルが無い場合は非表示
         localGroup.style.display = "none";
       }
 
-      NATIONAL_NEWS_DATA.forEach(item => {
+      // 2. 全国／一般ニュース（重複を排除して新しい順にソート）
+      const sortedGeneral = deduplicate([...NATIONAL_NEWS_DATA].sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)));
+
+      // 3. パーソナライズの評価
+      const categoryScores = calculateCategoryScores();
+      const isPersonalizedActive = settings.personalizeNews && interestLogs.length >= 2;
+
+      let remainingArticles = [];
+
+      if (isPersonalizedActive) {
+        // スコア順に重み付けして抽出
+        const scored = [...sortedGeneral].sort((a, b) => {
+          const scoreA = categoryScores[a.category] || 0;
+          const scoreB = categoryScores[b.category] || 0;
+          return scoreB - scoreA;
+        });
+
+        const topPersonalized = [];
+        const seenCatCount = {};
+
+        scored.forEach(item => {
+          const count = seenCatCount[item.category] || 0;
+          if (topPersonalized.length < 2 && count < 2 && (categoryScores[item.category] || 0) > 0.4) {
+            topPersonalized.push(item);
+            seenCatCount[item.category] = count + 1;
+          } else {
+            remainingArticles.push(item);
+          }
+        });
+
+        if (topPersonalized.length > 0) {
+          personalizedGroup.style.display = "block";
+          topPersonalized.forEach(item => {
+            personalizedContainer.appendChild(createNewsCard(item));
+          });
+        } else {
+          personalizedGroup.style.display = "none";
+        }
+      } else {
+        personalizedGroup.style.display = "none";
+        remainingArticles = sortedGeneral;
+      }
+
+      // 4. 全国ニュースの描画（ページネーション制御）
+      const visibleArticles = remainingArticles.slice(0, visibleNationalCount);
+      visibleArticles.forEach(item => {
         nationalContainer.appendChild(createNewsCard(item));
       });
+
+      // もっと見るボタンの表示/非表示
+      if (remainingArticles.length > visibleNationalCount) {
+        moreBtnContainer.style.display = "flex";
+      } else {
+        moreBtnContainer.style.display = "none";
+      }
     }
 
+    /* ニュースカード生成（全体が<a>タグ、固有URLリンク） */
     function createNewsCard(item) {
-      const card = document.createElement("article");
+      const card = document.createElement("a");
       card.className = "news-card";
+      card.href = item.url;
+      card.target = "_blank";
+      card.rel = "noopener noreferrer";
+
+      const timeAgo = formatTimeAgo(item.publishedAt);
+
       card.innerHTML = `
         <h3 class="news-title">${escapeHtml(item.title)}</h3>
-        <p class="news-desc">${escapeHtml(item.desc)}</p>
+        <p class="news-desc">${escapeHtml(item.description)}</p>
         <div class="news-footer">
-          <span class="news-tag">${escapeHtml(item.source)}</span>
-          <span>•</span>
-          <span>${escapeHtml(item.time)}</span>
+          <div class="news-footer-left">
+            <span class="news-tag">${escapeHtml(item.source)}</span>
+          </div>
+          <span class="news-time">${escapeHtml(timeAgo)}</span>
         </div>
       `;
+
+      // クリック時にパーソナライズ傾向を更新
+      card.addEventListener("click", () => {
+        recordNewsClick(item);
+      });
+
       return card;
     }
 
-    /* アプリランチャー型 お気に入りの描画（D&D対応） */
+    /* 手動更新ハンドラー */
+    function refreshNewsData(animate = true) {
+      const btn = document.getElementById("refreshNewsBtn");
+      if (animate && btn) btn.classList.add("spinning");
+
+      setTimeout(() => {
+        renderNews(currentPref.name);
+        if (btn) btn.classList.remove("spinning");
+      }, 350);
+    }
+
+    /* お気に入りランチャー描画 */
     function renderShortcuts() {
       const container = document.getElementById("launcherContainer");
       container.innerHTML = "";
@@ -1375,7 +1732,6 @@
           </button>
         `;
 
-        // ドラッグ＆ドロップ イベント
         tile.addEventListener("dragstart", (e) => {
           draggedTileIndex = index;
           tile.classList.add("dragging");
@@ -1408,7 +1764,6 @@
           saveShortcuts();
         });
 
-        // 3点メニューボタンクリック
         const menuBtn = tile.querySelector(".tile-menu-btn");
         menuBtn.addEventListener("click", (e) => {
           e.preventDefault();
@@ -1416,7 +1771,6 @@
           openContextMenu(e.clientX, e.clientY, item);
         });
 
-        // 右クリック対応
         tile.addEventListener("contextmenu", (e) => {
           e.preventDefault();
           openContextMenu(e.clientX, e.clientY, item);
@@ -1425,7 +1779,6 @@
         container.appendChild(tile);
       });
 
-      // 追加ボタンタイル
       const addTile = document.createElement("button");
       addTile.type = "button";
       addTile.className = "launcher-tile launcher-add-btn";
@@ -1450,7 +1803,6 @@
       }
     }
 
-    /* コンテキストメニュー制御 */
     const contextMenu = document.getElementById("contextMenu");
 
     function openContextMenu(x, y, item) {
@@ -1469,20 +1821,15 @@
     document.getElementById("contextEdit").addEventListener("click", (e) => {
       e.stopPropagation();
       closeContextMenu();
-      if (activeTargetShortcut) {
-        openShortcutModal(activeTargetShortcut);
-      }
+      if (activeTargetShortcut) openShortcutModal(activeTargetShortcut);
     });
 
     document.getElementById("contextDelete").addEventListener("click", (e) => {
       e.stopPropagation();
       closeContextMenu();
-      if (activeTargetShortcut) {
-        openDeleteModal(activeTargetShortcut);
-      }
+      if (activeTargetShortcut) openDeleteModal(activeTargetShortcut);
     });
 
-    /* モーダルダイアログ操作（追加・編集・削除） */
     const shortcutModal = document.getElementById("shortcutModalOverlay");
     const shortcutModalTitle = document.getElementById("shortcutModalTitle");
     const nameInput = document.getElementById("shortcutNameInput");
@@ -1524,9 +1871,7 @@
       deleteModal.classList.remove("active");
     }
 
-    /* イベントリスナー */
     function setupEventListeners() {
-      // 検索フォーム（Enter実行のみ）
       const form = document.getElementById("searchForm");
       const searchInput = document.getElementById("searchInput");
       form.addEventListener("submit", (e) => {
@@ -1537,7 +1882,6 @@
         }
       });
 
-      // 設定ドロワー開閉
       const drawer = document.getElementById("settingsDrawer");
       const overlay = document.getElementById("drawerOverlay");
       const openBtn = document.getElementById("openSettingsBtn");
@@ -1559,16 +1903,23 @@
       closeBtn.addEventListener("click", closeDrawer);
       overlay.addEventListener("click", closeDrawer);
 
-      // モーダルアクション
+      // ニュース更新ボタン & もっと見る
+      document.getElementById("refreshNewsBtn").addEventListener("click", () => {
+        refreshNewsData(true);
+      });
+
+      document.getElementById("newsMoreBtn").addEventListener("click", () => {
+        visibleNationalCount += PAGE_SIZE;
+        renderNews(currentPref.name);
+      });
+
       document.getElementById("cancelShortcutBtn").addEventListener("click", closeShortcutModal);
       document.getElementById("saveShortcutBtn").addEventListener("click", () => {
         const title = nameInput.value.trim();
         let url = urlInput.value.trim();
         if (!title || !url) return;
 
-        if (!/^https?:\/\//i.test(url)) {
-          url = `https://${url}`;
-        }
+        if (!/^https?:\/\//i.test(url)) url = `https://${url}`;
 
         if (editingShortcutId) {
           const target = shortcuts.find(s => s.id === editingShortcutId);
@@ -1577,11 +1928,7 @@
             target.url = url;
           }
         } else {
-          shortcuts.push({
-            id: `sc_${Date.now()}`,
-            title,
-            url
-          });
+          shortcuts.push({ id: `sc_${Date.now()}`, title, url });
         }
 
         saveShortcuts();
@@ -1597,7 +1944,6 @@
         closeDeleteModal();
       });
 
-      // 設定スイッチ・都道府県変更
       document.getElementById("toggleWeather").addEventListener("change", (e) => {
         settings.showWeather = e.target.checked;
         saveSettings();
@@ -1606,6 +1952,12 @@
       document.getElementById("toggleNews").addEventListener("change", (e) => {
         settings.showNews = e.target.checked;
         saveSettings();
+      });
+
+      document.getElementById("togglePersonalized").addEventListener("change", (e) => {
+        settings.personalizeNews = e.target.checked;
+        saveSettings();
+        renderNews(currentPref.name);
       });
 
       document.getElementById("toggleGeolocation").addEventListener("change", (e) => {
@@ -1622,7 +1974,6 @@
         }
       });
 
-      // Escキーで閉じる
       window.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           closeDrawer();
@@ -1633,10 +1984,10 @@
       });
     }
 
-    /* UI設定状態の即時同期 */
     function applySettingsToUI() {
       document.getElementById("toggleWeather").checked = settings.showWeather;
       document.getElementById("toggleNews").checked = settings.showNews;
+      document.getElementById("togglePersonalized").checked = settings.personalizeNews;
       document.getElementById("toggleGeolocation").checked = settings.useGeolocation;
       document.getElementById("manualPrefSelect").value = settings.manualPrefId;
 
