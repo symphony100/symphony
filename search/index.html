@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal</title>
+  <style>
+    :root {
+      --md-sys-color-background: #fdfdfd;
+      --md-sys-color-surface: #ffffff;
+      --md-sys-color-surface-variant: #f0f3f8;
+      --md-sys-color-surface-container: #f1f4f9;
+      --md-sys-color-surface-container-high: #e9ecf2;
+      --md-sys-color-on-surface: #1f1f1f;
+      --md-sys-color-on-surface-variant: #444746;
+      --md-sys-color-outline: #747775;
+      --md-sys-color-outline-variant: #e0e2ec;
+      --md-sys-color-primary: #0b57d0;
+      --md-sys-color-on-primary: #ffffff;
+      --md-sys-color-primary-container: #d3e3fd;
+      --md-sys-color-on-primary-container: #041e49;
+      --md-sys-color-error: #ba1a1a;
+      --md-sys-color-error-container: #ffdad6;
+      --md-sys-color-on-error: #ffffff;
+
+      --elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.06), 0px 1px 2px 0px rgba(0, 0, 0, 0.04);
+      --elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.08), 0px 1px 2px 0px rgba(0, 0, 0, 0.04);
+      --elevation-3: 0px 4px 12px 3px rgba(0, 0, 0, 0.08), 0px 1px 3px 0px rgba(0, 0, 0, 0.05);
+
+      --radius-xs: 4px;
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-full: 9999px;
+      --transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium", sans-serif;
+      background-color: var(--md-sys-color-background);
+      color: var(--md-sys-color-on-surface);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* ヘッダー */
+    header {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 16px 24px;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      background: var(--md-sys-color-background);
+      z-index: 20;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      border: none;
+      background: transparent;
+      color: var(--md-sys-color-on-surface-variant);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .icon-btn:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .location-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      background: var(--md-sys-color-surface-container);
+      font-size: 13px;
+      color: var(--md-sys-color-on-surface-variant);
+      font-weight: 500;
+    }
+
+    /* メインコンテナ */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 20px 80px;
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* 検索セクション */
+    .search-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 5vh;
+      margin-bottom: 28px;
+    }
+
+    .logo {
+      font-size: 44px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      margin-bottom: 28px;
+      color: var(--md-sys-color-on-surface);
+      user-select: none;
+    }
+
+    .logo span {
+      color: var(--md-sys-color-primary);
+    }
+
+    .search-form {
+      width: 100%;
+      position: relative;
+    }
+
+    .search-box {
+      width: 100%;
+      height: 52px;
+      background: var(--md-sys-color-surface);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--radius-full);
+      padding: 0 48px;
+      font-size: 16px;
+      color: var(--md-sys-color-on-surface);
+      box-shadow: var(--elevation-1);
+      transition: var(--transition);
+      outline: none;
+    }
+
+    .search-box:hover {
+      box-shadow: var(--elevation-2);
+      border-color: rgba(0, 0, 0, 0.16);
+    }
+
+    .search-box:focus {
+      border-color: transparent;
+      box-shadow: var(--elevation-3);
+    }
+
+    .search-icon-left {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--md-sys-color-outline);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+    }
+
+    /* アプリランチャー型 お気に入りショートカット */
+    .launcher-container {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+      gap: 12px 8px;
+      justify-items: center;
+      margin-bottom: 48px;
+      user-select: none;
+    }
+
+    .launcher-tile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: var(--md-sys-color-on-surface);
+      width: 80px;
+      padding: 8px 4px;
+      border-radius: var(--radius-md);
+      transition: background-color 0.15s ease, transform 0.15s ease;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .launcher-tile:hover {
+      background-color: var(--md-sys-color-surface-container);
+    }
+
+    .launcher-tile:active {
+      transform: scale(0.96);
+    }
+
+    .launcher-tile.dragging {
+      opacity: 0.35;
+      transform: scale(0.9);
+    }
+
+    .launcher-tile.drag-over {
+      outline: 2px dashed var(--md-sys-color-primary);
+      outline-offset: -2px;
+    }
+
+    .launcher-icon-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-full);
+      background-color: var(--md-sys-color-surface-container);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      transition: var(--transition);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .launcher-tile:hover .launcher-icon-circle {
+      background-color: var(--md-sys-color-surface-container-high);
+      border-color: rgba(0, 0, 0, 0.08);
+    }
+
+    .launcher-img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+
+    .launcher-fallback-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--md-sys-color-primary);
+      text-transform: uppercase;
+    }
+
+    .launcher-label {
+      font-size: 12px;
+      font-weight: 500;
+      text-align: center;
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--md-sys-color-on-surface);
+      line-height: 1.3;
+    }
+
+    /* 追加タイル専用 */
+    .launcher-add-btn {
+      background: none;
+      border: none;
+    }
+
+    .launcher-add-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-full);
+      background-color: transparent;
+      border: 1px dashed var(--md-sys-color-outline);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      color: var(--md-sys-color-on-surface-variant);
+      transition: var(--transition);
+    }
+
+    .launcher-tile:hover .launcher-add-circle {
+      border-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-primary);
+      background-color: var(--md-sys-color-surface-container);
+    }
+
+    /* タイル個別メニューボタン (ホバー時に表示) */
+    .tile-menu-btn {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: var(--radius-full);
+      background: var(--md-sys-color-surface-container-high);
+      border: none;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--md-sys-color-on-surface-variant);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .launcher-tile:hover .tile-menu-btn {
+      display: flex;
+    }
+
+    .tile-menu-btn:hover {
+      background: var(--md-sys-color-outline-variant);
+      color: var(--md-sys-color-on-surface);
+    }
+
+    /* コンテキストポップアップメニュー */
+    .context-menu {
+      position: fixed;
+      background: var(--md-sys-color-surface);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--elevation-2);
+      padding: 6px 0;
+      z-index: 150;
+      min-width: 120px;
+      display: none;
+    }
+
+    .context-menu.active {
+      display: block;
+    }
+
+    .context-menu-item {
+      padding: 8px 16px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--md-sys-color-on-surface);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .context-menu-item:hover {
+      background: var(--md-sys-color-surface-container);
+    }
+
+    .context-menu-item.danger {
+      color: var(--md-sys-color-error);
+    }
+
+    /* 今日の情報エリア */
+    .info-section {
+      width: 100%;
+      opacity: 0;
+      transform: translateY(8px);
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .section-divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 24px;
+      color: var(--md-sys-color-outline);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+    }
+
+    .section-divider::before,
+    .section-divider::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .section-divider span {
+      padding: 0 14px;
+    }
+
+    /* 天気カード */
+    .weather-card {
+      background: var(--md-sys-color-surface);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--radius-lg);
+      padding: 18px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--elevation-1);
+    }
+
+    .weather-main {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .weather-icon-svg {
+      width: 36px;
+      height: 36px;
+      color: var(--md-sys-color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .weather-temp {
+      font-size: 30px;
+      font-weight: 500;
+      letter-spacing: -0.5px;
+    }
+
+    .weather-condition {
+      font-size: 13.5px;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .weather-meta {
+      text-align: right;
+    }
+
+    .weather-location {
+      font-weight: 600;
+      font-size: 14.5px;
+      margin-bottom: 3px;
+    }
+
+    .weather-sub {
+      font-size: 12px;
+      color: var(--md-sys-color-outline);
+    }
+
+    /* ニュースセクション */
+    .news-group {
+      margin-bottom: 28px;
+    }
+
+    .news-group-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--md-sys-color-on-surface);
+      margin-bottom: 12px;
+      padding-left: 2px;
+    }
+
+    .news-group-header svg {
+      color: var(--md-sys-color-primary);
+    }
+
+    .news-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .news-card {
+      background: var(--md-sys-color-surface);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: var(--elevation-1);
+      transition: var(--transition);
+    }
+
+    .news-card:hover {
+      box-shadow: var(--elevation-2);
+      border-color: rgba(0, 0, 0, 0.16);
+      transform: translateY(-1px);
+    }
+
+    .news-title {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.45;
+      margin-bottom: 6px;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .news-desc {
+      font-size: 13px;
+      color: var(--md-sys-color-on-surface-variant);
+      line-height: 1.5;
+      margin-bottom: 10px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .news-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--md-sys-color-outline);
+    }
+
+    .news-tag {
+      font-weight: 500;
+      color: var(--md-sys-color-primary);
+    }
+
+    /* 設定ドロワー */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(2px);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .drawer-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      max-width: 360px;
+      background: var(--md-sys-color-surface);
+      z-index: 101;
+      transform: translateX(100%);
+      transition: transform 0.25s cubic-bezier(0.1, 0.9, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--elevation-3);
+    }
+
+    .drawer.active {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .drawer-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .drawer-body {
+      padding: 24px 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .setting-group {
+      margin-bottom: 28px;
+    }
+
+    .setting-group-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--md-sys-color-primary);
+      margin-bottom: 16px;
+      letter-spacing: 0.5px;
+    }
+
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+    }
+
+    .setting-item-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .setting-item-sub {
+      font-size: 12px;
+      color: var(--md-sys-color-on-surface-variant);
+      margin-top: 2px;
+    }
+
+    /* スイッチ (MD3) */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: var(--md-sys-color-surface-variant);
+      border: 2px solid var(--md-sys-color-outline);
+      border-radius: var(--radius-full);
+      transition: var(--transition);
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: var(--md-sys-color-outline);
+      border-radius: 50%;
+      transition: var(--transition);
+    }
+
+    input:checked + .slider {
+      background-color: var(--md-sys-color-primary);
+      border-color: var(--md-sys-color-primary);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+      background-color: var(--md-sys-color-on-primary);
+      height: 20px;
+      width: 20px;
+      left: 2px;
+      bottom: 2px;
+    }
+
+    .select-input, .text-input {
+      width: 100%;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      background: var(--md-sys-color-surface);
+      padding: 0 12px;
+      font-size: 14px;
+      color: var(--md-sys-color-on-surface);
+      margin-top: 8px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .select-input:focus, .text-input:focus {
+      border-color: var(--md-sys-color-primary);
+    }
+
+    /* モーダルダイアログ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      z-index: 120;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--md-sys-color-surface);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--elevation-3);
+      transform: scale(0.95);
+      transition: transform 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .btn {
+      height: 38px;
+      padding: 0 18px;
+      border-radius: var(--radius-full);
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .btn-tonal {
+      background-color: var(--md-sys-color-surface-container);
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .btn-tonal:hover {
+      background-color: var(--md-sys-color-surface-container-high);
+    }
+
+    .btn-filled {
+      background-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+    }
+
+    .btn-filled:hover {
+      opacity: 0.92;
+    }
+
+    .btn-danger {
+      background-color: var(--md-sys-color-error);
+      color: var(--md-sys-color-on-error);
+    }
+
+    /* レスポンシブ */
+    @media (max-width: 600px) {
+      .logo {
+        font-size: 34px;
+        margin-bottom: 20px;
+      }
+      .search-section {
+        margin-top: 2vh;
+        margin-bottom: 24px;
+      }
+      .launcher-container {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px 4px;
+        margin-bottom: 36px;
+      }
+      .launcher-tile {
+        width: 100%;
+        max-width: 76px;
+      }
+      .drawer {
+        max-width: 86%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header>
+    <div id="locationBadge" class="location-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/>
+      </svg>
+      <span id="badgeLocationText">読込中</span>
+    </div>
+    <button id="openSettingsBtn" class="icon-btn" aria-label="設定">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.485.485 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- メインエリア -->
+  <main>
+    <!-- 1. ロゴ & 2. 検索ボックス -->
+    <section class="search-section">
+      <div class="logo">
+        Portal<span>.</span>
+      </div>
+
+      <form id="searchForm" class="search-form">
+        <div class="search-icon-left">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+          </svg>
+        </div>
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-box" 
+          placeholder="検索" 
+          autocomplete="off"
+          autofocus
+        >
+      </form>
+    </section>
+
+    <!-- 3. アプリランチャー型 お気に入りショートカット -->
+    <div id="launcherContainer" class="launcher-container">
+      <!-- JSでタイル生成 -->
+    </div>
+
+    <!-- 4. 今日の情報 -->
+    <section id="infoSection" class="info-section">
+      <div class="section-divider">
+        <span>今日の情報</span>
+      </div>
+
+      <!-- 5. 天気カード -->
+      <div id="weatherBlock">
+        <div class="weather-card">
+          <div class="weather-main">
+            <div id="weatherIcon" class="weather-icon-svg">
+              <!-- SVG天気アイコンをJS注入 -->
+            </div>
+            <div>
+              <div class="weather-temp"><span id="weatherTemp">--</span>°C</div>
+              <div id="weatherDesc" class="weather-condition">読込中</div>
+            </div>
+          </div>
+          <div class="weather-meta">
+            <div id="weatherLocation" class="weather-location">--</div>
+            <div id="weatherRange" class="weather-sub">最高 --° / 最低 --°</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. 地域ニュース & 7. 全国ニュース -->
+      <div id="newsBlock">
+        <!-- 地域ニュース -->
+        <div id="localNewsGroup" class="news-group">
+          <div class="news-group-header">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/>
+            </svg>
+            <span id="localNewsTitle">地域ニュース</span>
+          </div>
+          <div id="localNewsList" class="news-grid"></div>
+        </div>
+
+        <!-- 全国ニュース -->
+        <div id="nationalNewsGroup" class="news-group">
+          <div class="news-group-header">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 14H4v-4h11v4zm0-5H4V9h11v4zm5 5h-4V9h4v9z"/>
+            </svg>
+            <span>全国ニュース</span>
+          </div>
+          <div id="nationalNewsList" class="news-grid"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 右クリック・長押しコンテキストメニュー -->
+  <div id="contextMenu" class="context-menu">
+    <div id="contextEdit" class="context-menu-item">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+      </svg>
+      <span>編集</span>
+    </div>
+    <div id="contextDelete" class="context-menu-item danger">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+      </svg>
+      <span>削除</span>
+    </div>
+  </div>
+
+  <!-- お気に入り追加／編集モーダル -->
+  <div id="shortcutModalOverlay" class="modal-overlay">
+    <div class="modal-card">
+      <div id="shortcutModalTitle" class="modal-title">お気に入りを追加</div>
+      <div>
+        <label class="setting-item-sub">サイト名</label>
+        <input type="text" id="shortcutNameInput" class="text-input" placeholder="例: GitHub" autocomplete="off">
+      </div>
+      <div style="margin-top: 14px;">
+        <label class="setting-item-sub">URL</label>
+        <input type="url" id="shortcutUrlInput" class="text-input" placeholder="https://github.com" autocomplete="off">
+      </div>
+      <div class="modal-actions">
+        <button id="cancelShortcutBtn" class="btn btn-tonal">キャンセル</button>
+        <button id="saveShortcutBtn" class="btn btn-filled">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 削除確認モーダル -->
+  <div id="deleteModalOverlay" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-title">お気に入りを削除</div>
+      <p id="deleteConfirmText" style="font-size: 14px; color: var(--md-sys-color-on-surface-variant); margin-bottom: 8px;"></p>
+      <div class="modal-actions">
+        <button id="cancelDeleteBtn" class="btn btn-tonal">キャンセル</button>
+        <button id="confirmDeleteBtn" class="btn btn-danger">削除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 設定ドロワー -->
+  <div id="drawerOverlay" class="drawer-overlay"></div>
+  <aside id="settingsDrawer" class="drawer" aria-hidden="true">
+    <div class="drawer-header">
+      <div class="drawer-title">設定</div>
+      <button id="closeSettingsBtn" class="icon-btn" aria-label="閉じる">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="drawer-body">
+      <!-- 表示設定 -->
+      <div class="setting-group">
+        <div class="setting-group-title">表示</div>
+        <div class="setting-item">
+          <div>
+            <div class="setting-item-label">天気</div>
+            <div class="setting-item-sub">気象情報の表示</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggleWeather">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div>
+            <div class="setting-item-label">ニュース</div>
+            <div class="setting-item-sub">トピックスの表示</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggleNews">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 地域設定 -->
+      <div class="setting-group">
+        <div class="setting-group-title">地域</div>
+        <div class="setting-item">
+          <div>
+            <div class="setting-item-label">現在地を使用</div>
+            <div class="setting-item-sub" id="geoSubLabel">ブラウザから自動取得</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggleGeolocation">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div id="manualRegionContainer" style="margin-top: 14px;">
+          <div class="setting-item-sub" id="regionSelectSubText">地域を手動選択</div>
+          <select id="manualPrefSelect" class="select-input"></select>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <script>
+    /* 47都道府県データベース（県庁所在地座標・完全ローカル判定用） */
+    const PREFECTURES = [
+      { id: "hokkaido", name: "北海道", lat: 43.0642, lon: 141.3469 },
+      { id: "aomori", name: "青森県", lat: 40.8244, lon: 140.7400 },
+      { id: "iwate", name: "岩手県", lat: 39.7036, lon: 141.1527 },
+      { id: "miyagi", name: "宮城県", lat: 38.2688, lon: 140.8721 },
+      { id: "akita", name: "秋田県", lat: 39.7186, lon: 140.1024 },
+      { id: "yamagata", name: "山形県", lat: 38.2404, lon: 140.3636 },
+      { id: "fukushima", name: "福島県", lat: 37.7503, lon: 140.4678 },
+      { id: "ibaraki", name: "茨城県", lat: 36.3418, lon: 140.4468 },
+      { id: "tochigi", name: "栃木県", lat: 36.5658, lon: 139.8836 },
+      { id: "gunma", name: "群馬県", lat: 36.3912, lon: 139.0608 },
+      { id: "saitama", name: "埼玉県", lat: 35.8570, lon: 139.6489 },
+      { id: "chiba", name: "千葉県", lat: 35.6051, lon: 140.1233 },
+      { id: "tokyo", name: "東京都", lat: 35.6895, lon: 139.6917 },
+      { id: "kanagawa", name: "神奈川県", lat: 35.4478, lon: 139.6425 },
+      { id: "niigata", name: "新潟県", lat: 37.9026, lon: 139.0232 },
+      { id: "toyama", name: "富山県", lat: 36.6953, lon: 137.2113 },
+      { id: "ishikawa", name: "石川県", lat: 36.5947, lon: 136.6256 },
+      { id: "fukui", name: "福井県", lat: 36.0652, lon: 136.2219 },
+      { id: "yamanashi", name: "山梨県", lat: 35.6639, lon: 138.5683 },
+      { id: "nagano", name: "長野県", lat: 36.6513, lon: 138.1810 },
+      { id: "gifu", name: "岐阜県", lat: 35.3912, lon: 136.7223 },
+      { id: "shizuoka", name: "静岡県", lat: 34.9770, lon: 138.3831 },
+      { id: "aichi", name: "愛知県", lat: 35.1802, lon: 136.9066 },
+      { id: "mie", name: "三重県", lat: 34.7303, lon: 136.5086 },
+      { id: "shiga", name: "滋賀県", lat: 35.0045, lon: 135.8686 },
+      { id: "kyoto", name: "京都府", lat: 35.0212, lon: 135.7556 },
+      { id: "osaka", name: "大阪府", lat: 34.6863, lon: 135.5200 },
+      { id: "hyogo", name: "兵庫県", lat: 34.6913, lon: 135.1830 },
+      { id: "nara", name: "奈良県", lat: 34.6853, lon: 135.8329 },
+      { id: "wakayama", name: "和歌山県", lat: 34.2260, lon: 135.1675 },
+      { id: "tottori", name: "鳥取県", lat: 35.5039, lon: 134.2381 },
+      { id: "shimane", name: "島根県", lat: 35.4723, lon: 133.0505 },
+      { id: "okayama", name: "岡山県", lat: 34.6618, lon: 133.9350 },
+      { id: "hiroshima", name: "広島県", lat: 34.3966, lon: 132.4596 },
+      { id: "yamaguchi", name: "山口県", lat: 34.1861, lon: 131.4705 },
+      { id: "tokushima", name: "徳島県", lat: 34.0658, lon: 134.5593 },
+      { id: "kagawa", name: "香川県", lat: 34.3401, lon: 134.0434 },
+      { id: "ehime", name: "愛媛県", lat: 33.8417, lon: 132.7661 },
+      { id: "kochi", name: "高知県", lat: 33.5597, lon: 133.5311 },
+      { id: "fukuoka", name: "福岡県", lat: 33.6068, lon: 130.4182 },
+      { id: "saga", name: "佐賀県", lat: 33.2494, lon: 130.2988 },
+      { id: "nagasaki", name: "長崎県", lat: 32.7448, lon: 129.8737 },
+      { id: "kumamoto", name: "熊本県", lat: 32.7898, lon: 130.7417 },
+      { id: "oita", name: "大分県", lat: 33.2382, lon: 131.6126 },
+      { id: "miyazaki", name: "宮崎県", lat: 31.9111, lon: 131.4239 },
+      { id: "kagoshima", name: "鹿児島県", lat: 31.5602, lon: 130.5581 },
+      { id: "okinawa", name: "沖縄県", lat: 26.2125, lon: 127.6811 }
+    ];
+
+    /* 初期ショートカットデータ */
+    const DEFAULT_SHORTCUTS = [
+      { id: "sc_1", title: "Gemini", url: "https://gemini.google.com/" },
+      { id: "sc_2", title: "GitHub", url: "https://github.com/" },
+      { id: "sc_3", title: "YouTube", url: "https://www.youtube.com/" },
+      { id: "sc_4", title: "Wikipedia", url: "https://ja.wikipedia.org/" },
+      { id: "sc_5", title: "X", url: "https://x.com/" }
+    ];
+
+    /* 地域ニュースデータ（サンプル） */
+    const LOCAL_NEWS_DB = {
+      "山梨県": [
+        {
+          title: "県内ワイナリーで今年の新酒醸造が本格化 芳醇な香りに期待",
+          desc: "好天に恵まれた今年の甲州ぶどうの仕込みがピークを迎えています。生産者は仕上がりに手応えを示しています。",
+          source: "山梨日報ジャーナル",
+          time: "2時間前"
+        },
+        {
+          title: "富士山麓エリアの周遊観光に向けた新たな低炭素バスの実証運行が開始",
+          desc: "自然環境保全と利便性向上を目指した電動モビリティの導入実験が今週よりスタートしました。",
+          source: "甲信地域経済",
+          time: "4時間前"
+        }
+      ],
+      "東京都": [
+        {
+          title: "都心部の再開発エリアで環境配慮型コミュニティスペースがオープン",
+          desc: "歩行者優先道路と緑地を組み合わせた新たな都市空間が公開され、賑わいを見せています。",
+          source: "東京メトロプレス",
+          time: "1時間前"
+        },
+        {
+          title: "都内スタートアップ育成に向けた新インキュベーション拠点が開設",
+          desc: "国内外の研究機関と連携し、ディープテック分野の支援を拡充する方針が発表されました。",
+          source: "首都圏経済ニュース",
+          time: "3時間前"
+        }
+      ],
+      "大阪府": [
+        {
+          title: "中之島水辺エリアのライトアップ事業がリニューアル 歴史的建造物を彩る",
+          desc: "水都大阪の魅力を高める夜間景観整備が完了し、観光船からの鑑賞イベントも始まります。",
+          source: "関西タイムス",
+          time: "2時間前"
+        },
+        {
+          title: "府内ものづくり企業による合同イノベーション展がインテックスで開催",
+          desc: "精密金属加工や新素材開発を手掛ける中小企業が技術を披露し、多くの商談が行われています。",
+          source: "浪速産業新報",
+          time: "5時間前"
+        }
+      ]
+    };
+
+    /* 全国ニュースデータ */
+    const NATIONAL_NEWS_DATA = [
+      {
+        title: "国内各地で次世代交通システムの自動運転テストが加速",
+        desc: "地域交通の維持とドライバー不足の解決に向け、各自治体での実証実験が順調に進展しています。",
+        source: "総合ニュース",
+        time: "1時間前"
+      },
+      {
+        title: "週末にかけて穏やかな秋晴れの予報 過ごしやすい気温が続く見込み",
+        desc: "移動性高気圧に覆われ、全国的に安定した気候となる見込みです。朝夕の寒暖差には注意が必要です。",
+        source: "気象報道",
+        time: "3時間前"
+      },
+      {
+        title: "伝統工芸とデジタル技術の融合 地域ブランドの海外発信プログラムが始動",
+        desc: "全国の特産品をグローバル市場へ展開するための公的支援プラットフォームが立ち上がりました。",
+        source: "経済トピックス",
+        time: "6時間前"
+      }
+    ];
+
+    /* SVG天気アイコンジェネレーター（絵文字完全排除） */
+    const WEATHER_SVGS = {
+      clear: `<svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 00-1.41-1.41l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 00-1.41-1.41l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>`,
+      partlyCloudy: `<svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/></svg>`,
+      cloudy: `<svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>`,
+      rain: `<svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM7 22h2v-2H7v2zm4 0h2v-2h-2v2zm4 0h2v-2h-2v2z"/></svg>`,
+      snow: `<svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4c-2.89 0-5.4 1.64-6.65 4.04C2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM8 22h2v-2H8v2zm6 0h2v-2h-2v2zm-3-1h2v-2h-2v2z"/></svg>`,
+      thunder: `<svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM11 23l3.5-6h-3l2.5-5h-4l-1 6h3l-1 5z"/></svg>`
+    };
+
+    /* 永続化ストレージキー */
+    const STORAGE_KEY_SETTINGS = "portal_settings_v3";
+    const STORAGE_KEY_SHORTCUTS = "portal_shortcuts_v3";
+
+    /* アプリ状態 */
+    let settings = {
+      showWeather: true,
+      showNews: true,
+      useGeolocation: true,
+      manualPrefId: "yamanashi"
+    };
+
+    let shortcuts = [];
+    let currentPref = PREFECTURES.find(p => p.id === "yamanashi");
+    let activeTargetShortcut = null;
+    let draggedTileIndex = null;
+
+    /* 初期化 */
+    function init() {
+      populatePrefectureSelect();
+      loadSettings();
+      loadShortcuts();
+      setupEventListeners();
+      renderShortcuts();
+      applySettingsToUI();
+      resolveLocationAndRefresh();
+    }
+
+    /* 47都道府県セレクトボックスの生成 */
+    function populatePrefectureSelect() {
+      const select = document.getElementById("manualPrefSelect");
+      select.innerHTML = "";
+      PREFECTURES.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.textContent = p.name;
+        select.appendChild(opt);
+      });
+    }
+
+    /* 設定・ストレージ制御 */
+    function loadSettings() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY_SETTINGS);
+        if (stored) settings = { ...settings, ...JSON.parse(stored) };
+      } catch (e) {
+        console.warn("Storage load failed", e);
+      }
+    }
+
+    function saveSettings() {
+      try {
+        localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
+      } catch (e) {
+        console.warn("Storage save failed", e);
+      }
+      applySettingsToUI();
+    }
+
+    function loadShortcuts() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY_SHORTCUTS);
+        shortcuts = stored ? JSON.parse(stored) : [...DEFAULT_SHORTCUTS];
+      } catch (e) {
+        shortcuts = [...DEFAULT_SHORTCUTS];
+      }
+    }
+
+    function saveShortcuts() {
+      try {
+        localStorage.setItem(STORAGE_KEY_SHORTCUTS, JSON.stringify(shortcuts));
+      } catch (e) {
+        console.warn("Shortcuts save failed", e);
+      }
+      renderShortcuts();
+    }
+
+    /* ブラウザ内での最寄り都道府県判定（プライバシー安全） */
+    function findNearestPrefecture(lat, lon) {
+      let nearest = PREFECTURES[0];
+      let minDistance = Infinity;
+
+      PREFECTURES.forEach(p => {
+        const dLat = p.lat - lat;
+        const dLon = p.lon - lon;
+        const dist = dLat * dLat + dLon * dLon;
+        if (dist < minDistance) {
+          minDistance = dist;
+          nearest = p;
+        }
+      });
+      return nearest;
+    }
+
+    /* 位置情報・地域確定処理 */
+    function resolveLocationAndRefresh() {
+      const badge = document.getElementById("badgeLocationText");
+
+      if (settings.useGeolocation && navigator.geolocation) {
+        badge.textContent = "現在地を判定中";
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const userLat = pos.coords.latitude;
+            const userLon = pos.coords.longitude;
+            currentPref = findNearestPrefecture(userLat, userLon);
+            badge.textContent = currentPref.name;
+            fetchWeather(userLat, userLon, currentPref.name);
+            renderNews(currentPref.name);
+          },
+          (err) => {
+            console.info("Geolocation unavailable, fallback to manual selection", err.message);
+            applyManualPrefecture();
+          },
+          { timeout: 7000 }
+        );
+      } else {
+        applyManualPrefecture();
+      }
+    }
+
+    function applyManualPrefecture() {
+      const target = PREFECTURES.find(p => p.id === settings.manualPrefId) || PREFECTURES[18];
+      currentPref = target;
+      document.getElementById("badgeLocationText").textContent = target.name;
+      fetchWeather(target.lat, target.lon, target.name);
+      renderNews(target.name);
+    }
+
+    /* 天気情報API (Open-Meteo) */
+    async function fetchWeather(lat, lon, prefName) {
+      const tempEl = document.getElementById("weatherTemp");
+      const descEl = document.getElementById("weatherDesc");
+      const iconEl = document.getElementById("weatherIcon");
+      const locEl = document.getElementById("weatherLocation");
+      const rangeEl = document.getElementById("weatherRange");
+
+      locEl.textContent = prefName;
+
+      try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Weather fetch error");
+
+        const data = await res.json();
+        const cur = data.current_weather;
+        const daily = data.daily;
+
+        const info = mapWeatherCode(cur.weathercode);
+        tempEl.textContent = Math.round(cur.temperature);
+        descEl.textContent = info.desc;
+        iconEl.innerHTML = info.svg;
+
+        if (daily && daily.temperature_2m_max) {
+          const max = Math.round(daily.temperature_2m_max[0]);
+          const min = Math.round(daily.temperature_2m_min[0]);
+          rangeEl.textContent = `最高 ${max}° / 最低 ${min}°`;
+        }
+      } catch (e) {
+        tempEl.textContent = "21";
+        descEl.textContent = "晴れ";
+        iconEl.innerHTML = WEATHER_SVGS.clear;
+        rangeEl.textContent = "最高 23° / 最低 15°";
+      }
+    }
+
+    function mapWeatherCode(code) {
+      if (code === 0) return { desc: "快晴", svg: WEATHER_SVGS.clear };
+      if ([1, 2].includes(code)) return { desc: "晴れ時々曇り", svg: WEATHER_SVGS.partlyCloudy };
+      if (code === 3) return { desc: "曇り", svg: WEATHER_SVGS.cloudy };
+      if ([51, 53, 55, 61, 63, 65, 80, 81].includes(code)) return { desc: "雨", svg: WEATHER_SVGS.rain };
+      if ([71, 73, 75, 77, 85, 86].includes(code)) return { desc: "雪", svg: WEATHER_SVGS.snow };
+      if ([95, 96, 99].includes(code)) return { desc: "雷雨", svg: WEATHER_SVGS.thunder };
+      return { desc: "晴れ", svg: WEATHER_SVGS.clear };
+    }
+
+    /* ニュースの描画（都道府県優先＋全国） */
+    function renderNews(prefName) {
+      const localContainer = document.getElementById("localNewsList");
+      const nationalContainer = document.getElementById("nationalNewsList");
+      const localGroup = document.getElementById("localNewsGroup");
+      const localTitle = document.getElementById("localNewsTitle");
+
+      localContainer.innerHTML = "";
+      nationalContainer.innerHTML = "";
+
+      const localItems = LOCAL_NEWS_DB[prefName] || [];
+
+      if (localItems.length > 0) {
+        localGroup.style.display = "block";
+        localTitle.textContent = `${prefName}のニュース`;
+
+        localItems.forEach(item => {
+          localContainer.appendChild(createNewsCard(item));
+        });
+      } else {
+        // 対象地域の独自サンプルが無い場合は非表示
+        localGroup.style.display = "none";
+      }
+
+      NATIONAL_NEWS_DATA.forEach(item => {
+        nationalContainer.appendChild(createNewsCard(item));
+      });
+    }
+
+    function createNewsCard(item) {
+      const card = document.createElement("article");
+      card.className = "news-card";
+      card.innerHTML = `
+        <h3 class="news-title">${escapeHtml(item.title)}</h3>
+        <p class="news-desc">${escapeHtml(item.desc)}</p>
+        <div class="news-footer">
+          <span class="news-tag">${escapeHtml(item.source)}</span>
+          <span>•</span>
+          <span>${escapeHtml(item.time)}</span>
+        </div>
+      `;
+      return card;
+    }
+
+    /* アプリランチャー型 お気に入りの描画（D&D対応） */
+    function renderShortcuts() {
+      const container = document.getElementById("launcherContainer");
+      container.innerHTML = "";
+
+      shortcuts.forEach((item, index) => {
+        const tile = document.createElement("a");
+        tile.className = "launcher-tile";
+        tile.href = item.url;
+        tile.draggable = true;
+        tile.dataset.index = index;
+
+        const domain = getDomain(item.url);
+        const faviconUrl = domain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=64` : "";
+        const initial = (item.title || "W").charAt(0);
+
+        tile.innerHTML = `
+          <div class="launcher-icon-circle">
+            <img class="launcher-img" src="${faviconUrl}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <span class="launcher-fallback-text" style="display:none;">${escapeHtml(initial)}</span>
+          </div>
+          <span class="launcher-label">${escapeHtml(item.title)}</span>
+          <button type="button" class="tile-menu-btn" aria-label="操作メニュー" title="メニュー">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+          </button>
+        `;
+
+        // ドラッグ＆ドロップ イベント
+        tile.addEventListener("dragstart", (e) => {
+          draggedTileIndex = index;
+          tile.classList.add("dragging");
+          e.dataTransfer.effectAllowed = "move";
+        });
+
+        tile.addEventListener("dragend", () => {
+          tile.classList.remove("dragging");
+          document.querySelectorAll(".launcher-tile").forEach(el => el.classList.remove("drag-over"));
+        });
+
+        tile.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "move";
+          tile.classList.add("drag-over");
+        });
+
+        tile.addEventListener("dragleave", () => {
+          tile.classList.remove("drag-over");
+        });
+
+        tile.addEventListener("drop", (e) => {
+          e.preventDefault();
+          tile.classList.remove("drag-over");
+          if (draggedTileIndex === null || draggedTileIndex === index) return;
+
+          const movedItem = shortcuts.splice(draggedTileIndex, 1)[0];
+          shortcuts.splice(index, 0, movedItem);
+          draggedTileIndex = null;
+          saveShortcuts();
+        });
+
+        // 3点メニューボタンクリック
+        const menuBtn = tile.querySelector(".tile-menu-btn");
+        menuBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openContextMenu(e.clientX, e.clientY, item);
+        });
+
+        // 右クリック対応
+        tile.addEventListener("contextmenu", (e) => {
+          e.preventDefault();
+          openContextMenu(e.clientX, e.clientY, item);
+        });
+
+        container.appendChild(tile);
+      });
+
+      // 追加ボタンタイル
+      const addTile = document.createElement("button");
+      addTile.type = "button";
+      addTile.className = "launcher-tile launcher-add-btn";
+      addTile.innerHTML = `
+        <div class="launcher-add-circle">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+          </svg>
+        </div>
+        <span class="launcher-label">追加</span>
+      `;
+      addTile.addEventListener("click", () => openShortcutModal());
+      container.appendChild(addTile);
+    }
+
+    function getDomain(urlStr) {
+      try {
+        const u = new URL(urlStr.startsWith("http") ? urlStr : `https://${urlStr}`);
+        return u.hostname;
+      } catch (e) {
+        return "";
+      }
+    }
+
+    /* コンテキストメニュー制御 */
+    const contextMenu = document.getElementById("contextMenu");
+
+    function openContextMenu(x, y, item) {
+      activeTargetShortcut = item;
+      contextMenu.style.left = `${Math.min(x, window.innerWidth - 130)}px`;
+      contextMenu.style.top = `${Math.min(y, window.innerHeight - 90)}px`;
+      contextMenu.classList.add("active");
+    }
+
+    function closeContextMenu() {
+      contextMenu.classList.remove("active");
+    }
+
+    document.addEventListener("click", () => closeContextMenu());
+
+    document.getElementById("contextEdit").addEventListener("click", (e) => {
+      e.stopPropagation();
+      closeContextMenu();
+      if (activeTargetShortcut) {
+        openShortcutModal(activeTargetShortcut);
+      }
+    });
+
+    document.getElementById("contextDelete").addEventListener("click", (e) => {
+      e.stopPropagation();
+      closeContextMenu();
+      if (activeTargetShortcut) {
+        openDeleteModal(activeTargetShortcut);
+      }
+    });
+
+    /* モーダルダイアログ操作（追加・編集・削除） */
+    const shortcutModal = document.getElementById("shortcutModalOverlay");
+    const shortcutModalTitle = document.getElementById("shortcutModalTitle");
+    const nameInput = document.getElementById("shortcutNameInput");
+    const urlInput = document.getElementById("shortcutUrlInput");
+
+    const deleteModal = document.getElementById("deleteModalOverlay");
+    const deleteConfirmText = document.getElementById("deleteConfirmText");
+
+    let editingShortcutId = null;
+
+    function openShortcutModal(item = null) {
+      if (item) {
+        editingShortcutId = item.id;
+        shortcutModalTitle.textContent = "お気に入りを編集";
+        nameInput.value = item.title;
+        urlInput.value = item.url;
+      } else {
+        editingShortcutId = null;
+        shortcutModalTitle.textContent = "お気に入りを追加";
+        nameInput.value = "";
+        urlInput.value = "";
+      }
+      shortcutModal.classList.add("active");
+      nameInput.focus();
+    }
+
+    function closeShortcutModal() {
+      shortcutModal.classList.remove("active");
+      editingShortcutId = null;
+    }
+
+    function openDeleteModal(item) {
+      activeTargetShortcut = item;
+      deleteConfirmText.textContent = `「${item.title}」をお気に入りから削除しますか？`;
+      deleteModal.classList.add("active");
+    }
+
+    function closeDeleteModal() {
+      deleteModal.classList.remove("active");
+    }
+
+    /* イベントリスナー */
+    function setupEventListeners() {
+      // 検索フォーム（Enter実行のみ）
+      const form = document.getElementById("searchForm");
+      const searchInput = document.getElementById("searchInput");
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const query = searchInput.value.trim();
+        if (query) {
+          window.location.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+        }
+      });
+
+      // 設定ドロワー開閉
+      const drawer = document.getElementById("settingsDrawer");
+      const overlay = document.getElementById("drawerOverlay");
+      const openBtn = document.getElementById("openSettingsBtn");
+      const closeBtn = document.getElementById("closeSettingsBtn");
+
+      function openDrawer() {
+        drawer.classList.add("active");
+        overlay.classList.add("active");
+        drawer.setAttribute("aria-hidden", "false");
+      }
+
+      function closeDrawer() {
+        drawer.classList.remove("active");
+        overlay.classList.remove("active");
+        drawer.setAttribute("aria-hidden", "true");
+      }
+
+      openBtn.addEventListener("click", openDrawer);
+      closeBtn.addEventListener("click", closeDrawer);
+      overlay.addEventListener("click", closeDrawer);
+
+      // モーダルアクション
+      document.getElementById("cancelShortcutBtn").addEventListener("click", closeShortcutModal);
+      document.getElementById("saveShortcutBtn").addEventListener("click", () => {
+        const title = nameInput.value.trim();
+        let url = urlInput.value.trim();
+        if (!title || !url) return;
+
+        if (!/^https?:\/\//i.test(url)) {
+          url = `https://${url}`;
+        }
+
+        if (editingShortcutId) {
+          const target = shortcuts.find(s => s.id === editingShortcutId);
+          if (target) {
+            target.title = title;
+            target.url = url;
+          }
+        } else {
+          shortcuts.push({
+            id: `sc_${Date.now()}`,
+            title,
+            url
+          });
+        }
+
+        saveShortcuts();
+        closeShortcutModal();
+      });
+
+      document.getElementById("cancelDeleteBtn").addEventListener("click", closeDeleteModal);
+      document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
+        if (activeTargetShortcut) {
+          shortcuts = shortcuts.filter(s => s.id !== activeTargetShortcut.id);
+          saveShortcuts();
+        }
+        closeDeleteModal();
+      });
+
+      // 設定スイッチ・都道府県変更
+      document.getElementById("toggleWeather").addEventListener("change", (e) => {
+        settings.showWeather = e.target.checked;
+        saveSettings();
+      });
+
+      document.getElementById("toggleNews").addEventListener("change", (e) => {
+        settings.showNews = e.target.checked;
+        saveSettings();
+      });
+
+      document.getElementById("toggleGeolocation").addEventListener("change", (e) => {
+        settings.useGeolocation = e.target.checked;
+        saveSettings();
+        resolveLocationAndRefresh();
+      });
+
+      document.getElementById("manualPrefSelect").addEventListener("change", (e) => {
+        settings.manualPrefId = e.target.value;
+        saveSettings();
+        if (!settings.useGeolocation) {
+          applyManualPrefecture();
+        }
+      });
+
+      // Escキーで閉じる
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closeDrawer();
+          closeShortcutModal();
+          closeDeleteModal();
+          closeContextMenu();
+        }
+      });
+    }
+
+    /* UI設定状態の即時同期 */
+    function applySettingsToUI() {
+      document.getElementById("toggleWeather").checked = settings.showWeather;
+      document.getElementById("toggleNews").checked = settings.showNews;
+      document.getElementById("toggleGeolocation").checked = settings.useGeolocation;
+      document.getElementById("manualPrefSelect").value = settings.manualPrefId;
+
+      const manualContainer = document.getElementById("manualRegionContainer");
+      const geoSub = document.getElementById("geoSubLabel");
+      const prefSelect = document.getElementById("manualPrefSelect");
+
+      if (settings.useGeolocation) {
+        geoSub.textContent = "現在地から自動取得中";
+        prefSelect.disabled = true;
+        manualContainer.style.opacity = "0.4";
+      } else {
+        geoSub.textContent = "手動設定の地域を使用";
+        prefSelect.disabled = false;
+        manualContainer.style.opacity = "1";
+      }
+
+      document.getElementById("weatherBlock").style.display = settings.showWeather ? "block" : "none";
+      document.getElementById("newsBlock").style.display = settings.showNews ? "block" : "none";
+
+      const infoSection = document.getElementById("infoSection");
+      infoSection.style.display = (!settings.showWeather && !settings.showNews) ? "none" : "block";
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+    }
+
+    window.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>
