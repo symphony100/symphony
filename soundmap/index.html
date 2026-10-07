@@ -25,7 +25,7 @@
   <link rel="icon" type="image/x-icon" href="https://symphony100.github.io/symphony/soundmap/icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Shippori+Mincho:wght@600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
   <script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
@@ -33,6 +33,7 @@
   <style>
     :root {
       --main-blue: #0288d1;
+      --deep-navy: #0f172a;
       --active-blue: #81d4fa;
       --light-blue: #e0f7fa;
       --yellow-btn: #ffc107;
@@ -574,32 +575,221 @@
       border: 1px solid #e2e8f0;
     }
 
+    /* ─── ① 復活：10秒カウントダウン黒フィルター ─── */
     .idle-overlay {
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(15, 23, 42, 0.92);
-      backdrop-filter: blur(6px);
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 9990;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .idle-overlay.active { opacity: 1; pointer-events: auto; }
+    .idle-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 28px 24px;
+      text-align: center;
+      max-width: 380px;
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    /* ─── ② 洗練された和モダン展示用スタート画面（脱AI臭） ─── */
+    .start-screen-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: #fdfbf7;
+      z-index: 9998;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      cursor: pointer;
+      user-select: none;
+      padding: 24px;
+      overflow: hidden;
+    }
+    .start-screen-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    /* 背景の繊細な同心円（音の波紋） */
+    .ripple-bg {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px; height: 700px;
+      border-radius: 50%;
+      border: 1px solid rgba(2, 136, 209, 0.08);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ripple-bg:before {
+      content: "";
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      border: 1px solid rgba(2, 136, 209, 0.12);
+    }
+    .ripple-bg:after {
+      content: "";
+      position: absolute;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      border: 1px solid rgba(2, 136, 209, 0.16);
+    }
+
+    .start-content-box {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 580px;
+    }
+    .start-badge {
+      display: inline-block;
+      font-size: 0.76rem;
+      letter-spacing: 0.25em;
+      font-weight: 700;
+      color: var(--main-blue);
+      text-transform: uppercase;
+      padding: 4px 16px;
+      border-bottom: 1px solid rgba(2, 136, 209, 0.3);
+      margin-bottom: 24px;
+    }
+    .start-main-title {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 3.4rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      color: #1e293b;
+      line-height: 1.25;
+      margin-bottom: 16px;
+    }
+    .start-sub-desc {
+      font-size: 0.98rem;
+      color: #64748b;
+      letter-spacing: 0.12em;
+      line-height: 1.8;
+      margin-bottom: 48px;
+    }
+    .start-touch-plate {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 36px;
+      border: 1px solid #1e293b;
+      background: #ffffff;
+      color: #0f172a;
+      border-radius: 36px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      transition: all 0.3s;
+    }
+    .start-touch-plate:hover {
+      background: #0f172a;
+      color: #ffffff;
+    }
+
+    /* ─── ③ PR動画サイネージ＆右から左へのスライドアニメーション ─── */
+    .pr-video-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: #000;
       z-index: 9999;
       display: flex;
       align-items: center;
       justify-content: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.25s;
+      cursor: pointer;
+      overflow: hidden;
     }
-    .idle-overlay.active { opacity: 1; pointer-events: auto; }
-    .idle-card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 24px 18px;
-      text-align: center;
-      max-width: 360px;
-      width: 90%;
+    .pr-video-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .pr-video-elm {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+    .pr-touch-hint {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+      pointer-events: none;
+      border: 1px solid rgba(255,255,255,0.2);
     }
+
+    /* 右から左へ流れるスライドトランジション */
+    @keyframes slideOutToLeft {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+    @keyframes slideInFromRight {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(0); }
+    }
+    .slide-exit-left {
+      animation: slideOutToLeft 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    }
+    .slide-enter-right {
+      animation: slideInFromRight 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    }
+
+    /* ─── ⑤ PR動画入力リスト行スタイル ─── */
+    .pr-input-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .del-pr-btn {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #dc2626;
+      border-radius: 6px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .del-pr-btn:hover { background: #fecaca; }
 
     .source-box {
       background: #f8fafc;
@@ -932,7 +1122,7 @@
 
   <!-- ⑥ Android風 設定 -->
   <div id="settingsModal" class="pop-win" onclick="if(event.target===this) closeSettingsModal()">
-    <div class="pop-card" style="background:#f1f5f9; max-width:500px;">
+    <div class="pop-card" style="background:#f1f5f9; max-width:520px;">
       <div class="pop-hdr" style="background:#e2e8f0;">
         <div>
           <span class="material-symbols-outlined">settings</span>
@@ -956,7 +1146,7 @@
           <div class="set-row">
             <div>
               <div style="font-weight:700; font-size:0.85rem;">動作モード</div>
-              <div style="font-size:0.72rem; color:var(--text-muted);">展示モードで自動リダイレクトが連動</div>
+              <div style="font-size:0.72rem; color:var(--text-muted);">展示モードで自動サイネージが連動</div>
             </div>
             <select id="cfgMode" class="set-input" style="width:110px;" onchange="onModeSelectChange(this.value)">
               <option value="standard">標準モード</option>
@@ -968,23 +1158,85 @@
         <div class="set-group">
           <div style="font-weight:700; font-size:0.85rem; margin-bottom:2px;">地方・都道府県の解放設定</div>
           <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;">チェックを切り替えると他の端末も即座に同期されます</div>
-          <div id="regionToggleListContainer" style="max-height:220px; overflow-y:auto;"></div>
+          <div id="regionToggleListContainer" style="max-height:180px; overflow-y:auto;"></div>
         </div>
 
+        <!-- 🌟 設定：10秒カウントダウン ＆ スタート画面 -->
         <div class="set-group">
           <div class="set-row">
             <div>
-              <div style="font-weight:700; font-size:0.85rem;">無操作自動リダイレクト</div>
-              <div style="font-size:0.72rem; color:var(--text-muted);">30秒操作がない場合初期画面へ遷移</div>
+              <div style="font-weight:700; font-size:0.85rem;">無操作時の警告カウントダウン</div>
+              <div style="font-size:0.72rem; color:var(--text-muted);">無操作が続いたとき10秒警告を出してスタート画面へ</div>
             </div>
             <label class="toggle-ui">
-              <input type="checkbox" id="cfgEnableIdle" onchange="saveAppConfig()">
+              <input type="checkbox" id="cfgEnableCountDown" onchange="saveAppConfig()">
               <span class="toggle-slider"></span>
             </label>
           </div>
-          <div style="margin-top:4px;">
-            <div style="font-size:0.72rem; color:var(--text-muted);">遷移先URL:</div>
-            <input type="text" id="cfgRedirectUrl" class="set-input" onchange="saveAppConfig()">
+          <div class="set-row" style="margin-top:6px;">
+            <div style="font-size:0.75rem; color:var(--text-muted);">警告が出るまでの無操作秒数:</div>
+            <input type="number" id="cfgIdleTimeoutSec" class="set-input" style="width:75px;" min="5" value="25" onchange="saveAppConfig()">
+          </div>
+          <div class="set-row" style="margin-top:6px;">
+            <div>
+              <div style="font-weight:700; font-size:0.82rem;">スタート画面をスキップして直接初期化</div>
+              <div style="font-size:0.7rem; color:var(--text-muted);">OFFの場合はカウントダウン後スタート画面を表示</div>
+            </div>
+            <label class="toggle-ui">
+              <input type="checkbox" id="cfgDirectReset" onchange="saveAppConfig()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 🌟 設定：スタート画面 ＆ チュートリアル連動 -->
+        <div class="set-group">
+          <div class="set-row">
+            <div>
+              <div style="font-weight:700; font-size:0.85rem;">スタート画面から開始時チュートリアル表示</div>
+              <div style="font-size:0.72rem; color:var(--text-muted);">「画面に触れてスタート」タップ時に使い方を表示</div>
+            </div>
+            <label class="toggle-ui">
+              <input type="checkbox" id="cfgShowTutorialOnStart" onchange="saveAppConfig()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 🌟 設定：PR動画サイネージ ＆ ＋ボタンで自由追加 -->
+        <div class="set-group">
+          <div class="set-row">
+            <div>
+              <div style="font-weight:700; font-size:0.85rem;">PR動画の自動再生</div>
+              <div style="font-size:0.72rem; color:var(--text-muted);">スタート画面放置時にPR動画を再生</div>
+            </div>
+            <label class="toggle-ui">
+              <input type="checkbox" id="cfgEnablePrVideo" onchange="saveAppConfig()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="set-row" style="margin-top:6px;">
+            <div style="font-size:0.75rem; color:var(--text-muted);">スタート画面からの待機秒数:</div>
+            <input type="number" id="cfgIdleToPrVideoSec" class="set-input" style="width:75px;" min="5" value="15" onchange="saveAppConfig()">
+          </div>
+
+          <div style="margin-top:8px; border-top:1px dashed var(--border-line); padding-top:6px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-size:0.78rem; font-weight:700;">PR動画リスト (MP4等):</span>
+              <button type="button" class="i-btn" style="padding:2px 8px;" onclick="addPrVideoInputRow('')">
+                <span class="material-symbols-outlined" style="font-size:0.95rem;">add</span> 追加
+              </button>
+            </div>
+            <div id="prVideoInputListContainer" style="max-height:160px; overflow-y:auto;"></div>
+          </div>
+
+          <div class="set-row" style="margin-top:8px;">
+            <div style="font-size:0.75rem; color:var(--text-muted);">何本ごとにスタート画面を挟むか:</div>
+            <input type="number" id="cfgPrInterval" class="set-input" style="width:75px;" min="1" max="20" value="3" onchange="saveAppConfig()">
+          </div>
+          <div class="set-row" style="margin-top:6px;">
+            <div style="font-size:0.75rem; color:var(--text-muted);">間に挟むスタート画面の表示秒数:</div>
+            <input type="number" id="cfgPrPauseSec" class="set-input" style="width:75px;" min="3" value="10" onchange="saveAppConfig()">
           </div>
         </div>
 
@@ -992,7 +1244,7 @@
           <div class="set-row">
             <div>
               <div style="font-weight:700; font-size:0.85rem;">アクセス時自動初期化</div>
-              <div style="font-size:0.72rem; color:var(--text-muted);">ページ読み込み時に発見記録をリセット</div>
+              <div style="font-size:0.72rem; color:var(--text-muted);">ページ読み込み時に全記録をリセット</div>
             </div>
             <label class="toggle-ui">
               <input type="checkbox" id="cfgAutoReset" onchange="saveAppConfig()">
@@ -1011,14 +1263,42 @@
     </div>
   </div>
 
-  <!-- 展示用 30秒無操作黒フィルター -->
+  <!-- ① 復活：展示用 10秒カウントダウン黒フィルター -->
   <div id="idleOverlay" class="idle-overlay" onclick="onIdleBoxTap(event)">
     <div class="idle-card">
-      <div style="font-size:1rem; font-weight:800;">操作が確認されませんでした</div>
-      <div style="font-size:0.85rem; color:var(--text-muted);">
-        あと <span id="countNum" style="font-size:2rem; font-weight:900; color:var(--main-blue);">10</span> 秒後に初期画面に戻ります。
+      <div style="font-size:1.05rem; font-weight:900; color:var(--text-dark);">操作が確認されませんでした</div>
+      <div style="font-size:0.88rem; color:var(--text-muted);">
+        あと <span id="countNum" style="font-size:2.4rem; font-weight:900; color:var(--main-blue);">10</span> 秒後に初期画面に戻ります。
       </div>
-      <div style="font-size:0.75rem; color:var(--main-blue); background:var(--light-blue); padding:4px 10px; border-radius:8px;">画面をタップすると操作を再開できます</div>
+      <div style="font-size:0.8rem; color:var(--main-blue); background:var(--light-blue); padding:6px 14px; border-radius:20px; font-weight:700;">
+        画面をタップすると操作を再開できます
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 洗練された和モダン展示用スタート画面（脱AI臭） -->
+  <div id="startScreenOverlay" class="start-screen-overlay" onclick="onStartScreenTap(event)">
+    <div class="ripple-bg"></div>
+    <div class="start-content-box">
+      <div class="start-badge">Sound Map Japan</div>
+      <h2 class="start-main-title">さうんどまっぷ</h2>
+      <p class="start-sub-desc">
+        日本各地の伝統行事、職人の息吹、大自然の音風景。<br>
+        耳を澄まし、風土と記憶をめぐる旅へ。
+      </p>
+      <div class="start-touch-plate">
+        <span class="material-symbols-outlined" style="font-size:1.35rem;">touch_app</span>
+        <span>画面に触れてスタート</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ PR動画サイネージ（右から左へスライド） -->
+  <div id="prVideoOverlay" class="pr-video-overlay" onclick="onPrVideoTap(event)">
+    <video id="prVideoPlayer" class="pr-video-elm" playsinline muted preload="auto"></video>
+    <div class="pr-touch-hint">
+      <span class="material-symbols-outlined">touch_app</span>
+      <span>画面に触れると体験が始まります</span>
     </div>
   </div>
 
@@ -1036,14 +1316,32 @@
       kyushu_okinawa: { name: "九州・沖縄", codes: ["40","41","42","43","44","45","46","47"] }
     };
 
-    let appConfig = JSON.parse(localStorage.getItem('soundmap_settings') || JSON.stringify({
+    const defaultSettings = {
       mode: 'standard',
-      enableIdleRedirect: false,
-      idleTimeoutSec: 30,
-      redirectUrl: 'https://symphony100.github.io/symphony/soundmap/',
-      autoResetOnLoad: false
-    }));
+      autoResetOnLoad: false,
 
+      // カウントダウン
+      enableCountDown: true,
+      idleTimeoutSec: 25,
+      directReset: false,
+
+      // スタート画面＆チュートリアル
+      showTutorialOnStart: true,
+
+      // PR動画
+      enablePrVideo: true,
+      idleToPrVideoSec: 15,
+      prVideos: [
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyBlazes.mp4"
+      ],
+      prInterval: 3,
+      prPauseSec: 10
+    };
+
+    let appConfig = Object.assign({}, defaultSettings, JSON.parse(localStorage.getItem('soundmap_settings') || '{}'));
     let prefVisibilityMap = JSON.parse(localStorage.getItem('soundmap_pref_visibility') || '{}');
 
     const MQTT_BROKER = "wss://broker.emqx.io:8084/mqtt";
@@ -1164,25 +1462,40 @@
     let gainNode;
     let soundLoopTimer;
 
-    let idleTimerId = null;
-    let countdownTimerId = null;
-    let countNumVal = 10;
     let slideIdx = 0;
-
     let quizItems = [];
     let nowIdx = 0;
 
     let doneSet = new Set(JSON.parse(localStorage.getItem('otomap_discovered') || '[]'));
     let favList = JSON.parse(localStorage.getItem('otomap_favorites') || '[]');
 
+    // ─── タイマー管理 ───
+    let mainIdleTimerId = null;
+    let countdownIntervalId = null;
+    let idleToPrVideoTimerId = null;
+    let prPauseTimerId = null;
+
+    let countNumVal = 10;
+    let prCurrentIndex = 0;
+    let prPlayedCount = 0;
+
+    let isCountdownActive = false;
+    let isStartScreenActive = false;
+    let isPrVideoActive = false;
+
     window.addEventListener('DOMContentLoaded', async () => {
-      if (appConfig.autoResetOnLoad || appConfig.mode === 'exhibition') {
+      const shouldReset = appConfig.autoResetOnLoad || appConfig.mode === 'exhibition';
+      if (shouldReset) {
         doneSet.clear();
-        localStorage.setItem('otomap_discovered', '[]');
+        localStorage.removeItem('otomap_discovered');
+        favList = [];
+        localStorage.removeItem('otomap_favorites');
+        localStorage.removeItem('otomap_visited');
       }
 
+      // 展示モードの場合は最初からスタート画面を掲示
       if (appConfig.mode === 'exhibition') {
-        setTimeout(() => openTutorial(), 350);
+        showStartScreen();
       } else {
         if (!localStorage.getItem('otomap_visited')) {
           setTimeout(() => openTutorial(), 350);
@@ -1191,12 +1504,12 @@
       }
 
       updateProgress();
+      setupPrVideoEvents();
+      resetGlobalIdleTimer();
 
       try {
         const dataRes = await fetch(DATA_URL);
-        if (dataRes.ok) {
-          externalData = await dataRes.json();
-        }
+        if (dataRes.ok) externalData = await dataRes.json();
       } catch (e) {
         console.error("データ取得エラー:", e);
       }
@@ -1229,6 +1542,388 @@
       }
     });
 
+    // ─── 無操作・カウントダウン・スタート画面の制御 ───
+    function resetGlobalIdleTimer() {
+      clearTimeout(mainIdleTimerId);
+      clearInterval(countdownIntervalId);
+
+      // 通常操作画面のとき
+      if (!isCountdownActive && !isStartScreenActive && !isPrVideoActive) {
+        if (appConfig.enableCountDown) {
+          const timeoutSec = parseInt(appConfig.idleTimeoutSec, 10) || 25;
+          mainIdleTimerId = setTimeout(() => {
+            trigger10sCountdown();
+          }, timeoutSec * 1000);
+        }
+      }
+    }
+
+    // ① 10秒カウントダウン表示
+    function trigger10sCountdown() {
+      isCountdownActive = true;
+      countNumVal = 10;
+      document.getElementById('countNum').textContent = countNumVal;
+      document.getElementById('idleOverlay').classList.add('active');
+
+      countdownIntervalId = setInterval(() => {
+        countNumVal--;
+        document.getElementById('countNum').textContent = countNumVal;
+
+        if (countNumVal <= 0) {
+          clearInterval(countdownIntervalId);
+          isCountdownActive = false;
+          document.getElementById('idleOverlay').classList.remove('active');
+
+          if (appConfig.directReset) {
+            handleResetUserData();
+            resetZoom();
+            resetGlobalIdleTimer();
+          } else {
+            showStartScreen();
+          }
+        }
+      }, 1000);
+    }
+
+    function onIdleBoxTap(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      // タップでカウントダウン解除＆操作再開
+      isCountdownActive = false;
+      clearInterval(countdownIntervalId);
+      document.getElementById('idleOverlay').classList.remove('active');
+      resetGlobalIdleTimer();
+    }
+
+    // ② スタート画面の表示
+    function showStartScreen() {
+      isCountdownActive = false;
+      isStartScreenActive = true;
+      isPrVideoActive = false;
+
+      closeAllModals();
+      resetZoom();
+      stopAllSounds();
+
+      const overlay = document.getElementById('startScreenOverlay');
+      overlay.classList.remove('slide-exit-left', 'slide-enter-right');
+      overlay.classList.add('active');
+
+      // PR動画タイマー起動
+      clearTimeout(idleToPrVideoTimerId);
+      if (appConfig.enablePrVideo) {
+        const sec = parseInt(appConfig.idleToPrVideoSec, 10) || 15;
+        idleToPrVideoTimerId = setTimeout(() => {
+          transitionStartToPrVideo();
+        }, sec * 1000);
+      }
+    }
+
+    // ④ スタート画面タップで体験スタート ＆ チュートリアル表示
+    function onStartScreenTap(e) {
+      if (e) e.stopPropagation();
+
+      clearTimeout(idleToPrVideoTimerId);
+      clearTimeout(prPauseTimerId);
+
+      isStartScreenActive = false;
+      isPrVideoActive = false;
+      document.getElementById('startScreenOverlay').classList.remove('active');
+
+      if (appConfig.autoResetOnLoad) {
+        doneSet.clear();
+        favList = [];
+        updateProgress();
+        initMapElements();
+      }
+
+      resetZoom();
+      resetGlobalIdleTimer();
+
+      // 展示用：スタート画面から入ったときにチュートリアルを表示
+      if (appConfig.showTutorialOnStart) {
+        setTimeout(() => openTutorial(), 200);
+      }
+    }
+
+    // スタート画面からPR動画へ（右から左へスライドイン）
+    function transitionStartToPrVideo() {
+      const validVideos = (appConfig.prVideos || []).filter(v => v && v.trim() !== "");
+      if (validVideos.length === 0) return;
+
+      const startOverlay = document.getElementById('startScreenOverlay');
+      const prOverlay = document.getElementById('prVideoOverlay');
+
+      // スライドアニメーション適用
+      startOverlay.classList.add('slide-exit-left');
+      prOverlay.classList.remove('slide-exit-left');
+      prOverlay.classList.add('active', 'slide-enter-right');
+
+      setTimeout(() => {
+        startOverlay.classList.remove('active', 'slide-exit-left');
+        prOverlay.classList.remove('slide-enter-right');
+        isStartScreenActive = false;
+        isPrVideoActive = true;
+        playCurrentPrVideo();
+      }, 550);
+    }
+
+    // ③ PR動画再生と右から左へのスライド
+    function setupPrVideoEvents() {
+      const videoElm = document.getElementById('prVideoPlayer');
+      videoElm.addEventListener('ended', () => {
+        prCurrentIndex++;
+        prPlayedCount++;
+
+        const interval = parseInt(appConfig.prInterval, 10) || 3;
+        if (prPlayedCount >= interval) {
+          prPlayedCount = 0;
+          transitionPrVideoToStartScreen();
+        } else {
+          transitionPrVideoToNext();
+        }
+      });
+    }
+
+    function playCurrentPrVideo() {
+      const validVideos = (appConfig.prVideos || []).filter(v => v && v.trim() !== "");
+      if (validVideos.length === 0) {
+        exitToStart();
+        return;
+      }
+
+      if (prCurrentIndex >= validVideos.length) {
+        prCurrentIndex = 0;
+      }
+
+      const videoElm = document.getElementById('prVideoPlayer');
+      videoElm.src = validVideos[prCurrentIndex];
+      videoElm.currentTime = 0;
+      videoElm.play().catch(e => console.warn("動画自動再生ブロック:", e));
+    }
+
+    // 動画終了時：右から左へスライドして次の動画へ
+    function transitionPrVideoToNext() {
+      const prOverlay = document.getElementById('prVideoOverlay');
+      prOverlay.classList.add('slide-exit-left');
+
+      setTimeout(() => {
+        playCurrentPrVideo();
+        prOverlay.classList.remove('slide-exit-left');
+        prOverlay.classList.add('slide-enter-right');
+        setTimeout(() => prOverlay.classList.remove('slide-enter-right'), 550);
+      }, 500);
+    }
+
+    // 動画終了時：右から左へスライドしてスタート画面を挟む
+    function transitionPrVideoToStartScreen() {
+      const videoElm = document.getElementById('prVideoPlayer');
+      videoElm.pause();
+
+      const prOverlay = document.getElementById('prVideoOverlay');
+      const startOverlay = document.getElementById('startScreenOverlay');
+
+      prOverlay.classList.add('slide-exit-left');
+      startOverlay.classList.remove('slide-exit-left');
+      startOverlay.classList.add('active', 'slide-enter-right');
+
+      setTimeout(() => {
+        prOverlay.classList.remove('active', 'slide-exit-left');
+        startOverlay.classList.remove('slide-enter-right');
+        isStartScreenActive = true;
+        isPrVideoActive = false;
+
+        const pauseSec = parseInt(appConfig.prPauseSec, 10) || 10;
+        prPauseTimerId = setTimeout(() => {
+          if (isStartScreenActive) {
+            transitionStartToPrVideo();
+          }
+        }, pauseSec * 1000);
+      }, 550);
+    }
+
+    // PR動画タッチで即座に体験開始
+    function onPrVideoTap(e) {
+      if (e) e.stopPropagation();
+      exitToStart();
+    }
+
+    function exitToStart() {
+      clearTimeout(idleToPrVideoTimerId);
+      clearTimeout(prPauseTimerId);
+
+      const videoElm = document.getElementById('prVideoPlayer');
+      videoElm.pause();
+      videoElm.src = "";
+
+      document.getElementById('prVideoOverlay').classList.remove('active', 'slide-exit-left', 'slide-enter-right');
+      document.getElementById('startScreenOverlay').classList.remove('active', 'slide-exit-left', 'slide-enter-right');
+
+      isStartScreenActive = false;
+      isPrVideoActive = false;
+
+      if (appConfig.autoResetOnLoad) {
+        doneSet.clear();
+        favList = [];
+        updateProgress();
+        initMapElements();
+      }
+
+      resetZoom();
+      resetGlobalIdleTimer();
+
+      if (appConfig.showTutorialOnStart) {
+        setTimeout(() => openTutorial(), 200);
+      }
+    }
+
+    function handleUserTouch(e) {
+      if (!isStartScreenActive && !isPrVideoActive && !isCountdownActive) {
+        resetGlobalIdleTimer();
+      }
+    }
+
+    function closeAllModals() {
+      closeModal();
+      closeDevModal();
+      closeFavModal();
+      closeQuizModal();
+      closeTutorial();
+      closeSourceModal();
+      closePinModal();
+      closeSettingsModal();
+    }
+
+    // ─── ⑤ PR動画リストの動的生成（＋とゴミ箱） ───
+    function renderPrVideoInputListUI() {
+      const container = document.getElementById('prVideoInputListContainer');
+      if (!container) return;
+      container.innerHTML = "";
+
+      const list = appConfig.prVideos || [];
+      if (list.length === 0) {
+        container.innerHTML = `<div style="font-size:0.75rem; color:var(--text-muted); padding:4px;">動画が登録されていません。「追加」ボタンで登録できます。</div>`;
+        return;
+      }
+
+      list.forEach((url, idx) => {
+        const row = document.createElement('div');
+        row.className = 'pr-input-row';
+        row.innerHTML = `
+          <input type="text" class="set-input pr-url-field" value="${url}" placeholder="PR Video ${idx + 1} URL" onchange="updatePrVideoFromUI()">
+          <button type="button" class="del-pr-btn" onclick="removePrVideoInputRow(${idx})" title="削除">
+            <span class="material-symbols-outlined" style="font-size:1rem;">delete</span>
+          </button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function addPrVideoInputRow(url = "") {
+      if (!appConfig.prVideos) appConfig.prVideos = [];
+      appConfig.prVideos.push(url);
+      renderPrVideoInputListUI();
+      saveAppConfig();
+    }
+
+    function removePrVideoInputRow(index) {
+      if (!appConfig.prVideos) return;
+      appConfig.prVideos.splice(index, 1);
+      renderPrVideoInputListUI();
+      saveAppConfig();
+    }
+
+    function updatePrVideoFromUI() {
+      const fields = document.querySelectorAll('.pr-url-field');
+      const list = [];
+      fields.forEach(f => list.push(f.value.trim()));
+      appConfig.prVideos = list;
+      saveAppConfig();
+    }
+
+    // ─── 管理者設定 ───
+    function openSettingsModal() {
+      document.getElementById('cfgMode').value = appConfig.mode;
+      document.getElementById('cfgAutoReset').checked = appConfig.autoResetOnLoad;
+
+      document.getElementById('cfgEnableCountDown').checked = appConfig.enableCountDown;
+      document.getElementById('cfgIdleTimeoutSec').value = appConfig.idleTimeoutSec || 25;
+      document.getElementById('cfgDirectReset').checked = appConfig.directReset || false;
+
+      document.getElementById('cfgShowTutorialOnStart').checked = appConfig.showTutorialOnStart;
+
+      document.getElementById('cfgEnablePrVideo').checked = appConfig.enablePrVideo;
+      document.getElementById('cfgIdleToPrVideoSec').value = appConfig.idleToPrVideoSec || 15;
+
+      document.getElementById('cfgPrInterval').value = appConfig.prInterval || 3;
+      document.getElementById('cfgPrPauseSec').value = appConfig.prPauseSec || 10;
+
+      renderPrVideoInputListUI();
+
+      document.getElementById('clearConfirmTxt').style.display = 'none';
+      document.getElementById('settingsModal').classList.add('open');
+    }
+
+    function saveAppConfig() {
+      appConfig.mode = document.getElementById('cfgMode').value;
+      appConfig.autoResetOnLoad = document.getElementById('cfgAutoReset').checked;
+
+      appConfig.enableCountDown = document.getElementById('cfgEnableCountDown').checked;
+      appConfig.idleTimeoutSec = parseInt(document.getElementById('cfgIdleTimeoutSec').value, 10) || 25;
+      appConfig.directReset = document.getElementById('cfgDirectReset').checked;
+
+      appConfig.showTutorialOnStart = document.getElementById('cfgShowTutorialOnStart').checked;
+
+      appConfig.enablePrVideo = document.getElementById('cfgEnablePrVideo').checked;
+      appConfig.idleToPrVideoSec = parseInt(document.getElementById('cfgIdleToPrVideoSec').value, 10) || 15;
+
+      appConfig.prInterval = parseInt(document.getElementById('cfgPrInterval').value, 10) || 3;
+      appConfig.prPauseSec = parseInt(document.getElementById('cfgPrPauseSec').value, 10) || 10;
+
+      const fields = document.querySelectorAll('.pr-url-field');
+      if (fields.length > 0) {
+        const list = [];
+        fields.forEach(f => list.push(f.value.trim()));
+        appConfig.prVideos = list;
+      }
+
+      localStorage.setItem('soundmap_settings', JSON.stringify(appConfig));
+      resetGlobalIdleTimer();
+    }
+
+    function onModeSelectChange(val) {
+      appConfig.mode = val;
+      const isExh = (val === 'exhibition');
+      appConfig.enableCountDown = isExh;
+      appConfig.enablePrVideo = isExh;
+      appConfig.showTutorialOnStart = isExh;
+
+      document.getElementById('cfgEnableCountDown').checked = isExh;
+      document.getElementById('cfgEnablePrVideo').checked = isExh;
+      document.getElementById('cfgShowTutorialOnStart').checked = isExh;
+      saveAppConfig();
+    }
+
+    function closeSettingsModal() { document.getElementById('settingsModal').classList.remove('open'); }
+
+    function handleResetUserData() {
+      const confirmTxt = document.getElementById('clearConfirmTxt');
+      if (confirmTxt.style.display === 'none') {
+        confirmTxt.style.display = 'block';
+        confirmTxt.textContent = "もう一度タップすると初期化を実行します";
+        return;
+      }
+
+      localStorage.removeItem('otomap_discovered');
+      localStorage.removeItem('otomap_favorites');
+      localStorage.removeItem('otomap_visited');
+      doneSet.clear();
+      favList = [];
+      updateProgress();
+      initMapElements();
+      closeSettingsModal();
+    }
+
+    // ─── 地図＆モーダル関連 ───
     function initMapElements() {
       if (!svgMapElement) return;
       const prefs = svgMapElement.querySelectorAll('.prefecture');
@@ -1345,14 +2040,6 @@
       broadcastSync({ type: 'APPLY_CONFIG', data: prefVisibilityMap });
     }
 
-    function onModeSelectChange(val) {
-      appConfig.mode = val;
-      const enableIdle = (val === 'exhibition');
-      appConfig.enableIdleRedirect = enableIdle;
-      document.getElementById('cfgEnableIdle').checked = enableIdle;
-      saveAppConfig();
-    }
-
     function toggleLang(isEn) {
       currentLang = isEn ? 'en' : 'ja';
       document.getElementById('headerTitle').textContent = langDict[currentLang].title;
@@ -1403,7 +2090,7 @@
       zoomToPref(elem);
       drawPins(code, elem);
 
-      resetInactivityTimer();
+      resetGlobalIdleTimer();
     }
 
     function zoomToPref(elem) {
@@ -1790,44 +2477,6 @@
       }
     }
 
-    function openSettingsModal() {
-      document.getElementById('cfgMode').value = appConfig.mode;
-      document.getElementById('cfgEnableIdle').checked = appConfig.enableIdleRedirect;
-      document.getElementById('cfgRedirectUrl').value = appConfig.redirectUrl;
-      document.getElementById('cfgAutoReset').checked = appConfig.autoResetOnLoad;
-
-      document.getElementById('clearConfirmTxt').style.display = 'none';
-      document.getElementById('settingsModal').classList.add('open');
-    }
-
-    function saveAppConfig() {
-      appConfig.mode = document.getElementById('cfgMode').value;
-      appConfig.enableIdleRedirect = document.getElementById('cfgEnableIdle').checked;
-      appConfig.redirectUrl = document.getElementById('cfgRedirectUrl').value;
-      appConfig.autoResetOnLoad = document.getElementById('cfgAutoReset').checked;
-
-      localStorage.setItem('soundmap_settings', JSON.stringify(appConfig));
-    }
-
-    function closeSettingsModal() { document.getElementById('settingsModal').classList.remove('open'); }
-
-    function handleResetUserData() {
-      const confirmTxt = document.getElementById('clearConfirmTxt');
-      if (confirmTxt.style.display === 'none') {
-        confirmTxt.style.display = 'block';
-        confirmTxt.textContent = "もう一度タップすると初期化を実行します";
-        return;
-      }
-
-      localStorage.removeItem('otomap_discovered');
-      localStorage.removeItem('otomap_favorites');
-      doneSet.clear();
-      favList = [];
-      updateProgress();
-      initMapElements();
-      closeSettingsModal();
-    }
-
     function startAudioLoop(url) {
       stopAllSounds();
       function run() {
@@ -1945,52 +2594,8 @@
       document.getElementById('btnBackAll').classList.remove('show');
       closeModal();
       selCode = null;
-
-      stopInactivityTimer();
-    }
-
-    function handleUserTouch(e) {
-      if (selCode) {
-        resetInactivityTimer();
-      }
-    }
-
-    function stopInactivityTimer() {
-      clearTimeout(idleTimerId);
-      clearInterval(countdownTimerId);
-      document.getElementById('idleOverlay').classList.remove('active');
-    }
-
-    function resetInactivityTimer() {
-      stopInactivityTimer();
-
-      if (selCode && (appConfig.enableIdleRedirect || appConfig.mode === 'exhibition')) {
-        idleTimerId = setTimeout(triggerIdleOverlay, (appConfig.idleTimeoutSec || 30) * 1000);
-      }
-    }
-
-    function triggerIdleOverlay() {
-      countNumVal = 10;
-      document.getElementById('countNum').textContent = countNumVal;
-      document.getElementById('idleOverlay').classList.add('active');
-
-      countdownTimerId = setInterval(() => {
-        countNumVal--;
-        document.getElementById('countNum').textContent = countNumVal;
-        if (countNumVal <= 0) {
-          clearInterval(countdownTimerId);
-          window.location.href = appConfig.redirectUrl || "https://symphony100.github.io/symphony/soundmap/";
-        }
-      }, 1000);
-    }
-
-    function onIdleBoxTap(e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      resetInactivityTimer();
     }
   </script>
 </body>
 </html>
+
