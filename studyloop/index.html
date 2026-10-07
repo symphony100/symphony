@@ -1,0 +1,2209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>まなべるーぷ | MANABELOOP</title>
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+  <style>
+    /* ==========================================================================
+       DESIGN SYSTEM (WHITE BASE / PIXEL-LIKE CLEAN MINIMALISM)
+       ========================================================================== */
+    :root {
+      --font-family: 'Plus Jakarta Sans', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+      
+      --bg-app: #ffffff;
+      --bg-outer: #f8f9fa;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f1f3f4;
+      --bg-hover: #e8eaed;
+      
+      --text-primary: #1f1f1f;
+      --text-secondary: #5f6368;
+      --text-tertiary: #80868b;
+      
+      --accent: #1a73e8;
+      --accent-surface: #e8f0fe;
+      --accent-hover: #1765cc;
+      
+      --dopamine-red: #e5252b;
+
+      --rare-accent: #9334e9;
+      --rare-surface: #f3e8ff;
+      --rare-border: #d8b4fe;
+
+      --correct: #137333;
+      --correct-bg: #e6f4ea;
+      --incorrect: #c5221f;
+      --incorrect-bg: #fce8e6;
+
+      --border-light: #dadce0;
+      --border-extra-light: #eaedf0;
+      
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-full: 9999px;
+      
+      --shadow-subtle: 0 1px 3px rgba(60,64,67,0.08), 0 1px 2px rgba(60,64,67,0.04);
+      --shadow-sheet: 0 -8px 28px rgba(0,0,0,0.08);
+
+      --ease-google: cubic-bezier(0.2, 0.0, 0.0, 1.0);
+      --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-outer);
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      font-size: 16px;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 460px;
+      margin: 0 auto;
+      background-color: var(--bg-app);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Top Navigation (Rightmost: Settings) */
+    .top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 52px;
+      padding: 0 12px 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(218, 220, 224, 0.4);
+      z-index: 50;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .brand-name {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    .brand-sub {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s var(--ease-google), color 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+    }
+
+    .icon-btn:active {
+      transform: scale(0.92);
+    }
+
+    .icon-btn .badge-dot {
+      position: absolute;
+      top: 9px;
+      right: 9px;
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: none;
+    }
+
+    .icon-btn .badge-dot.show {
+      display: block;
+    }
+
+    /* Vertical Feed */
+    .shorts-feed {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      padding-top: 52px;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .shorts-feed::-webkit-scrollbar {
+      display: none;
+    }
+
+    .shorts-feed.scroll-locked {
+      overflow-y: hidden !important;
+      touch-action: none !important;
+      pointer-events: none !important;
+    }
+
+    .knowledge-item {
+      position: relative;
+      width: 100%;
+      height: calc(100dvh - 52px);
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px 20px 24px 20px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-extra-light);
+      overflow: hidden;
+    }
+
+    .knowledge-item.rare-card {
+      background: radial-gradient(circle at 50% 10%, rgba(147, 51, 234, 0.05) 0%, #ffffff 80%);
+    }
+
+    /* Side Actions */
+    .side-controls {
+      position: absolute;
+      right: 14px;
+      bottom: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      z-index: 20;
+    }
+
+    .side-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      cursor: pointer;
+      box-shadow: var(--shadow-subtle);
+      transition: transform 0.2s var(--ease-bounce), border-color 0.2s, color 0.2s;
+    }
+
+    .side-btn:active {
+      transform: scale(0.85);
+    }
+
+    .side-btn.saved {
+      color: var(--accent);
+      border-color: rgba(26, 115, 232, 0.4);
+      background: var(--accent-surface);
+    }
+
+    .side-btn.saved .material-symbols-rounded {
+      font-variation-settings: 'FILL' 1;
+    }
+
+    .side-btn .material-symbols-rounded {
+      font-size: 22px;
+      transition: font-variation-settings 0.2s;
+    }
+
+    .side-btn-label {
+      font-size: 9px;
+      font-weight: 700;
+      margin-top: 1px;
+      color: var(--text-tertiary);
+    }
+
+    /* Card Content */
+    .item-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      z-index: 2;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .chip-rare {
+      background: var(--rare-surface);
+      color: var(--rare-accent);
+      border: 1px solid var(--rare-border);
+    }
+
+    .item-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 4px;
+      z-index: 2;
+      max-width: calc(100% - 50px);
+    }
+
+    .knowledge-headline {
+      font-size: 21px;
+      font-weight: 800;
+      line-height: 1.38;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      word-break: break-word;
+    }
+
+    .interaction-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    /* Option buttons */
+    .option-btn {
+      width: 100%;
+      padding: 13px 16px;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-light);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.15s var(--ease-google), border-color 0.15s, transform 0.12s;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: var(--bg-subtle);
+      border-color: #c4c7c5;
+    }
+
+    .option-btn:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .option-btn.state-correct {
+      background: var(--correct-bg) !important;
+      border-color: var(--correct) !important;
+      color: var(--correct) !important;
+    }
+
+    .option-btn.state-incorrect {
+      background: var(--incorrect-bg) !important;
+      border-color: var(--incorrect) !important;
+      color: var(--incorrect) !important;
+    }
+
+    .option-btn.state-highlight {
+      border-color: var(--correct) !important;
+    }
+
+    /* True/False */
+    .tf-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .tf-btn {
+      padding: 18px 12px;
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.15s var(--ease-google);
+    }
+
+    .tf-btn .symbol {
+      font-size: 28px;
+    }
+
+    /* Compare */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .compare-btn {
+      padding: 22px 14px;
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-light);
+      text-align: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.15s var(--ease-bounce), border-color 0.15s;
+    }
+
+    .compare-btn:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+
+    /* Slider */
+    .slider-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .slider-val {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--accent);
+      text-align: center;
+    }
+
+    .minimal-range {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #dadce0;
+      border-radius: 3px;
+      outline: none;
+    }
+
+    .minimal-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    }
+
+    .slider-commit-btn {
+      padding: 10px;
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    /* Tap Reveal */
+    .reveal-card {
+      background: var(--bg-subtle);
+      border: 1.5px dashed var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 24px 18px;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+
+    .reveal-card:hover {
+      background: var(--bg-hover);
+    }
+
+    /* Sort */
+    .sort-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sort-item {
+      padding: 11px 14px;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-light);
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: transform 0.12s;
+    }
+
+    .sort-item:active {
+      transform: scale(0.98);
+    }
+
+    .sort-tag {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Insight Card */
+    .insight-box {
+      margin-top: 16px;
+      background: #f4f6f8;
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      animation: insightFadeIn 0.3s var(--ease-google) forwards;
+      display: none;
+      position: relative;
+    }
+
+    @keyframes insightFadeIn {
+      0% { opacity: 0; transform: translateY(8px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .insight-top-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: var(--radius-full);
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .insight-top-pill .material-symbols-rounded {
+      font-size: 14px;
+      color: #fbbc04;
+    }
+
+    .insight-text {
+      font-size: 13.5px;
+      color: var(--text-primary);
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    .item-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-tertiary);
+      font-weight: 600;
+      padding-top: 12px;
+    }
+
+    /* Dopamine Red Circle Overlay */
+    .dopamine-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none !important;
+      z-index: 90;
+      opacity: 0;
+      transform: scale(0.65);
+    }
+
+    .dopamine-overlay.burst {
+      animation: dopaminePop 0.85s var(--ease-bounce) forwards;
+    }
+
+    @keyframes dopaminePop {
+      0% { opacity: 0; transform: scale(0.6) rotate(-10deg); }
+      25% { opacity: 1; transform: scale(1.15) rotate(4deg); }
+      50% { transform: scale(1) rotate(0deg); }
+      80% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.05) translateY(-8px); }
+    }
+
+    .shinken-circle-svg {
+      width: 210px;
+      height: 210px;
+      filter: drop-shadow(0 4px 14px rgba(229, 37, 43, 0.45));
+      pointer-events: none !important;
+    }
+
+    .dopamine-stroke-outer {
+      stroke-dasharray: 600;
+      stroke-dashoffset: 600;
+      transform-origin: center;
+    }
+
+    .dopamine-stroke-inner {
+      stroke-dasharray: 480;
+      stroke-dashoffset: 480;
+      transform-origin: center;
+    }
+
+    .burst .dopamine-stroke-outer {
+      animation: drawCircle 0.32s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+    }
+
+    .burst .dopamine-stroke-inner {
+      animation: drawCircle 0.35s 0.08s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+    }
+
+    @keyframes drawCircle {
+      to { stroke-dashoffset: 0; }
+    }
+
+    .dopamine-spark {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--dopamine-red);
+      opacity: 0;
+      pointer-events: none !important;
+    }
+
+    .burst .spark-1 { animation: sparkFly1 0.5s ease-out forwards; }
+    .burst .spark-2 { animation: sparkFly2 0.5s ease-out forwards; }
+    .burst .spark-3 { animation: sparkFly3 0.5s ease-out forwards; }
+    .burst .spark-4 { animation: sparkFly4 0.5s ease-out forwards; }
+
+    @keyframes sparkFly1 { 0% { transform: translate(0,0) scale(0); opacity: 1; } 100% { transform: translate(-80px, -70px) scale(1.2); opacity: 0; } }
+    @keyframes sparkFly2 { 0% { transform: translate(0,0) scale(0); opacity: 1; } 100% { transform: translate(85px, -65px) scale(1.4); opacity: 0; } }
+    @keyframes sparkFly3 { 0% { transform: translate(0,0) scale(0); opacity: 1; } 100% { transform: translate(-75px, 75px) scale(1.1); opacity: 0; } }
+    @keyframes sparkFly4 { 0% { transform: translate(0,0) scale(0); opacity: 1; } 100% { transform: translate(80px, 80px) scale(1.3); opacity: 0; } }
+
+    /* Double Tap Bubble */
+    .double-tap-feedback {
+      position: absolute;
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      pointer-events: none !important;
+      z-index: 100;
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.4);
+    }
+
+    .double-tap-feedback.animate {
+      animation: doubleTapBounce 0.6s var(--ease-bounce) forwards;
+    }
+
+    @keyframes doubleTapBounce {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+      40% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+      70% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+    }
+
+    /* Streak Toast */
+    #streak-toast {
+      position: absolute;
+      top: 64px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: var(--text-primary);
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 120;
+      opacity: 0;
+      pointer-events: none !important;
+      transition: transform 0.25s var(--ease-bounce), opacity 0.2s ease;
+    }
+
+    #streak-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Mini Toast */
+    #mini-toast {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: rgba(31, 31, 31, 0.92);
+      color: #ffffff;
+      padding: 8px 18px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none !important;
+      transition: transform 0.2s var(--ease-google), opacity 0.2s ease;
+    }
+
+    #mini-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* ==========================================================================
+       START SCREEN (ATTRACT SCREEN)
+       ========================================================================== */
+    #start-screen {
+      position: absolute;
+      inset: 0;
+      background: #ffffff;
+      z-index: 140;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 72px 24px 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: opacity 0.3s var(--ease-google), transform 0.3s var(--ease-google);
+    }
+
+    #start-screen.hidden {
+      opacity: 0;
+      transform: translateY(-8px);
+      pointer-events: none !important;
+    }
+
+    .start-brand-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin-top: 40px;
+    }
+
+    .start-logo-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background: var(--accent-surface);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      box-shadow: 0 4px 16px rgba(26,115,232,0.15);
+    }
+
+    .start-title {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.03em;
+    }
+
+    .start-sub {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .start-desc {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 280px;
+      margin-top: 14px;
+    }
+
+    .start-action-box {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .start-big-btn {
+      width: 100%;
+      max-width: 280px;
+      padding: 18px;
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-full);
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(26,115,232,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      animation: startPulse 2s infinite ease-in-out;
+    }
+
+    @keyframes startPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 4px 18px rgba(26,115,232,0.3); }
+      50% { transform: scale(1.02); box-shadow: 0 6px 24px rgba(26,115,232,0.45); }
+    }
+
+    .start-hint-text {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+
+    /* ==========================================================================
+       IDLE WARNING BLACK POPUP
+       ========================================================================== */
+    #idle-black-popup {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.92);
+      width: calc(100% - 48px);
+      max-width: 340px;
+      background: rgba(24, 24, 27, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.45);
+      z-index: 160;
+      color: #ffffff;
+    }
+
+    #idle-black-popup.show {
+      display: flex;
+      animation: blackPopIn 0.25s var(--ease-bounce) forwards;
+    }
+
+    @keyframes blackPopIn {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    .idle-black-icon {
+      font-size: 36px;
+      color: #fbbc04;
+      margin-bottom: 8px;
+    }
+
+    .idle-black-title {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .idle-black-sub {
+      font-size: 13px;
+      color: #a1a1aa;
+      line-height: 1.45;
+      margin-bottom: 18px;
+    }
+
+    .idle-black-btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-full);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ==========================================================================
+       FINISH SCREEN OVERLAY (WITH 5-SEC COUNTDOWN)
+       ========================================================================== */
+    #finish-screen-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.97);
+      backdrop-filter: blur(10px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 32px 24px;
+      z-index: 130;
+      animation: finishFadeIn 0.35s var(--ease-bounce);
+    }
+
+    #finish-screen-overlay.show {
+      display: flex;
+    }
+
+    @keyframes finishFadeIn {
+      0% { opacity: 0; transform: scale(0.92); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .kiosk-finish-icon {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: var(--accent-surface);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .kiosk-finish-title {
+      font-size: 23px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .kiosk-finish-sub {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 20px;
+    }
+
+    .finish-countdown-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--accent-surface);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      margin-bottom: 24px;
+    }
+
+    .kiosk-next-btn {
+      width: 100%;
+      max-width: 260px;
+      padding: 16px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-full);
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(26,115,232,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* MODAL BASE */
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(4px);
+      z-index: 150;
+      display: flex;
+      align-items: flex-end;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s var(--ease-google);
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .sheet-card {
+      width: 100%;
+      max-height: 86%;
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      box-shadow: var(--shadow-sheet);
+      padding: 24px 20px 32px 20px;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.3s var(--ease-google);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .modal-backdrop.open .sheet-card {
+      transform: translateY(0);
+    }
+
+    .sheet-drag-handle {
+      width: 36px;
+      height: 4px;
+      background: #dadce0;
+      border-radius: 2px;
+      margin: 0 auto -6px auto;
+    }
+
+    .sheet-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .sheet-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: -14px;
+      line-height: 1.4;
+    }
+
+    .setting-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .setting-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .setting-value-badge {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .slider-track-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: 2px;
+    }
+
+    .kiosk-switch-box {
+      background: #f8fafc;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .primary-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(26,115,232,0.25);
+      transition: background 0.15s ease;
+    }
+
+    .primary-btn:active {
+      background: var(--accent-hover);
+    }
+
+    /* PIN INPUT */
+    .pin-input-field {
+      width: 100%;
+      padding: 14px;
+      font-size: 24px;
+      letter-spacing: 12px;
+      text-align: center;
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-md);
+      outline: none;
+      background: var(--bg-subtle);
+      font-family: inherit;
+      color: var(--text-primary);
+    }
+
+    .pin-input-field:focus {
+      border-color: var(--accent);
+      background: #ffffff;
+    }
+
+    .pin-input-field.error {
+      border-color: var(--incorrect);
+      background: var(--incorrect-bg);
+      animation: pinShake 0.3s ease;
+    }
+
+    @keyframes pinShake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    .saved-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .saved-row-item {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .saved-row-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .saved-row-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .saved-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-tertiary);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <!-- Top Bar (Rightmost: Settings) -->
+  <header class="top-bar">
+    <div class="brand-logo" id="logo-action">
+      <span class="brand-name">まなべるーぷ</span>
+      <span class="brand-sub">MANABELOOP</span>
+    </div>
+    <div class="top-actions">
+      <!-- Saved Archive -->
+      <button class="icon-btn" id="open-saved-btn" title="保存した知識">
+        <span class="material-symbols-rounded">bookmark</span>
+        <span class="badge-dot" id="saved-badge"></span>
+      </button>
+      <!-- Rightmost Settings with Password Protection -->
+      <button class="icon-btn" id="open-settings-btn" title="設定">
+        <span class="material-symbols-rounded">tune</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Vertical Infinite Feed (Scroll Snap) -->
+  <main class="shorts-feed" id="feed-container" tabindex="0">
+    <!-- Dynamic Knowledge Cards Injected Here -->
+  </main>
+
+  <!-- 1. START ATTRACT SCREEN -->
+  <div id="start-screen">
+    <div class="start-brand-box">
+      <div class="start-logo-icon">
+        <span class="material-symbols-rounded" style="font-size: 42px;">all_inclusive</span>
+      </div>
+      <div class="start-title">まなべるーぷ</div>
+      <div class="start-sub">MANABELOOP</div>
+      <div class="start-desc">
+        次が気になって見続けていたら、<br>
+        いつの間にか知識が増えている。
+      </div>
+    </div>
+
+    <div class="start-action-box">
+      <button class="start-big-btn" id="start-app-btn">
+        <span>タップしてスタート</span>
+        <span class="material-symbols-rounded">play_arrow</span>
+      </button>
+      <div class="start-hint-text">画面のどこをタップしても始まります</div>
+    </div>
+  </div>
+
+  <!-- 2. IDLE WARNING BLACK POPUP -->
+  <div id="idle-black-popup">
+    <span class="material-symbols-rounded idle-black-icon">schedule</span>
+    <div class="idle-black-title">操作がありません</div>
+    <div class="idle-black-sub">
+      まもなくスタート画面へ戻ります。<br>
+      (<span id="idle-countdown-sec">10</span>秒後にリセット)
+    </div>
+    <button class="idle-black-btn" id="idle-continue-btn">体験を続ける</button>
+  </div>
+
+  <!-- 3. FULLSCREEN FINISH SCREEN (WITH 5-SEC COUNTDOWN) -->
+  <div id="finish-screen-overlay">
+    <div class="kiosk-finish-icon">
+      <span class="material-symbols-rounded" style="font-size: 40px;">celebration</span>
+    </div>
+    <div class="kiosk-finish-title">体験ありがとうございました！</div>
+    <div class="kiosk-finish-sub">
+      一通りの知識を体験しました。<br>
+      次の人へ交代をお願いします。
+    </div>
+    <div class="finish-countdown-box">
+      <span class="material-symbols-rounded" style="font-size: 16px;">timer</span>
+      <span><span id="finish-auto-sec">5</span>秒後にスタート画面へ戻ります</span>
+    </div>
+    <button class="kiosk-next-btn" id="kiosk-finish-next-btn">
+      <span>今すぐ次の人へ</span>
+      <span class="material-symbols-rounded">arrow_forward</span>
+    </button>
+  </div>
+
+  <!-- Streak Toast -->
+  <div id="streak-toast">
+    <span class="material-symbols-rounded" style="color: #fbbc04; font-size: 18px;">bolt</span>
+    <span id="streak-text">3問連続</span>
+  </div>
+
+  <!-- Mini Toast -->
+  <div id="mini-toast">保存しました</div>
+
+  <!-- Double Tap Feedback Visual -->
+  <div class="double-tap-feedback" id="double-tap-bubble">
+    <span class="material-symbols-rounded" style="font-size: 34px; font-variation-settings: 'FILL' 1;">bookmark</span>
+  </div>
+
+  <!-- MODAL: PASSWORD PROMPT (PASSWORD: 1234) -->
+  <div class="modal-backdrop" id="password-modal">
+    <div class="sheet-card">
+      <div class="sheet-drag-handle"></div>
+      <h2 class="sheet-title">管理者パスワード</h2>
+      <p class="sheet-desc">設定を開くにはパスワードを入力してください。</p>
+
+      <input type="password" class="pin-input-field" id="pin-input" maxlength="4" placeholder="••••" autofocus>
+
+      <div style="display: flex; gap: 10px;">
+        <button class="primary-btn" style="background: var(--bg-subtle); color: var(--text-primary); box-shadow: none;" id="password-cancel-btn">キャンセル</button>
+        <button class="primary-btn" id="password-submit-btn">ロック解除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SETTINGS (FULLY CUSTOMIZABLE TIMEOUTS & LIMITS) -->
+  <div class="modal-backdrop" id="settings-modal">
+    <div class="sheet-card">
+      <div class="sheet-drag-handle"></div>
+      <h2 class="sheet-title">設定</h2>
+      <p class="sheet-desc">展示時間やリセット条件をカスタマイズできます。</p>
+
+      <!-- EXHIBITION CUSTOMIZATIONS -->
+      <div class="kiosk-switch-box">
+        <div class="setting-group">
+          <div class="setting-label-row">
+            <span>プレイ中の無操作警告時間</span>
+            <span class="setting-value-badge" id="setting-idle-val">30秒</span>
+          </div>
+          <input type="range" class="minimal-range" id="setting-idle-slider" min="10" max="120" step="5" value="30">
+          <div class="slider-track-labels">
+            <span>10秒</span>
+            <span>標準 (30秒)</span>
+            <span>120秒</span>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <div class="setting-label-row">
+            <span>体験終了後の自動リセット時間</span>
+            <span class="setting-value-badge" id="setting-finish-timeout-val">5秒</span>
+          </div>
+          <input type="range" class="minimal-range" id="setting-finish-timeout-slider" min="3" max="20" step="1" value="5">
+          <div class="slider-track-labels">
+            <span>すぐ (3秒)</span>
+            <span>標準 (5秒)</span>
+            <span>20秒</span>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <div class="setting-label-row">
+            <span>1人あたりの体験問題数</span>
+            <span class="setting-value-badge" id="setting-limit-val">5問</span>
+          </div>
+          <input type="range" class="minimal-range" id="setting-limit-slider" min="1" max="15" step="1" value="5">
+          <div class="slider-track-labels">
+            <span>1問</span>
+            <span>5問</span>
+            <span>全15問</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-label-row">
+          <span>難易度</span>
+          <span class="setting-value-badge" id="setting-diff-val">標準</span>
+        </div>
+        <input type="range" class="minimal-range" id="setting-diff-slider" min="1" max="3" step="1" value="2">
+        <div class="slider-track-labels">
+          <span>やさしい</span>
+          <span>標準</span>
+          <span>手応えあり</span>
+        </div>
+      </div>
+
+      <button class="primary-btn" id="settings-close-btn">設定を保存して戻る</button>
+    </div>
+  </div>
+
+  <!-- MODAL: SAVED ARCHIVE -->
+  <div class="modal-backdrop" id="saved-modal">
+    <div class="sheet-card">
+      <div class="sheet-drag-handle"></div>
+      <h2 class="sheet-title">保存した知識</h2>
+      <p class="sheet-desc">気になって残した知識のアーカイブです。</p>
+      <div class="saved-list" id="saved-archive-list"></div>
+      <button class="primary-btn" style="background: var(--bg-subtle); color: var(--text-primary); box-shadow: none;" id="saved-close-btn">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==========================================================================
+   15 EXACT CURATED KNOWLEDGE ITEMS
+   ========================================================================== */
+const EXACT_15_ITEMS = [
+  // 1. 地理 (4択)
+  {
+    id: "k-1", genre: "geography", difficulty: 1, format: "choice4",
+    title: "日本で一番面積が大きい都道府県は？",
+    options: ["岩手県", "北海道", "長野県", "福島県"], correct: 1,
+    insight: "北海道は、日本の国土面積のおよそ5分の1（約22%）を占めています。"
+  },
+  // 2. 比較 (compare)
+  {
+    id: "k-2", genre: "geography", difficulty: 1, format: "compare",
+    title: "東京と大阪、より「北」にあるのは？",
+    items: ["東京", "大阪"], correct: 0,
+    insight: "東京は北緯約35度41分、大阪は北緯約34度41分。東京のほうが約110km北に位置します。"
+  },
+  // 3. ○× (tf)
+  {
+    id: "k-3", genre: "geography", difficulty: 1, format: "tf",
+    title: "富士山は、静岡県と山梨県の両方にまたがっている。",
+    correct: true,
+    insight: "正解は○。山頂付近は明確な県境が定められていない境界未定地となっています。"
+  },
+  // 4. RARE KNOWLEDGE (rare)
+  {
+    id: "k-4", genre: "space", difficulty: 2, format: "rare",
+    title: "実は、宇宙ステーションでは1日に16回も日の出を見る。",
+    revealText: "時速約28,000kmで地球を90分に1周しているため、約45分ごとに昼と夜が入れ替わります。",
+    insight: "猛スピードで地球を周回しているため、宇宙飛行士は体内時計を人工照明で管理しています。"
+  },
+  // 5. 数字スライダー (guess_slider)
+  {
+    id: "k-5", genre: "space", difficulty: 2, format: "guess_slider",
+    title: "太陽の光が地球に届くまで、約何分かかる？",
+    min: 1, max: 20, default: 4, target: 8, unit: "分",
+    insight: "約1億5000万km離れた太陽から、光の速さ（秒速約30万km）で約8分20秒かけて届きます。"
+  },
+  // 6. 生物 (2択)
+  {
+    id: "k-6", genre: "biology", difficulty: 2, format: "choice2",
+    title: "野生のペンギンは「北極」にも住んでいる？",
+    options: ["住んでいる", "住んでいない（南半球のみ）"], correct: 1,
+    insight: "野生のペンギンはガラパゴス諸島を含め、すべて南半球にしか生息していません。"
+  },
+  // 7. タップめくり (tap_reveal)
+  {
+    id: "k-7", genre: "food", difficulty: 1, format: "tap_reveal",
+    title: "「ショートケーキ」のショートとは本来どういう意味？",
+    hiddenAnswer: "サクサクした・もろい（Shorteningの語源）",
+    insight: "短時間で作れるという意味ではなく、油脂を含んでサクッとした食感を表す英語が由来です。"
+  },
+  // 8. 歴史・並び替え (sort)
+  {
+    id: "k-8", genre: "history", difficulty: 2, format: "sort",
+    title: "歴史上、古い時代順に並べてください",
+    items: ["平安時代", "鎌倉時代", "室町時代"], correctOrder: ["平安時代", "鎌倉時代", "室町時代"],
+    insight: "平安（794年〜）→ 鎌倉（1185年頃〜）→ 室町（1336年〜）の順序です。"
+  },
+  // 9. 鉄道 (compare)
+  {
+    id: "k-9", genre: "railway", difficulty: 2, format: "compare",
+    title: "新幹線の線路幅と在来線の線路幅、広いのは？",
+    items: ["在来線", "新幹線"], correct: 1,
+    insight: "新幹線は高速走行のため標準軌（1435mm）、一般的な在来線は狭軌（1067mm）です。"
+  },
+  // 10. 科学 (4択)
+  {
+    id: "k-10", genre: "science", difficulty: 1, format: "choice4",
+    title: "地球の空気の中で、最も体積が大きい気体は？",
+    options: ["酸素", "二酸化炭素", "窒素", "水素"], correct: 2,
+    insight: "空気のおよそ78%が窒素、酸素は約21%、二酸化炭素は約0.04%です。"
+  },
+  // 11. テクノロジー (4択)
+  {
+    id: "k-11", genre: "tech", difficulty: 2, format: "choice4",
+    title: "プログラミング言語「Python」の名前の由来となったものは？",
+    options: ["開発者の好きなヘビ", "イギリスのコメディ番組", "古代ギリシャ神話", "開発元の社屋"], correct: 1,
+    insight: "BBCのコメディ番組『空飛ぶモンティ・パイソン』が好きな開発者が名付けました。"
+  },
+  // 12. RARE KNOWLEDGE (rare)
+  {
+    id: "k-12", genre: "biology", difficulty: 2, format: "rare",
+    title: "実は、タコには心臓が3つ、脳が9つもある。",
+    revealText: "全身用の主心臓1つ＋エラ用2つ。脳も頭部の中央脳に加え、8本の腕それぞれに独立した神経節（副脳）を持ちます。",
+    insight: "腕がそれぞれ自分で判断して動けるため、タコは驚くほど高い知能と問題解決力を誇ります。"
+  },
+  // 13. 英語 (compare)
+  {
+    id: "k-13", genre: "english", difficulty: 1, format: "compare",
+    title: "「砂漠」と「食後のデザート」、sが2つあるのは？",
+    items: ["砂漠", "デザート"], correct: 1,
+    insight: "dessert（sが2つ）が甘いデザート、desert（sが1つ）が砂漠です。"
+  },
+  // 14. 数学 (tf)
+  {
+    id: "k-14", genre: "math", difficulty: 1, format: "tf",
+    title: "数学において、数字の「0（ゼロ）」は偶数である。",
+    correct: true,
+    insight: "正解は○。2で割り切れる整数（余りが0）は偶数と定義されるため、0も偶数です。"
+  },
+  // 15. 雑学 (4択)
+  {
+    id: "k-15", genre: "trivia", difficulty: 2, format: "choice4",
+    title: "トランプの数字（1〜13）を4スート分すべて足すといくつ？",
+    options: ["360", "364", "365", "400"], correct: 1,
+    insight: "各スートの合計は91。4スートで364。ジョーカー1枚を足すと365（1年の日数）になります。"
+  }
+];
+
+/* ==========================================================================
+   STATE STORE (LOCALSTORAGE)
+   ========================================================================== */
+class StoreManager {
+  constructor() {
+    this.KEY = "manabeloop_storage_v4";
+    this.state = this.load();
+  }
+
+  load() {
+    const raw = localStorage.getItem(this.KEY);
+    if (raw) {
+      try { return JSON.parse(raw); } catch (e) {}
+    }
+    return {
+      difficulty: 2,
+      saved: {}, streak: 0,
+      idleTimeout: 30,       // プレイ中の無操作警告秒数 (初期値: 30秒)
+      finishTimeout: 5,      // 体験終了後の自動スタート戻り秒数 (初期値: 5秒)
+      questionLimit: 5       // 1人あたりの体験問題数 (初期値: 5問)
+    };
+  }
+
+  save() {
+    localStorage.setItem(this.KEY, JSON.stringify(this.state));
+  }
+
+  isSaved(id) {
+    return !!this.state.saved[id];
+  }
+
+  toggleSave(item) {
+    if (this.state.saved[item.id]) {
+      delete this.state.saved[item.id];
+      this.save();
+      return false;
+    } else {
+      this.state.saved[item.id] = { title: item.title, insight: item.insight, savedAt: Date.now() };
+      this.save();
+      return true;
+    }
+  }
+}
+
+const store = new StoreManager();
+
+/* ==========================================================================
+   FEED & DOM CONTROLLER
+   ========================================================================== */
+const feedContainer = document.getElementById("feed-container");
+const appContainer = document.getElementById("app");
+const startScreen = document.getElementById("start-screen");
+const finishOverlay = document.getElementById("finish-screen-overlay");
+const blackPopup = document.getElementById("idle-black-popup");
+
+let answeredCountThisSession = 0;
+let isSessionCompleted = false;
+let isStarted = false;
+
+// 15-question queue management
+let questionIndex = 0;
+
+function getGenreLabel(genreId) {
+  const map = {
+    geography: "地理", space: "宇宙", biology: "生物",
+    food: "食べ物", history: "歴史", railway: "鉄道",
+    science: "科学", tech: "テクノロジー", english: "英語",
+    math: "数学", trivia: "雑学"
+  };
+  return map[genreId] || genreId;
+}
+
+function createKnowledgeCard(item) {
+  const article = document.createElement("article");
+  article.className = `knowledge-item ${item.format === 'rare' ? 'rare-card' : ''}`;
+  article.dataset.id = item.id;
+  article.dataset.genre = item.genre;
+
+  const isSaved = store.isSaved(item.id);
+
+  article.innerHTML = `
+    <!-- Shinken-Zemi Giant Red Circle Burst (POINTER-EVENTS: NONE) -->
+    <div class="dopamine-overlay" id="dopamine-${item.id}">
+      <svg class="shinken-circle-svg" viewBox="0 0 160 160">
+        <path class="dopamine-stroke-outer" d="M 80, 16 A 64,64 0 1, 1 76, 17" fill="none" stroke="var(--dopamine-red)" stroke-width="11" stroke-linecap="round" />
+        <path class="dopamine-stroke-inner" d="M 80, 32 A 48,48 0 1, 1 77, 33" fill="none" stroke="var(--dopamine-red)" stroke-width="8.5" stroke-linecap="round" opacity="0.95" />
+      </svg>
+      <div class="dopamine-spark spark-1"></div>
+      <div class="dopamine-spark spark-2"></div>
+      <div class="dopamine-spark spark-3"></div>
+      <div class="dopamine-spark spark-4"></div>
+    </div>
+
+    <!-- Top Metadata -->
+    <div class="item-header">
+      <span class="chip ${item.format === 'rare' ? 'chip-rare' : ''}">
+        <span class="material-symbols-rounded" style="font-size: 14px;">${item.format === 'rare' ? 'auto_awesome' : 'scatter_plot'}</span>
+        ${item.format === 'rare' ? 'レア知識' : getGenreLabel(item.genre)}
+      </span>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="item-main">
+      <h1 class="knowledge-headline">${item.title}</h1>
+      <div class="interaction-container" id="stage-${item.id}"></div>
+
+      <!-- Insight Box (No left line) -->
+      <div class="insight-box" id="insight-${item.id}">
+        <div class="insight-top-pill">
+          <span class="material-symbols-rounded">lightbulb</span>
+          <span>へぇ！ポイント</span>
+        </div>
+        <p class="insight-text">${item.insight}</p>
+      </div>
+    </div>
+
+    <!-- Side Actions -->
+    <div class="side-controls">
+      <button class="side-btn btn-save ${isSaved ? 'saved' : ''}" title="保存">
+        <span class="material-symbols-rounded">bookmark</span>
+        <span class="side-btn-label">保存</span>
+      </button>
+      <button class="side-btn btn-share" title="共有">
+        <span class="material-symbols-rounded">share</span>
+        <span class="side-btn-label">共有</span>
+      </button>
+    </div>
+
+    <!-- Swipe Footer Guidance -->
+    <div class="item-footer">
+      <span class="material-symbols-rounded" style="font-size: 15px;">arrow_downward</span>
+      <span>スワイプで次の知識へ</span>
+    </div>
+  `;
+
+  renderFormatComponent(article.querySelector(`#stage-${item.id}`), item);
+  attachCardListeners(article, item);
+  return article;
+}
+
+function renderFormatComponent(container, item) {
+  switch(item.format) {
+    case "choice4":
+    case "choice2":
+      item.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.innerHTML = `<span>${opt}</span><span class="material-symbols-rounded" style="font-size: 18px; color: var(--border-light);">radio_button_unchecked</span>`;
+        btn.addEventListener("click", () => handleChoiceSelect(container, item, idx, btn));
+        container.appendChild(btn);
+      });
+      break;
+
+    case "tf":
+      const tfRow = document.createElement("div");
+      tfRow.className = "tf-grid";
+      
+      const trueBtn = document.createElement("button");
+      trueBtn.className = "tf-btn";
+      trueBtn.innerHTML = `<span class="symbol" style="color: var(--accent);">○</span><span>その通り</span>`;
+      trueBtn.addEventListener("click", () => handleTfSelect(container, item, true, trueBtn));
+
+      const falseBtn = document.createElement("button");
+      falseBtn.className = "tf-btn";
+      falseBtn.innerHTML = `<span class="symbol" style="color: var(--text-secondary);">×</span><span>ちがう</span>`;
+      falseBtn.addEventListener("click", () => handleTfSelect(container, item, false, falseBtn));
+
+      tfRow.appendChild(trueBtn);
+      tfRow.appendChild(falseBtn);
+      container.appendChild(tfRow);
+      break;
+
+    case "compare":
+      const compRow = document.createElement("div");
+      compRow.className = "compare-grid";
+      item.items.forEach((label, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "compare-btn";
+        btn.innerHTML = `<span>${label}</span>`;
+        btn.addEventListener("click", () => handleChoiceSelect(container, item, idx, btn));
+        compRow.appendChild(btn);
+      });
+      container.appendChild(compRow);
+      break;
+
+    case "guess_slider":
+      const sliderBox = document.createElement("div");
+      sliderBox.className = "slider-box";
+      sliderBox.innerHTML = `
+        <div class="slider-val"><span id="val-${item.id}">${item.default}</span> <span style="font-size: 15px;">${item.unit}</span></div>
+        <input type="range" class="minimal-range" min="${item.min}" max="${item.max}" value="${item.default}">
+        <button class="slider-commit-btn">これで確定</button>
+      `;
+      const slider = sliderBox.querySelector(".minimal-range");
+      const valDisp = sliderBox.querySelector(`#val-${item.id}`);
+      slider.addEventListener("input", () => { valDisp.textContent = slider.value; });
+      sliderBox.querySelector(".slider-commit-btn").addEventListener("click", (e) => {
+        e.target.disabled = true;
+        slider.disabled = true;
+        const entered = Number(slider.value);
+        const isClose = Math.abs(entered - item.target) <= 2;
+        completeInteraction(item, isClose);
+      });
+      container.appendChild(sliderBox);
+      break;
+
+    case "tap_reveal":
+    case "rare":
+      const reveal = document.createElement("div");
+      reveal.className = "reveal-card";
+      reveal.innerHTML = `
+        <span class="material-symbols-rounded" style="font-size: 26px; color: ${item.format === 'rare' ? 'var(--rare-accent)' : 'var(--accent)'};">touch_app</span>
+        <span style="font-size: 13.5px; font-weight: 700; color: var(--text-secondary);">タップして答えを見る</span>
+      `;
+      reveal.addEventListener("click", () => {
+        reveal.innerHTML = `
+          <span class="material-symbols-rounded" style="font-size: 24px; color: ${item.format === 'rare' ? 'var(--rare-accent)' : 'var(--accent)'};">tips_and_updates</span>
+          <span style="font-size: 15px; font-weight: 800; color: var(--text-primary);">${item.revealText || item.hiddenAnswer}</span>
+        `;
+        completeInteraction(item, true);
+      }, { once: true });
+      container.appendChild(reveal);
+      break;
+
+    case "sort":
+      const sortBox = document.createElement("div");
+      sortBox.className = "sort-container";
+      const shuffled = [...item.items].sort(() => Math.random() - 0.5);
+      const picked = [];
+      shuffled.forEach(txt => {
+        const row = document.createElement("div");
+        row.className = "sort-item";
+        row.innerHTML = `<span>${txt}</span><span class="material-symbols-rounded" style="color:var(--text-tertiary); font-size:18px;">touch_app</span>`;
+        row.addEventListener("click", () => {
+          if (row.classList.contains("selected")) return;
+          row.classList.add("selected");
+          picked.push(txt);
+          row.querySelector(".material-symbols-rounded").outerHTML = `<div class="sort-tag">${picked.length}</div>`;
+          if (picked.length === item.items.length) {
+            const correct = JSON.stringify(picked) === JSON.stringify(item.correctOrder);
+            completeInteraction(item, correct);
+          }
+        });
+        sortBox.appendChild(row);
+      });
+      container.appendChild(sortBox);
+      break;
+  }
+}
+
+function handleChoiceSelect(container, item, selectedIdx, targetBtn) {
+  const btns = container.querySelectorAll(".option-btn, .compare-btn");
+  btns.forEach(b => b.disabled = true);
+
+  const isCorrect = selectedIdx === item.correct;
+  if (isCorrect) {
+    targetBtn.classList.add("state-correct");
+  } else {
+    targetBtn.classList.add("state-incorrect");
+    if (btns[item.correct]) btns[item.correct].classList.add("state-highlight");
+  }
+
+  completeInteraction(item, isCorrect);
+}
+
+function handleTfSelect(container, item, chosen, btn) {
+  container.querySelectorAll(".tf-btn").forEach(b => b.disabled = true);
+  const isCorrect = chosen === item.correct;
+  btn.style.borderColor = isCorrect ? "var(--correct)" : "var(--incorrect)";
+  btn.style.background = isCorrect ? "var(--correct-bg)" : "var(--incorrect-bg)";
+  completeInteraction(item, isCorrect);
+}
+
+function completeInteraction(item, isCorrect) {
+  answeredCountThisSession++;
+  
+  if (isCorrect) {
+    store.state.streak++;
+    if (store.state.streak % 3 === 0) {
+      triggerStreakFeedback(store.state.streak);
+    }
+
+    const dopamineOverlay = document.getElementById(`dopamine-${item.id}`);
+    if (dopamineOverlay) {
+      dopamineOverlay.classList.remove("burst");
+      void dopamineOverlay.offsetWidth;
+      dopamineOverlay.classList.add("burst");
+    }
+  } else {
+    store.state.streak = 0;
+  }
+  store.save();
+
+  const insightEl = document.getElementById(`insight-${item.id}`);
+  if (insightEl) {
+    insightEl.style.display = "block";
+  }
+
+  // Check Session Limit
+  if (answeredCountThisSession >= store.state.questionLimit) {
+    setTimeout(() => {
+      triggerFinishSession();
+    }, 1200);
+  }
+}
+
+/* ==========================================================================
+   START SCREEN & FINISH LOGIC
+   ========================================================================== */
+function hideStartScreen() {
+  isStarted = true;
+  startScreen.classList.add("hidden");
+  resetUserActivity();
+}
+
+function showStartScreen() {
+  isStarted = false;
+  isSessionCompleted = false;
+  answeredCountThisSession = 0;
+
+  clearTimeout(idleWarnTimeout);
+  clearInterval(idleWarnInterval);
+  clearInterval(finishAutoInterval);
+
+  blackPopup.classList.remove("show");
+  finishOverlay.classList.remove("show");
+  feedContainer.classList.remove("scroll-locked");
+  document.querySelectorAll(".modal-backdrop").forEach(m => m.classList.remove("open"));
+
+  // Re-initialize cards from the beginning of the 15 items
+  initFreshFeed();
+  feedContainer.scrollTo({ top: 0, behavior: "instant" });
+
+  startScreen.classList.remove("hidden");
+}
+
+startScreen.addEventListener("click", () => {
+  hideStartScreen();
+});
+
+/* ==========================================================================
+   FINISH SESSION: 5-SEC AUTO RESET TO START
+   ========================================================================== */
+let finishAutoInterval = null;
+
+function triggerFinishSession() {
+  isSessionCompleted = true;
+  feedContainer.classList.add("scroll-locked");
+  finishOverlay.classList.add("show");
+
+  let remainSec = store.state.finishTimeout;
+  const secDisp = document.getElementById("finish-auto-sec");
+  secDisp.textContent = remainSec;
+
+  clearInterval(finishAutoInterval);
+  finishAutoInterval = setInterval(() => {
+    remainSec--;
+    secDisp.textContent = remainSec;
+    if (remainSec <= 0) {
+      clearInterval(finishAutoInterval);
+      showStartScreen();
+    }
+  }, 1000);
+}
+
+document.getElementById("kiosk-finish-next-btn").addEventListener("click", () => {
+  clearInterval(finishAutoInterval);
+  showStartScreen();
+});
+
+/* ==========================================================================
+   IDLE TIMER & BLACK POPUP
+   ========================================================================== */
+let idleWarnTimeout = null;
+let idleWarnInterval = null;
+
+function resetUserActivity() {
+  if (!isStarted || isSessionCompleted) return;
+
+  blackPopup.classList.remove("show");
+  clearTimeout(idleWarnTimeout);
+  clearInterval(idleWarnInterval);
+
+  const warnDelayMs = Math.max(3000, (store.state.idleTimeout - 10) * 1000);
+
+  idleWarnTimeout = setTimeout(() => {
+    showIdleBlackPopup();
+  }, warnDelayMs);
+}
+
+function showIdleBlackPopup() {
+  if (!isStarted || isSessionCompleted) return;
+
+  blackPopup.classList.add("show");
+  let countdownSec = 10;
+  const countDisp = document.getElementById("idle-countdown-sec");
+  countDisp.textContent = countdownSec;
+
+  clearInterval(idleWarnInterval);
+  idleWarnInterval = setInterval(() => {
+    countdownSec--;
+    countDisp.textContent = countdownSec;
+    if (countdownSec <= 0) {
+      clearInterval(idleWarnInterval);
+      blackPopup.classList.remove("show");
+      showStartScreen();
+    }
+  }, 1000);
+}
+
+document.getElementById("idle-continue-btn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  resetUserActivity();
+});
+
+// Any activity clears warning
+["click", "touchstart", "mousemove", "keydown", "scroll"].forEach(evtName => {
+  window.addEventListener(evtName, () => {
+    resetUserActivity();
+  }, { passive: true });
+});
+
+/* ==========================================================================
+   DOUBLE TAP TO SAVE: ACCURATE UNDER-FINGER COORDINATES
+   ========================================================================== */
+function attachCardListeners(card, item) {
+  const saveBtn = card.querySelector(".btn-save");
+  saveBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const active = store.toggleSave(item);
+    saveBtn.classList.toggle("saved", active);
+    showMiniToast(active ? "保存しました" : "保存を解除しました");
+    updateSavedBadge();
+  });
+
+  const shareBtn = card.querySelector(".btn-share");
+  shareBtn.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "まなべるーぷ | MANABELOOP",
+          text: item.title,
+          url: window.location.href
+        });
+      } catch (err) {}
+    } else {
+      navigator.clipboard.writeText(`${item.title}\nまなべるーぷでチェック`);
+      showMiniToast("知識テキストをコピーしました");
+    }
+  });
+
+  // Double tap detection
+  let lastTapTime = 0;
+  card.addEventListener("click", (e) => {
+    if (isSessionCompleted || !isStarted) return;
+    if (e.target.closest(".side-controls") || e.target.closest("button") || e.target.closest("input")) {
+      return;
+    }
+
+    const now = Date.now();
+    if (now - lastTapTime < 320) {
+      const appRect = appContainer.getBoundingClientRect();
+      const relativeX = e.clientX - appRect.left;
+      const relativeY = e.clientY - appRect.top;
+
+      triggerDoubleTapSave(card, item, relativeX, relativeY);
+      lastTapTime = 0;
+    } else {
+      lastTapTime = now;
+    }
+  });
+}
+
+function triggerDoubleTapSave(card, item, relX, relY) {
+  const active = store.toggleSave(item);
+  const saveBtn = card.querySelector(".btn-save");
+  saveBtn.classList.toggle("saved", active);
+  updateSavedBadge();
+  showMiniToast(active ? "保存しました" : "保存を解除しました");
+
+  const bubble = document.getElementById("double-tap-bubble");
+  bubble.style.left = `${relX}px`;
+  bubble.style.top = `${relY}px`;
+  bubble.classList.remove("animate");
+  void bubble.offsetWidth;
+  bubble.classList.add("animate");
+}
+
+/* ==========================================================================
+   STREAK & TOAST
+   ========================================================================== */
+let streakTimeout;
+function triggerStreakFeedback(count) {
+  const toast = document.getElementById("streak-toast");
+  const text = document.getElementById("streak-text");
+  text.textContent = `${count}問連続 ✓`;
+  toast.classList.add("show");
+  clearTimeout(streakTimeout);
+  streakTimeout = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 1600);
+}
+
+let miniToastTimeout;
+function showMiniToast(msg) {
+  const toast = document.getElementById("mini-toast");
+  toast.textContent = msg;
+  toast.classList.add("show");
+  clearTimeout(miniToastTimeout);
+  miniToastTimeout = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2000);
+}
+
+function updateSavedBadge() {
+  const count = Object.keys(store.state.saved).length;
+  document.getElementById("saved-badge").classList.toggle("show", count > 0);
+}
+
+/* ==========================================================================
+   FEED BUFFER MANAGEMENT (15 EXACT ITEMS ROTATION)
+   ========================================================================== */
+function initFreshFeed() {
+  feedContainer.innerHTML = "";
+  questionIndex = 0;
+  appendBatch(4);
+}
+
+function appendBatch(count = 3) {
+  for (let i = 0; i < count; i++) {
+    const item = EXACT_15_ITEMS[questionIndex % EXACT_15_ITEMS.length];
+    questionIndex++;
+    const cardEl = createKnowledgeCard(item);
+    feedContainer.appendChild(cardEl);
+    observeFeedCard(cardEl);
+  }
+}
+
+function observeFeedCard(cardEl) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !isSessionCompleted) {
+        const parent = cardEl.parentElement;
+        if (parent && cardEl === parent.children[parent.children.length - 2]) {
+          appendBatch(3);
+        }
+      }
+    });
+  }, { threshold: 0.6 });
+
+  observer.observe(cardEl);
+}
+
+/* ==========================================================================
+   KEYBOARD NAVIGATION
+   ========================================================================== */
+window.addEventListener("keydown", (e) => {
+  if (isSessionCompleted || !isStarted) return;
+  if (e.key === "ArrowDown" || e.key === "j") {
+    feedContainer.scrollBy({ top: window.innerHeight * 0.85, behavior: "smooth" });
+  } else if (e.key === "ArrowUp" || e.key === "k") {
+    feedContainer.scrollBy({ top: -window.innerHeight * 0.85, behavior: "smooth" });
+  }
+});
+
+/* ==========================================================================
+   SETTINGS & PASSWORD LOGIC (PIN: 1234)
+   ========================================================================== */
+function setupSettingsAndPassword() {
+  const settingsModal = document.getElementById("settings-modal");
+  const passwordModal = document.getElementById("password-modal");
+  
+  const openSettingsBtn = document.getElementById("open-settings-btn");
+  const pinInput = document.getElementById("pin-input");
+  const passSubmitBtn = document.getElementById("password-submit-btn");
+  const passCancelBtn = document.getElementById("password-cancel-btn");
+
+  const closeSettingsBtn = document.getElementById("settings-close-btn");
+  const diffSlider = document.getElementById("setting-diff-slider");
+  const diffVal = document.getElementById("setting-diff-val");
+
+  const idleSlider = document.getElementById("setting-idle-slider");
+  const idleVal = document.getElementById("setting-idle-val");
+  const finishTimeoutSlider = document.getElementById("setting-finish-timeout-slider");
+  const finishTimeoutVal = document.getElementById("setting-finish-timeout-val");
+  const limitSlider = document.getElementById("setting-limit-slider");
+  const limitVal = document.getElementById("setting-limit-val");
+
+  const diffMap = { "1": "やさしい", "2": "標準", "3": "手応えあり" };
+
+  openSettingsBtn.addEventListener("click", () => {
+    pinInput.value = "";
+    pinInput.classList.remove("error");
+    passwordModal.classList.add("open");
+    setTimeout(() => pinInput.focus(), 250);
+  });
+
+  passCancelBtn.addEventListener("click", () => {
+    passwordModal.classList.remove("open");
+  });
+
+  function verifyPin() {
+    if (pinInput.value === "1234") {
+      passwordModal.classList.remove("open");
+      openSettingsView();
+    } else {
+      pinInput.classList.add("error");
+      showMiniToast("パスワードが違います");
+      setTimeout(() => {
+        pinInput.classList.remove("error");
+        pinInput.value = "";
+      }, 600);
+    }
+  }
+
+  passSubmitBtn.addEventListener("click", verifyPin);
+  pinInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") verifyPin();
+  });
+
+  function openSettingsView() {
+    diffSlider.value = store.state.difficulty;
+    diffVal.textContent = diffMap[store.state.difficulty];
+
+    idleSlider.value = store.state.idleTimeout;
+    idleVal.textContent = `${store.state.idleTimeout}秒`;
+
+    finishTimeoutSlider.value = store.state.finishTimeout;
+    finishTimeoutVal.textContent = `${store.state.finishTimeout}秒`;
+
+    limitSlider.value = store.state.questionLimit;
+    limitVal.textContent = `${store.state.questionLimit}問`;
+
+    settingsModal.classList.add("open");
+  }
+
+  idleSlider.addEventListener("input", () => {
+    idleVal.textContent = `${idleSlider.value}秒`;
+  });
+
+  finishTimeoutSlider.addEventListener("input", () => {
+    finishTimeoutVal.textContent = `${finishTimeoutSlider.value}秒`;
+  });
+
+  limitSlider.addEventListener("input", () => {
+    limitVal.textContent = `${limitSlider.value}問`;
+  });
+
+  diffSlider.addEventListener("input", () => {
+    diffVal.textContent = diffMap[diffSlider.value];
+  });
+
+  closeSettingsBtn.addEventListener("click", () => {
+    store.state.difficulty = Number(diffSlider.value);
+    store.state.idleTimeout = Number(idleSlider.value);
+    store.state.finishTimeout = Number(finishTimeoutSlider.value);
+    store.state.questionLimit = Number(limitSlider.value);
+
+    store.save();
+    settingsModal.classList.remove("open");
+    showMiniToast("設定を保存しました");
+    resetUserActivity();
+  });
+
+  passwordModal.addEventListener("click", (e) => {
+    if (e.target === passwordModal) passwordModal.classList.remove("open");
+  });
+
+  settingsModal.addEventListener("click", (e) => {
+    if (e.target === settingsModal) settingsModal.classList.remove("open");
+  });
+}
+
+function setupSavedArchiveModal() {
+  const modal = document.getElementById("saved-modal");
+  const openBtn = document.getElementById("open-saved-btn");
+  const closeBtn = document.getElementById("saved-close-btn");
+  const listEl = document.getElementById("saved-archive-list");
+
+  openBtn.addEventListener("click", () => {
+    listEl.innerHTML = "";
+    const savedEntries = Object.entries(store.state.saved);
+    if (savedEntries.length === 0) {
+      listEl.innerHTML = `<div class="saved-empty"><span class="material-symbols-rounded" style="font-size:36px; margin-bottom:6px;">bookmark_border</span><div>まだ保存した知識はありません。<br>画面をダブルタップするか、保存ボタンで残せます。</div></div>`;
+    } else {
+      savedEntries.forEach(([id, item]) => {
+        const row = document.createElement("div");
+        row.className = "saved-row-item";
+        row.innerHTML = `
+          <div class="saved-row-title">${item.title}</div>
+          <div class="saved-row-desc">${item.insight}</div>
+        `;
+        listEl.appendChild(row);
+      });
+    }
+    modal.classList.add("open");
+  });
+
+  closeBtn.addEventListener("click", () => modal.classList.remove("open"));
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.classList.remove("open");
+  });
+}
+
+document.getElementById("logo-action").addEventListener("click", () => {
+  if (!isSessionCompleted && isStarted) feedContainer.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+/* ==========================================================================
+   INITIAL BOOTSTRAP
+   ========================================================================== */
+(function init() {
+  updateSavedBadge();
+  setupSettingsAndPassword();
+  setupSavedArchiveModal();
+  initFreshFeed();
+  // Starts with Start Screen shown
+})();
+</script>
+</body>
+</html>
