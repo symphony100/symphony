@@ -498,7 +498,7 @@
     }
     .nav-ctrl-btn:disabled { background: #cbd5e1; }
 
-    /* ─── 🌟 オリジナルテンキー（PIN入力） ─── */
+    /* ─── オリジナルテンキー（PIN入力） ─── */
     .pin-grid {
       display: flex;
       justify-content: center;
@@ -516,7 +516,7 @@
       background: #f8fafc;
       outline: none;
       user-select: none;
-      pointer-events: none; /* OSキーボード起動をブロック */
+      pointer-events: none;
     }
     .pin-box.err { border-color: #ef4444; background: #fef2f2; }
 
@@ -745,11 +745,11 @@
       color: #ffffff;
     }
 
-    /* ─── 🌟 PR動画サイネージ（純黒背景を固定し内部でスライド） ─── */
+    /* ─── PR動画サイネージ ─── */
     .pr-video-overlay {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      background: #000000 !important; /* 日本地図を絶対に透けさせない黒 */
+      background: #000000 !important;
       z-index: 9999;
       opacity: 0;
       pointer-events: none;
@@ -770,13 +770,18 @@
       align-items: center;
       justify-content: center;
     }
+
+    /* 🌟 はみ出し解消：object-fit を contain に変更 🌟 */
     .pr-video-elm {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      max-width: 100vw;
+      max-height: 100vh;
+      object-fit: contain !important; /* 画面内にアスペクト比を維持して100%収める */
       pointer-events: none;
       background: #000000;
     }
+
     .pr-touch-hint {
       position: absolute;
       bottom: 32px;
@@ -798,7 +803,7 @@
       z-index: 10;
     }
 
-    /* スライドトランジション（黒背景の中で動画ステージのみが滑らかに移動） */
+    /* スライドトランジション */
     @keyframes slideOutToLeft {
       0% { transform: translateX(0); }
       100% { transform: translateX(-100%); }
@@ -1140,7 +1145,7 @@
     </div>
   </div>
 
-  <!-- 🌟 ⑤ PIN入力（オリジナルテンキー付き） -->
+  <!-- ⑤ PIN入力（オリジナルテンキー付き） -->
   <div id="pinModal" class="pop-win" onclick="if(event.target===this) closePinModal()">
     <div class="pop-card" style="max-width:320px;">
       <div class="pop-hdr">
@@ -1358,7 +1363,7 @@
     </div>
   </div>
 
-  <!-- 🌟 ③ PR動画サイネージ（純黒背景で完全に日本地図を遮断） -->
+  <!-- ③ PR動画サイネージ（端が一切切り取られない全画面表示） -->
   <div id="prVideoOverlay" class="pr-video-overlay" onclick="onPrVideoTap(event)">
     <div id="prVideoStage" class="pr-video-stage">
       <video id="prVideoPlayer" class="pr-video-elm" playsinline muted preload="auto"></video>
@@ -1623,7 +1628,6 @@
       }
     }
 
-    // ① 10秒カウントダウン表示
     function trigger10sCountdown() {
       isCountdownActive = true;
       countNumVal = 10;
@@ -1658,7 +1662,6 @@
       resetGlobalIdleTimer();
     }
 
-    // ② スタート画面の表示
     function showStartScreen() {
       isCountdownActive = false;
       isStartScreenActive = true;
@@ -1680,7 +1683,6 @@
       }
     }
 
-    // スタート画面タップで開始 ＆ チュートリアル表示
     function onStartScreenTap(e) {
       if (e) e.stopPropagation();
 
@@ -1706,7 +1708,6 @@
       }
     }
 
-    // ─── 🌟 PR動画の完全黒背景トランジション ───
     function transitionStartToPrVideo() {
       const validVideos = (appConfig.prVideos || []).filter(v => v && v.trim() !== "");
       if (validVideos.length === 0) return;
@@ -1715,7 +1716,6 @@
       const prOverlay = document.getElementById('prVideoOverlay');
       const stage = document.getElementById('prVideoStage');
 
-      // 黒背景オーバーレイをアクティブにして地図を完全にブロック
       prOverlay.classList.add('active');
       stage.classList.remove('slide-exit-left');
       stage.classList.add('slide-enter-right');
@@ -1763,7 +1763,6 @@
       videoElm.play().catch(e => console.warn("動画自動再生ブロック:", e));
     }
 
-    // 🌟 動画から次の動画へ：黒背景を保ったまま中のステージだけ右から左へスライド
     function transitionPrVideoToNext() {
       const stage = document.getElementById('prVideoStage');
       stage.classList.add('slide-exit-left');
@@ -1776,7 +1775,6 @@
       }, 450);
     }
 
-    // 🌟 動画からスタート画面へ：日本地図を見せずに直接スタート画面へ切り替え
     function transitionPrVideoToStartScreen() {
       const videoElm = document.getElementById('prVideoPlayer');
       videoElm.pause();
@@ -1788,7 +1786,6 @@
       stage.classList.add('slide-exit-left');
 
       setTimeout(() => {
-        // スタート画面を表示
         startOverlay.classList.add('active');
         prOverlay.classList.remove('active');
         stage.classList.remove('slide-exit-left');
@@ -1857,7 +1854,7 @@
       closeSettingsModal();
     }
 
-    // ─── 🌟 オリジナル画面内テンキーのロジック ───
+    // ─── オリジナル画面内テンキーのロジック ───
     let currentEnteredPin = "";
 
     function openPinModal() {
@@ -1924,7 +1921,6 @@
       }
     }
 
-    // PCキーボード入力にも対応
     window.addEventListener('keydown', (e) => {
       if (!document.getElementById('pinModal').classList.contains('open')) return;
       if (e.key >= '0' && e.key <= '9') {
@@ -1936,7 +1932,7 @@
       }
     });
 
-    // ─── PR動画リストの動的生成（＋とゴミ箱） ───
+    // ─── PR動画リストの動的生成 ───
     function renderPrVideoInputListUI() {
       const container = document.getElementById('prVideoInputListContainer');
       if (!container) return;
