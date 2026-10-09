@@ -498,28 +498,66 @@
     }
     .nav-ctrl-btn:disabled { background: #cbd5e1; }
 
+    /* ─── 🌟 オリジナルテンキー（PIN入力） ─── */
     .pin-grid {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin: 12px 0;
+      gap: 12px;
+      margin: 10px 0 16px;
     }
     .pin-box {
-      width: 44px;
-      height: 48px;
+      width: 46px;
+      height: 50px;
       border: 2px solid var(--border-line);
-      border-radius: 8px;
-      font-size: 1.5rem;
+      border-radius: 10px;
+      font-size: 1.6rem;
       text-align: center;
       font-weight: 900;
-      background: #fff;
+      background: #f8fafc;
       outline: none;
+      user-select: none;
+      pointer-events: none; /* OSキーボード起動をブロック */
     }
-    .pin-box:focus {
+    .pin-box.err { border-color: #ef4444; background: #fef2f2; }
+
+    .numpad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      max-width: 250px;
+      margin: 0 auto;
+    }
+    .numpad-btn {
+      height: 52px;
+      border-radius: 12px;
+      border: 1px solid var(--border-line);
+      background: #f8fafc;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, transform 0.1s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .numpad-btn:active {
+      background: var(--light-blue);
       border-color: var(--main-blue);
-      box-shadow: 0 0 6px rgba(2, 136, 209, 0.2);
+      color: var(--main-blue);
+      transform: scale(0.95);
     }
-    .pin-box.err { border-color: #ef4444; }
+    .numpad-btn.numpad-action {
+      background: #f1f5f9;
+      font-size: 1.05rem;
+      color: var(--text-muted);
+    }
+    .numpad-btn.numpad-action:active {
+      background: #e2e8f0;
+      color: var(--text-dark);
+    }
 
     .set-group {
       background: #fff;
@@ -575,7 +613,7 @@
       border: 1px solid #e2e8f0;
     }
 
-    /* ─── ① 復活：10秒カウントダウン黒フィルター ─── */
+    /* ─── 10秒カウントダウン黒フィルター ─── */
     .idle-overlay {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
@@ -604,7 +642,7 @@
       box-shadow: 0 20px 40px rgba(0,0,0,0.3);
     }
 
-    /* ─── ② 洗練された和モダン展示用スタート画面（脱AI臭） ─── */
+    /* ─── 洗練された和モダン展示用スタート画面 ─── */
     .start-screen-overlay {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
@@ -626,7 +664,6 @@
       opacity: 1;
       pointer-events: auto;
     }
-    /* 背景の繊細な同心円（音の波紋） */
     .ripple-bg {
       position: absolute;
       top: 50%; left: 50%;
@@ -652,7 +689,6 @@
       border-radius: 50%;
       border: 1px solid rgba(2, 136, 209, 0.16);
     }
-
     .start-content-box {
       position: relative;
       z-index: 2;
@@ -709,36 +745,44 @@
       color: #ffffff;
     }
 
-    /* ─── ③ PR動画サイネージ＆右から左へのスライドアニメーション ─── */
+    /* ─── 🌟 PR動画サイネージ（純黒背景を固定し内部でスライド） ─── */
     .pr-video-overlay {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      background: #000;
+      background: #000000 !important; /* 日本地図を絶対に透けさせない黒 */
       z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       opacity: 0;
       pointer-events: none;
       cursor: pointer;
       overflow: hidden;
+      transition: opacity 0.4s ease;
     }
     .pr-video-overlay.active {
       opacity: 1;
       pointer-events: auto;
+    }
+    .pr-video-stage {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .pr-video-elm {
       width: 100%;
       height: 100%;
       object-fit: cover;
       pointer-events: none;
+      background: #000000;
     }
     .pr-touch-hint {
       position: absolute;
       bottom: 32px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.72);
+      background: rgba(15, 23, 42, 0.75);
       backdrop-filter: blur(10px);
       color: #fff;
       padding: 12px 28px;
@@ -751,9 +795,10 @@
       gap: 10px;
       pointer-events: none;
       border: 1px solid rgba(255,255,255,0.2);
+      z-index: 10;
     }
 
-    /* 右から左へ流れるスライドトランジション */
+    /* スライドトランジション（黒背景の中で動画ステージのみが滑らかに移動） */
     @keyframes slideOutToLeft {
       0% { transform: translateX(0); }
       100% { transform: translateX(-100%); }
@@ -763,13 +808,13 @@
       100% { transform: translateX(0); }
     }
     .slide-exit-left {
-      animation: slideOutToLeft 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+      animation: slideOutToLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
     }
     .slide-enter-right {
-      animation: slideInFromRight 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+      animation: slideInFromRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
     }
 
-    /* ─── ⑤ PR動画入力リスト行スタイル ─── */
+    /* ─── PR動画リスト動的行 ─── */
     .pr-input-row {
       display: flex;
       align-items: center;
@@ -1095,9 +1140,9 @@
     </div>
   </div>
 
-  <!-- ⑤ PIN入力 -->
+  <!-- 🌟 ⑤ PIN入力（オリジナルテンキー付き） -->
   <div id="pinModal" class="pop-win" onclick="if(event.target===this) closePinModal()">
-    <div class="pop-card" style="max-width:300px;">
+    <div class="pop-card" style="max-width:320px;">
       <div class="pop-hdr">
         <div>
           <span class="material-symbols-outlined" style="color:var(--main-blue);">lock</span>
@@ -1107,15 +1152,35 @@
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
-      <div class="pop-body" style="text-align:center;">
-        <p style="font-size:0.8rem; color:var(--text-muted);">管理者パスワードを入力してください</p>
+      <div class="pop-body" style="text-align:center; padding:18px 20px 24px;">
+        <p style="font-size:0.82rem; color:var(--text-muted);">管理者パスワードを入力してください</p>
+        
         <div class="pin-grid">
-          <input type="password" maxlength="1" class="pin-box" id="pin0" inputmode="numeric" oninput="handlePinInput(0)">
-          <input type="password" maxlength="1" class="pin-box" id="pin1" inputmode="numeric" oninput="handlePinInput(1)">
-          <input type="password" maxlength="1" class="pin-box" id="pin2" inputmode="numeric" oninput="handlePinInput(2)">
-          <input type="password" maxlength="1" class="pin-box" id="pin3" inputmode="numeric" oninput="handlePinInput(3)">
+          <input type="password" maxlength="1" class="pin-box" id="pin0" readonly>
+          <input type="password" maxlength="1" class="pin-box" id="pin1" readonly>
+          <input type="password" maxlength="1" class="pin-box" id="pin2" readonly>
+          <input type="password" maxlength="1" class="pin-box" id="pin3" readonly>
         </div>
-        <div id="pinErrMsg" style="display:none; color:#ef4444; font-size:0.75rem; font-weight:700;">パスワードが違います</div>
+
+        <div id="pinErrMsg" style="display:none; color:#ef4444; font-size:0.75rem; font-weight:700; margin-bottom:6px;">パスワードが違います</div>
+
+        <!-- 画面内テンキー -->
+        <div class="numpad-grid">
+          <button type="button" class="numpad-btn" onclick="pressNumpad('1')">1</button>
+          <button type="button" class="numpad-btn" onclick="pressNumpad('2')">2</button>
+          <button type="button" class="numpad-btn" onclick="pressNumpad('3')">3</button>
+          <button type="button" class="numpad-btn" onclick="pressNumpad('4')">4</button>
+          <button type="button" class="numpad-btn" onclick="pressNumpad('5')">5</button>
+          <button type="button" class="numpad-btn" onclick="pressNumpad('6')">6</button>
+          <button type="button" class="numpad-btn" onclick="pressNumpad('7')">7</button>
+          <button type="button" class="numpad-btn" onclick="pressNumpad('8')">8</button>
+          <button type="button" class="numpad-btn" onclick="pressNumpad('9')">9</button>
+          <button type="button" class="numpad-btn numpad-action" onclick="clearPinInput()">C</button>
+          <button type="button" class="numpad-btn" onclick="pressNumpad('0')">0</button>
+          <button type="button" class="numpad-btn numpad-action" onclick="backspacePinInput()">
+            <span class="material-symbols-outlined" style="font-size:1.3rem;">backspace</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1161,7 +1226,7 @@
           <div id="regionToggleListContainer" style="max-height:180px; overflow-y:auto;"></div>
         </div>
 
-        <!-- 🌟 設定：10秒カウントダウン ＆ スタート画面 -->
+        <!-- 設定：10秒カウントダウン ＆ スタート画面 -->
         <div class="set-group">
           <div class="set-row">
             <div>
@@ -1189,7 +1254,7 @@
           </div>
         </div>
 
-        <!-- 🌟 設定：スタート画面 ＆ チュートリアル連動 -->
+        <!-- 設定：スタート画面 ＆ チュートリアル連動 -->
         <div class="set-group">
           <div class="set-row">
             <div>
@@ -1203,7 +1268,7 @@
           </div>
         </div>
 
-        <!-- 🌟 設定：PR動画サイネージ ＆ ＋ボタンで自由追加 -->
+        <!-- 設定：PR動画サイネージ ＆ ＋ボタンで自由追加 -->
         <div class="set-group">
           <div class="set-row">
             <div>
@@ -1263,7 +1328,7 @@
     </div>
   </div>
 
-  <!-- ① 復活：展示用 10秒カウントダウン黒フィルター -->
+  <!-- ① 10秒カウントダウン黒フィルター -->
   <div id="idleOverlay" class="idle-overlay" onclick="onIdleBoxTap(event)">
     <div class="idle-card">
       <div style="font-size:1.05rem; font-weight:900; color:var(--text-dark);">操作が確認されませんでした</div>
@@ -1276,7 +1341,7 @@
     </div>
   </div>
 
-  <!-- ② 洗練された和モダン展示用スタート画面（脱AI臭） -->
+  <!-- ② 洗練された和モダン展示用スタート画面 -->
   <div id="startScreenOverlay" class="start-screen-overlay" onclick="onStartScreenTap(event)">
     <div class="ripple-bg"></div>
     <div class="start-content-box">
@@ -1293,9 +1358,11 @@
     </div>
   </div>
 
-  <!-- ③ PR動画サイネージ（右から左へスライド） -->
+  <!-- 🌟 ③ PR動画サイネージ（純黒背景で完全に日本地図を遮断） -->
   <div id="prVideoOverlay" class="pr-video-overlay" onclick="onPrVideoTap(event)">
-    <video id="prVideoPlayer" class="pr-video-elm" playsinline muted preload="auto"></video>
+    <div id="prVideoStage" class="pr-video-stage">
+      <video id="prVideoPlayer" class="pr-video-elm" playsinline muted preload="auto"></video>
+    </div>
     <div class="pr-touch-hint">
       <span class="material-symbols-outlined">touch_app</span>
       <span>画面に触れると体験が始まります</span>
@@ -1493,7 +1560,6 @@
         localStorage.removeItem('otomap_visited');
       }
 
-      // 展示モードの場合は最初からスタート画面を掲示
       if (appConfig.mode === 'exhibition') {
         showStartScreen();
       } else {
@@ -1547,7 +1613,6 @@
       clearTimeout(mainIdleTimerId);
       clearInterval(countdownIntervalId);
 
-      // 通常操作画面のとき
       if (!isCountdownActive && !isStartScreenActive && !isPrVideoActive) {
         if (appConfig.enableCountDown) {
           const timeoutSec = parseInt(appConfig.idleTimeoutSec, 10) || 25;
@@ -1587,7 +1652,6 @@
 
     function onIdleBoxTap(e) {
       if (e) { e.preventDefault(); e.stopPropagation(); }
-      // タップでカウントダウン解除＆操作再開
       isCountdownActive = false;
       clearInterval(countdownIntervalId);
       document.getElementById('idleOverlay').classList.remove('active');
@@ -1605,10 +1669,8 @@
       stopAllSounds();
 
       const overlay = document.getElementById('startScreenOverlay');
-      overlay.classList.remove('slide-exit-left', 'slide-enter-right');
       overlay.classList.add('active');
 
-      // PR動画タイマー起動
       clearTimeout(idleToPrVideoTimerId);
       if (appConfig.enablePrVideo) {
         const sec = parseInt(appConfig.idleToPrVideoSec, 10) || 15;
@@ -1618,7 +1680,7 @@
       }
     }
 
-    // ④ スタート画面タップで体験スタート ＆ チュートリアル表示
+    // スタート画面タップで開始 ＆ チュートリアル表示
     function onStartScreenTap(e) {
       if (e) e.stopPropagation();
 
@@ -1639,35 +1701,35 @@
       resetZoom();
       resetGlobalIdleTimer();
 
-      // 展示用：スタート画面から入ったときにチュートリアルを表示
       if (appConfig.showTutorialOnStart) {
         setTimeout(() => openTutorial(), 200);
       }
     }
 
-    // スタート画面からPR動画へ（右から左へスライドイン）
+    // ─── 🌟 PR動画の完全黒背景トランジション ───
     function transitionStartToPrVideo() {
       const validVideos = (appConfig.prVideos || []).filter(v => v && v.trim() !== "");
       if (validVideos.length === 0) return;
 
       const startOverlay = document.getElementById('startScreenOverlay');
       const prOverlay = document.getElementById('prVideoOverlay');
+      const stage = document.getElementById('prVideoStage');
 
-      // スライドアニメーション適用
-      startOverlay.classList.add('slide-exit-left');
-      prOverlay.classList.remove('slide-exit-left');
-      prOverlay.classList.add('active', 'slide-enter-right');
+      // 黒背景オーバーレイをアクティブにして地図を完全にブロック
+      prOverlay.classList.add('active');
+      stage.classList.remove('slide-exit-left');
+      stage.classList.add('slide-enter-right');
+
+      playCurrentPrVideo();
 
       setTimeout(() => {
-        startOverlay.classList.remove('active', 'slide-exit-left');
-        prOverlay.classList.remove('slide-enter-right');
+        startOverlay.classList.remove('active');
+        stage.classList.remove('slide-enter-right');
         isStartScreenActive = false;
         isPrVideoActive = true;
-        playCurrentPrVideo();
-      }, 550);
+      }, 500);
     }
 
-    // ③ PR動画再生と右から左へのスライド
     function setupPrVideoEvents() {
       const videoElm = document.getElementById('prVideoPlayer');
       videoElm.addEventListener('ended', () => {
@@ -1701,34 +1763,36 @@
       videoElm.play().catch(e => console.warn("動画自動再生ブロック:", e));
     }
 
-    // 動画終了時：右から左へスライドして次の動画へ
+    // 🌟 動画から次の動画へ：黒背景を保ったまま中のステージだけ右から左へスライド
     function transitionPrVideoToNext() {
-      const prOverlay = document.getElementById('prVideoOverlay');
-      prOverlay.classList.add('slide-exit-left');
+      const stage = document.getElementById('prVideoStage');
+      stage.classList.add('slide-exit-left');
 
       setTimeout(() => {
         playCurrentPrVideo();
-        prOverlay.classList.remove('slide-exit-left');
-        prOverlay.classList.add('slide-enter-right');
-        setTimeout(() => prOverlay.classList.remove('slide-enter-right'), 550);
-      }, 500);
+        stage.classList.remove('slide-exit-left');
+        stage.classList.add('slide-enter-right');
+        setTimeout(() => stage.classList.remove('slide-enter-right'), 500);
+      }, 450);
     }
 
-    // 動画終了時：右から左へスライドしてスタート画面を挟む
+    // 🌟 動画からスタート画面へ：日本地図を見せずに直接スタート画面へ切り替え
     function transitionPrVideoToStartScreen() {
       const videoElm = document.getElementById('prVideoPlayer');
       videoElm.pause();
 
       const prOverlay = document.getElementById('prVideoOverlay');
       const startOverlay = document.getElementById('startScreenOverlay');
+      const stage = document.getElementById('prVideoStage');
 
-      prOverlay.classList.add('slide-exit-left');
-      startOverlay.classList.remove('slide-exit-left');
-      startOverlay.classList.add('active', 'slide-enter-right');
+      stage.classList.add('slide-exit-left');
 
       setTimeout(() => {
-        prOverlay.classList.remove('active', 'slide-exit-left');
-        startOverlay.classList.remove('slide-enter-right');
+        // スタート画面を表示
+        startOverlay.classList.add('active');
+        prOverlay.classList.remove('active');
+        stage.classList.remove('slide-exit-left');
+
         isStartScreenActive = true;
         isPrVideoActive = false;
 
@@ -1738,10 +1802,9 @@
             transitionStartToPrVideo();
           }
         }, pauseSec * 1000);
-      }, 550);
+      }, 500);
     }
 
-    // PR動画タッチで即座に体験開始
     function onPrVideoTap(e) {
       if (e) e.stopPropagation();
       exitToStart();
@@ -1755,8 +1818,9 @@
       videoElm.pause();
       videoElm.src = "";
 
-      document.getElementById('prVideoOverlay').classList.remove('active', 'slide-exit-left', 'slide-enter-right');
-      document.getElementById('startScreenOverlay').classList.remove('active', 'slide-exit-left', 'slide-enter-right');
+      document.getElementById('prVideoOverlay').classList.remove('active');
+      document.getElementById('prVideoStage').classList.remove('slide-exit-left', 'slide-enter-right');
+      document.getElementById('startScreenOverlay').classList.remove('active');
 
       isStartScreenActive = false;
       isPrVideoActive = false;
@@ -1793,7 +1857,86 @@
       closeSettingsModal();
     }
 
-    // ─── ⑤ PR動画リストの動的生成（＋とゴミ箱） ───
+    // ─── 🌟 オリジナル画面内テンキーのロジック ───
+    let currentEnteredPin = "";
+
+    function openPinModal() {
+      currentEnteredPin = "";
+      updatePinDisplay();
+      document.getElementById('pinErrMsg').style.display = 'none';
+      for (let i = 0; i < 4; i++) {
+        document.getElementById(`pin${i}`).classList.remove('err');
+      }
+      document.getElementById('pinModal').classList.add('open');
+    }
+
+    function closePinModal() {
+      document.getElementById('pinModal').classList.remove('open');
+    }
+
+    function pressNumpad(num) {
+      if (currentEnteredPin.length >= 4) return;
+      currentEnteredPin += num;
+      updatePinDisplay();
+      document.getElementById('pinErrMsg').style.display = 'none';
+
+      if (currentEnteredPin.length === 4) {
+        verifyPin();
+      }
+    }
+
+    function backspacePinInput() {
+      if (currentEnteredPin.length > 0) {
+        currentEnteredPin = currentEnteredPin.slice(0, -1);
+        updatePinDisplay();
+        document.getElementById('pinErrMsg').style.display = 'none';
+      }
+    }
+
+    function clearPinInput() {
+      currentEnteredPin = "";
+      updatePinDisplay();
+      document.getElementById('pinErrMsg').style.display = 'none';
+    }
+
+    function updatePinDisplay() {
+      for (let i = 0; i < 4; i++) {
+        const inp = document.getElementById(`pin${i}`);
+        inp.value = i < currentEnteredPin.length ? currentEnteredPin[i] : "";
+      }
+    }
+
+    function verifyPin() {
+      if (currentEnteredPin === "1234") {
+        closePinModal();
+        openSettingsModal();
+      } else {
+        document.getElementById('pinErrMsg').style.display = 'block';
+        for (let i = 0; i < 4; i++) {
+          document.getElementById(`pin${i}`).classList.add('err');
+        }
+        setTimeout(() => {
+          clearPinInput();
+          for (let i = 0; i < 4; i++) {
+            document.getElementById(`pin${i}`).classList.remove('err');
+          }
+        }, 550);
+      }
+    }
+
+    // PCキーボード入力にも対応
+    window.addEventListener('keydown', (e) => {
+      if (!document.getElementById('pinModal').classList.contains('open')) return;
+      if (e.key >= '0' && e.key <= '9') {
+        pressNumpad(e.key);
+      } else if (e.key === 'Backspace') {
+        backspacePinInput();
+      } else if (e.key === 'Escape') {
+        closePinModal();
+      }
+    });
+
+    // ─── PR動画リストの動的生成（＋とゴミ箱） ───
     function renderPrVideoInputListUI() {
       const container = document.getElementById('prVideoInputListContainer');
       if (!container) return;
@@ -2436,47 +2579,6 @@
       });
     }
 
-    function openPinModal() {
-      for (let i = 0; i < 4; i++) {
-        const inp = document.getElementById(`pin${i}`);
-        inp.value = "";
-        inp.classList.remove('err');
-      }
-      document.getElementById('pinErrMsg').style.display = 'none';
-      document.getElementById('pinModal').classList.add('open');
-      setTimeout(() => document.getElementById('pin0').focus(), 150);
-    }
-
-    function closePinModal() { document.getElementById('pinModal').classList.remove('open'); }
-
-    function handlePinInput(idx) {
-      const cur = document.getElementById(`pin${idx}`);
-      if (cur.value.length === 1 && idx < 3) {
-        document.getElementById(`pin${idx + 1}`).focus();
-      }
-
-      let code = "";
-      for (let i = 0; i < 4; i++) code += document.getElementById(`pin${i}`).value;
-
-      if (code.length === 4) {
-        if (code === "1234") {
-          closePinModal();
-          openSettingsModal();
-        } else {
-          document.getElementById('pinErrMsg').style.display = 'block';
-          for (let i = 0; i < 4; i++) document.getElementById(`pin${i}`).classList.add('err');
-          setTimeout(() => {
-            for (let i = 0; i < 4; i++) {
-              const inp = document.getElementById(`pin${i}`);
-              inp.value = "";
-              inp.classList.remove('err');
-            }
-            document.getElementById('pin0').focus();
-          }, 600);
-        }
-      }
-    }
-
     function startAudioLoop(url) {
       stopAllSounds();
       function run() {
@@ -2598,4 +2700,3 @@
   </script>
 </body>
 </html>
-
