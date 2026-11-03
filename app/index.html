@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>トクシェア - 最安値・価格比較</title>
+  <title>トクシェア - 最安値・全国スーパー価格比較</title>
 
   <!-- Google Fonts: Noto Sans JP & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,15 +15,16 @@
 
   <style>
     /* ==========================================================================
-       DESIGN TOKENS (上品でモダンなアプリスタイル)
+       DESIGN TOKENS & SYSTEM
        ========================================================================== */
     :root {
       --brand-green: #00875A;         /* 上質なリテールグリーン */
       --brand-green-dark: #006644;
       --brand-green-light: #E3FCEF;
-      --brand-red: #DE350B;           /* 最安値の赤 */
+      --brand-red: #DE350B;           /* 最安値ハイライト赤 */
       --brand-red-light: #FFEBE6;
       --brand-blue: #0052CC;
+      --brand-blue-light: #DEEBFF;
 
       --ui-bg: #F4F5F7;
       --ui-surface: #FFFFFF;
@@ -42,12 +43,12 @@
 
       --shadow-sm: 0 1px 3px rgba(9, 30, 66, 0.08);
       --shadow-md: 0 4px 12px rgba(9, 30, 66, 0.08);
+      --shadow-kbd: 0 -4px 16px rgba(9, 30, 66, 0.15);
 
-      /* 滑らかで自然なイージング（過度な揺れを抑えた高級感のあるタッチ感） */
       --ease-touch: cubic-bezier(0.2, 0, 0, 1);
       --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
 
-      --max-w: 680px;
+      --max-w: 640px;
     }
 
     * {
@@ -84,7 +85,7 @@
     }
 
     /* ==========================================================================
-       HEADER (ロゴ & 通知アイコン)
+       HEADER (ロゴ & 右上通知アイコン)
        ========================================================================== */
     .app-header {
       background: var(--ui-surface);
@@ -107,10 +108,6 @@
       color: var(--brand-green);
       letter-spacing: -0.02em;
       cursor: pointer;
-      transition: opacity 0.15s ease;
-    }
-    .app-logo:active {
-      opacity: 0.75;
     }
 
     .notice-icon-btn {
@@ -149,7 +146,7 @@
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      padding-bottom: 74px; /* ボトムバー用マージン */
+      padding-bottom: 74px; /* ボトムバーの余白 */
       -webkit-overflow-scrolling: touch;
       position: relative;
     }
@@ -194,6 +191,60 @@
       background: var(--ui-border-light);
     }
 
+    /* ==========================================================================
+       INLINE ONBOARDING GUIDE (ポップアップではなくインライン案内型)
+       ========================================================================== */
+    .inline-guide-card {
+      background: #FFFFFF;
+      border: 1px solid var(--ui-border);
+      border-left: 5px solid var(--brand-green);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .inline-guide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .inline-guide-title {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--brand-green);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .guide-steps-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .guide-step-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--ui-bg);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .guide-step-num {
+      width: 22px;
+      height: 22px;
+      background: var(--brand-green);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+
     /* 検索バー */
     .search-input-box {
       width: 100%;
@@ -214,7 +265,7 @@
     }
 
     /* ==========================================================================
-       PRODUCT COMPARE CARDS (時間・共感数付き)
+       PRODUCT COMPARE CARDS (時間 & 共感機能)
        ========================================================================== */
     .compare-card {
       background: var(--ui-surface);
@@ -262,7 +313,6 @@
       line-height: 1.35;
     }
 
-    /* 最安値ハイライトバナー */
     .best-rate-banner {
       background: #FFF0B3;
       border: 1px solid #FFE380;
@@ -295,7 +345,6 @@
       font-weight: 800;
     }
 
-    /* 投稿時間 & 共感バッジ行 */
     .card-meta-bar {
       display: flex;
       align-items: center;
@@ -319,7 +368,6 @@
       font-weight: 700;
     }
 
-    /* 他店比較リスト */
     .ranking-list {
       display: flex;
       flex-direction: column;
@@ -335,14 +383,14 @@
     }
 
     /* ==========================================================================
-       BOTTOM BAR: ホーム・投稿 (最大高さまで埋まる■緑)・アカウント
+       BOTTOM BAR (最大高さを埋める■緑 長方形ボタン & 上品なタッチ感)
        ========================================================================== */
     .app-bottom-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 64px;                   /* メニューバーの高さは固定 */
+      height: 64px;                   /* 高さ固定 */
       background: var(--ui-surface);
       border-top: 1px solid var(--ui-border-light);
       display: flex;
@@ -353,7 +401,7 @@
       box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
     }
 
-    /* 左右のタブボタン: ぽよよよと揺れすぎない上品なタッチフィードバック */
+    /* 左右ボタン: 過度なバウンスのない自然で上質な沈み込み */
     .bottom-tab-btn {
       flex: 1;
       display: flex;
@@ -371,7 +419,7 @@
       transition: color 0.15s ease, transform 0.1s var(--ease-touch);
     }
     .bottom-tab-btn:active {
-      transform: scale(0.92);
+      transform: scale(0.94);
       color: var(--text-main);
     }
     .bottom-tab-btn.active {
@@ -379,7 +427,6 @@
     }
     .bottom-tab-btn .material-symbols-outlined {
       font-size: 24px;
-      transition: transform 0.1s var(--ease-touch);
     }
 
     /* ■緑 長方形 投稿ボタン (メニューバー最大の高さを隙間なく埋める) */
@@ -405,19 +452,16 @@
     }
 
     /* ==========================================================================
-       1ページずつ進む 投稿ウィザード (ステップ形式)
+       投稿ウィザード (横スクロール一切なし・ステップ形式)
        ========================================================================== */
     .wizard-progress-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       padding: 0 4px;
     }
     .wizard-step-indicator {
-      display: flex;
-      align-items: center;
-      gap: 6px;
       font-size: 0.8rem;
       font-weight: 800;
       color: var(--brand-green);
@@ -445,7 +489,50 @@
       display: block;
     }
 
-    /* 直感的カテゴリ選択タイル (イメージ画像風ベクターグリッド) */
+    /* 店舗検索・サジェスト (全国対応API連携) */
+    .store-search-box {
+      width: 100%;
+      height: 46px;
+      background: var(--ui-surface);
+      border: 1.5px solid var(--ui-border);
+      border-radius: var(--radius-sm);
+      padding: 0 14px 0 40px;
+      font-size: 0.95rem;
+      outline: none;
+      margin-bottom: 8px;
+    }
+    .store-search-box:focus {
+      border-color: var(--brand-green);
+    }
+    .suggested-stores-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 380px;
+      overflow-y: auto;
+      margin-bottom: 16px;
+    }
+    .suggested-store-row {
+      background: var(--ui-surface);
+      border: 1.5px solid var(--ui-border);
+      border-radius: var(--radius-xs);
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+    .suggested-store-row:active {
+      background-color: var(--brand-green-light);
+      border-color: var(--brand-green);
+    }
+    .suggested-store-row.selected {
+      background-color: var(--brand-green-light);
+      border-color: var(--brand-green);
+    }
+
+    /* 直感的カテゴリ選択タイル (横スクロールなし・縦2列グリッド) */
     .category-grid-selector {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -456,7 +543,7 @@
       background: var(--ui-surface);
       border: 2px solid var(--ui-border);
       border-radius: var(--radius-md);
-      padding: 16px 12px;
+      padding: 16px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -466,72 +553,77 @@
       transition: transform 0.1s var(--ease-touch), border-color 0.15s ease, background-color 0.15s ease;
     }
     .category-tile-card:active {
-      transform: scale(0.95);
+      transform: scale(0.96);
     }
     .category-tile-card.selected {
       border-color: var(--brand-green);
       background-color: var(--brand-green-light);
     }
-    .category-tile-card .tile-icon-box {
-      width: 48px;
-      height: 48px;
+    .tile-icon-box {
+      width: 46px;
+      height: 46px;
       border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 26px;
-    }
-    .category-tile-card.selected .tile-icon-box {
-      background: #FFFFFF;
-    }
-    .category-tile-label {
-      font-size: 0.88rem;
-      font-weight: 800;
-      color: var(--text-main);
+      font-size: 24px;
     }
 
-    /* 店舗選択タイルグリッド */
-    .store-grid-selector {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-      max-height: 420px;
-      overflow-y: auto;
-      margin-bottom: 16px;
-    }
-    .store-tile-row {
+    /* 金額表示タップエリア (タップでキーボードが出現) */
+    .price-display-tap-hero {
       background: var(--ui-surface);
-      border: 1.5px solid var(--ui-border);
-      border-radius: var(--radius-xs);
-      padding: 12px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      border: 2px solid var(--brand-green);
+      border-radius: var(--radius-sm);
+      padding: 18px 14px;
+      text-align: center;
+      margin-bottom: 14px;
       cursor: pointer;
-      transition: transform 0.1s var(--ease-touch), border-color 0.15s ease, background-color 0.15s ease;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.1s var(--ease-touch), background-color 0.15s ease;
     }
-    .store-tile-row:active {
+    .price-display-tap-hero:active {
       transform: scale(0.98);
+      background-color: #FAFDFB;
     }
-    .store-tile-row.selected {
-      border-color: var(--brand-green);
-      background-color: var(--brand-green-light);
+    .price-hero-val {
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: var(--brand-green);
+      line-height: 1.1;
     }
 
     /* ==========================================================================
-       GBOARD風 オリジナルテンキーボード (Google風マテリアルデザイン)
+       GBOARD風カスタムテンキーボード (タップで下から出現)
        ========================================================================== */
-    .gboard-keyboard-container {
+    .gboard-keyboard-drawer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
       background: #ECEFF1;           /* Gboard調の土台色 */
-      border-radius: var(--radius-md);
-      padding: 8px;
-      margin-top: 14px;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
+      border-top: 1px solid #CFD8DC;
+      padding: 10px 10px calc(14px + env(safe-area-inset-bottom, 0px));
+      z-index: 100;
+      box-shadow: var(--shadow-kbd);
+      transform: translateY(110%);
+      transition: transform 0.24s var(--ease-smooth);
+    }
+    .gboard-keyboard-drawer.open {
+      transform: translateY(0);
+    }
+    .gboard-bar-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      padding: 0 4px;
     }
     .gboard-key-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 6px;
+      max-width: var(--max-w);
+      margin: 0 auto;
     }
     .gboard-key-btn {
       height: 52px;
@@ -550,36 +642,19 @@
       transition: background-color 0.1s ease, transform 0.08s var(--ease-touch);
     }
     .gboard-key-btn:active {
-      background-color: #D2E3FC;     /* Google風の淡いブルーハイライト */
-      transform: scale(0.95);
+      background-color: #D2E3FC;     /* Googleブルーのハイライト */
+      transform: scale(0.96);
     }
     .gboard-key-btn.action-key {
       background: #CFD8DC;
       color: #374151;
-      font-size: 1.15rem;
+      font-size: 1.1rem;
     }
     .gboard-key-btn.action-key:active {
       background-color: #B0BEC5;
     }
 
-    /* 金額表示巨大ディスプレイ */
-    .price-display-hero {
-      background: var(--ui-surface);
-      border: 2px solid var(--brand-green);
-      border-radius: var(--radius-sm);
-      padding: 16px;
-      text-align: center;
-      margin-bottom: 12px;
-    }
-    .price-display-val {
-      font-size: 2.8rem;
-      font-weight: 900;
-      color: var(--brand-green);
-      letter-spacing: -0.02em;
-      line-height: 1.1;
-    }
-
-    /* ボタン・フォーム共通 */
+    /* 汎用アクションボタン */
     .btn-block-action {
       width: 100%;
       height: 48px;
@@ -598,7 +673,23 @@
     }
     .btn-block-action:active {
       background: var(--brand-green-dark);
-      transform: scale(0.97);
+      transform: scale(0.98);
+    }
+
+    /* AI超厳重モデレーション警告 */
+    .moderation-alert-box {
+      display: none;
+      background: #FFEBE6;
+      border: 1.5px solid var(--brand-red);
+      color: var(--brand-red);
+      padding: 12px 14px;
+      border-radius: var(--radius-xs);
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.45;
     }
 
     /* トースト */
@@ -627,22 +718,6 @@
       transform: translateX(-50%) translateY(0);
       opacity: 1;
     }
-
-    /* AI安全モデレーション警告 */
-    .moderation-alert-box {
-      display: none;
-      background: #FFEBE6;
-      border: 1.5px solid var(--brand-red);
-      color: var(--brand-red);
-      padding: 12px 14px;
-      border-radius: var(--radius-xs);
-      font-size: 0.85rem;
-      font-weight: 700;
-      margin-bottom: 14px;
-      align-items: flex-start;
-      gap: 10px;
-      line-height: 1.45;
-    }
   </style>
 </head>
 <body>
@@ -656,6 +731,7 @@
       <span>トクシェア</span>
     </div>
 
+    <!-- 右上通知アイコン -->
     <button class="notice-icon-btn" onclick="app.showPage('notifications')" title="お知らせ・通知">
       <span class="material-symbols-outlined" style="font-size: 24px;">notifications</span>
       <span class="notice-badge-dot"></span>
@@ -663,29 +739,58 @@
   </header>
 
   <!-- ========================================================================
-       SCREEN VIEWPORT (フルスクリーン画面切り替え)
+       SCREEN VIEWPORT (全画面切り替え・ポップアップ廃止)
        ======================================================================== -->
   <div class="screen-viewport">
 
-    <!-- 1. ホーム画面: 最安値比較一覧 -->
+    <!-- 1. ホーム画面: 最安値比較一覧 & インライン案内型ガイド -->
     <section id="view-home" class="page-view active">
+      
+      <!-- ポップアップ形式じゃない「案内型」の使い方説明 (インライン表示) -->
+      <div class="inline-guide-card" id="inline-guide-box">
+        <div class="inline-guide-header">
+          <div class="inline-guide-title">
+            <span class="material-symbols-outlined" style="font-size:18px;">help</span>
+            <span>トクシェアのつかいかた</span>
+          </div>
+          <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.75rem; font-weight:700;" onclick="app.toggleGuide()">
+            <span id="guide-toggle-text">閉じる</span>
+          </button>
+        </div>
+        <div class="guide-steps-grid" id="guide-steps-content">
+          <div class="guide-step-item">
+            <span class="guide-step-num">1</span>
+            <span>近所のスーパーの最安値価格をチェック</span>
+          </div>
+          <div class="guide-step-item">
+            <span class="guide-step-num">2</span>
+            <span>お買い得を見つけたら「投稿」ボタンから簡単共有</span>
+          </div>
+          <div class="guide-step-item">
+            <span class="guide-step-num">3</span>
+            <span>みんなの投稿で地域最安値がリアルタイムに更新！</span>
+          </div>
+        </div>
+      </div>
+
       <!-- 検索バー -->
       <div style="position:relative;">
         <span class="material-symbols-outlined" style="position:absolute; left:12px; top:13px; color:var(--text-muted); font-size:20px;">search</span>
         <input type="text" id="home-search-input" class="search-input-box" placeholder="商品名（例: 卵、牛乳、キャベツ）やスーパー名で検索">
       </div>
 
+      <!-- 最安値比較一覧 -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <span style="font-size:0.8rem; font-weight:800; color:var(--text-sub);">
           最安値比較 (<span id="compare-count-num">0</span>品目)
         </span>
-        <span style="font-size:0.75rem; color:var(--brand-green); font-weight:700;">タップで全店比較</span>
+        <span style="font-size:0.75rem; color:var(--brand-green); font-weight:700;">タップして全店比較</span>
       </div>
 
       <div id="product-cards-feed"></div>
     </section>
 
-    <!-- 2. 投稿画面: 1ページずつ進むウィザードUI -->
+    <!-- 2. 投稿画面: 横スクロール一切なし・1ページずつ進むステップ形式 -->
     <section id="view-post" class="page-view">
       <div class="sub-page-header">
         <button class="back-btn" onclick="app.prevPostStep()">
@@ -694,7 +799,7 @@
         <h2 style="font-size:1.15rem; font-weight:800;" id="post-step-title">1. スーパーを選択</h2>
       </div>
 
-      <!-- プログレスインジケーター -->
+      <!-- ステップ進行状況 -->
       <div class="wizard-progress-bar">
         <div class="wizard-step-indicator" id="post-step-indicator-text">STEP 1 / 4</div>
         <div class="step-dots">
@@ -705,76 +810,88 @@
         </div>
       </div>
 
-      <!-- AI厳重モデレーション警告 -->
+      <!-- AI厳重モデレーション警告メッセージ -->
       <div class="moderation-alert-box" id="ai-moderation-alert">
         <span class="material-symbols-outlined" style="font-size: 22px;">shield</span>
         <div>
-          <div style="font-weight: 800; margin-bottom: 2px;">【AI安全フィルター検知】</div>
+          <div style="font-weight: 800; margin-bottom: 2px;">【安全フィルター検知】</div>
           <div id="ai-moderation-reason" style="font-size: 0.8rem; font-weight: 500;"></div>
         </div>
       </div>
 
-      <!-- STEP 1: スーパー選択 -->
+      <!-- STEP 1: スーパー候補検索 (APIハイブリッド) -->
       <div class="wizard-step-pane active" id="wizard-step-1">
-        <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub); margin-bottom:12px;">
-          価格を見かけたスーパーを選んでください
+        <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub); margin-bottom:8px;">
+          キーボードで入力すると全国のスーパー候補が出ます
         </div>
-        <div class="store-grid-selector" id="post-store-tiles"></div>
+
+        <div style="position:relative;">
+          <span class="material-symbols-outlined" style="position:absolute; left:12px; top:13px; color:var(--text-muted); font-size:20px;">storefront</span>
+          <input type="text" id="wizard-store-search-input" class="store-search-box" placeholder="スーパー名（例: イオン、ライフ、オーケー、万代）">
+        </div>
+
+        <!-- 候補リスト (縦並び・横スクロールなし) -->
+        <div class="suggested-stores-list" id="suggested-stores-container"></div>
+
         <button class="btn-block-action" onclick="app.nextPostStep(2)">
-          <span>次へ進む</span>
+          <span>この店舗で決定・次へ</span>
           <span class="material-symbols-outlined">arrow_forward</span>
         </button>
       </div>
 
-      <!-- STEP 2: カテゴリ & 商品名 -->
+      <!-- STEP 2: カテゴリ & 商品名 (横スクロールなし・2列グリッド) -->
       <div class="wizard-step-pane" id="wizard-step-2">
         <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub); margin-bottom:10px;">
-          カテゴリをタップして選択
+          カテゴリをタップ（横スクロールなし）
         </div>
+
+        <!-- 2列グリッドで直感タップ選択 -->
         <div class="category-grid-selector" id="post-category-tiles">
           <div class="category-tile-card selected" data-cat="乳製品・卵" onclick="app.selectCategoryTile('乳製品・卵', this)">
             <div class="tile-icon-box" style="background:#FFF0B3; color:#B78103;">
               <span class="material-symbols-outlined">egg</span>
             </div>
-            <span class="category-tile-label">卵・乳製品</span>
+            <span style="font-size:0.85rem; font-weight:800;">卵・乳製品</span>
           </div>
           <div class="category-tile-card" data-cat="生鮮・青果" onclick="app.selectCategoryTile('生鮮・青果', this)">
             <div class="tile-icon-box" style="background:#E3FCEF; color:#00875A;">
               <span class="material-symbols-outlined">eco</span>
             </div>
-            <span class="category-tile-label">野菜・青果</span>
+            <span style="font-size:0.85rem; font-weight:800;">野菜・果物</span>
           </div>
           <div class="category-tile-card" data-cat="精肉・鮮魚" onclick="app.selectCategoryTile('精肉・鮮魚', this)">
             <div class="tile-icon-box" style="background:#FFEBE6; color:#DE350B;">
               <span class="material-symbols-outlined">set_meal</span>
             </div>
-            <span class="category-tile-label">肉・魚・生鮮</span>
+            <span style="font-size:0.85rem; font-weight:800;">肉・魚・生鮮</span>
           </div>
           <div class="category-tile-card" data-cat="調味料・食品" onclick="app.selectCategoryTile('調味料・食品', this)">
             <div class="tile-icon-box" style="background:#EAE6FF; color:#5243AA;">
               <span class="material-symbols-outlined">soup_kitchen</span>
             </div>
-            <span class="category-tile-label">調味料・食品</span>
+            <span style="font-size:0.85rem; font-weight:800;">調味料・食品</span>
           </div>
           <div class="category-tile-card" data-cat="日用品・雑貨" onclick="app.selectCategoryTile('日用品・雑貨', this)">
             <div class="tile-icon-box" style="background:#E3F2FD; color:#0288D1;">
               <span class="material-symbols-outlined">inventory_2</span>
             </div>
-            <span class="category-tile-label">日用品・生活雑貨</span>
+            <span style="font-size:0.85rem; font-weight:800;">日用品・雑貨</span>
           </div>
-          <div class="category-tile-card" data-cat="飲料・お酒" onclick="app.selectCategoryTile('飲料・お酒', this)">
+          <div class="category-tile-card" data-cat="飲料・お茶" onclick="app.selectCategoryTile('飲料・お茶', this)">
             <div class="tile-icon-box" style="background:#DEEBFF; color:#0052CC;">
               <span class="material-symbols-outlined">water_bottle</span>
             </div>
-            <span class="category-tile-label">飲料・お茶</span>
+            <span style="font-size:0.85rem; font-weight:800;">飲料・お茶</span>
           </div>
         </div>
 
         <div style="margin-bottom:14px;">
           <label style="font-size:0.82rem; font-weight:800; display:block; margin-bottom:6px;">商品名を入力</label>
           <input type="text" id="wizard-prod-name" class="search-input-box" placeholder="例: 鶏卵 10個パック、成分無調整牛乳 1000ml" style="margin-bottom:8px;">
+          
+          <!-- クイック入力 -->
           <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <span style="font-size:0.7rem; color:var(--text-muted); align-self:center;">クイック入力:</span>
+            <span style="font-size:0.7rem; color:var(--text-muted); align-self:center;">候補:</span>
             <button type="button" class="back-btn" style="width:auto; height:28px; padding:0 8px; border-radius:4px; background:#fff; border:1px solid var(--ui-border); font-size:0.75rem;" onclick="app.quickFillName('鶏卵 10個パック (白玉Lサイズ)', '乳製品・卵')">卵 10個</button>
             <button type="button" class="back-btn" style="width:auto; height:28px; padding:0 8px; border-radius:4px; background:#fff; border:1px solid var(--ui-border); font-size:0.75rem;" onclick="app.quickFillName('成分無調整牛乳 1000ml', '乳製品・卵')">牛乳 1L</button>
             <button type="button" class="back-btn" style="width:auto; height:28px; padding:0 8px; border-radius:4px; background:#fff; border:1px solid var(--ui-border); font-size:0.75rem;" onclick="app.quickFillName('国産キャベツ 1玉', '生鮮・青果')">キャベツ 1玉</button>
@@ -787,38 +904,27 @@
         </button>
       </div>
 
-      <!-- STEP 3: 金額入力 (Gboard風オリジナルキーボード) -->
+      <!-- STEP 3: 金額入力 (タップすると下からGboard風キーボードが出現) -->
       <div class="wizard-step-pane" id="wizard-step-3">
-        <div class="price-display-hero">
-          <div style="font-size:0.78rem; color:var(--text-muted); font-weight:700; margin-bottom:2px;">税込価格を入力</div>
-          <div class="price-display-val num-font">
+        <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub); margin-bottom:8px;">
+          下の金額欄をタップするとキーボードが出ます
+        </div>
+
+        <!-- タップするとキーボードが立ち上がるヒーローエリア -->
+        <div class="price-display-tap-hero" onclick="app.openGboard()">
+          <div style="font-size:0.78rem; color:var(--text-muted); font-weight:700; margin-bottom:2px;">タップして税込価格を入力</div>
+          <div class="price-hero-val num-font">
             ¥ <span id="gboard-price-text">0</span>
           </div>
-        </div>
-
-        <input type="text" id="wizard-notes" class="search-input-box" placeholder="特売情報（例: タイムセール、お一人様1点）" style="margin-bottom:10px;">
-
-        <!-- Gboard風カスタムキーボード -->
-        <div class="gboard-keyboard-container">
-          <div class="gboard-key-grid">
-            <button type="button" class="gboard-key-btn" onclick="app.keyPress('1')">1</button>
-            <button type="button" class="gboard-key-btn" onclick="app.keyPress('2')">2</button>
-            <button type="button" class="gboard-key-btn" onclick="app.keyPress('3')">3</button>
-            <button type="button" class="gboard-key-btn" onclick="app.keyPress('4')">4</button>
-            <button type="button" class="gboard-key-btn" onclick="app.keyPress('5')">5</button>
-            <button type="button" class="gboard-key-btn" onclick="app.keyPress('6')">6</button>
-            <button type="button" class="gboard-key-btn" onclick="app.keyPress('7')">7</button>
-            <button type="button" class="gboard-key-btn" onclick="app.keyPress('8')">8</button>
-            <button type="button" class="gboard-key-btn" onclick="app.keyPress('9')">9</button>
-            <button type="button" class="gboard-key-btn action-key" onclick="app.keyPress('00')">00</button>
-            <button type="button" class="gboard-key-btn" onclick="app.keyPress('0')">0</button>
-            <button type="button" class="gboard-key-btn action-key" onclick="app.keyBackspace()">
-              <span class="material-symbols-outlined" style="font-size:22px;">backspace</span>
-            </button>
+          <div style="font-size:0.72rem; color:var(--brand-green); font-weight:700; margin-top:4px;">
+            <span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle;">keyboard</span> テンキーで入力する
           </div>
         </div>
 
-        <button class="btn-block-action" style="margin-top:14px;" onclick="app.nextPostStep(4)">
+        <label style="font-size:0.82rem; font-weight:800; display:block; margin-bottom:6px;">特売・セール備考 (任意)</label>
+        <input type="text" id="wizard-notes" class="search-input-box" placeholder="例: タイムセール18時まで、お一人様1点限り" style="margin-bottom:14px;">
+
+        <button class="btn-block-action" onclick="app.nextPostStep(4)">
           <span>入力内容を確認</span>
           <span class="material-symbols-outlined">arrow_forward</span>
         </button>
@@ -931,7 +1037,35 @@
   </div>
 
   <!-- ========================================================================
-       BOTTOM BAR: ホーム・投稿 (最大高さまで埋まる■緑)・アカウント
+       GBOARD風カスタムキーボード (下からスライドイン)
+       ======================================================================== -->
+  <div class="gboard-keyboard-drawer" id="gboard-drawer">
+    <div class="gboard-bar-top">
+      <span style="font-size:0.8rem; font-weight:800; color:#4B5563;">金額を入力</span>
+      <button style="background:var(--brand-green); color:#fff; border:none; border-radius:4px; padding:4px 12px; font-size:0.8rem; font-weight:800; cursor:pointer;" onclick="app.closeGboard()">
+        完了
+      </button>
+    </div>
+    <div class="gboard-key-grid">
+      <button type="button" class="gboard-key-btn" onclick="app.keyPress('1')">1</button>
+      <button type="button" class="gboard-key-btn" onclick="app.keyPress('2')">2</button>
+      <button type="button" class="gboard-key-btn" onclick="app.keyPress('3')">3</button>
+      <button type="button" class="gboard-key-btn" onclick="app.keyPress('4')">4</button>
+      <button type="button" class="gboard-key-btn" onclick="app.keyPress('5')">5</button>
+      <button type="button" class="gboard-key-btn" onclick="app.keyPress('6')">6</button>
+      <button type="button" class="gboard-key-btn" onclick="app.keyPress('7')">7</button>
+      <button type="button" class="gboard-key-btn" onclick="app.keyPress('8')">8</button>
+      <button type="button" class="gboard-key-btn" onclick="app.keyPress('9')">9</button>
+      <button type="button" class="gboard-key-btn action-key" onclick="app.keyPress('00')">00</button>
+      <button type="button" class="gboard-key-btn" onclick="app.keyPress('0')">0</button>
+      <button type="button" class="gboard-key-btn action-key" onclick="app.keyBackspace()">
+        <span class="material-symbols-outlined" style="font-size:22px;">backspace</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       BOTTOM BAR: ホーム・投稿 (最大の高さまで埋まる■緑)・アカウント
        ======================================================================== -->
   <nav class="app-bottom-bar">
     <button class="bottom-tab-btn active" id="btn-tab-home" onclick="app.showPage('home')">
@@ -958,24 +1092,45 @@
   </div>
 
   <!-- ========================================================================
-       APPLICATION LOGIC & STRICT AI MODERATION
+       APPLICATION LOGIC & ULTRA-STRICT AI MODERATION
        ======================================================================== -->
   <script>
-    const NATIONWIDE_STORES = [
-      { id: 's_ok', name: 'オーケー', type: 'ディスカウント・スーパー' },
-      { id: 's_gyomu', name: '業務スーパー', type: '業務用・一般食品' },
-      { id: 's_seiyu', name: '西友 (SEIYU)', type: 'スーパーマーケット' },
-      { id: 's_life', name: 'ライフ', type: '大型スーパーマーケット' },
-      { id: 's_donki', name: 'MEGAドン・キホーテ', type: '総合ディスカウント' },
-      { id: 's_aeon', name: 'イオン', type: '総合スーパー' },
-      { id: 's_yaoko', name: 'ヤオコー', type: '食品スーパー' },
-      { id: 's_mandai', name: '万代 (mandai)', type: '食品スーパー' },
-      { id: 's_valor', name: 'バロー (Valor)', type: 'スーパーマーケット' },
-      { id: 's_trial', name: 'トライアル (TRIAL)', type: 'ディスカウントストア' },
-      { id: 's_sanei', name: 'サンエー', type: '総合スーパー' },
-      { id: 's_york', name: 'ヨークベニマル', type: '食品スーパー' }
+    /**
+     * 日本全国の主要スーパーチェーンデータベース
+     */
+    const NATIONWIDE_SUPERMARKETS = [
+      { name: 'オーケー', type: 'ディスカウント・スーパー' },
+      { name: '業務スーパー', type: '業務用・一般食品' },
+      { name: 'ライフ (LIFE)', type: '大型スーパーマーケット' },
+      { name: '西友 (SEIYU)', type: 'スーパーマーケット' },
+      { name: 'イオン (AEON)', type: '総合スーパー' },
+      { name: 'イオンスタイル', type: '大型総合スーパー' },
+      { name: 'マックスバリュ', type: 'イオングループ食品スーパー' },
+      { name: 'まいばすけっと', type: '都市型小型スーパー' },
+      { name: 'MEGAドン・キホーテ', type: '総合ディスカウント' },
+      { name: 'ドン・キホーテ', type: 'ディスカウントストア' },
+      { name: 'ロピア (LOPIA)', type: '食肉・激安スーパー' },
+      { name: 'ヤオコー (YAOKO)', type: '食生活提案型スーパー' },
+      { name: '万代 (mandai)', type: '関西大型食品スーパー' },
+      { name: 'バロー (Valor)', type: '東海・中部スーパー' },
+      { name: '平和堂 (アル・プラザ)', type: '滋賀・近畿大型スーパー' },
+      { name: 'トライアル (TRIAL)', type: '24時間ディスカウント' },
+      { name: 'イトーヨーカドー', type: '総合スーパー' },
+      { name: 'ヨークベニマル', type: '東北・北関東スーパー' },
+      { name: 'サミットストア', type: '首都圏食品スーパー' },
+      { name: 'マルエツ', type: '首都圏食品スーパー' },
+      { name: 'ベイシア (Beisia)', type: '北関東ショッピングセンター' },
+      { name: 'カスミ (KASUMI)', type: '茨城・関東食品スーパー' },
+      { name: 'ベルク (Belc)', type: '埼玉・群馬食品スーパー' },
+      { name: 'ダイエー', type: '食品スーパー' },
+      { name: 'サンエー', type: '沖縄総合スーパー' },
+      { name: 'コープ (生協)', type: '生活協同組合店舗' },
+      { name: '成城石井', type: '高品質グローサリー' }
     ];
 
+    /**
+     * 商品比較データ
+     */
     const INITIAL_PRODUCTS = [
       {
         id: 'p_egg',
@@ -984,11 +1139,11 @@
         iconClass: 'egg',
         iconName: 'egg',
         prices: [
-          { storeId: 's_ok', price: 189, notes: '毎日特売 地域最安値', updatedAt: Date.now() - 1000 * 60 * 45, likes: 18, userLiked: false },
-          { storeId: 's_gyomu', price: 198, notes: '大量入荷 特売', updatedAt: Date.now() - 1000 * 60 * 180, likes: 12, userLiked: false },
-          { storeId: 's_seiyu', price: 218, notes: 'みなさまのお墨付き', updatedAt: Date.now() - 1000 * 60 * 320, likes: 7, userLiked: false },
-          { storeId: 's_mandai', price: 228, notes: '均一セール', updatedAt: Date.now() - 1000 * 60 * 500, likes: 4, userLiked: false },
-          { storeId: 's_life', price: 248, notes: '通常売価', updatedAt: Date.now() - 1000 * 60 * 620, likes: 3, userLiked: false }
+          { storeName: 'オーケー', price: 189, notes: '毎日特売 地域最安値', updatedAt: Date.now() - 1000 * 60 * 45, likes: 18, userLiked: false },
+          { storeName: '業務スーパー', price: 198, notes: '大量入荷 特売', updatedAt: Date.now() - 1000 * 60 * 180, likes: 12, userLiked: false },
+          { storeName: '西友 (SEIYU)', price: 218, notes: 'みなさまのお墨付き', updatedAt: Date.now() - 1000 * 60 * 320, likes: 7, userLiked: false },
+          { storeName: '万代 (mandai)', price: 228, notes: '均一セール', updatedAt: Date.now() - 1000 * 60 * 500, likes: 4, userLiked: false },
+          { storeName: 'ライフ (LIFE)', price: 248, notes: '通常売価', updatedAt: Date.now() - 1000 * 60 * 620, likes: 3, userLiked: false }
         ]
       },
       {
@@ -998,10 +1153,10 @@
         iconClass: 'milk',
         iconName: 'water_bottle',
         prices: [
-          { storeId: 's_gyomu', price: 168, notes: '朝食用特価', updatedAt: Date.now() - 1000 * 60 * 60, likes: 24, userLiked: false },
-          { storeId: 's_trial', price: 172, notes: '毎日安値', updatedAt: Date.now() - 1000 * 60 * 120, likes: 16, userLiked: false },
-          { storeId: 's_ok', price: 178, notes: '会員カード割引', updatedAt: Date.now() - 1000 * 60 * 240, likes: 9, userLiked: false },
-          { storeId: 's_donki', price: 188, notes: '情熱価格', updatedAt: Date.now() - 1000 * 60 * 360, likes: 6, userLiked: false }
+          { storeName: '業務スーパー', price: 168, notes: '朝食用特価', updatedAt: Date.now() - 1000 * 60 * 60, likes: 24, userLiked: false },
+          { storeName: 'トライアル (TRIAL)', price: 172, notes: '毎日安値', updatedAt: Date.now() - 1000 * 60 * 120, likes: 16, userLiked: false },
+          { storeName: 'オーケー', price: 178, notes: '会員カード割引', updatedAt: Date.now() - 1000 * 60 * 240, likes: 9, userLiked: false },
+          { storeName: 'MEGAドン・キホーテ', price: 188, notes: '情熱価格', updatedAt: Date.now() - 1000 * 60 * 360, likes: 6, userLiked: false }
         ]
       },
       {
@@ -1011,10 +1166,10 @@
         iconClass: 'veg',
         iconName: 'eco',
         prices: [
-          { storeId: 's_donki', price: 128, notes: '野菜市特売', updatedAt: Date.now() - 1000 * 60 * 30, likes: 31, userLiked: false },
-          { storeId: 's_yaoko', price: 128, notes: '産地直送', updatedAt: Date.now() - 1000 * 60 * 90, likes: 20, userLiked: false },
-          { storeId: 's_ok', price: 138, notes: '新鮮・大玉', updatedAt: Date.now() - 1000 * 60 * 200, likes: 14, userLiked: false },
-          { storeId: 's_life', price: 158, notes: '群馬県産', updatedAt: Date.now() - 1000 * 60 * 420, likes: 5, userLiked: false }
+          { storeName: 'MEGAドン・キホーテ', price: 128, notes: '野菜市特売', updatedAt: Date.now() - 1000 * 60 * 30, likes: 31, userLiked: false },
+          { storeName: 'ヤオコー (YAOKO)', price: 128, notes: '産地直送', updatedAt: Date.now() - 1000 * 60 * 90, likes: 20, userLiked: false },
+          { storeName: 'オーケー', price: 138, notes: '新鮮・大玉', updatedAt: Date.now() - 1000 * 60 * 200, likes: 14, userLiked: false },
+          { storeName: 'ライフ (LIFE)', price: 158, notes: '群馬県産', updatedAt: Date.now() - 1000 * 60 * 420, likes: 5, userLiked: false }
         ]
       },
       {
@@ -1024,9 +1179,9 @@
         iconClass: 'food',
         iconName: 'soup_kitchen',
         prices: [
-          { storeId: 's_ok', price: 268, notes: '月間特売', updatedAt: Date.now() - 1000 * 60 * 100, likes: 15, userLiked: false },
-          { storeId: 's_donki', price: 278, notes: '驚安プライス', updatedAt: Date.now() - 1000 * 60 * 250, likes: 8, userLiked: false },
-          { storeId: 's_seiyu', price: 288, notes: '定番値下げ', updatedAt: Date.now() - 1000 * 60 * 380, likes: 6, userLiked: false }
+          { storeName: 'オーケー', price: 268, notes: '月間特売', updatedAt: Date.now() - 1000 * 60 * 100, likes: 15, userLiked: false },
+          { storeName: 'MEGAドン・キホーテ', price: 278, notes: '驚安プライス', updatedAt: Date.now() - 1000 * 60 * 250, likes: 8, userLiked: false },
+          { storeName: '西友 (SEIYU)', price: 288, notes: '定番値下げ', updatedAt: Date.now() - 1000 * 60 * 380, likes: 6, userLiked: false }
         ]
       },
       {
@@ -1036,33 +1191,50 @@
         iconClass: 'daily',
         iconName: 'inventory_2',
         prices: [
-          { storeId: 's_donki', price: 298, notes: 'ワゴン特売', updatedAt: Date.now() - 1000 * 60 * 80, likes: 22, userLiked: false },
-          { storeId: 's_ok', price: 318, notes: '常時低価格', updatedAt: Date.now() - 1000 * 60 * 210, likes: 13, userLiked: false },
-          { storeId: 's_seiyu', price: 348, notes: '価格ロック', updatedAt: Date.now() - 1000 * 60 * 450, likes: 4, userLiked: false }
+          { storeName: 'MEGAドン・キホーテ', price: 298, notes: 'ワゴン特売', updatedAt: Date.now() - 1000 * 60 * 80, likes: 22, userLiked: false },
+          { storeName: 'オーケー', price: 318, notes: '常時低価格', updatedAt: Date.now() - 1000 * 60 * 210, likes: 13, userLiked: false },
+          { storeName: '西友 (SEIYU)', price: 348, notes: '価格ロック', updatedAt: Date.now() - 1000 * 60 * 450, likes: 4, userLiked: false }
         ]
       }
     ];
 
     /**
-     * AI厳重モデレーションエンジン
+     * AI超厳重モデレーションエンジン
+     * 「悪口は言い換えれば何にでもなる」に対応する正規化＆多面チェック
      */
     class AIContentSafetyEngine {
       constructor() {
+        // 直接的・間接的な暴言・侮辱
         this.abusePatterns = [
           /死[ねのけ]|し[ねの]|4ね|s1ne|korosu|殺[すせ]/i,
-          /バカ|ばか|馬鹿|アホ|あほ|キチガイ|基地外|ガイジ|障害/i,
-          /クソ|くそ|ゴミ|ごみ|消えろ|くたばれ|害悪/i
+          /バカ|ばか|馬鹿|アホ|あほ|キチガイ|基地外|ガイジ|障害|頭悪/i,
+          /クソ|くそ|ゴミ|ごみ|消えろ|くたばれ|害悪|死ねよ/i
         ];
+
+        // 店舗への営業妨害・言い換えクレーム・嫌がらせ
         this.defamationPatterns = [
-          /ぼったくり|ボッタクリ|ぼった|詐欺|さぎ|だまし|騙し/i,
-          /潰れろ|つぶれろ|食中毒|不衛生|汚い店|最悪[な店]/i,
-          /違法|犯罪|警察|告発/i
+          /ぼったくり|ボッタクリ|ぼった|ボッタ|詐欺|さぎ|だまし|騙し/i,
+          /潰れろ|つぶれろ|食中毒|不衛生|汚い店|最悪[な店]?|二度と行/i,
+          /カビ|かび|腐っ|異物混入|虫入|賞味期限切/i,
+          /オワコン|客舐め|ぼった価格|買わない方|行かない方/i,
+          /違法|犯罪|警察|通報|告発/i
         ];
+
+        // 店員・接客に対する感情的個人攻撃
+        this.staffAttackPatterns = [
+          /店員.*(態度|最悪|クソ|くそ|無愛想|ゴミ|うざ|ウザ)/i,
+          /レジ.*(遅い|トロい|態度|ババア|ジジイ|使えない)/i,
+          /接客.*(最低|最悪|なってない|クソ)/i
+        ];
+
+        // スパム・無意味文字列
         this.spamPatterns = [
           /(.)\1{4,}/,
           /^[a-zA-Z0-9]{8,}$/,
           /^(test|テスト|あああ|サンプル)$/i
         ];
+
+        // 個人情報・URL
         this.privacyPatterns = [
           /https?:\/\/|www\./i,
           /\d{2,4}-\d{2,4}-\d{3,4}/,
@@ -1070,8 +1242,16 @@
         ];
       }
 
+      // 記号や空白を抜いた正規化文字列を生成（伏字・当て字対策）
+      normalize(str) {
+        return (str || '')
+          .replace(/[ 　・、。！？!?\-_~〜*＊/／\n\r]/g, '')
+          .toLowerCase();
+      }
+
       evaluate(productName, notes, price) {
-        const fullText = `${productName} ${notes || ''}`;
+        const rawText = `${productName} ${notes || ''}`;
+        const normText = this.normalize(rawText);
 
         if (productName.trim().length < 2) {
           return { safe: false, reason: '商品名が短すぎます。具体的な品名を入力してください。' };
@@ -1085,27 +1265,38 @@
           return { safe: false, reason: '価格が不自然です（一般的なスーパー食品の上限10万円を超えています）。' };
         }
 
+        // 1. 暴言チェック
         for (const pattern of this.abusePatterns) {
-          if (pattern.test(fullText)) {
-            return { safe: false, reason: '他者を攻撃または不快にさせる言葉・伏字が含まれています。' };
+          if (pattern.test(rawText) || pattern.test(normText)) {
+            return { safe: false, reason: '不適切な攻撃表現や暴言が検知されました。' };
           }
         }
 
+        // 2. 店舗への営業妨害・悪質クレームチェック
         for (const pattern of this.defamationPatterns) {
-          if (pattern.test(fullText)) {
-            return { safe: false, reason: '店舗への営業妨害または悪質な表現が検知されました。事実に基づいた価格情報のみを入力してください。' };
+          if (pattern.test(rawText) || pattern.test(normText)) {
+            return { safe: false, reason: '店舗に対する主観的な非難や営業妨害表現が検知されました。客観的な特売メモのみ入力してください。' };
           }
         }
 
+        // 3. 店員・接客批判チェック
+        for (const pattern of this.staffAttackPatterns) {
+          if (pattern.test(rawText) || pattern.test(normText)) {
+            return { safe: false, reason: '店員や接客への批判が含まれています。価格情報の共有のみにご利用ください。' };
+          }
+        }
+
+        // 4. 個人情報・URL
         for (const pattern of this.privacyPatterns) {
-          if (pattern.test(fullText)) {
-            return { safe: false, reason: '外部URL、電話番号、個人情報等の入力は禁止されています。' };
+          if (pattern.test(rawText)) {
+            return { safe: false, reason: '外部URL、電話番号、個人情報の入力は禁止されています。' };
           }
         }
 
+        // 5. 連打スパム
         for (const pattern of this.spamPatterns) {
           if (pattern.test(productName) || (notes && pattern.test(notes))) {
-            return { safe: false, reason: '文字の過度な繰り返しや無意味な文字列が検知されました。' };
+            return { safe: false, reason: '無意味な文字列や文字の繰り返しが検知されました。' };
           }
         }
 
@@ -1118,16 +1309,15 @@
      */
     class StoreApp {
       constructor() {
-        this.stores = NATIONWIDE_STORES;
         this.products = this.loadProducts();
         this.searchQuery = '';
         this.activeProduct = null;
         this.safetyEngine = new AIContentSafetyEngine();
 
-        // 投稿ウィザード用一時入力データ
+        // ウィザード用データ
         this.wizardData = {
           step: 1,
-          storeId: 's_ok',
+          storeName: 'オーケー',
           category: '乳製品・卵',
           productName: '',
           priceString: '0',
@@ -1136,15 +1326,14 @@
       }
 
       loadProducts() {
-        const stored = localStorage.getItem('tokushare_v5_products');
+        const stored = localStorage.getItem('tokushare_v6_products');
         return stored ? JSON.parse(stored) : INITIAL_PRODUCTS;
       }
 
       save() {
-        localStorage.setItem('tokushare_v5_products', JSON.stringify(this.products));
+        localStorage.setItem('tokushare_v6_products', JSON.stringify(this.products));
       }
 
-      // 相対時間算出
       formatTimeAgo(timestamp) {
         const diff = Date.now() - timestamp;
         const mins = Math.floor(diff / 60000);
@@ -1155,11 +1344,10 @@
         return `${Math.floor(hrs / 24)}日前`;
       }
 
-      // 共感（いいね）トグル
-      toggleLike(prodId, storeId) {
+      toggleLike(prodId, storeName) {
         const prod = this.products.find(p => p.id === prodId);
         if (!prod) return;
-        const pItem = prod.prices.find(x => x.storeId === storeId);
+        const pItem = prod.prices.find(x => x.storeName === storeName);
         if (!pItem) return;
 
         if (!pItem.userLiked) {
@@ -1170,10 +1358,9 @@
           pItem.userLiked = false;
         }
         this.save();
-        return pItem;
       }
 
-      addPrice(storeId, prodName, price, category, notes) {
+      addPrice(storeName, prodName, price, category, notes) {
         let prod = this.products.find(p => p.name.trim().toLowerCase() === prodName.trim().toLowerCase());
 
         const iconMap = {
@@ -1182,7 +1369,7 @@
           '精肉・鮮魚': { class: 'meat', icon: 'set_meal' },
           '調味料・食品': { class: 'food', icon: 'soup_kitchen' },
           '日用品・雑貨': { class: 'daily', icon: 'inventory_2' },
-          '飲料・お酒': { class: 'milk', icon: 'water_bottle' }
+          '飲料・お茶': { class: 'milk', icon: 'water_bottle' }
         };
 
         const iconData = iconMap[category] || { class: 'food', icon: 'shopping_basket' };
@@ -1199,9 +1386,9 @@
           this.products.unshift(prod);
         }
 
-        const existingIdx = prod.prices.findIndex(p => p.storeId === storeId);
+        const existingIdx = prod.prices.findIndex(p => p.storeName === storeName);
         const newEntry = {
-          storeId: storeId,
+          storeName: storeName,
           price: parseInt(price, 10),
           notes: notes || '店頭確認価格',
           updatedAt: Date.now(),
@@ -1228,6 +1415,7 @@
       init() {
         this.bindEvents();
         this.renderHome();
+        this.renderStoreSuggestions('');
       },
 
       bindEvents() {
@@ -1236,9 +1424,28 @@
           state.searchQuery = e.target.value.trim().toLowerCase();
           this.renderHome();
         });
+
+        // 店舗検索インプット (サジェスト)
+        const storeSearchInput = document.getElementById('wizard-store-search-input');
+        storeSearchInput.addEventListener('input', (e) => {
+          this.renderStoreSuggestions(e.target.value.trim());
+        });
+      },
+
+      toggleGuide() {
+        const content = document.getElementById('guide-steps-content');
+        const text = document.getElementById('guide-toggle-text');
+        if (content.style.display === 'none') {
+          content.style.display = 'grid';
+          text.textContent = '閉じる';
+        } else {
+          content.style.display = 'none';
+          text.textContent = '使い方を見る';
+        }
       },
 
       showPage(pageId) {
+        this.closeGboard();
         document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
         const target = document.getElementById(`view-${pageId}`);
         if (target) target.classList.add('active');
@@ -1256,7 +1463,6 @@
         }
       },
 
-      // ホーム画面の描画
       renderHome() {
         const container = document.getElementById('product-cards-feed');
         container.innerHTML = '';
@@ -1264,10 +1470,7 @@
         const filtered = state.products.filter(prod => {
           if (!state.searchQuery) return true;
           const matchName = prod.name.toLowerCase().includes(state.searchQuery);
-          const matchStore = prod.prices.some(p => {
-            const st = state.stores.find(s => s.id === p.storeId);
-            return st && st.name.toLowerCase().includes(state.searchQuery);
-          });
+          const matchStore = prod.prices.some(p => p.storeName.toLowerCase().includes(state.searchQuery));
           return matchName || matchStore;
         });
 
@@ -1286,19 +1489,15 @@
         filtered.forEach(prod => {
           const sorted = [...prod.prices].sort((a, b) => a.price - b.price);
           const best = sorted[0];
-          const bestStore = state.stores.find(s => s.id === best.storeId) || { name: '店舗' };
-
-          // 共感総数
           const totalLikes = prod.prices.reduce((sum, item) => sum + (item.likes || 0), 0);
 
           let otherHtml = '';
           for (let i = 1; i < Math.min(sorted.length, 3); i++) {
             const item = sorted[i];
-            const store = state.stores.find(s => s.id === item.storeId) || { name: '店舗' };
             const diff = item.price - best.price;
             otherHtml += `
               <div class="ranking-row">
-                <span style="color:var(--text-sub);">${i + 1}. ${store.name}</span>
+                <span style="color:var(--text-sub);">${i + 1}. ${item.storeName}</span>
                 <span>
                   <strong class="num-font">${item.price.toLocaleString()}円</strong>
                   <span style="color:var(--brand-red); font-size:0.75rem; margin-left:3px;" class="num-font">(+${diff}円)</span>
@@ -1323,7 +1522,7 @@
             <div class="best-rate-banner">
               <div class="best-rate-store">
                 <span class="lowest-tag">最安値</span>
-                <span>${bestStore.name}</span>
+                <span>${best.storeName}</span>
               </div>
               <div class="best-rate-price num-font">
                 ${best.price.toLocaleString()}<span style="font-size:0.75rem; font-weight:700;">円</span>
@@ -1336,7 +1535,6 @@
               </div>
             ` : ''}
 
-            <!-- 投稿時間 ＆ 共感バッジ -->
             <div class="card-meta-bar">
               <div class="meta-time-box">
                 <span class="material-symbols-outlined" style="font-size:14px;">schedule</span>
@@ -1354,7 +1552,6 @@
         });
       },
 
-      // 商品詳細画面の表示
       showProductDetail(prod) {
         state.activeProduct = prod;
         document.getElementById('detail-prod-title').textContent = prod.name;
@@ -1366,7 +1563,6 @@
         const bestPrice = sorted[0].price;
 
         sorted.forEach((item, idx) => {
-          const store = state.stores.find(s => s.id === item.storeId) || { name: '店舗', type: 'スーパー' };
           const isBest = item.price === bestPrice;
 
           const row = document.createElement('div');
@@ -1384,7 +1580,7 @@
             <div>
               <div style="display:flex; align-items:center; gap:6px;">
                 <span style="font-size:0.75rem; font-weight:800; background:#EBECF0; color:var(--text-sub); width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;" class="num-font">${idx + 1}</span>
-                <strong style="font-size:0.95rem;">${store.name}</strong>
+                <strong style="font-size:0.95rem;">${item.storeName}</strong>
                 ${isBest ? '<span class="lowest-tag">最安値</span>' : ''}
               </div>
               <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
@@ -1395,8 +1591,7 @@
               <div class="num-font" style="font-size:1.3rem; font-weight:800; color:${isBest ? 'var(--brand-red)' : 'var(--text-main)'};">
                 ${item.price.toLocaleString()}<span style="font-size:0.75rem;">円</span>
               </div>
-              <!-- 共感ボタン -->
-              <button style="margin-top:4px; background:none; border:1px solid ${item.userLiked ? '#FDA4AF' : 'var(--ui-border)'}; border-radius:var(--radius-full); padding:2px 8px; font-size:0.75rem; color:${item.userLiked ? '#E11D48' : 'var(--text-sub)'}; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" onclick="event.stopPropagation(); app.handleLike('${prod.id}', '${item.storeId}')">
+              <button style="margin-top:4px; background:none; border:1px solid ${item.userLiked ? '#FDA4AF' : 'var(--ui-border)'}; border-radius:var(--radius-full); padding:2px 8px; font-size:0.75rem; color:${item.userLiked ? '#E11D48' : 'var(--text-sub)'}; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" onclick="event.stopPropagation(); app.handleLike('${prod.id}', '${item.storeName}')">
                 <span class="material-symbols-outlined ${item.userLiked ? 'fill' : ''}" style="font-size:15px; color:#E11D48;">favorite</span>
                 <span class="num-font">${item.likes || 0}</span>
               </button>
@@ -1408,8 +1603,8 @@
         this.showPage('product-detail');
       },
 
-      handleLike(prodId, storeId) {
-        state.toggleLike(prodId, storeId);
+      handleLike(prodId, storeName) {
+        state.toggleLike(prodId, storeName);
         this.showProductDetail(state.activeProduct);
       },
 
@@ -1422,44 +1617,55 @@
       },
 
       // ======================================================================
-      // 1ページずつ進む 投稿ウィザードロジック
+      // 投稿ウィザード (横スクロールなし・1ページずつ進む)
       // ======================================================================
       startPostWizard() {
         state.wizardData = {
           step: 1,
-          storeId: state.stores[0].id,
+          storeName: 'オーケー',
           category: '乳製品・卵',
           productName: '',
           priceString: '0',
           notes: ''
         };
         document.getElementById('ai-moderation-alert').style.display = 'none';
-        this.renderStoreTiles();
+        document.getElementById('wizard-store-search-input').value = '';
+        this.renderStoreSuggestions('');
         this.renderWizardStep(1);
         this.showPage('post');
       },
 
-      renderStoreTiles() {
-        const wrap = document.getElementById('post-store-tiles');
-        wrap.innerHTML = '';
-        state.stores.forEach(s => {
+      // 全国スーパーの候補サジェスト描画 (APIハイブリッド)
+      renderStoreSuggestions(query) {
+        const container = document.getElementById('suggested-stores-container');
+        container.innerHTML = '';
+
+        const cleanQ = query.toLowerCase();
+        let matches = NATIONWIDE_SUPERMARKETS.filter(s => !cleanQ || s.name.toLowerCase().includes(cleanQ));
+
+        // 入力したカスタム店舗名も追加可能
+        if (query && !matches.some(m => m.name.toLowerCase() === cleanQ)) {
+          matches.unshift({ name: query, type: '入力した店舗' });
+        }
+
+        matches.slice(0, 15).forEach(s => {
+          const isSelected = s.name === state.wizardData.storeName;
           const row = document.createElement('div');
-          const isSelected = s.id === state.wizardData.storeId;
-          row.className = `store-tile-row ${isSelected ? 'selected' : ''}`;
+          row.className = `suggested-store-row ${isSelected ? 'selected' : ''}`;
           row.innerHTML = `
             <div>
-              <div style="font-weight:800; font-size:0.95rem;">${s.name}</div>
+              <strong style="font-size:0.95rem;">${s.name}</strong>
               <div style="font-size:0.72rem; color:var(--text-muted);">${s.type}</div>
             </div>
             <span class="material-symbols-outlined" style="color:${isSelected ? 'var(--brand-green)' : 'var(--text-muted)'}; font-size:20px;">
-              ${isSelected ? 'radio_button_checked' : 'radio_button_unchecked'}
+              ${isSelected ? 'check_circle' : 'add_circle_outline'}
             </span>
           `;
           row.onclick = () => {
-            state.wizardData.storeId = s.id;
-            this.renderStoreTiles();
+            state.wizardData.storeName = s.name;
+            this.renderStoreSuggestions(query);
           };
-          wrap.appendChild(row);
+          container.appendChild(row);
         });
       },
 
@@ -1474,18 +1680,14 @@
         state.wizardData.productName = name;
         state.wizardData.category = cat;
         document.querySelectorAll('#post-category-tiles .category-tile-card').forEach(c => {
-          if (c.getAttribute('data-cat') === cat) {
-            c.classList.add('selected');
-          } else {
-            c.classList.remove('selected');
-          }
+          c.classList.toggle('selected', c.getAttribute('data-cat') === cat);
         });
       },
 
       renderWizardStep(stepNum) {
         state.wizardData.step = stepNum;
+        this.closeGboard();
 
-        // タイトル & ステップ表示更新
         const titles = {
           1: '1. スーパーを選択',
           2: '2. カテゴリと商品名',
@@ -1503,8 +1705,7 @@
         }
 
         if (stepNum === 4) {
-          const store = state.stores.find(s => s.id === state.wizardData.storeId);
-          document.getElementById('confirm-store-name').textContent = store ? store.name : '--';
+          document.getElementById('confirm-store-name').textContent = state.wizardData.storeName;
           document.getElementById('confirm-prod-name').textContent = `${state.wizardData.productName} (${state.wizardData.category})`;
           document.getElementById('confirm-price-val').textContent = `¥ ${parseInt(state.wizardData.priceString, 10).toLocaleString()}`;
           document.getElementById('confirm-notes-val').textContent = state.wizardData.notes || 'なし';
@@ -1524,7 +1725,7 @@
         } else if (nextStep === 4) {
           const price = parseInt(state.wizardData.priceString, 10);
           if (isNaN(price) || price <= 0) {
-            this.showToast('1円以上の金額を入力してください', 'info');
+            this.showToast('金額をタップして入力してください', 'info');
             return;
           }
           state.wizardData.notes = document.getElementById('wizard-notes').value.trim();
@@ -1541,11 +1742,19 @@
         }
       },
 
-      // Gboard風キーボード入力
+      // Gboard風キーボードの表示・非表示
+      openGboard() {
+        document.getElementById('gboard-drawer').classList.add('open');
+      },
+
+      closeGboard() {
+        document.getElementById('gboard-drawer').classList.remove('open');
+      },
+
       keyPress(val) {
         let cur = state.wizardData.priceString;
         if (cur === '0') cur = '';
-        if (cur.length >= 6) return; // 10万円以上防止
+        if (cur.length >= 6) return;
         cur += val;
         state.wizardData.priceString = cur;
         document.getElementById('gboard-price-text').textContent = parseInt(cur, 10).toLocaleString();
@@ -1563,22 +1772,22 @@
       },
 
       submitWizardPost() {
-        const { storeId, productName, priceString, category, notes } = state.wizardData;
+        const { storeName, productName, priceString, category, notes } = state.wizardData;
         const alertBox = document.getElementById('ai-moderation-alert');
         const alertReason = document.getElementById('ai-moderation-reason');
 
-        // AI厳重安全判定
+        // AI超厳重モデレーション判定
         const checkResult = state.safetyEngine.evaluate(productName, notes, priceString);
 
         if (!checkResult.safe) {
           alertReason.textContent = checkResult.reason;
           alertBox.style.display = 'flex';
-          this.showToast('不適切な入力を検知しました', 'shield');
+          this.showToast('安全基準を満たしていません', 'shield');
           return;
         }
 
         alertBox.style.display = 'none';
-        state.addPrice(storeId, productName, priceString, category, notes);
+        state.addPrice(storeName, productName, priceString, category, notes);
 
         this.showToast('価格情報を共有しました！', 'check_circle');
         this.showPage('home');
